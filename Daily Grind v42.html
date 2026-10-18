@@ -702,14 +702,11 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 
   // ---- Bank ----
   'Bank: Security Guard': ['Medicine Certificate'],                                                      // $110 (first aid)
-  'Teller':               ['Finance Certificate'],                                                       // $150
-  'Financial Analyst':    ['Finance Diploma', 'Technology Certificate'],                                 // $240
-  'Investment Associate': ['Finance Degree', 'Technology Diploma', 'Sales Certificate'],                 // $330
-  'Fund Manager':         ['Finance Masters', 'Technology Degree', 'Sales Diploma', 'Engineering Certificate'],   // $440
-  // ---- Bank (Branch) ----
-  'Customer Service Officer': ['Sales Certificate'],                                                     // $120
-  'Loan Officer':             ['Finance Diploma', 'Sales Certificate'],                                  // $210
-  'Branch Manager':           ['Finance Degree', 'Sales Diploma', 'Technology Certificate'],             // $360
+  'Teller':               ['Finance Certificate', 'Sales Certificate'],                                  // $150 (cash handling, customer service)
+  'Financial Analyst':    ['Finance Diploma', 'Technology Certificate'],                                 // $240 (reporting, data)
+  'Investment Associate': ['Finance Degree', 'Sales Diploma'],                                           // $330 (portfolios, client advice)
+  'Branch Manager':       ['Finance Degree', 'Sales Diploma', 'Technology Certificate'],                 // $360 (runs the branch and its staff)
+  'Tech Developer':       ['Technology Masters', 'Finance Diploma'],                                     // $440 (banking systems, security)
 
   // ---- Hospital ----
   'Hospital Porter':      [],                                                                            // $90
@@ -725,16 +722,6 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   'Receptionist':           ['Sales Certificate'],                                                       // $100
   'Lab Technician':         ['Technology Diploma'],                                                      // $190
   'Hospital Administrator': ['Finance Degree', 'Medicine Diploma', 'Technology Certificate'],            // $330
-
-  // ---- School ----
-  'Janitor':            [],                                                                              // $75
-  'Lab Assistant':      ['Technology Certificate'],                                                      // $140
-  'Tutor':              ['Technology Diploma', 'Finance Certificate'],                                   // $200
-  'Lecturer':           ['Technology Degree', 'Finance Diploma', 'Sales Certificate'],                   // $320
-  // ---- School (Staff) ----
-  'Library Assistant':  [],                                                                              // $80
-  'Admin Clerk':        ['Finance Certificate'],                                                         // $100
-  'Careers Counsellor': ['Sales Diploma', 'Finance Certificate'],                                        // $210
 
   // ---- Electronics Store (Sales) ----
   'Stock Clerk':        [],                                                                              // $90
@@ -1213,7 +1200,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       {r:'Teller',pay:150,t:'fin',l:1,dress:'suit'},
       {r:'Financial Analyst',pay:240,t:'fin',l:2,dress:'suit'},
       {r:'Investment Associate',pay:330,t:'fin',l:3,dress:'suit'},
-      {r:'Fund Manager',pay:440,t:'fin',l:4,dress:'suit'}]},
+      {r:'Branch Manager',pay:360,t:'fin',l:3,dress:'suit'},
+      {r:'Tech Developer',pay:440,t:'tech',l:4,dress:'suit'}]},
     hosp:{n:'Hospital',ranks:[
       {r:'Hospital Porter',pay:90,t:'',l:0,dress:'casual'},
       {r:'Nursing Aide',pay:140,t:'med',l:1,dress:'casual'},
@@ -1223,11 +1211,6 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       {r:'Specialist Registrar',pay:470,t:'med',l:5,dress:'suit'},
       {r:'Consultant',pay:580,t:'med',l:6,dress:'suit'},
       {r:'Chief of Surgery',pay:720,t:'med',l:7,dress:'suit'}]},
-    school:{n:'School',ranks:[
-      {r:'Janitor',pay:75,t:'',l:0},
-      {r:'Lab Assistant',pay:140,t:'tech',l:1,dress:'casual'},
-      {r:'Tutor',pay:200,t:'any',l:2,dress:'casual'},
-      {r:'Lecturer',pay:320,t:'any',l:3,dress:'suit'}]},
     elec:{n:'Electronics Store (Sales)',b:'elec',ranks:[
       {r:'Stock Clerk',pay:90,t:'',l:0,dress:'casual'},
       {r:'Sales Assistant',pay:130,t:'sal',l:1,dress:'casual'},
@@ -1267,19 +1250,11 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     pawn2:{n:'Pawn Shop (Back office)',b:'pawn',ranks:[
       {r:'Security Guard',pay:95,t:'',l:0,dress:'casual'},
       {r:'Bookkeeper',pay:150,t:'fin',l:1,dress:'smart'}]},
-    bank2:{n:'Bank (Branch)',b:'bank',ranks:[
-      {r:'Customer Service Officer',pay:120,t:'',l:0,dress:'smart'},
-      {r:'Loan Officer',pay:210,t:'fin',l:2,dress:'smart'},
-      {r:'Branch Manager',pay:360,t:'fin',l:3,dress:'suit'}]},
     hosp2:{n:'Hospital (Support)',b:'hosp',ranks:[
       {r:'Cleaner',pay:75,t:'',l:0},
       {r:'Receptionist',pay:100,t:'',l:0,dress:'smart'},
       {r:'Lab Technician',pay:190,t:'tech',l:2,dress:'casual'},
       {r:'Hospital Administrator',pay:330,t:'fin',l:3,dress:'suit'}]},
-    school2:{n:'School (Staff)',b:'school',ranks:[
-      {r:'Library Assistant',pay:80,t:'',l:0,dress:'casual'},
-      {r:'Admin Clerk',pay:100,t:'',l:0,dress:'smart'},
-      {r:'Careers Counsellor',pay:210,t:'sal',l:2,dress:'smart'}]},
     elec3:{n:'Electronics Store (Service)',b:'elec',ranks:[
       {r:'Delivery & Install',pay:95,t:'',l:0,dress:'casual'},
       {r:'Repair Technician',pay:170,t:'eng',l:1,dress:'casual'},
@@ -1297,7 +1272,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     {r:'Operations Assistant',pay:260,t:'sal',l:2,dress:'smart'}]};
   /* the better the pay, the more qualifications from different fields it asks for.
      q = list of [track, level]. Pay 250+ asks for a second field (up to a Degree); pay 450+ for a third. */
-  var COMP={factory:['eng','tech','fin'],fast:['fnb','sal','fin'],resto:['fnb','sal','fin'],market:['sal','fnb','fin'],mall:['sal','fin','fnb'],thrift:['sal','fin','eng'],pawn:['fin','tech','sal'],bank:['fin','tech','sal'],hosp:['med','tech','eng'],school:['tech','fin','sal'],elec:['sal','tech','fin'],gym:['sal','med']};
+  var COMP={factory:['eng','tech','fin'],fast:['fnb','sal','fin'],resto:['fnb','sal','fin'],market:['sal','fnb','fin'],mall:['sal','fin','fnb'],thrift:['sal','fin','eng'],pawn:['fin','tech','sal'],bank:['fin','tech','sal'],hosp:['med','tech','eng'],elec:['sal','tech','fin'],gym:['sal','med']};
   /* Build each job's qualification list (rk.q) from CONFIG.jobs.
      rk.q is a list of [track, level]; rk.kn is the knowledge needed. */
   var CFG_WARN=[];   /* problems found in CONFIG, shown in the Daily log when the game loads */
@@ -1354,7 +1329,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     function autoKn(l){return l>=J.knowledgeFromLevel?(l-(J.knowledgeFromLevel-1))*J.knowledgePerLevel+J.knowledgeBase:0}
   })();
   var GENLV=['Certificate','Diploma','Degree','Honours','Masters','Doctorate','Specialist'];
-  var BOARD=['factory','factory2','fast','fast2','resto','resto2','market','market2','mall','mall2','thrift','thrift2','pawn','pawn2','bank','bank2','hosp','hosp2','school','school2','elec','elec2','elec3','gym'];
+  var BOARD=['factory','factory2','fast','fast2','resto','resto2','market','market2','mall','mall2','thrift','thrift2','pawn','pawn2','bank','hosp','hosp2','elec','elec2','elec3','gym'];
   function lvl(t){if(t==='any'){var mx=0;Object.keys(TRACKS).forEach(function(k){mx=Math.max(mx,lvl(k))});return mx}var c=TRACKS[t].c,n=S.edu[t],k=0;c.forEach(function(e){if(n>=e)k++});return k}
   function bestEdu(){var b=null;Object.keys(S.edu).forEach(function(t){if(lvl(t)>0&&(!b||lvl(t)>lvl(b)))b=t});return b}
   function cur(c){var r=S.career[c];return r==null?null:CAREERS[c].ranks[r]}
@@ -1403,7 +1378,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     done();
   }
 
-  function blank(){return {sagaLast:'',slept:0,homeMeals:0,shut:{},cooked:[],health:CONFIG.health.start,gym:[],good:[],studyMin:0,studyStreak:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:2,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:100,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickRest:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,pantry:[],broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
+  function blank(){return {sagaLast:'',slept:0,homeMeals:0,shut:{},cooked:[],health:CONFIG.health.start,gym:[],good:[],studyMin:0,studyStreak:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:3,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:100,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickRest:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,pantry:[],broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
     S=blank();T0();PREV=null;
     rollOpenings();loc='apt';view=null;last=null;
@@ -1434,7 +1409,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       var b=blank();
       if(!d.S.tmin){d.S.ap=MAX_AP;d.S.tmin=1}
       if(!d.S.enr){d.S.enr={};Object.keys(TRACKS).forEach(function(t){var n=(d.S.edu||{})[t]||0,ls=(d.S.les||{})[t]||0;if(n<TRACKS[t].c[TRACKS[t].c.length-1]&&(ls>0||(n>0&&TRACKS[t].c.indexOf(n)<0)))d.S.enr[t]=TRACKS[t].c.filter(function(e){return n>=e}).length})}
-      if(d.S.ver!==2&&d.S.career){var cr=d.S.career;if(cr.jobs!=null){cr.factory=cr.jobs;delete cr.jobs}['resto','bank','elec'].forEach(function(c){if(cr[c]!=null)cr[c]++});d.S.ver=2}
+      if(!(d.S.ver>=2)&&d.S.career){var cr=d.S.career;if(cr.jobs!=null){cr.factory=cr.jobs;delete cr.jobs}['resto','bank','elec'].forEach(function(c){if(cr[c]!=null)cr[c]++});d.S.ver=2}
+      if(d.S.ver===2&&d.S.career){var cr2=d.S.career;if(cr2.bank===4)cr2.bank=5;Object.keys(cr2).forEach(function(c){if(!CAREERS[c])delete cr2[c]});d.S.ver=3}
       Object.keys(b).forEach(function(k){if(d.S[k]===undefined)d.S[k]=b[k]});
       /* one job at a time: keep the best-paid job from an older save */
       (function(){var cs=Object.keys(d.S.career||{});if(cs.length>1){var best=null,bp=-1;cs.forEach(function(c){var rk=CAREERS[c]&&CAREERS[c].ranks[d.S.career[c]];if(rk&&rk.pay>bp){bp=rk.pay;best=c}});var keep={};if(best)keep[best]=d.S.career[best];d.S.career=keep}
