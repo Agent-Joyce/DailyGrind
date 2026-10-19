@@ -141,7 +141,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.three .grp{margin:0;padding:7px 9px 9px}
 .three .kv{flex-wrap:nowrap}.three .kv b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}.three .kv span{white-space:nowrap}.three .wr span{width:auto}.three .wr{flex-wrap:wrap;gap:2px 6px}.three .wr em{min-width:0;margin-left:auto}
 .center.wide{width:94%}
-.jb{columns:5;column-gap:12px}.jb>div{break-inside:avoid;margin-bottom:6px}.result:empty{display:none}.jb2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px}
+.jb{columns:175px 5;column-gap:12px}.jb>div{break-inside:avoid;margin-bottom:6px}.result:empty{display:none}.jb2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px}
 .jb .opt{flex-direction:row;align-items:center;gap:8px;padding:5px 0;font-size:.82rem;line-height:1.2}.jb .opt .btn{min-height:28px;padding:2px 10px;font-size:.78rem;box-shadow:0 2px 0 rgba(22,34,46,.9)}.jb .opt small{font-size:.68rem;margin-top:1px}
 .jb .jh{margin-top:4px}
 .bcard{border:2px solid var(--line);border-radius:12px;padding:4px 10px 6px;background:var(--surface)}.bcard .jh{margin:4px 0 2px;font-size:.8rem;opacity:1;display:flex;justify-content:space-between;gap:6px}.bcard .jh em{font-style:normal;color:var(--red);text-transform:none;letter-spacing:0}
@@ -161,6 +161,18 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 .mute.reset{font-size:.72rem;font-weight:800;padding:1px 8px;color:var(--red);border-color:color-mix(in srgb,var(--red) 45%,var(--line))}
 .mute{font:inherit;font-size:.9rem;background:none;border:2px solid var(--line);border-radius:8px;padding:0 6px;margin-left:6px;cursor:pointer;vertical-align:middle}
 .floater{position:absolute;z-index:1500;transform:translate(-50%,0);pointer-events:none;font-weight:800;font-size:.95rem;padding:1px 8px;border-radius:99px;background:rgba(255,255,255,.92);box-shadow:0 2px 6px rgba(0,0,0,.25);animation:floatup 1.4s ease-out forwards;white-space:nowrap}
+.ic{display:inline-block;width:1.15em;height:1.15em;vertical-align:-.22em;margin-right:3px;flex:none}
+.opt small .ic{width:1.25em;height:1.25em;margin:0 2px 0 4px}.opt small .ic:first-child{margin-left:0}
+.tcell .l .ic{width:1.6em;height:1.6em;vertical-align:-.55em;margin-right:3px}
+.hud .tcell:has(.icl){padding-left:4px;padding-right:4px;text-align:center;flex:0 0 62px;width:62px;box-sizing:border-box}.hud .tcell:has(.icl) b{font-size:.92rem}.hud .tcell .l.icl{opacity:1;line-height:1;margin-bottom:2px}.hud .tcell .l.icl .ic{width:18px;height:18px;margin:0;vertical-align:middle}
+/* narrow windows (tablets, small laptop windows): compact the top bar so it stays on one row */
+@media (min-width:641px) and (max-width:1023px){.hud .hstats{gap:4px}.hud .hstats>.tcell{padding-left:5px;padding-right:5px}.hud .tcell:has(.icl){flex:0 0 50px;width:50px}.hud .tcell:has(.icl) b{font-size:.8rem}.hud .tcell .l.icl .ic{width:16px;height:16px}.hud .tleft .donut,.hud #apOf,.hud .tleft #clockIcon{display:none}.hud .tleft b{font-size:.9rem}.hud .tcell b{font-size:.9rem}.hud .actbar .btn{min-height:36px;padding:4px 10px;font-size:.85rem}.hud .hstats{flex:1 0 auto;flex-wrap:nowrap}.hud .actbar{margin-left:auto}}
+@media (max-width:640px){.hud .tcell .l.icl .ic{width:15px;height:15px}.hud .hstats>.tcell{padding-left:4px;padding-right:4px}.hud .tleft #clockNow,.hud .tleft #clockIcon{display:none}.hud .tcell b{font-size:.85rem}.hud .hstats>.tcell:has(.icl){flex:1 1 0;width:auto;min-width:0}.hud .tcell:has(.icl) b{font-size:.74rem}.hud .hstats>.tleft{flex:0 0 auto}.hud .tleft b{font-size:.74rem}.hud .sclbl{display:none}.hud .hinfo{margin-left:0;width:14px;height:14px;font-size:10px}.hud .tleft .donut{display:none}}
+.mrow>span .ic{width:1.3em;height:1.3em;vertical-align:-.3em;margin-right:4px}
+#tip{position:fixed;z-index:7000;max-width:270px;background:#16222e;color:#fff;font-size:.78rem;font-weight:600;line-height:1.4;padding:8px 11px;border-radius:9px;border:2px solid #3cc0c3;box-shadow:0 6px 18px rgba(0,0,0,.35);pointer-events:none;opacity:0;transition:opacity .08s;left:0;top:0}
+#tip.on{opacity:1}#tip table{border-collapse:collapse;margin-top:5px;width:100%}#tip td{padding:1px 0;font-weight:600}#tip td+td{text-align:right;padding-left:10px}#tip tr.tot td{border-top:1px solid rgba(255,255,255,.35);padding-top:3px;font-weight:800;color:#f0bd4a}
+.hud [data-tip]{cursor:help}.hinfo{display:inline-flex;align-items:center;justify-content:center;width:12px;height:12px;border-radius:50%;background:#3cc0c3;color:#06262a;font:italic 800 9px/1 Georgia,serif;margin-left:3px;vertical-align:1px;text-transform:none}
+.g-nw .parts{display:flex;gap:6px}.g-nw .parts>div{flex:1 1 0;min-width:0;white-space:nowrap;font-size:.7rem}.g-nw .parts>div[hidden]{display:none}.g-nw .parts b{font-size:.9rem;overflow:hidden;text-overflow:ellipsis}.g-nw .parts .dot{width:7px;height:7px;margin-right:3px}
 .floater.up{color:#1f7a4a}.floater.dn{color:#b8352b}
 @keyframes floatup{0%{opacity:0;transform:translate(-50%,8px) scale(.8)}15%{opacity:1;transform:translate(-50%,0) scale(1.05)}100%{opacity:0;transform:translate(-50%,-46px) scale(1)}}
 @media (prefers-reduced-motion:reduce){.floater{animation:none}}
@@ -220,7 +232,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 .g-bill{border-color:var(--red);background:color-mix(in srgb,var(--red) 7%,var(--surface))}.g-bill .gh{color:var(--red)}
 .wr{display:flex;align-items:center;gap:8px;font-size:.82rem;margin-top:4px}.wr span{width:52px;color:var(--muted)}.wr .bar{flex:1;margin:0}.wr em{font-style:normal;font-weight:700;min-width:62px;text-align:right}
 
-.s4{background:#8a5cc2}.d4{background:#8a5cc2}.parts{grid-template-columns:repeat(4,1fr)}
+.s4{background:#8a5cc2}.d4{background:#8a5cc2}.d5{background:var(--red)}.parts{grid-template-columns:repeat(auto-fit,minmax(78px,1fr))}.parts b.owe.dn,#billsv{color:var(--red)}.parts{grid-template-columns:repeat(4,1fr)}
 .invline{display:inline-block;margin-right:12px;margin-top:4px;font-size:.78rem;color:var(--muted)}.invline b{color:var(--ink)}.invline .up{color:var(--green)}.invline .dn{color:var(--red)}
 .kb i{background:#8a5cc2}
 .meal{margin-top:5px;font-size:.78rem;font-weight:700}.meal.ok{color:var(--green)}.meal.no{color:var(--red)}
@@ -303,7 +315,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 .g-vit .mrow b{min-width:64px}
 /* 3. toasts */
 #toasts{position:fixed;left:50%;transform:translateX(-50%);top:72px;z-index:6000;display:flex;flex-direction:column;gap:6px;width:min(420px,calc(100vw - 24px));pointer-events:none}
-.toast{pointer-events:auto;padding:9px 12px;border-radius:12px;border:3px solid var(--ink);border-left-width:8px;background:var(--surface);color:var(--ink);font-size:.85rem;font-weight:700;line-height:1.3;cursor:pointer;box-shadow:0 6px 0 -1px rgba(22,34,46,.35),0 10px 24px rgba(0,0,0,.35);animation:toastin .28s ease-out both;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.toast{pointer-events:auto;padding:9px 12px;border-radius:12px;border:3px solid var(--ink);border-left-width:8px;background:var(--surface);color:var(--ink);font-size:.85rem;font-weight:700;line-height:1.3;cursor:pointer;box-shadow:0 6px 0 -1px rgba(22,34,46,.35),0 10px 24px rgba(0,0,0,.35);animation:toastin .28s ease-out both;display:block;overflow-wrap:anywhere}
 .toast.good{border-color:var(--green)}.toast.bad{border-color:var(--red)}.toast.warn{border-color:var(--gold)}
 .toast.out{animation:toastout .25s ease-in both}
 @keyframes toastin{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
@@ -378,16 +390,18 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 <header class="hud" id="hud">
   <div class="hstats">
     <div class="tcell"><span class="l">Day</span><b><span id="day">1</span><small id="dayMax"> / 30</small></b></div>
-        <div class="tcell tleft" id="donutWrap"><svg class="donut" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15.9155" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="5"/><circle id="donut" cx="18" cy="18" r="15.9155" fill="none" stroke="#3cc0c3" stroke-width="5" stroke-dasharray="100 100" stroke-linecap="round" transform="rotate(-90 18 18)"/><text id="donutTxt" x="18" y="21" text-anchor="middle" font-size="8.5" font-weight="800" fill="#fff">100%</text></svg><div><span class="l"><span class="ck-pre">Time left · </span><span id="clockNow">7:00 AM</span> <span id="clockIcon">☀️</span></span><b><span id="ap">24h</span><small id="apOf"> of 24h</small></b></div></div>
+        <div class="tcell tleft" id="donutWrap"><svg class="donut" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15.9155" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="5"/><circle id="donut" cx="18" cy="18" r="15.9155" fill="none" stroke="#3cc0c3" stroke-width="5" stroke-dasharray="100 100" stroke-linecap="round" transform="rotate(-90 18 18)"/><text id="donutTxt" x="18" y="21" text-anchor="middle" font-size="8.5" font-weight="800" fill="#fff">100%</text></svg><div><span class="l"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-time"/></svg><span id="clockNow">7:00 AM</span> <span id="clockIcon">☀️</span></span><b><span id="ap">24h</span><small id="apOf"> of 24h</small></b></div></div>
         
-    <div class="tcell"><span class="l">Cash</span><b id="hCash">$200</b></div>
-    <div class="tcell"><span class="l">Energy</span><b id="hEn">100%</b></div>
-    <div class="tcell"><span class="l">Happy</span><b id="hHp">70</b></div>
-    <div class="tcell"><span class="l">Health</span><b id="hHl">80</b></div>
+    <div class="tcell" id="hNwC" data-tip="Net worth: cash + bank + investments + the resale value of your things, minus any loan and bills you owe. Reach the next rank to win." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Net worth"><use href="#ic-worth"/></svg></span><b id="hNw">$200</b></div>
+    <div class="tcell" data-tip="Cash in hand. Pays for food, shopping and rent. Bank savings and investments are not included." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Cash"><use href="#ic-cash"/></svg></span><b id="hCash">$200</b></div>
+    <div class="tcell" data-tip="Energy: work and study use it up; food, rest and sleep restore it. Under 30% your shifts pay less and you fall ill more easily." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Energy"><use href="#ic-energy"/></svg></span><b id="hEn">100%</b></div>
+    <div class="tcell" data-tip="Happiness: fun, good food and comfort at home raise it. Low happiness cuts your pay, and too long at rock bottom ends the game." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Happiness"><use href="#ic-happy"/></svg></span><b id="hHp">70</b></div>
+    <div class="tcell" data-tip="Health: healthy meals, the gym and sleeping at home raise it. Junk food, hunger and illness lower it. Poor health means more illness and lower pay." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Health"><use href="#ic-health"/></svg></span><b id="hHl">80</b></div>
+    <div class="tcell" data-tip="Knowledge: grows with study, devices and investing. Better jobs need more of it, and it raises your shift pay." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Knowledge"><use href="#ic-know"/></svg></span><b id="hKn">10</b></div>
     <div class="tcell" id="hInvC" hidden><span class="l">Invest</span><b id="hInv">$0</b><small id="hInvPL"></small></div>
-    <div class="tcell sc"><span class="l">Score</span><b id="hScore">0</b><small id="hBest"></small></div>
+    <div class="tcell sc" data-tip="score" tabindex="0"><span class="l"><span class="sclbl">Score </span><i class="hinfo" aria-label="How the score is worked out">i</i></span><b id="hScore">0</b><small id="hBest"></small></div>
   </div>
-  <div class="actbar" id="actbar"><button class="btn alt" id="hudLeave">← Leave</button><button class="btn" id="hudEnd">End day ☾</button></div>
+  <div class="actbar" id="actbar"><button class="btn alt" id="hudLeave">← Leave</button><button class="btn" id="hudEnd">Sleep in Apartment ☾</button></div>
   <div class="daybar" id="daybar" aria-hidden="true"></div>
 </header>
 <main class="board" id="board">
@@ -404,26 +418,13 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       <div class="goals" id="goals" hidden></div>
       <div class="alerts" id="warn" hidden></div>
       <div class="sumcard" id="sumcard" hidden></div>
-      <div class="grp g-nw">
-        <div class="gh">💰 Net worth</div>
-        <div class="nwrow"><b id="nw">$200</b><span><span id="goalAmt">next: Comfortable $2,000</span></span></div>
-        <div class="seg" id="seg"><i class="s1" id="sgCash"></i><i class="s2" id="sgBank"></i><i class="s4" id="sgInv"></i><i class="s3" id="sgAsset"></i></div>
-        <div class="parts">
-          <div><span class="dot d1"></span>Cash<b id="cash">$200</b></div>
-          <div><span class="dot d2"></span>Bank account<b id="bank">$0</b></div>
-          <div><span class="dot d4"></span>Investments<b id="invv">$0</b></div>
-          <div><span class="dot d3"></span>Other assets<b id="assets">$0</b></div>
-        </div>
-        <div class="invline" id="invline" hidden></div>
-        <div class="invline" id="debtline" hidden></div>
-      </div>
       <div class="three">
         <div class="grp g-vit">
           <div class="gh">❤️ Vitals</div>
-          <div class="mrow"><span>⚡ Energy</span><div class="bar"><i id="enBar"></i></div><b id="energy">100%</b></div>
-          <div class="mrow"><span>😊 Happy</span><div class="bar"><i id="hpBar"></i></div><b id="happy">70%</b></div>
-          <div class="mrow"><span>💚 Health</span><div class="bar"><i id="hlBar"></i></div><b id="health">80%</b></div>
-          <div class="mrow"><span>🧠 Know</span><div class="bar kb"><i id="knBar"></i></div><b id="know">10</b></div>
+          <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-energy"/></svg>Energy</span><div class="bar"><i id="enBar"></i></div><b id="energy">100%</b></div>
+          <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-happy"/></svg>Happy</span><div class="bar"><i id="hpBar"></i></div><b id="happy">70%</b></div>
+          <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-health"/></svg>Health</span><div class="bar"><i id="hlBar"></i></div><b id="health">80%</b></div>
+          <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-know"/></svg>Know</span><div class="bar kb"><i id="knBar"></i></div><b id="know">10</b></div>
           <div class="meal" id="meal"></div>
         </div>
         <div class="grp g-life">
@@ -438,6 +439,21 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
           <div class="kv"><span>Rent</span><b id="rent"></b></div>
           <div id="wardrobe"></div>
         </div>
+      </div>
+      <div class="grp g-nw">
+        <div class="gh">💰 Net worth</div>
+        <div class="nwrow"><b id="nw">$200</b><span><span id="goalAmt">next: Comfortable $2,000</span></span></div>
+        <div class="seg" id="seg"><i class="s1" id="sgCash"></i><i class="s2" id="sgBank"></i><i class="s4" id="sgInv"></i><i class="s3" id="sgAsset"></i></div>
+        <div class="parts">
+          <div><span class="dot d1"></span>Cash<b id="cash">$200</b></div>
+          <div><span class="dot d2"></span>Bank<b id="bank">$0</b></div>
+          <div><span class="dot d4"></span>Invest<b id="invv">$0</b></div>
+          <div><span class="dot d3"></span>Assets<b id="assets">$0</b></div>
+          <div><span class="dot d5"></span>Loan<b id="loanv" class="owe">$0</b></div>
+          <div id="billsRow" hidden><span class="dot d5"></span>Bills<b id="billsv" class="owe">$0</b></div>
+        </div>
+        <div class="invline" id="invline" hidden></div>
+        <div class="invline" id="debtline" hidden></div>
       </div>
       <div class="loghead"><h2>Daily log</h2><span style="display:flex;gap:8px"><button class="btn alt" id="newBtn" title="Start over">New game</button><button class="btn alt" id="rulesBtn" title="How the game ends">How it ends</button></span></div>
       <div id="log" role="log"></div>
@@ -458,7 +474,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   <h2 id="wlT">Welcome to Daily Grind</h2>
   <p style="color:var(--ink)">Build a life from scratch. Reach <b><span id="cfgGoal">$2,000</span> net worth</b> without going broke, burning out or skipping meals.</p>
   <ul>
-    <li><b>Each day has 24 hours.</b> Walking (<span id="cfgWalk">5 minutes</span> per building), working, studying and shopping all use time. Click <b>End day</b> (at home) or <b>Sleep outside</b> (anywhere else) when you are done.</li>
+    <li><b>Each day has 24 hours.</b> Walking (<span id="cfgWalk">5 minutes</span> per building), working, studying and shopping all use time. Click <b>Sleep in Apartment</b> (at home) or <b>Sleep outside</b> (anywhere else) when you are done.</li>
     <li><b>Eat once a day</b> and keep an eye on energy and happiness. Low energy makes you ill; low happiness cuts your pay.</li>
     <li><b>Rent is due <span id="cfgRent">every 4 days</span>.</b> If your cash is negative when it is due, you are evicted.</li>
     <li><b>Start simple:</b> you begin with Casual Clothes that last <span id="cfgClothes">5 days</span>. Get a job at the Employment Office, work shifts, then study for better jobs. Replace your clothes at the Clothes Mall before they wear out.</li>
@@ -579,6 +595,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     limits:{
       /* Hard floors and ceilings, however bad or good the news gets. */
       priceMin:0.5, priceMax:3,     // price index: 0.5 = half price, 3 = triple price
+      /* Each new game starts with a random price index in this range (on top of the difficulty's prices). */
+      startPriceMin:0.94, startPriceMax:1.06,
       wageMin:0.7,  wageMax:1.5,    // pay index
       rateMin:0,    rateMax:5,      // bank interest, % per day
       marketMin:-4, marketMax:4     // market mood (drives ETF, hedge fund, crypto)
@@ -600,6 +618,13 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       rateBeta:{etf:0.3, hf:0.4, cry:0.6}   // expected daily return lost per +1 point of interest above rateBase (gained when below)
     },
     jobs:{
+      /* Each new game, every job's pay (as set in CAREERS) is moved up or down at random by up to this much.
+         0.05 = ±5%. The variation is fixed for the whole game. */
+      payVary:0.05,
+      /* Work experience: jobs paying MORE than payAbove a shift (as shown on the board) need this many
+         shifts already worked at the same workplace (any role there counts). Without them the interview
+         still takes 1h and fails with "Not enough relevant working experience". shifts:0 switches this off. */
+      experience:{payAbove:150, shifts:5},
       /* ---- Automatic rule (used for every job NOT listed in 'pick' below) ----
          A job always needs its own track at its own level (set in CAREERS).
          Better-paid jobs also need a second, then a third qualification, taken in order
@@ -618,8 +643,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
          Levels: Certificate, Degree, Honours, Masters
          (not every track has every level; Sales and Food & Beverage stop at Degree, Finance and Technology at Masters).
          An empty list [] means no qualification is needed.
-         Two roles share a name (Security Guard, Repair Technician); for those, put the
-         card name first, e.g. 'Pawn Shop (Back office): Security Guard'.
+         One role name is shared (Repair Technician: Thrift Store and Electronics Store); for it, put the
+         card name first, e.g. 'Thrift Store (Workshop): Repair Technician'.
          If a line has a typo, the game keeps the automatic rule for that job and shows
          a red warning in the Daily log when the game loads.
          Add 'knowledge:<number>' as the last item to set the knowledge needed directly.
@@ -629,123 +654,104 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
            'Bank Investment Associate': ['Finance Degree', 'Technology Degree', 'knowledge:30'],  */
       pick:{
 
-
   // ---- Factory ----
   'Line Worker':        ['Engineering Certificate'],                                                     // $120
   'Technician':         ['Engineering Certificate', 'Technology Certificate'],                           // $180
-  'Design Engineer':    ['Engineering Degree', 'Technology Certificate'],                               // $250
+  'Design Engineer':    ['Engineering Degree', 'Technology Certificate'],                                // $250
   'Senior Engineer':    ['Engineering Degree', 'Technology Degree', 'Finance Certificate'],              // $330
   'Project Lead':       ['Engineering Honours', 'Technology Degree', 'Finance Certificate'],             // $400
   'Principal Engineer': ['Engineering Masters', 'Technology Certificate', 'Finance Certificate'],        // $480
   'Chief Engineer':     ['Engineering Masters', 'Technology Degree', 'Finance Certificate'],             // $700
-  // ---- Factory (Logistics) ----
   'Forklift Driver':    ['Engineering Certificate'],                                                     // $110
-  'Quality Inspector':  ['Engineering Certificate', 'Technology Certificate'],                           // $170
-  'Logistics Manager':  ['Engineering Degree', 'Finance Certificate'],                                  // $250
 
   // ---- Fast Food ----
   'Crew Member':        [],                                                                              // $70
   'Shift Supervisor':   ['Food & Beverage Certificate'],                                                 // $110
   'Store Manager':      ['Food & Beverage Certificate', 'Sales Certificate'],                            // $180
-  // ---- Fast Food (Kitchen) ----
   'Kitchen Hand':       [],                                                                              // $65
   'Delivery Rider':     [],                                                                              // $80
   'Grill Cook':         ['Food & Beverage Certificate'],                                                 // $120
-  'Area Manager':       ['Food & Beverage Degree', 'Finance Certificate'],                              // $220
+  'Area Manager':       ['Food & Beverage Degree', 'Finance Certificate'],                               // $220
 
   // ---- Restaurant ----
   'Dishwasher':         [],                                                                              // $85
   'Waiter':             ['Sales Certificate'],                                                           // $105
-  'Chef':               ['Food & Beverage Degree'],                                                     // $180
-  'Master Chef':        ['Food & Beverage Degree', 'Finance Degree'],                                    // $300
-  // ---- Restaurant (Front of house) ----
-  'Busser':             [],                                                                              // $80
-  'Host':               [],                                                                              // $95
-  'Sommelier':          ['Food & Beverage Degree', 'Sales Certificate'],                                // $210
-  'Restaurant Manager': ['Food & Beverage Degree', 'Sales Degree', 'Finance Certificate'],             // $310
+  'Chef':               ['Food & Beverage Degree'],                                                      // $180
+  'Master Chef':        ['Food & Beverage Degree', 'Sales Degree'],                                      // $300
+  'Restaurant Manager': ['Food & Beverage Degree', 'Sales Degree', 'Finance Certificate'],               // $310
 
   // ---- Supermarket ----
   'Shelf Stacker':       [],                                                                             // $75
   'Cashier':             [],                                                                             // $85
   'Store Supervisor':    ['Sales Certificate'],                                                          // $140
-  'Supermarket Manager': ['Sales Degree', 'Finance Certificate'],                                       // $230
-  // ---- Supermarket (Fresh) ----
+  'Supermarket Manager': ['Sales Degree', 'Finance Certificate'],                                        // $230
   'Delivery Driver':     [],                                                                             // $90
-  'Butcher':             ['Food & Beverage Certificate'],                                                // $120
-  'Buyer':               ['Sales Degree'],                                                              // $190
+  'Product Promoter':    ['Sales Degree'],                                                               // $190
 
   // ---- Clothes Mall ----
   'Sales Clerk':         [],                                                                             // $95
   'Visual Merchandiser': ['Sales Certificate'],                                                          // $150
-  'Boutique Manager':    ['Sales Degree', 'Finance Certificate'],                                       // $250
-  // ---- Clothes Mall (Studio) ----
-  'Stockroom Assistant': [],                                                                             // $85
-  'Personal Stylist':    ['Sales Certificate'],                                                          // $150
-  'Mall Manager':        ['Sales Degree', 'Finance Degree', 'Technology Certificate'],                 // $320
+  'Boutique Manager':    ['Sales Degree', 'Finance Certificate'],                                        // $250
+  'Sales Promoter':      ['Sales Certificate'],                                                          // $150
+  'Mall Manager':        ['Sales Degree', 'Finance Degree', 'Technology Certificate'],                   // $320
 
   // ---- Thrift Store ----
   'Shop Assistant':       [],                                                                            // $70
   'Thrift Store Manager': ['Sales Certificate'],                                                         // $130
-  // ---- Thrift Store (Workshop) ----
   'Sorter':               [],                                                                            // $65
   'Thrift Store (Workshop): Repair Technician': ['Engineering Certificate'],                             // $140
 
   // ---- Pawn Shop ----
   'Counter Assistant':  [],                                                                              // $80
   'Appraiser':          ['Finance Certificate', 'Sales Certificate'],                                    // $170
-  'Pawnbroker':         ['Finance Degree', 'Sales Degree'],                                            // $290
-  // ---- Pawn Shop (Back office) ----
-  'Pawn Shop (Back office): Security Guard': [],                                                         // $95
+  'Pawnbroker':         ['Finance Degree', 'Sales Degree'],                                              // $290
+  'Security Guard':     [],                                                                              // $95
   'Bookkeeper':         ['Finance Certificate'],                                                         // $150
 
   // ---- Bank ----
-  'Bank: Security Guard': ['Medicine Certificate'],                                                      // $110 (first aid)
-  'Teller':               ['Finance Certificate', 'Sales Certificate'],                                  // $150 (cash handling, customer service)
-  'Financial Analyst':    ['Finance Degree', 'Technology Certificate'],                                 // $240 (reporting, data)
-  'Investment Associate': ['Finance Degree', 'Sales Degree', 'Technology Certificate'],                  // $330 (portfolios, client advice)
-  'Tech Developer':       ['Technology Masters', 'Finance Degree'],                                     // $410 (banking systems, security)
-  'Branch Manager':       ['Finance Masters', 'Sales Degree', 'Technology Certificate'],                // $450 (runs the branch, its staff and its systems)
+  'Teller':              ['Finance Certificate'],                                                        // $110
+  'Internal Auditor':    ['Finance Degree'],                                                             // $150
+  'Market Risk Analyst': ['Finance Degree', 'Technology Certificate'],                                   // $240
+  'Rates Trader':        ['Finance Degree', 'Sales Degree', 'Technology Certificate'],                   // $330
+  'Tech Developer':      ['Technology Masters', 'Finance Degree'],                                       // $410
+  'Head Trader':         ['Finance Masters', 'Sales Degree', 'Technology Certificate'],                  // $450
 
   // ---- Hospital ----
   'Hospital Porter':      [],                                                                            // $90
   'Nursing Aide':         ['Medicine Certificate'],                                                      // $140
-  'Nurse':                ['Medicine Degree'],                                                          // $210
+  'Nurse':                ['Medicine Degree'],                                                           // $210
   'Senior Nurse':         ['Medicine Degree', 'Technology Certificate'],                                 // $290
   'Junior Doctor':        ['Medicine Honours'],                                                          // $330
-  'Specialist Registrar': ['Medicine Masters', 'Technology Certificate'],                                // $460
+  'Specialist Doctor':    ['Medicine Masters', 'Technology Certificate'],                                // $460
   'Consultant':           ['Medicine Masters', 'Finance Degree'],                                        // $620
   'Chief of Surgery':     ['Medicine Masters', 'Finance Degree', 'Technology Certificate'],              // $900
-  // ---- Hospital (Support) ----
-  'Cleaner':                [],                                                                          // $75
-  'Receptionist':           ['Sales Certificate'],                                                       // $100
-  'Lab Technician':         ['Medicine Certificate', 'Technology Certificate'],                          // $180
-  'Hospital Administrator': ['Finance Degree', 'Medicine Degree', 'Technology Certificate'],             // $330
+  'Cleaner':              [],                                                                            // $75
+  'Lab Technician':       ['Medicine Certificate', 'Technology Certificate'],                            // $180
+  'General Manager':      ['Finance Degree', 'Medicine Degree', 'Technology Certificate'],               // $330
 
-  // ---- Electronics Store (Sales) ----
+  // ---- Electronics Store ----
   'Stock Clerk':        [],                                                                              // $90
   'Sales Assistant':    ['Sales Certificate'],                                                           // $130
-  'Sales Director':     ['Sales Degree', 'Technology Degree', 'Finance Degree'],                      // $350
-  // ---- Electronics Store (Technology) ----
+  'Sales Director':     ['Sales Degree', 'Technology Degree', 'Finance Degree'],                         // $350
   'Data Annotator':     ['Technology Certificate'],                                                      // $150
-  'Software Developer': ['Technology Degree'],                                                          // $210
-  'AI Engineer':        ['Technology Degree', 'Finance Certificate'],                                    // $290
+  'Software Developer': ['Technology Degree'],                                                           // $210
+  'AI Engineer':        ['Technology Degree', 'Engineering Certificate'],                                // $290
   'Lead Architect':     ['Technology Masters', 'Engineering Degree', 'Finance Certificate'],             // $450
-  'Chief Technologist': ['Technology Masters', 'Engineering Honours', 'Finance Certificate'],            // $660
-  // ---- Electronics Store (Service) ----
+  'Chief Technologist': ['Technology Masters', 'Engineering Honours', 'Finance Certificate'],             // $660
   'Delivery & Install': [],                                                                              // $95
   'Electronics Store (Service): Repair Technician': ['Engineering Certificate', 'Technology Certificate'], // $170
-  'IT Support Lead':    ['Technology Degree', 'Engineering Certificate'],                               // $240
+  'IT Support Lead':    ['Technology Degree', 'Engineering Certificate'],                                // $240
 
   // ---- Gym ----
   'Front Desk':           [],                                                                            // $85
-  'Gym Instructor':       ['Medicine Certificate'],                                                      // $150
-  'Operations Assistant': ['Sales Degree', 'Finance Certificate']                                       // $250
+  'Gym Instructor':       ['Sales Certificate'],                                                         // $150
+  'Operations Assistant': ['Sales Degree', 'Finance Certificate']                                        // $250
 
       }
     },
     time:{
       dayMinutes:1440,     // length of a day in minutes (1440 = 24 hours). Unused time is slept at day end.
-      walkMinutes:5,       // minutes to walk past one building on the ring road
+      walkMinutes:15,       // minutes to walk past one building on the ring road
       rentEveryDays:5,     // rent is due every this many days
       gameDays:15,         // how many days a game lasts (all difficulties)
       /* Most actions (eating, studying, shopping, working...) have a cost in 'units' in their
@@ -924,7 +930,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     },
     selfStudy:{
       /* Studying online at home. You need one of these devices; the best one you own counts. */
-      gain:{computer:4, tablet:3, phone:2},   // knowledge per session
+      gain:{computer:6, tablet:5, phone:4},   // knowledge per session (was 4/3/2; +2 each)
       units:5,               // session length (see CONFIG.time; 5 = 3h)
       energy:-3,
       health:-3,
@@ -1016,12 +1022,14 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       clock:{startHour:7, use24h:false},
       /* 2. Trend arrows next to each vital: the change since you woke up. Changes smaller than this are not shown. */
       trend:{minChange:1},
+      /* Floating numbers (+$, energy, happiness, knowledge) that pop up over the building after an action: seconds on screen. */
+      floaterSeconds:3.5,
       /* 3. Toasts: short pop-ups that fade by themselves.
             vitalWarnings: pop up whenever a NEW warning appears (tired, low morale, rent due, no meal yet...).
             words: pop up when a Daily log line contains one of these phrases (lowercase). */
       toasts:{
-        on:true, seconds:4.5, max:3, vitalWarnings:true,
-        words:['you passed the interview','didn’t pass the interview','you were promoted','laid off from','qualification earned',
+        on:true, seconds:2, max:3, vitalWarnings:true,
+        words:['you passed the interview','didn’t pass the interview','not enough relevant working experience','no openings now','you were promoted','laid off from','qualification earned',
                'lottery win','food poisoning','rushed to hospital','is admitting you','released from the hospital','expelled from school','demotes you','late fee','broke down',
                'milestone:','you reached ']
       },
@@ -1063,9 +1071,9 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
          set:[{k:'food.basic.cost', x:0.7}, {k:'food.premium.cost', x:0.7}, {k:'food.bundleDiscount', v:0.3},
               {k:'food.basic.happiness', v:1}, {k:'food.premium.happiness', v:6}]},
         {id:'book', icon:'📚', name:'Bookworm',
-         plus:'Self-study teaches more (computer +6, tablet +4, phone +3) and you stop forgetting things overnight.',
+         plus:'Self-study teaches more (computer +8, tablet +6, phone +5) and you stop forgetting things overnight.',
          minus:'Long sessions wear you out (−6% energy each) and burnout starts after 4 hours of study a day.',
-         set:[{k:'selfStudy.gain.computer', v:6}, {k:'selfStudy.gain.tablet', v:4}, {k:'selfStudy.gain.phone', v:3},
+         set:[{k:'selfStudy.gain.computer', v:8}, {k:'selfStudy.gain.tablet', v:6}, {k:'selfStudy.gain.phone', v:5},
               {k:'selfStudy.nightlyLoss', v:0}, {k:'selfStudy.energy', v:-6}, {k:'burnout.studyMinutes', v:240}]},
         {id:'hardy', icon:'🛡️', name:'Hardy',
          plus:'You start with 90 health and fall ill about a fifth less often.',
@@ -1131,6 +1139,54 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function maxDays(){return Df().days||Infinity}
   var S, loc, view, last=null;
   var $=function(id){return document.getElementById(id)};
+  /* ---------- stat icons (small SVGs in the game's outline style) ---------- */
+  var ICO={
+    cash:'<rect x="1.6" y="5.6" width="20.8" height="12.8" rx="2" fill="#2f8f5b" stroke="#16222e" stroke-width="1.7"/><rect x="4" y="8" width="16" height="8" rx="1" fill="none" stroke="#bfe6cf" stroke-width="1"/><circle cx="12" cy="12" r="3.4" fill="#bfe6cf" stroke="#16222e" stroke-width="1.1"/><path d="M13.2 10.7c-.3-.4-.7-.6-1.2-.6-.7 0-1.2.4-1.2.9 0 1.3 2.5.7 2.5 2 0 .5-.6.9-1.3.9-.6 0-1.1-.3-1.3-.7M12 9.4v.7M12 13.9v.7" fill="none" stroke="#16222e" stroke-width="1.1" stroke-linecap="round"/><circle cx="5.6" cy="12" r=".9" fill="#bfe6cf"/><circle cx="18.4" cy="12" r=".9" fill="#bfe6cf"/>',
+    energy:'<path d="M13.6 2.2 4.8 13.4h6.1l-1.5 8.4 9-11.4h-6.2z" fill="#3b8fe0" stroke="#16222e" stroke-width="1.8" stroke-linejoin="round"/>',
+    happy:'<g stroke="#16222e" stroke-width="2" stroke-linecap="round"><path d="M12 1.6v2.4M12 20v2.4M1.6 12H4M20 12h2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></g><circle cx="12" cy="12" r="6.4" fill="#f6b73c" stroke="#16222e" stroke-width="1.9"/>',
+    know:'<path d="M12 4.4 1.8 9.2 12 14l10.2-4.8z" fill="#8a5cc2" stroke="#16222e" stroke-width="1.9" stroke-linejoin="round"/><path d="M6 11.2v4.4c1.6 1.6 3.6 2.4 6 2.4s4.4-.8 6-2.4v-4.4L12 14z" fill="#6c45a3" stroke="#16222e" stroke-width="1.9" stroke-linejoin="round"/>',
+    health:'<path d="M12 20.6s-8.4-4.9-8.4-11.1C3.6 6.6 5.8 4.4 8.5 4.4c1.5 0 2.8.7 3.5 1.9.7-1.2 2-1.9 3.5-1.9 2.7 0 4.9 2.2 4.9 5.1 0 6.2-8.4 11.1-8.4 11.1z" fill="#e2564a" stroke="#16222e" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 9.2v6M9 12.2h6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>',
+    time:'<circle cx="12" cy="12.6" r="9.2" fill="#0f7f82" stroke="#16222e" stroke-width="1.8"/><circle cx="12" cy="12.6" r="6.4" fill="#fbf3e2"/><path d="M12 12.6V8.8M12 12.6l2.8 1.7" stroke="#16222e" stroke-width="2" stroke-linecap="round"/>'
+  };
+  ICO.worth='<path d="M9 3.2h6l-1.6 3.1h-2.8z" fill="#d99a1e" stroke="#16222e" stroke-width="1.6" stroke-linejoin="round"/><path d="M10.4 6.3h3.2c3.9 2.3 6.6 6 6.6 9.6 0 3.3-2.6 5-8.2 5s-8.2-1.7-8.2-5c0-3.6 2.7-7.3 6.6-9.6z" fill="#f0bd4a" stroke="#16222e" stroke-width="1.8" stroke-linejoin="round"/><path d="M13.9 11.6c-.4-.6-1.1-.9-1.9-.9-1.1 0-1.9.6-1.9 1.4 0 2 3.9 1 3.9 3 0 .9-.9 1.5-2 1.5-.9 0-1.7-.4-2.1-1M12 9.7v1M12 16.6v1" fill="none" stroke="#16222e" stroke-width="1.5" stroke-linecap="round"/>';
+  var ICO_NAME={worth:'net worth',cash:'cash',energy:'energy',happy:'happiness',know:'knowledge',health:'health',time:'time'};
+  function ic(k){return '<svg class="ic" viewBox="0 0 24 24" role="img" aria-label="'+ICO_NAME[k]+'">'+ICO[k]+'</svg>'}
+  /* the same icons as <symbol>s, for the fixed HTML (top bar, vitals) which uses <use href="#ic-…"> */
+  (function(){var d=document.createElement('div');d.innerHTML='<svg width="0" height="0" style="position:absolute" aria-hidden="true">'+Object.keys(ICO).map(function(k){return '<symbol id="ic-'+k+'" viewBox="0 0 24 24">'+ICO[k]+'</symbol>'}).join('')+'</svg>';document.body.appendChild(d.firstChild)})();
+  /* ---------- quick tooltips: [data-tip] shows at once on hover (computer) or on tap (phone) ---------- */
+  (function(){
+    var tip=document.createElement('div');tip.id='tip';tip.setAttribute('role','tooltip');document.body.appendChild(tip);var cur=null,hideT=null;
+    function scoreTip(){
+      var W=CONFIG.score,p=scoreParts(),tot=p.reduce(function(a,b){return a+b[1]},0);
+      return '<b>How your score is worked out</b><br>Net worth + energy × '+W.energy+' + happiness × '+W.happiness+' + health × '+W.health+' + knowledge × '+W.knowledge+' + education levels × '+W.educationLevel+
+        '<table>'+p.map(function(r){return '<tr><td>'+r[0]+'</td><td>'+(r[1]<0?'−':'')+Math.abs(r[1]).toLocaleString()+'</td></tr>'}).join('')+'<tr class="tot"><td>Score</td><td>'+Math.max(0,tot).toLocaleString()+'</td></tr></table>';
+    }
+    function show(el){
+      clearTimeout(hideT);cur=el;var k=el.getAttribute('data-tip');tip.innerHTML=k==='score'?scoreTip():k;tip.classList.add('on');
+      var r=el.getBoundingClientRect(),w=tip.offsetWidth,h=tip.offsetHeight,x=Math.min(window.innerWidth-w-8,Math.max(8,r.left+r.width/2-w/2)),y=r.bottom+8;
+      if(y+h>window.innerHeight-8)y=Math.max(8,r.top-h-8);tip.style.left=x+'px';tip.style.top=y+'px';
+    }
+    function hide(){cur=null;tip.classList.remove('on')}
+    document.addEventListener('mouseover',function(e){var el=e.target.closest&&e.target.closest('[data-tip]');if(el&&el!==cur)show(el);else if(!el&&cur)hide()});
+    document.addEventListener('focusin',function(e){var el=e.target.closest&&e.target.closest('[data-tip]');if(el)show(el)});
+    document.addEventListener('focusout',hide);
+    /* phones: tap to show, tap again or anywhere else to hide; it also closes by itself after 6 seconds */
+    document.addEventListener('pointerdown',function(e){if(e.pointerType==='mouse')return;var el=e.target.closest&&e.target.closest('[data-tip]');
+      if(el&&el!==cur){show(el);hideT=setTimeout(hide,6000)}else hide()});
+    window.addEventListener('scroll',hide,true);
+  })();
+  /* turn "1h 30m, +12% energy, +1 happiness, −8 health" into icon + number: used for every option line */
+  function statIcons(s){
+    s=String(s).replace(/(^|[\s(>])(?<!of )(\d+h(?: \d+m)?|\d+m)(?=,| ·| to buy|\s*$)/g,function(_,a,t){return a+ic('time')+t})
+      .replace(/([+\-−]?\d+(?:\.\d+)?%) energy\b/g,function(_,v){return ic('energy')+v})
+      .replace(/([+\-−]?\d+(?:\.\d+)?) happiness\b/g,function(_,v){return ic('happy')+v})
+      .replace(/([+\-−]?\d+(?:\.\d+)?) health\b/g,function(_,v){return ic('health')+v})
+      .replace(/([+\-−]?\d+(?:\.\d+)?) knowledge\b/g,function(_,v){return ic('know')+v});
+    return s.replace(/,\s*(?=<svg class="ic")/g,'  ');
+  }
+  /* short money for the top bar: $12,345 -> $12.3K, $1,250,000 -> $1.3M (under $1,000 unchanged) */
+  function kMoney(n){var a=Math.abs(n),s=n<0?'-$':'$',f=function(v){return v.toFixed(1).replace(/\.0$/,'')};
+    return a>=1e6?s+f(a/1e6)+'M':a>=1000?s+f(a/1000)+'K':money(n)}
   var money=function(n){return (n<0?'-$':'$')+Math.abs(n).toLocaleString()};
   var clamp=function(n){return Math.max(0,Math.min(100,n))};
 
@@ -1238,19 +1294,19 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       {r:'Appraiser',pay:170,t:'fin',l:1,dress:'casual'},
       {r:'Pawnbroker',pay:290,t:'fin',l:2,dress:'suit'}]},
     bank:{n:'Bank',ranks:[
-      {r:'Security Guard',pay:110,t:'',l:0,dress:'suit'},
-      {r:'Teller',pay:150,t:'fin',l:1,dress:'suit'},
-      {r:'Financial Analyst',pay:240,t:'fin',l:2,dress:'suit'},
-      {r:'Investment Associate',pay:330,t:'fin',l:3,dress:'suit'},
+      {r:'Teller',pay:110,t:'fin',l:1,dress:'suit'},
+      {r:'Internal Auditor',pay:150,t:'fin',l:2,dress:'suit'},
+      {r:'Market Risk Analyst',pay:240,t:'fin',l:2,dress:'suit'},
+      {r:'Rates Trader',pay:330,t:'fin',l:3,dress:'suit'},
       {r:'Tech Developer',pay:410,t:'tech',l:4,dress:'suit'},
-      {r:'Branch Manager',pay:450,t:'fin',l:4,dress:'suit'}]},
+      {r:'Head Trader',pay:450,t:'fin',l:4,dress:'suit'}]},
     hosp:{n:'Hospital',ranks:[
       {r:'Hospital Porter',pay:90,t:'',l:0,dress:'casual'},
       {r:'Nursing Aide',pay:140,t:'med',l:1,dress:'casual'},
       {r:'Nurse',pay:210,t:'med',l:2,dress:'casual'},
       {r:'Senior Nurse',pay:290,t:'med',l:3,dress:'casual'},
       {r:'Junior Doctor',pay:330,t:'med',l:4,dress:'suit'},
-      {r:'Specialist Registrar',pay:460,t:'med',l:5,dress:'suit'},
+      {r:'Specialist Doctor',pay:460,t:'med',l:5,dress:'suit'},
       {r:'Consultant',pay:620,t:'med',l:5,dress:'suit'},
       {r:'Chief of Surgery',pay:900,t:'med',l:5,dress:'suit'}]},
     elec:{n:'Electronics Store (Sales)',b:'elec',ranks:[
@@ -1265,26 +1321,19 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       {r:'Chief Technologist',pay:660,t:'tech',l:4,dress:'suit'}]},
     /* second job line at each workplace (more openings) */
     factory2:{n:'Factory (Logistics)',b:'factory',ranks:[
-      {r:'Forklift Driver',pay:110,t:'',l:0,dress:'casual'},
-      {r:'Quality Inspector',pay:170,t:'eng',l:1,dress:'smart'},
-      {r:'Logistics Manager',pay:250,t:'eng',l:2,dress:'smart'}]},
+      {r:'Forklift Driver',pay:110,t:'',l:0,dress:'casual'}]},
     fast2:{n:'Fast Food (Kitchen)',b:'fast',ranks:[
       {r:'Kitchen Hand',pay:65,t:'',l:0},
       {r:'Delivery Rider',pay:80,t:'',l:0,dress:'casual'},
       {r:'Grill Cook',pay:120,t:'fnb',l:1,dress:'casual'},
       {r:'Area Manager',pay:220,t:'fnb',l:2,dress:'smart'}]},
-    resto2:{n:'Restaurant (Front of house)',b:'resto',ranks:[
-      {r:'Busser',pay:80,t:'',l:0,dress:'casual'},
-      {r:'Host',pay:95,t:'',l:0,dress:'smart'},
-      {r:'Sommelier',pay:210,t:'fnb',l:2,dress:'smart'},
+    resto2:{n:'Restaurant (Management)',b:'resto',ranks:[
       {r:'Restaurant Manager',pay:310,t:'fnb',l:3,dress:'suit'}]},
-    market2:{n:'Supermarket (Fresh)',b:'market',ranks:[
+    market2:{n:'Supermarket (Delivery & Promotions)',b:'market',ranks:[
       {r:'Delivery Driver',pay:90,t:'',l:0,dress:'casual'},
-      {r:'Butcher',pay:120,t:'fnb',l:1,dress:'casual'},
-      {r:'Buyer',pay:190,t:'sal',l:2,dress:'smart'}]},
-    mall2:{n:'Clothes Mall (Studio)',b:'mall',ranks:[
-      {r:'Stockroom Assistant',pay:85,t:'',l:0},
-      {r:'Personal Stylist',pay:150,t:'sal',l:1,dress:'smart'},
+      {r:'Product Promoter',pay:190,t:'sal',l:2,dress:'smart'}]},
+    mall2:{n:'Clothes Mall (Promotions)',b:'mall',ranks:[
+      {r:'Sales Promoter',pay:150,t:'sal',l:1,dress:'smart'},
       {r:'Mall Manager',pay:320,t:'sal',l:2,dress:'suit'}]},
     thrift2:{n:'Thrift Store (Workshop)',b:'thrift',ranks:[
       {r:'Sorter',pay:65,t:'',l:0},
@@ -1294,9 +1343,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       {r:'Bookkeeper',pay:150,t:'fin',l:1,dress:'smart'}]},
     hosp2:{n:'Hospital (Support)',b:'hosp',ranks:[
       {r:'Cleaner',pay:75,t:'',l:0},
-      {r:'Receptionist',pay:100,t:'',l:0,dress:'smart'},
       {r:'Lab Technician',pay:180,t:'tech',l:2,dress:'casual'},
-      {r:'Hospital Administrator',pay:330,t:'fin',l:3,dress:'suit'}]},
+      {r:'General Manager',pay:330,t:'fin',l:3,dress:'suit'}]},
     elec3:{n:'Electronics Store (Service)',b:'elec',ranks:[
       {r:'Delivery & Install',pay:95,t:'',l:0,dress:'casual'},
       {r:'Repair Technician',pay:170,t:'eng',l:1,dress:'casual'},
@@ -1310,8 +1358,17 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   /* gym jobs */
   CAREERS.gym={n:'Gym',ranks:[
     {r:'Front Desk',pay:85,t:'',l:0,dress:'casual'},
-    {r:'Gym Instructor',pay:150,t:'med',l:1,dress:'casual'},
+    {r:'Gym Instructor',pay:150,t:'sal',l:1,dress:'casual'},
     {r:'Operations Assistant',pay:250,t:'sal',l:2,dress:'smart'}]};
+  /* per-game pay variation (CONFIG.jobs.payVary): rk.base is the pay set above; rk.pay is this game's pay */
+  Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk){rk.base=rk.pay})});
+  function applyPayVar(){
+    var v=CONFIG.jobs.payVary||0;if(!S.payVar)S.payVar={};
+    Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk,i){
+      var key=c+'_'+i;if(S.payVar[key]==null)S.payVar[key]=Math.round((Math.random()*2-1)*v*1000)/1000;
+      rk.pay=Math.round(rk.base*(1+S.payVar[key]));
+    })});
+  }
   /* the better the pay, the more qualifications from different fields it asks for.
      q = list of [track, level]. Pay 250+ asks for a second field (up to a Degree); pay 450+ for a third. */
   var COMP={factory:['eng','tech','fin'],fast:['fnb','sal','fin'],resto:['fnb','sal','fin'],market:['sal','fnb','fin'],mall:['sal','fin','fnb'],thrift:['sal','fin','eng'],pawn:['fin','tech','sal'],bank:['fin','tech','sal'],hosp:['med','tech','eng'],elec:['sal','tech','fin'],gym:['sal','med']};
@@ -1378,8 +1435,15 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function kreq(rk){return rk.kn||0}
   function qTxt(q){return q[0]==='any'?'Any '+GENLV[q[1]-1]:TRACKS[q[0]].n+' '+TRACKS[q[0]].lv[q[1]-1]}
   function meets(rk){return (rk.q||[]).every(function(q){return lvl(q[0])>=q[1]})}
-  function needTxt(rk){return (rk.q&&rk.q.length?rk.q.map(qTxt).join(' + '):'No qualification')+(kreq(rk)?' · Knowledge '+kreq(rk):'')}
+  function needTxt(rk,c){return (rk.q&&rk.q.length?rk.q.map(qTxt).join(' + '):'No qualification')+(kreq(rk)?' · Knowledge '+kreq(rk):'')+(c&&needsExp(rk)?' · '+expTxt(c):'')}
+  /* work experience (CONFIG.jobs.experience): better-paid jobs need shifts already worked at the same workplace */
+  function shiftPayNow(rk){return Math.round(rk.pay*payIdx())}
+  function needsExp(rk){var E=CONFIG.jobs.experience;return !!E&&E.shifts>0&&shiftPayNow(rk)>E.payAbove}
+  function shiftsAt(c){return (S.shiftsAt||{})[bOf(c)]||0}
+  function expShort(c,rk){return needsExp(rk)&&shiftsAt(c)<CONFIG.jobs.experience.shifts}
+  function expTxt(c){var n=CONFIG.jobs.experience.shifts;return n+' shift'+(n===1?'':'s')+' worked at the '+NAME[bOf(c)]+' (you have '+Math.min(n,shiftsAt(c))+')'}
   function bOf(c){return CAREERS[c].b||c}
+  function sleepLabel(){return 'Sleep in Apartment'}
   function myJob(){var c=Object.keys(S.career)[0];return c&&CAREERS[c]&&cur(c)?{c:c,b:bOf(c),rk:cur(c)}:null}
   function shutLeft(b){return (S.shut&&S.shut[b])||0}
   function shutSum(){var n=0;Object.keys(S.shut||{}).forEach(function(b){n+=S.shut[b]||0});return n}
@@ -1422,7 +1486,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 
   function blank(){return {loan:null,broke:0,workMin:0,workStreak:0,sagaLast:'',slept:0,homeMeals:0,shut:{},cooked:[],health:CONFIG.health.start,gym:[],good:[],studyMin:0,studyStreak:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:4,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:100,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickRest:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,pantry:[],broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
-    S=blank();T0();PREV=null;
+    S=blank();T0();PREV=null;applyPayVar();
     rollOpenings();loc='apt';view=null;last=null;
     $('log').innerHTML='';S.logs=[];
     $('over').classList.remove('show');$('welcome').classList.add('show');
@@ -1462,17 +1526,19 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
           d.S.edu[t]=lab?TRACKS[t].c[TRACKS[t].lv.indexOf(lab)]:0});
         d.S.enr={};d.S.les={};d.S.cert=null;d.S.ver=4;
       }
+      /* jobs list changed: drop a saved job whose role no longer exists (or moved), so the player can re-apply */
+      var lostJob=null;Object.keys(d.S.career||{}).forEach(function(c){var rk=CAREERS[c]&&CAREERS[c].ranks[d.S.career[c]];if(!rk||(d.S.jobName&&d.S.jobName!==rk.r)){lostJob=d.S.jobName||c;delete d.S.career[c]}});
       /* one job at a time: keep the best-paid job from an older save */
       (function(){var cs=Object.keys(d.S.career||{});if(cs.length>1){var best=null,bp=-1;cs.forEach(function(c){var rk=CAREERS[c]&&CAREERS[c].ranks[d.S.career[c]];if(rk&&rk.pay>bp){bp=rk.pay;best=c}});var keep={};if(best)keep[best]=d.S.career[best];d.S.career=keep}
         if(d.S.layoff>0){var c0=Object.keys(d.S.career)[0];if(c0)d.S.shut[CAREERS[c0].b||c0]=Math.min(4,d.S.layoff);d.S.layoff=0}
         if(Object.keys(d.S.items||{}).some(function(k){return d.S.items[k]}))d.S.flags.buy=1})();
       ['inv','edu','clothes'].forEach(function(k){Object.keys(b[k]).forEach(function(q){if(d.S[k][q]===undefined)d.S[k][q]=b[k][q]})});
-      PREV=null;S=d.S;loc=LOCS.some(function(l){return l[0]===d.loc})?d.loc:S.home;view=d.view&&panels[d.view]?d.view:null;last=d.last||null;
+      PREV=null;S=d.S;applyPayVar();loc=LOCS.some(function(l){return l[0]===d.loc})?d.loc:S.home;view=d.view&&panels[d.view]?d.view:null;last=d.last||null;
       if(!S.logs)S.logs=[];
       $('log').innerHTML='';
       S.logs.slice().reverse().forEach(function(e){var x=document.createElement('div');x.textContent=e[0];if(e[1])x.className=e[1];$('log').insertBefore(x,$('log').firstChild)});
       $('over').classList.remove('show');
-      log('Welcome back. Your game was restored from your last session.','good');
+      log('Welcome back. Your game was restored from your last session.','good');if(lostJob)log('The job list has changed and your old job ('+lostJob+') no longer exists. Apply for a new one at the Employment Office.','warn');
       if(!S.flags.diff&&S.day===1)$('welcome').classList.add('show');
       render();return true;
     }catch(e){return false}
@@ -1546,16 +1612,17 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function floater(txt,cls,i){
     var t=document.querySelector('.tile[data-loc="'+loc+'"]'),bd=$('board');if(!t||!bd)return;
     var a=t.getBoundingClientRect(),b=bd.getBoundingClientRect(),d=document.createElement('div');
-    d.className='floater '+cls;d.textContent=txt;d.setAttribute('aria-hidden','true');
+    d.className='floater '+cls;d.innerHTML=txt;d.setAttribute('aria-hidden','true');
     d.style.left=(a.left-b.left+a.width/2)+'px';d.style.top=(a.top-b.top+a.height*0.25-i*20)+'px';
-    bd.appendChild(d);setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d)},1500);
+    var fs=(CONFIG.ui.floaterSeconds||1.4);d.style.animationDuration=fs+'s';
+    bd.appendChild(d);setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d)},fs*1000+100);
   }
   function feedback(){
     var cur={cash:S.cash,energy:S.energy,happy:S.happy,know:Math.floor(S.know),day:S.day};
     if(PREV&&PREV.day===cur.day){
       var i=0,dc=cur.cash-PREV.cash;
-      if(dc){floater((dc>0?'+':'−')+money(Math.abs(dc)),dc>0?'up':'dn',i++);snd(dc>0?'coin':'spend')}
-      [['energy','⚡','%'],['happy','😊',''],['know','🧠','']].forEach(function(q){var d=cur[q[0]]-PREV[q[0]];if(d)floater(q[1]+(d>0?'+':'−')+Math.abs(d)+q[2],d>0?'up':'dn',i++)});
+      if(dc){floater(ic('cash')+(dc>0?'+':'−')+money(Math.abs(dc)),dc>0?'up':'dn',i++);snd(dc>0?'coin':'spend')}
+      [['energy',ic('energy'),'%'],['happy',ic('happy'),''],['know',ic('know'),'']].forEach(function(q){var d=cur[q[0]]-PREV[q[0]];if(d)floater(q[1]+(d>0?'+':'−')+Math.abs(d)+q[2],d>0?'up':'dn',i++)});
     }
     PREV=cur;
   }
@@ -1600,6 +1667,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     S.workMin=(S.workMin||0)+M(j.ap);
     var pr=prod(), pay=shiftPay(j.pay), low=pr.m<1;
     S.cash+=pay;inc(pay);S.energy=clamp(S.energy-j.en);S.flags.worked=1;
+    if(c){if(!S.shiftsAt)S.shiftsAt={};S.shiftsAt[bOf(k)]=(S.shiftsAt[bOf(k)]||0)+1}   /* work experience per workplace */
     log('You worked a shift as '+j.n+' and earned '+money(pay)+'.'+(low?' Productivity was '+Math.round(pr.m*100)+'% ('+pr.rs.join(', ')+').':''),'good');
     done();
   }
@@ -1612,6 +1680,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     /* every interview takes 1 hour, whatever the result */
     if(!spendMin(60,0))return;
     var who=CAREERS[c].n;
+    if(expShort(c,rk)){log('Not enough relevant working experience. '+rk.r+' at the '+who+' needs '+expTxt(c)+'. The 1h interview was wasted.','bad');return done()}
     if(S.closed[id]){log('No openings now for '+rk.r+' at the '+who+'. The 1h interview slot was wasted. Try another day.','warn');return done()}
     var pp=0.82-0.05*i+S.know/400+(S.happy-50)/300-(rk.dress&&!hasDress(rk.dress)?0.25:0)-(S.energy<30?0.1:0);
     pp=Math.max(0.2,Math.min(0.95,pp));
@@ -1620,7 +1689,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       log('Didn’t pass the interview for '+rk.r+' at the '+who+'. '+why+' (1h spent)','bad');return done();
     }
     var old=myJob();
-    S.career={};S.career[c]=i;S.flags.job=1;
+    S.career={};S.career[c]=i;S.jobName=rk.r;S.flags.job=1;
     if(old&&old.c!==c)log('You resigned as '+old.rk.r+' at the '+NAME[old.b]+' to take the new job. You can only hold one job at a time.','warn');
     else if(old)log('You were promoted from '+old.rk.r+'.','good');
     log('You passed the interview! You are now a '+rk.r+' at the '+who+' ('+money(Math.round(rk.pay*payIdx()))+' a shift). Work your shifts at the '+NAME[CAREERS[c].b||c]+'.','good');
@@ -2244,8 +2313,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function stressList(){
     var a=[],H=HOUSE[S.home],nw=worth();
     var push=function(l,t){a.push({l:l,t:t})};
-    if(S.energy<=10)push('bad','⚡ Exhausted ('+S.energy+'%): two days like this and you collapse. Shifts pay 15% less.');
-    else if(S.energy<30)push('warn','⚡ Tired ('+S.energy+'%): shifts pay 15% less'+(S.energy<15?' and you may fall sick.':'.'));
+    if(S.energy<=10)push('bad',ic('energy')+' Exhausted ('+S.energy+'%): two days like this and you collapse. Shifts pay 15% less.');
+    else if(S.energy<30)push('warn',ic('energy')+' Tired ('+S.energy+'%): shifts pay 15% less'+(S.energy<15?' and you may fall sick.':'.'));
     if(S.happy<=10)push('bad','😞 Rock-bottom morale: three days here and you give up (shifts pay 40% less, you may be demoted).');
     else if(S.happy<20)push('bad','😞 Morale crash ('+S.happy+'): shifts pay 40% less and your boss may demote you.');
     else if(S.happy<25)push('warn','😟 Low morale ('+S.happy+'): shifts pay 25% less.');
@@ -2257,7 +2326,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(S.loan){var Lx=S.loan;if(S.day>Lx.due)push('bad','🏦 Loan overdue: you owe '+money(loanOwed())+', growing '+rateTxt(CONFIG.loan.overdueRate)+' a day. Default on day '+(Lx.due+CONFIG.loan.graceDays)+'.');else if(Lx.due-S.day<=1)push('warn','🏦 Loan due '+(Lx.due===S.day?'tonight':'tomorrow')+': you owe '+money(loanOwed())+'.')}
     if(S.burn>0)push('bad','🔥 Burnout ('+S.burn+' day'+(S.burn>1?'s':'')+' left): your health keeps dropping and shifts pay '+pctTxt(1-CONFIG.burnout.pay)+' less. Rest, and cut down on studying.');
     else if(CONFIG.burnout.daysInARow>1&&S.studyStreak>=CONFIG.burnout.daysInARow-1)push('warn','📚 '+(S.studyStreak===1?'You studied over '+studyLimitTxt()+' yesterday. Another day like that causes burnout.':'You have studied over '+studyLimitTxt()+' a day '+numWord(S.studyStreak)+' days running. A '+(ORD[CONFIG.burnout.daysInARow]||CONFIG.burnout.daysInARow+'th')+' day causes burnout.'));
-    if(S.health<CONFIG.health.poorBelow)push(S.health<=CONFIG.health.poorBelow/2?'bad':'warn','💚 Poor health ('+S.health+'/100): you fall ill more easily and shifts pay '+pctTxt(1-CONFIG.health.poorPay)+' less. Eat well, rest or go to the Gym.');
+    if(S.health<CONFIG.health.poorBelow)push(S.health<=CONFIG.health.poorBelow/2?'bad':'warn',ic('health')+' Poor health ('+S.health+'/100): you fall ill more easily and shifts pay '+pctTxt(1-CONFIG.health.poorPay)+' less. Eat well, rest or go to the Gym.');
     if(S.arrears)push('bad','🏠 Rent arrears: '+money(S.arrears.bal)+' owed, '+money(instal())+' due tomorrow morning.');
     if(S.medDebt>0)push('bad','🧾 Medical bill arrears: '+money(S.medDebt)+' owed, '+money(medInstal())+' due tomorrow morning (late fee if you can’t pay). Pay more at the Hospital.');
     if(S.hungry>=1&&!S.fed)push('bad','🍽 '+S.hungry+' day'+(S.hungry>1?'s':'')+' without a meal and none yet today: '+FD.hungryDaysToHospital+' in a row puts you in hospital.');
@@ -2798,7 +2867,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     return '<button class="btn'+(act==='work'?' work':alt?' alt':'')+'" data-act="'+act+'" data-arg="'+(arg||'')+'"'+(off?' disabled':'')+'>'+label+'</button>';
   }
   function opt(title,desc,b,cls){
-    return '<div class="opt'+(cls?' '+cls:'')+'"><div>'+title+'<small>'+desc+'</small></div>'+b+'</div>';
+    return '<div class="opt'+(cls?' '+cls:'')+'"><div>'+title+'<small>'+statIcons(desc)+'</small></div>'+b+'</div>';
   }
   function shop(name){
     var h='';
@@ -2860,7 +2929,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       rows.sort(function(x,y){return x.rk.pay-y.rk.pay});
       h+='<div class="bcard"><h4 class="jh"><span>'+ICON[b]+' '+NAME[b]+'</span>'+(sh?'<em>🔒 closed '+sh+'d</em>':'')+'</h4>'+rows.map(function(o){
         var rk=o.rk;
-        return opt('<span class="rn">'+rk.r+'</span> · '+money(Math.round(rk.pay*payIdx()))+'/shift',needTxt(rk)+(rk.dress?' · '+DSHORT[rk.dress]:'')+(o.ok||o.mine?'':' · 🔒'),
+        return opt('<span class="rn">'+rk.r+'</span> · '+money(Math.round(rk.pay*payIdx()))+'/shift',needTxt(rk,o.mine||o.have?null:o.c)+(rk.dress?' · '+DSHORT[rk.dress]:'')+(o.ok||o.mine?'':' · 🔒'),
           o.mine?'<span class="tag">Your job</span>':o.have?'<span class="tag">Past rank</span>':btn('apply',o.c+'_'+o.i,'Apply',!o.ok,!o.ok||sh>0),o.mine?'mine':'');
       }).join('')+'</div>';
     });
@@ -2905,7 +2974,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     t+='<p style="margin:6px 0"><small>😌 Comfort: '+(ci.length?ci.join(', ')+' (+'+ci.length*10+'% rest)':'none yet. A TV, console, fridge, coffee machine or computer at home makes rest work better')+'. Resting gives about '+rr0.toFixed(1)+'% energy per hour.</small></p>';
     var SL=CONFIG.sleep,nh=SL.napMinutes/60;
     t+=opt('Rest for '+(SL.napMinutes%60?hm(SL.napMinutes):nh+' hour'+(nh===1?'':'s')),hm(SL.napMinutes)+' · +'+Math.round(nh*rr0)+'% energy now, +'+SL.napHappiness+' happiness'+(SL.napHappiness===nh?' (1 per hour)':'')+(S.ill?' · <b>+'+pctTxt(HP.restRecover)+' chance to recover tonight</b>':''),btn('nap','','Rest '+hm(SL.napMinutes),0,S.ap<SL.napMinutes||(S.energy>=100&&!S.ill)));
-    t+=opt('Sleep and end the day','Sleep the remaining '+hm(S.ap)+'. You start tomorrow with +'+sleepGain(S.ap)+'% energy, +'+Math.min(CONFIG.health.sleep.max,Math.round(S.ap/60*CONFIG.health.sleep.perHour))+' health and +'+Math.floor(S.ap/60)*CONFIG.sleep.happinessPerHour+' happiness ('+CONFIG.sleep.happinessPerHour+' per hour)'+(HOUSE[S.home].hap?', plus +'+HOUSE[S.home].hap+' for the bed':'')+' (the more hours left, the more you recover).',btn('rest','','Sleep'));
+    t+=opt('Sleep and end the day','Sleep the remaining '+hm(S.ap)+'. You start tomorrow with +'+sleepGain(S.ap)+'% energy, +'+Math.min(CONFIG.health.sleep.max,Math.round(S.ap/60*CONFIG.health.sleep.perHour))+' health and +'+Math.floor(S.ap/60)*CONFIG.sleep.happinessPerHour+' happiness ('+CONFIG.sleep.happinessPerHour+' per hour)'+(HOUSE[S.home].hap?', plus +'+HOUSE[S.home].hap+' for the bed':'')+' (the more hours left, the more you recover).',btn('rest','',sleepLabel()));
     /* --- study and work from home --- */
     t+=sec('📚 Study & work from home');
     t+=opt('Self-study online'+(S.studyMin>0?' <small style="display:inline">(studied '+hm(S.studyMin)+' today)</small>':''),hm(M(SS.units))+', '+sg(SS.energy)+'% energy, '+sg(SS.health)+' health · '+(gain?'+'+gain+' knowledge':'needs a computer, tablet or phone')+'. Over '+studyLimitTxt()+' of study a day for '+dayN(CONFIG.burnout.daysInARow)+' running causes burnout.',btn('study','','Study',0,!gain));
@@ -3322,11 +3391,11 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       var cn=$('cpNext');cn.hidden=!nxT;if(nxT){cn.textContent='Enrol in the '+TT.lv[C.l]+' · '+money(nxF);cn.disabled=S.cash<nxF||S.expelled>0}
       cp.classList.add('show')}else cp.classList.remove('show');
     var mo=$('morning');if(S.morning&&!S.over&&!S.pending&&!S.cert){$('mnT').textContent='☀️ Day '+S.day+(maxDays()!==Infinity?' of '+maxDays():'');$('mnSub').textContent='Before you start, a few things need your attention:';$('mnList').innerHTML=S.morning.map(function(x){return '<li class="'+x.l+'">'+x.t+'</li>'}).join('');mo.classList.add('show')}else mo.classList.remove('show');
-    $('hCash').textContent=money(S.cash);$('hEn').textContent=S.energy+'%';$('hHp').textContent=S.happy;$('hHl').textContent=S.health;$('hHl').style.color=S.health<30?'#ef7d72':'';
+    $('hNw').textContent=kMoney(worth());$('hNw').style.color=worth()<0?'#ef7d72':'';$('hKn').textContent=Math.floor(S.know);$('hCash').textContent=kMoney(S.cash);$('hNw').title=money(worth());$('hCash').title=money(S.cash);$('hEn').textContent=S.energy+'%';$('hHp').textContent=S.happy;$('hHl').textContent=S.health;$('hHl').style.color=S.health<30?'#ef7d72':'';
     $('hEn').style.color=S.energy<30?'#ef7d72':'';$('hHp').style.color=S.happy<30?'#ef7d72':'';$('hCash').style.color=S.cash<0?'#ef7d72':'';
     var hiv=invTotal();$('hInvC').hidden=!anyInv();if(anyInv()){var pl0=hiv-invSum('c');$('hInv').textContent=money(hiv);$('hInvPL').textContent=sm(pl0)+' ('+(pl0>=0?'+':'−')+Math.abs(invSum('c')?pl0/invSum('c')*100:0).toFixed(1)+'%)';$('hInvPL').style.color=pl0>=0?'#7fe0a6':'#ef7d72'}
     $('hScore').textContent=score().toLocaleString();var bs0=bestScore();$('hBest').textContent=bs0?'best '+bs0.toLocaleString():'';
-    $('hudLeave').hidden=!view||!!S.pending;$('hudEnd').disabled=!!S.over||!!S.pending;$('hudEnd').textContent=loc===S.home?'End day ☾':'Sleep outside ☾';
+    $('hudLeave').hidden=!view||!!S.pending;$('hudEnd').disabled=!!S.over||!!S.pending;$('hudEnd').textContent=loc===S.home?sleepLabel()+' ☾':'Sleep outside ☾';
     var pi=payInfo(),pm0=prod().m;$('pay').textContent=money(pi.v)+(pi.n?'/shift':'');$('payRole').textContent=pi.txt+(pi.n&&pm0<1?' · ×'+Math.round(pm0*100)+'% today':'');
     $('dayMax').textContent=maxDays()===Infinity?'':' / '+maxDays();$('diffTag').textContent=Df().n;
     $('rlWin').textContent=maxDays()===Infinity?' (no time limit on Easy)':', within '+maxDays()+' days';$('rlTime').textContent=maxDays()===Infinity?'Not on Easy: there is no day limit.':'Day '+maxDays()+' passes and you are still under '+money(GOAL)+'.';
@@ -3337,7 +3406,11 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var al=stressList(),wa=$('warn');
     wa.hidden=!al.length;
     wa.innerHTML=al.slice(0,2).map(function(x){return '<div class="al '+x.l+'">'+x.t+'</div>'}).join('')+(al.length>2?'<div class="al more" title="'+al.slice(2).map(function(x){return x.t}).join(' | ').replace(/"/g,'&quot;')+'">+'+(al.length-2)+' more warning'+(al.length>3?'s':'')+'</div>':'');
-    var dl=$('debtline');dl.hidden=S.medDebt<=0;dl.innerHTML='🏥 Hospital debt: <b class="dn">−'+money(S.medDebt)+'</b> (in net worth, repaid each morning)';
+    /* debts shown as negative parts, so the parts add up to net worth */
+    var lo=loanOwed(),bo=S.medDebt+(S.arrears?S.arrears.bal:0);
+    $('loanv').textContent=lo>0?'-'+money(lo):money(0);$('loanv').classList.toggle('dn',lo>0);
+    $('billsRow').hidden=bo<=0;$('billsv').textContent='-'+money(bo);$('billsRow').title='Medical bills '+money(S.medDebt)+' + rent arrears '+money(S.arrears?S.arrears.bal:0);
+    $('debtline').hidden=true;
     var il=$('invline');
     if(anyInv()){var c0=invSum('c'),pl=iv-c0,wk=S.wk||{abs:0,pct:0};
       il.hidden=false;il.innerHTML='📈 Investments: <b>'+money(iv)+'</b> · today <b class="'+(wk.abs>=0?'up':'dn')+'">'+sm(wk.abs)+' ('+(wk.pct>=0?'+':'−')+Math.abs(wk.pct).toFixed(1)+'%)</b> · overall <b class="'+(pl>=0?'up':'dn')+'">'+sm(pl)+' ('+(pl>=0?'+':'−')+Math.abs(c0?pl/c0*100:0).toFixed(1)+'%)</b>';}
@@ -3359,12 +3432,15 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var pk=view+'|'+pend;if(window.__pk!==pk){window.__pk=pk;$('center').scrollTop=0}
     $('overview').hidden=!!view||pend;
     $('shop').hidden=!view||pend;
+    /* overview window (no building open): only as tall as the vitals row, centred on the map, scroll for net worth and the log */
+    (function(){var c=$('center'),ov=!view&&!pend&&window.innerWidth>640,t3=c.querySelector('.three');
+      c.style.maxHeight='';if(ov&&t3)c.style.maxHeight='min(94%, '+Math.round(t3.offsetTop+t3.offsetHeight+14)+'px)'})();
     var wrap=$('evwrap'), was=wrap.hidden;
     wrap.hidden=!pend;
     if(pend){renderEvent();setTimeout(function(){var f=$('event').querySelector('button:not(:disabled)');if(f&&was)f.focus()},0);if(was){var c=$('event');c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop')}}
     if(view&&!pend){
       $('shopTitle').textContent=ICON[view]+' '+NAME[view];
-      $('strip').innerHTML='<span>Day '+S.day+'</span><span>⏱ '+hm(S.ap)+' left</span><span>Cash '+money(S.cash)+'</span><span>Energy '+S.energy+'%</span><span>Happy '+S.happy+'%</span>';
+      $('strip').innerHTML='<span>Day '+S.day+'</span><span>'+ic('time')+hm(S.ap)+' left</span><span>'+ic('cash')+money(S.cash)+'</span><span>'+ic('energy')+S.energy+'%</span><span>'+ic('happy')+S.happy+'</span><span>'+ic('health')+S.health+'</span>';
       if(!sayLine||sayLine.k!==view)sayLine={k:view,t:greetLine(view)};
       $('say').innerHTML='<b>'+GREET[view][0]+'</b>“'+sayLine.t+'”';
       var r=$('result');
@@ -3635,7 +3711,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   $('diffs').addEventListener('click',function(e){
     var b=e.target.closest('[data-diff]');if(!b)return;
     var k=b.dataset.diff,D=DIFF[k];
-    S.diff=k;S.flags.diff=1;S.cash=D.cash;S.px=D.px;S.wage=D.wage;S.today=null;T0();
+    S.diff=k;S.flags.diff=1;S.cash=D.cash;S.px=D.px*(CONFIG.limits.startPriceMin+Math.random()*(CONFIG.limits.startPriceMax-CONFIG.limits.startPriceMin));S.wage=D.wage;S.today=null;T0();
     $('welcome').classList.remove('show');
     log('Difficulty: '+D.n+'. '+D.d,'good');render();
   });
@@ -3682,10 +3758,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
     /* first sentence (or two, if the first is very short) of a log line, trimmed to fit a toast or a list row */
     function shortText(msg){
-      var parts=String(msg).match(/[^.!?]+[.!?]+/g)||[String(msg)],out=parts[0];
-      if(out.length<28&&parts[1])out+=parts[1];
-      out=out.trim();
-      return out.length>92?out.slice(0,90).trim()+'…':out;
+      return String(msg).trim();   /* the full message: toasts grow to fit and stay up longer for longer text */
     }
 
     /* ---------- 1. CLOCK + DAY BAR ----------
@@ -3785,13 +3858,16 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     }
     function makeToast(t){
       var box=$('toasts'),el=document.createElement('div');
-      if([].some.call(box.children,function(c){return c.textContent===t.txt}))return;   /* already on screen */
-      el.className='toast '+t.cls;el.textContent=t.txt;
+      if([].some.call(box.children,function(c){return c.dataset.txt===t.txt}))return;   /* already on screen */
+      el.className='toast '+t.cls;el.innerHTML=t.txt;el.dataset.txt=t.txt;
       if(t.quiet)el.setAttribute('aria-hidden','true');   /* log lines are already read out by the live region */
       el.addEventListener('click',function(){dismiss(el)});
       box.appendChild(el);
       while(box.children.length>(TS.max||3))dismiss(box.firstChild,true);
-      setTimeout(function(){dismiss(el)},(TS.seconds||4.5)*1000);
+      /* longer messages stay up longer (+1s per 60 characters, up to 15s); hovering pauses the countdown */
+      var ms=Math.min(15000,((TS.seconds||4.5)+el.textContent.length/60)*1000),tm=setTimeout(function(){dismiss(el)},ms);
+      el.addEventListener('mouseenter',function(){clearTimeout(tm)});
+      el.addEventListener('mouseleave',function(){tm=setTimeout(function(){dismiss(el)},2500)});
     }
     /* log lines: queue a toast when the line contains one of the chosen phrases */
     function logToast(msg,cls){
@@ -3870,12 +3946,12 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     }
     function showPreview(b,a,arg,r){
       var B=r.before,A=r.after,used=B.ap-A.ap,rows='';
-      rows+='<div class="pv-row"><span class="pv-i">⏱</span><span class="pv-l">Time</span><span class="pv-d dn">−'+hm(used)+'</span><span class="pv-a">Done at '+clockText(A.ap)+' · '+hm(A.ap)+' left today</span></div>';
-      rows+=pvRow('💵','Cash',A.cash-B.cash,'You will have '+money(A.cash),function(n){return money(n)});
-      rows+=pvRow('⚡','Energy',A.energy-B.energy,'Energy '+A.energy+'%',function(n){return n+'%'});
-      rows+=pvRow('😊','Happiness',A.happy-B.happy,'Happiness '+A.happy,function(n){return n});
-      rows+=pvRow('💚','Health',A.health-B.health,'Health '+A.health,function(n){return n});
-      rows+=pvRow('🧠','Knowledge',A.know-B.know,'Knowledge '+A.know,function(n){return n});
+      rows+='<div class="pv-row"><span class="pv-i">'+ic('time')+'</span><span class="pv-l">Time</span><span class="pv-d dn">−'+hm(used)+'</span><span class="pv-a">Done at '+clockText(A.ap)+' · '+hm(A.ap)+' left today</span></div>';
+      rows+=pvRow(ic('cash'),'Cash',A.cash-B.cash,'You will have '+money(A.cash),function(n){return money(n)});
+      rows+=pvRow(ic('energy'),'Energy',A.energy-B.energy,'Energy '+A.energy+'%',function(n){return n+'%'});
+      rows+=pvRow(ic('happy'),'Happiness',A.happy-B.happy,'Happiness '+A.happy,function(n){return n});
+      rows+=pvRow(ic('health'),'Health',A.health-B.health,'Health '+A.health,function(n){return n});
+      rows+=pvRow(ic('know'),'Knowledge',A.know-B.know,'Knowledge '+A.know,function(n){return n});
       $('pvT').textContent=pvTitle(b)+'?';
       $('pvSub').textContent=(NAME[view]?NAME[view]+' · ':'')+'Here is what this will do:';
       $('pvRows').innerHTML=rows;

@@ -18,6 +18,8 @@ Everything adjustable lives in the `CONFIG` block near the top of the script: `C
 10. [Economy, events and health](#10-economy-events-and-health)
 11. [Known open issues](#11-known-open-issues)
 12. [2,000-game re-run](#12-2000-game-re-run)
+13. [Job list update](#13-job-list-update)
+14. [Interface and gameplay updates](#14-interface-and-gameplay-updates)
 
 ---
 
@@ -210,3 +212,51 @@ Latest build, bankrupt rule counted from day 5. Same bot and same 2,000 jobs as 
 - Best pathways: Mall Manager, Supermarket Manager, Boutique Manager, Operations Assistant, Senior Nurse, AI Engineer, Logistics Manager. The 32-hour study jobs paying $230 to $290 did best.
 - The very top jobs (Chief of Surgery, Consultant, Chief Engineer and so on, 100+ study hours) were never reached within 15 days, so their pay does not matter inside the day limit.
 - Test note: an earlier run of this bot forced the bankrupt start day back to day 1 (a leftover in the test script), giving 59% bankruptcies on day 4. That was a test fault, not a game bug, and is fixed.
+
+---
+
+## 13. Job list update
+
+The full job list and qualifications now follow the list supplied for this game (`CONFIG.jobs.pick`, mirrored in `CAREERS`). 71 roles in total.
+
+- Removed: Quality Inspector, Logistics Manager (Factory); Busser, Host, Sommelier (Restaurant); Butcher, Buyer (Supermarket); Stockroom Assistant, Personal Stylist (Clothes Mall); the Bank Security Guard, Financial Analyst, Investment Associate, Branch Manager (Bank); Receptionist, Hospital Administrator (Hospital).
+- Added: Product Promoter ($190, Sales Degree) at the Supermarket; Sales Promoter ($150, Sales Certificate) at the Clothes Mall; Internal Auditor ($150), Market Risk Analyst ($240), Rates Trader ($330), Head Trader ($450) at the Bank; General Manager ($330) at the Hospital.
+- Renamed: Specialist Registrar is now Specialist Doctor.
+- Changed qualifications: Master Chef (Food & Beverage Degree + Sales Degree), Teller (Finance Certificate, $110), AI Engineer (Technology Degree + Engineering Certificate), Gym Instructor (Sales Certificate instead of Medicine).
+- Second job lines renamed to match what is left: Restaurant (Management), Supermarket (Delivery & Promotions), Clothes Mall (Promotions). Factory (Logistics) now only has Forklift Driver.
+- The Bank no longer has an entry job: Teller, its lowest role, needs a Finance Certificate.
+- Pawn Shop Security Guard is now the only Security Guard, so its config line no longer needs the card name. Repair Technician (Thrift Store and Electronics Store) still does.
+- Unchanged rules still apply on top of the list: knowledge needed by job level, dress codes, work experience for jobs over $150 and the ±5% per-game pay variation.
+- Old saves: a saved job that no longer exists is dropped on load with a message to re-apply. The game now also remembers the job's name, so future reshuffles are caught too.
+
+---
+
+## 14. Interface and gameplay updates
+
+### Gameplay
+- Job pay varies by up to ±5% at random each game (`CONFIG.jobs.payVary`), fixed for that game and kept in the save.
+- Each new game starts with a random price index between 94% and 106% (`CONFIG.limits.startPriceMin` / `startPriceMax`), on top of the difficulty's prices. Shift pay follows the price index as before.
+- Work experience: jobs paying more than $150 a shift (as shown on the board) need 5 shifts already worked at the same workplace, any role there (`CONFIG.jobs.experience`). Without them the interview still takes 1h and fails with "Not enough relevant working experience". The job board shows "5 shifts worked at the Factory (you have N)".
+- Self-study online gives +2 more knowledge: computer 6, tablet 5, phone 4 (Bookworm: 8, 6, 5).
+
+### Top bar
+- Icons only, no words: net worth (new, money bag), cash (dollar note), energy (blue bolt), happiness (sun), health (heart), knowledge (new, grad cap), time (clock).
+- All six stat cells are the same width with smaller numbers. Cash and net worth of $1,000+ show as $12.3K / $1.3M (hover shows the exact amount).
+- Hover (computer) or tap (phone) any stat for an instant description. Score has an "i" icon that shows the score formula and your current breakdown.
+- Compact layouts so the bar stays on one row on phones and on 641–1023px windows (buttons drop below the stats only when there is no room).
+- The home button reads "Sleep in Apartment" (was "End day"), for either home.
+
+### Stat icons everywhere
+- Every building's option lines show icon + number, e.g. clock 1h 30m, bolt +12%, sun +1, heart −8. Also used in each window's top strip, the action preview pop-up, the floating +/− numbers and the tired/poor-health warnings. The Daily log stays as words.
+
+### Overview window
+- Net worth now shows Loan as a negative amount (and Bills owed when you owe medical bills or rent arrears), so the parts add up to the total. Legend squeezed onto one row (Cash, Bank, Invest, Assets, Loan).
+- The Net worth box moved below the Vitals / Life & learning / Rent & clothing row.
+- The window is only as tall as that row, centred on the map, and scrolls for Net worth and the Daily log, so buildings around it stay clickable.
+
+### Messages
+- Toasts show the full message (no more one-sentence, 90-character or 3-line cut-off), stay up longer for longer text (up to 15s) and pause while hovered. "Not enough relevant working experience" and "No openings now" now pop up too.
+- Floating +/− numbers after an action stay on screen 3.5s (was 1.4s), set by `CONFIG.ui.floaterSeconds`.
+
+### Employment Office
+- The job board picks 1–5 columns to fit the window (each at least 175px), so cards and Apply buttons no longer overflow on narrower screens.
