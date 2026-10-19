@@ -1,0 +1,41 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## What this is
+
+Daily Grind is a browser life-sim game that lives in **one file: `index.html`** (~4,200 lines: CSS, markup, then a single `<script>` wrapped in one IIFE). There is no build step, package manager, linter or test suite in the repo. `CHANGELOG.md` is the running record of every gameplay change and is the only documentation (no README). `docs/QA_Report.html` is a snapshot QA report of an older build.
+
+## Running and checking changes
+
+- Run it: open `index.html` in a browser (or `python3 -m http.server`). Game state autosaves to `localStorage` (`dailyGrind.save.v1`), so clear it when testing a fresh start.
+- There are no repo tests. Past verification used Playwright (Chromium is preinstalled; set `PLAYWRIGHT_BROWSERS_PATH`, do not run `playwright install`) against a throwaway copy of `index.html` with a test hook injected just before the line `  if(!load())fresh();`. The hook assigns `window.__G` to expose the closure's internals (`S`, `CONFIG`, `fresh`, `enter`, `render`, `worth`, `expRet`, ...). Everything is private to the IIFE, so nothing can be driven from outside without such a hook. Keep that marker line unique and intact. Build the copy outside the repo and do not commit it.
+- Seed `Math.random` in the page before running anything that must be repeatable. Events, illness, shocks and market noise all use it.
+- Drive the UI with real clicks on `#shop [data-act]` buttons, `#hudEnd` (end day or "Sleep outside") and `#event [data-act]` (event choices) rather than calling functions, so button wiring is exercised too.
+
+## Architecture
+
+**One mutable state object `S`** (`blank()` is the full schema, about 80 fields) plus a `CONFIG` object at the top of the script. `CONFIG` is the single source of tunable numbers, split into numbered groups described in the comment block above it. Gameplay values (pay shifts, food energy, loan rates, bankrupt rule, sleep, health, market sensitivity, macro strength) belong in `CONFIG`, not inline.
+
+**Rules text is generated from CONFIG.** The Rules overlay in the HTML has `<span id="cfg...">` placeholders filled in from `CONFIG` (see `paintBurnRules` and the setters beside it). When you change a rule or its numbers, update the matching `cfg*` text so the screen still describes the logic. Text and logic drifting apart was the most common bug found in QA.
+
+**Day cycle.** Player actions spend `S.ap` (minutes, `MAX_AP` = 1440 per day). Ending the day goes `endWeek(rested)` (decides where you slept, sets `restBonus`/`restHap`/`slept`, then `pickEvent()` creates the end-of-day event stored in `S.pending`) then, when the player dismisses it, `rollover()` (the overnight pipeline). `rollover` order matters: rent, wear, energy and happiness drift, hunger, food spoilage, `trendTick` (macro effects), `tickInv` (investments), `healthTick`, `burnTick`, school expulsion, `loanTick`, `stressTick` (game-over checks: bankrupt, hospital, exhaustion, morale), savings interest, rent and arrears, then the morning summary and notes. Several steps return early when they end the game.
+
+**Events and the effect-token mini-language.** Event outcomes are strings of space-separated tokens parsed by `applyFx0` using `tokRe`: `c` cash, `b` bank, `e` energy, `h` happiness, `l` health, `n` knowledge, `p` prices %, `w` pay %, `r` interest points, `j` workplace closure days, `k` clothes wear. A range is written `a~b`. Always go through `applyFx`, which also nudges market mood `S.mkt` when rates, prices or closures change. Writing to `S` directly means the displayed "fx" line will not match the real change. Event sources: `NEWS`, `CHOICES`, `TWISTS`, `STORIES`, `SAGAS` (multi-day storylines), `MACRO` (multi-day shocks) and `basicEvent`/`itemEvent`.
+
+**Macro economy.** News, `MACRO` and `SAGAS` push entries onto `S.trends`; `trendTick` applies each trend's daily `p/w/r/mkt/lay/cls/ill` every night. All of it is scaled by `CONFIG.macro` (`strength` times per-key multipliers via `scaleTrend`/`mk`). The savings rate `S.rate` and market mood `S.mkt` feed `expRet()`, which sets the expected daily return of the fixed deposit (follows `S.rate`) and ETF, hedge fund and crypto (follow `S.mkt`, minus an interest-above-normal term, `CONFIG.market.rateBeta`). When no trend is moving interest, `S.rate` drifts back to `CONFIG.market.rateBase`. **Loan rates (`CONFIG.loan`) are intentionally fixed and must never be touched by macro code.**
+
+**Careers and study.** `CAREERS` (ladders per workplace, each rank has pay and `need` qualifications) and `TRACKS` (School pathways: Certificate, Degree, Honours, Masters, each made of modules and lessons) are separate tables linked by qualification name. Job knowledge requirements come from `CONFIG.jobs.knowledgeByLevel`. Shift length and energy cost are derived from shift pay through `CONFIG.time.shifts`, so a higher-paying job always works shorter shifts. Check pay-per-hour ordering after editing pay. Actual shift pay (`shiftPay`/`payInfo`) includes knowledge and penalties, while the job board shows base pay.
+
+**Net worth and endings.** `worth()` is the score basis: cash, bank, investments and resale value of belongings, minus hospital debt, rent arrears and any loan. Endings are checked in `stressTick`, `loanTick` and `checkWin`: bankrupt (net worth under a threshold for N consecutive days, counted from `fromDay`), loan default, hospital, exhaustion, morale, time limit.
+
+**Rendering.** `render()` repaints the HUD and the building panel from `S`; there is no framework or virtual DOM. Panel HTML is built in the `panels` map as strings. Buttons are `data-act`/`data-arg` elements handled by delegated click listeners on `#shop` (around the end of the script). Add a feature by adding its panel markup, a `data-act` branch in that listener and the function it calls. The top-bar "End day" button reads "Sleep outside" when the player is not at home.
+
+**Saves.** `load()` migrates old saves forward by feeding them through `blank()` defaults and patching removed jobs and qualifications. When renaming or removing a career line, qualification or `S` field, keep old saves loadable (they are checked on every page load).
+
+## Conventions specific to this repo
+
+- Log every gameplay change in `CHANGELOG.md`, in the existing numbered-section style, including new `CONFIG` keys and removed ones.
+- Use a real minus sign (`−`) in player-facing text via the `sg()` helper (`+5` / `−3`); money goes through `money()`.
+- Scaling to difficulty, prices and wages goes through `G()` (price index) and `Df()` (difficulty), so use them for any new cost.
+- Sleeping at home earns `CONFIG.health.sleep` health (per hour left, capped) and full energy and happiness. Sleeping elsewhere earns `CONFIG.sleep.awayShare` of each. Going to bed unfed adds `CONFIG.health.nightly.skippedMeal`. Health has no other event hook besides the `l` token and the gym, hospital and meals.
