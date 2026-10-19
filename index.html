@@ -80,7 +80,6 @@ background:radial-gradient(circle at 18% 22%,rgba(255,255,255,.12),transparent 2
 .evbtns{display:flex;gap:12px;margin:12px 0;flex-wrap:wrap}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 14px}
 .chips span{font-size:.82rem;font-weight:700;border:2px solid var(--ink);border-radius:8px;padding:1px 8px;background:var(--bg)}
-.footer{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 p{margin:0 0 10px}
 .bank{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .bk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));grid-auto-rows:1fr;gap:12px;margin-top:8px}
@@ -88,6 +87,7 @@ p{margin:0 0 10px}
 .bk-h{display:flex;flex-direction:column;gap:1px}.bk-h b{font-size:.95rem}.bk-h span{font-size:.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
 .bk-d{flex:1;font-size:.76rem;line-height:1.3;color:var(--muted)}.bk-v{font-size:.76rem;min-height:2.6em}
 .bk-title{margin:4px 0 2px;font-size:1.05rem}
+.bk-wide{margin:6px 0 10px}.bk-card.wide{max-width:560px}.bk-ten{display:flex;gap:6px;flex-wrap:wrap}.bk-ten .btn{min-height:34px;padding:4px 10px;margin:0;font-size:.8rem}
 .bk-v .up{color:var(--green,#1f8a4c)}.bk-v .dn{color:var(--red)}
 .bk-amt{display:grid;grid-template-columns:40px 1fr 40px;gap:6px}.bk-amt .btn{min-height:36px;padding:0;margin:0;font-size:1.1rem;line-height:1}
 .bk-card input{width:100%;box-sizing:border-box;min-height:36px;padding:2px 8px;text-align:center;font-weight:800;border:3px solid var(--ink);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit}
@@ -153,9 +153,6 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 .goals .gh{display:flex;align-items:center;gap:8px;color:var(--teal);margin-bottom:2px}.goals .gh span{color:var(--muted)}
 .goal{font-size:.78rem;padding:1px 0}.pips{display:flex;gap:4px;margin:2px 0 3px}.pips i{flex:1;height:5px;border-radius:3px;background:var(--line)}.pips i.on{background:var(--teal)}.goal.done{color:var(--muted);text-decoration:line-through}
 .linkbtn{margin-left:auto;font:inherit;font-size:.72rem;background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;padding:2px 4px}
-.sheetbar{display:none;position:sticky;top:0;z-index:5;width:calc(100% + 24px);margin:0 -12px 6px;align-items:center;gap:8px;padding:14px 14px 8px;border:0;border-bottom:1px solid var(--line);background:inherit;background:color-mix(in srgb,var(--gold) 12%,var(--surface));font:inherit;font-size:.82rem;font-weight:700;color:var(--ink);cursor:pointer;text-align:left}
-.sheetbar .grip{position:absolute;left:50%;top:5px;width:40px;height:4px;margin-left:-20px;border-radius:4px;background:var(--line)}
-#sheetSum{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#sheetTog{color:var(--muted);font-size:.75rem}
 .sumcard{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;margin:6px 0 0;padding:5px 10px;border-radius:12px;border:2px solid var(--line);background:var(--surface);font-size:.76rem}
 .sumcard .st{font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:.68rem;color:var(--muted)}.sumcard .up{color:var(--green)}.sumcard .dn{color:var(--red)}
 .sumcard .hits{flex-basis:100%;color:var(--red);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -182,7 +179,6 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 .hud .tcell b{font-size:1.05rem}#hInvC small{display:block;font-size:.62rem;font-weight:700}.hud .tcell.sc b{color:#ffd45e}.hud .tcell.sc small{display:block;font-size:.6rem;opacity:.75}
 .hud .donut{width:38px;height:38px}
 .actbar{display:flex;gap:8px}.actbar .btn{min-height:40px;padding:6px 16px}
-.footer,#endWeek{display:none!important}
 #overScore{margin:8px 0 10px}.bigscore{font-size:1.6rem;font-weight:800;margin:4px 0}.topscore{font-weight:800;color:#1f7a4a;font-size:1.05rem}.prevtop{color:var(--muted);font-size:.9rem}
 .sctab{margin:4px auto 0;font-size:.85rem;border-collapse:collapse}.sctab td{padding:1px 10px;text-align:left}.sctab td+td{text-align:right;font-weight:700}
 .morning{text-align:left;max-width:520px}.morning ul{list-style:none;padding:0;margin:8px 0}.morning li{padding:6px 10px;border-radius:9px;margin:4px 0;font-size:.9rem;font-weight:600;border:2px solid var(--gold);background:color-mix(in srgb,var(--gold) 14%,var(--surface))}.morning li.bad{border-color:var(--red);background:color-mix(in srgb,var(--red) 12%,var(--surface))}.morning li.good{border-color:#2f8f5b;background:color-mix(in srgb,#2f8f5b 14%,var(--surface))}.morning li.rem{border-color:#4b78c2;background:color-mix(in srgb,#4b78c2 12%,var(--surface))}
@@ -269,8 +265,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   .actbar{position:fixed;left:0;right:0;bottom:0;z-index:4600;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(20,32,43,.96);justify-content:stretch}
   .actbar .btn{flex:1;min-height:48px;font-size:1rem}
   body{padding-bottom:76px}
-  .center,.center.wide,.center.collapsed{position:static;transform:none;width:auto;max-height:none;overflow:visible;margin:10px 6px 28px;padding:10px 12px 14px;border-width:3px;border-radius:18px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
-  .sheetbar{display:none!important}
+  .center,.center.wide{position:static;transform:none;width:auto;max-height:none;overflow:visible;margin:10px 6px 28px;padding:10px 12px 14px;border-width:3px;border-radius:18px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
   #evwrap{position:fixed}
   .top{grid-template-columns:auto 1fr}.top .tcell.pay{grid-column:1/-1}
   .loghead{flex-wrap:wrap;gap:6px}.loghead span{flex-wrap:wrap}
@@ -400,7 +395,6 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   <div class="cloud"></div><div class="cloud b"></div>
   <section class="center" id="center" aria-label="Game panel">
     <div id="sr" class="sr" aria-live="polite" aria-atomic="true"></div>
-    <button class="sheetbar" id="sheetbar" aria-expanded="true" aria-controls="center"><span class="grip"></span><span id="sheetSum"></span><span id="sheetTog">▾ Hide</span></button>
     <div id="overview">
       <h1>Daily Grind</h1> <button class="mute" id="muteBtn" aria-pressed="false" title="Sound on/off">🔊</button><button class="mute reset" id="resetBtn" title="Wipe the save and start a fresh game">↺ Reset</button><button class="mute" id="previewBtn" aria-pressed="true" title="Ask before big actions, showing what they will cost">🔎 Preview: on</button><span class="saved" title="Your progress is saved in this browser">💾 Auto-saved · <span id="diffTag">Normal</span></span>
       <div class="top">
@@ -436,7 +430,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
           <div class="gh">🏠 Life &amp; learning</div>
           <div class="kv"><span>Home</span><b id="homeName"></b></div>
           <div class="kv"><span>Belongings</span><b id="belong">0</b></div>
-          <div class="kv"><span>Education</span><b id="edu">High School Diploma</b></div>
+          <div class="kv"><span>Education</span><b id="edu">High School</b></div>
           <div class="sub" id="eduSub">No courses yet</div>
         </div>
         <div class="grp g-bill">
@@ -445,7 +439,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
           <div id="wardrobe"></div>
         </div>
       </div>
-      <div class="loghead"><h2>Daily log</h2><span style="display:flex;gap:8px"><button class="btn alt" id="newBtn" title="Start over">New game</button><button class="btn alt" id="rulesBtn" title="How the game ends">How it ends</button><button class="btn alt" id="endWeek">End day</button></span></div>
+      <div class="loghead"><h2>Daily log</h2><span style="display:flex;gap:8px"><button class="btn alt" id="newBtn" title="Start over">New game</button><button class="btn alt" id="rulesBtn" title="How the game ends">How it ends</button></span></div>
       <div id="log" role="log"></div>
     </div>
 
@@ -455,10 +449,6 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       <div class="say" id="say"></div>
       <div class="result" id="result"></div>
       <div id="shopBody"></div>
-      <div class="footer">
-        <button class="btn alt" data-leave="1">Leave</button>
-        <button class="btn alt" data-end="1">End day</button>
-      </div>
     </div>
   </section>
   <div id="evwrap" hidden><div id="event" class="evcard" role="dialog" aria-live="assertive"></div></div>
@@ -490,7 +480,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   <li>Keep playing for a higher rank: <span id="cfgRanks"><b>💼 Wealthy</b> at $5,000 and <b>👑 Tycoon</b> at $10,000 (Tycoon ends the game)</span>. When time runs out, your best rank is your final result.</li></ul>
   <h3 class="lose">You lose</h3>
   <ul>
-    <li><b>Bankrupt:</b> net worth falls to −$200 or lower.</li>
+    <li><b>Bankrupt:</b> <span id="cfgBankrupt">net worth under $500 for three days in a row.</span></li>
+    <li><b>Loan default:</b> <span id="cfgLoanDefault">you owe more than $10,000, or have not repaid your loan in full 5 days after its due date.</span></li>
     <li><b>Exhaustion:</b> energy at 10% or less at the end of two days in a row.</li>
     <li><b>You gave up:</b> happiness at 10 or less for three days in a row.</li>
     <li><b>Hospitalised:</b> <span id="cfgHungry">three days</span> in a row without a meal.</li>
@@ -505,9 +496,11 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     <li><b>Keyboard:</b> 1–9 press the numbered buttons, E ends the day, Esc leaves a building or closes a window, H opens these rules, M toggles sound. Tab moves between buildings.</li>
     <li><b>Health:</b> a slow-moving vital. Healthy meals, the gym and sleeping at home raise it; hunger, illness, junk food, long study days and burnout lower it. Good health, a healthy diet and regular gym visits all cut your chance of falling ill.</li>
     <li><b>Layoffs and closures (two different things):</b> in a bad economy you can be <b>laid off</b> (the job is gone, so apply for a new one) or your workplace can <b>close</b> for 1 to 4 days (the Work button is disabled, but the job stays on your record and the morning message tells you when it is back). You can only hold one job at a time.</li>
-    <li><b>Burnout:</b> <span id="cfgBurn">studying more than 5 hours a day (school plus self-study) three days in a row costs 15 health and cuts shift pay by 20% for 3 days.</span></li>
+    <li><b>Loans:</b> <span id="cfgLoan">Borrow at the Bank in $50 steps.</span></li>
+    <li><b>Work limit:</b> you can work at most <span id="cfgWork">12 hours</span> of shifts in one day.</li>
+    <li><b>Burnout:</b> <span id="cfgBurn">studying more than 5 hours a day (school plus self-study), or working 9 hours or more a day, three days in a row costs 15 health and cuts shift pay by 20% for 3 days.</span></li>
     <li><b>Illness:</b> low energy raises your chance of a cold, flu, dengue or pneumonia. While sick you cannot work: get treated at the Hospital (usually a full day in the ward) or rest at home to recover naturally. The bill is charged the morning after you are released; whatever your cash cannot cover goes on a repayment plan (+<span id="cfgDebt">10%</span> interest, late fees on missed instalments), like rent arrears.</li>
-    <li><b>School:</b> 3 days without a lesson is a warning, 5 to 6 is expulsion.</li>
+    <li><b>School:</b> while a qualification is in progress, 3 days without a lesson is a warning and 5 to 6 is expulsion. Once you have finished one and not started the next, nothing is skipped.</li>
   </ul>
   <button class="btn" id="rulesClose" style="margin-top:12px">Got it</button>
 </div></div>
@@ -606,19 +599,17 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
          from that building's list in COMP. */
       secondQualPay:250,      // jobs paying this much or more need a second qualification
       thirdQualPay:450,       // ...and this much or more need a third
-      secondQualMaxLevel:3,   // highest level asked for the second one (3 = Degree)
-      thirdQualLevel:2,       // level asked for the third one (2 = Diploma)
+      secondQualMaxLevel:2,   // highest level asked for the second one (2 = Degree)
+      thirdQualLevel:1,       // level asked for the third one (1 = Certificate)
       /* Knowledge needed on top: from this job level up, base + perLevel for each level above 2.
-         With the defaults: Degree jobs need 20, Honours 35, Masters 50, Doctorate 65. */
-      knowledgeFromLevel:3,
-      knowledgeBase:5,
-      knowledgePerLevel:15,
+         With the defaults: Degree jobs need 20, Honours 35, Masters 50. */
+      knowledgeByLevel:{Degree:20, Honours:35, Masters:50},   // a job asks for the knowledge of its highest qualification
       /* ---- Hand-picked qualifications (these replace the automatic rule) ----
          Write the role name exactly as the Employment Office shows it, then a list of
          qualifications as '<Track> <Level>'.
          Tracks: Sales, Food & Beverage, Finance, Technology, Medical Health, Engineering.
-         Levels: Certificate, Diploma, Degree, Honours, Masters, Doctorate, Specialist
-         (not every track has every level; Sales stops at Diploma).
+         Levels: Certificate, Degree, Honours, Masters
+         (not every track has every level; Sales and Food & Beverage stop at Degree, Finance and Technology at Masters).
          An empty list [] means no qualification is needed.
          Two roles share a name (Security Guard, Repair Technician); for those, put the
          card name first, e.g. 'Pawn Shop (Back office): Security Guard'.
@@ -628,62 +619,62 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
          Example lines (remove the // to use them):
            'Gym Instructor': ['Medicine Certificate', 'Sales Certificate'],
            'Line Worker': ['Engineering Certificate'],
-           'Bank Investment Associate': ['Finance Degree', 'Technology Diploma', 'knowledge:30'],  */
+           'Bank Investment Associate': ['Finance Degree', 'Technology Degree', 'knowledge:30'],  */
       pick:{
 
 
   // ---- Factory ----
   'Line Worker':        ['Engineering Certificate'],                                                     // $120
-  'Technician':         ['Engineering Certificate', 'Technology Certificate'],                           // $200
-  'Design Engineer':    ['Engineering Diploma', 'Technology Certificate'],                               // $260
-  'Senior Engineer':    ['Engineering Degree', 'Technology Diploma', 'Finance Certificate'],             // $320
-  'Project Lead':       ['Engineering Honours', 'Technology Diploma', 'Finance Certificate'],            // $380
-  'Principal Engineer': ['Engineering Masters', 'Technology Degree', 'Finance Diploma', 'Sales Certificate'],                          // $450
-  'Chief Engineer':     ['Engineering Doctorate', 'Technology Degree', 'Finance Diploma', 'Sales Diploma', 'Medicine Certificate'],   // $560
+  'Technician':         ['Engineering Certificate', 'Technology Certificate'],                           // $180
+  'Design Engineer':    ['Engineering Degree', 'Technology Certificate'],                               // $250
+  'Senior Engineer':    ['Engineering Degree', 'Technology Degree', 'Finance Certificate'],              // $330
+  'Project Lead':       ['Engineering Honours', 'Technology Degree', 'Finance Certificate'],             // $400
+  'Principal Engineer': ['Engineering Masters', 'Technology Certificate', 'Finance Certificate'],        // $480
+  'Chief Engineer':     ['Engineering Masters', 'Technology Degree', 'Finance Certificate'],             // $700
   // ---- Factory (Logistics) ----
   'Forklift Driver':    ['Engineering Certificate'],                                                     // $110
-  'Quality Inspector':  ['Engineering Certificate'],                                                     // $170
-  'Logistics Manager':  ['Engineering Diploma', 'Finance Certificate'],                                  // $290
+  'Quality Inspector':  ['Engineering Certificate', 'Technology Certificate'],                           // $170
+  'Logistics Manager':  ['Engineering Degree', 'Finance Certificate'],                                  // $250
 
   // ---- Fast Food ----
   'Crew Member':        [],                                                                              // $70
   'Shift Supervisor':   ['Food & Beverage Certificate'],                                                 // $110
-  'Store Manager':      ['Food & Beverage Diploma'],                                                     // $170
+  'Store Manager':      ['Food & Beverage Certificate', 'Sales Certificate'],                            // $180
   // ---- Fast Food (Kitchen) ----
   'Kitchen Hand':       [],                                                                              // $65
   'Delivery Rider':     [],                                                                              // $80
   'Grill Cook':         ['Food & Beverage Certificate'],                                                 // $120
-  'Area Manager':       ['Food & Beverage Diploma', 'Finance Certificate'],                              // $220
+  'Area Manager':       ['Food & Beverage Degree', 'Finance Certificate'],                              // $220
 
   // ---- Restaurant ----
   'Dishwasher':         [],                                                                              // $85
-  'Waiter':             ['Food & Beverage Certificate'],                                                 // $105
-  'Chef':               ['Food & Beverage Diploma'],                                                     // $180
-  'Master Chef':        ['Food & Beverage Degree', 'Sales Certificate', 'Finance Certificate'],          // $300
+  'Waiter':             ['Sales Certificate'],                                                           // $105
+  'Chef':               ['Food & Beverage Degree'],                                                     // $180
+  'Master Chef':        ['Food & Beverage Degree', 'Finance Degree'],                                    // $300
   // ---- Restaurant (Front of house) ----
   'Busser':             [],                                                                              // $80
   'Host':               [],                                                                              // $95
-  'Sommelier':          ['Food & Beverage Diploma', 'Sales Certificate'],                                // $200
-  'Restaurant Manager': ['Food & Beverage Degree', 'Finance Diploma'],                                   // $280
+  'Sommelier':          ['Food & Beverage Degree', 'Sales Certificate'],                                // $210
+  'Restaurant Manager': ['Food & Beverage Degree', 'Sales Degree', 'Finance Certificate'],             // $310
 
   // ---- Supermarket ----
   'Shelf Stacker':       [],                                                                             // $75
   'Cashier':             [],                                                                             // $85
   'Store Supervisor':    ['Sales Certificate'],                                                          // $140
-  'Supermarket Manager': ['Sales Diploma', 'Finance Certificate'],                                       // $230
+  'Supermarket Manager': ['Sales Degree', 'Finance Certificate'],                                       // $230
   // ---- Supermarket (Fresh) ----
   'Delivery Driver':     [],                                                                             // $90
   'Butcher':             ['Food & Beverage Certificate'],                                                // $120
-  'Buyer':               ['Sales Diploma'],                                                              // $190
+  'Buyer':               ['Sales Degree'],                                                              // $190
 
   // ---- Clothes Mall ----
   'Sales Clerk':         [],                                                                             // $95
-  'Visual Merchandiser': ['Sales Certificate'],                                                          // $160
-  'Boutique Manager':    ['Sales Diploma', 'Finance Certificate'],                                       // $260
+  'Visual Merchandiser': ['Sales Certificate'],                                                          // $150
+  'Boutique Manager':    ['Sales Degree', 'Finance Certificate'],                                       // $250
   // ---- Clothes Mall (Studio) ----
   'Stockroom Assistant': [],                                                                             // $85
-  'Personal Stylist':    ['Sales Certificate'],                                                          // $180
-  'Mall Manager':        ['Sales Diploma', 'Finance Diploma', 'Technology Certificate'],                 // $320
+  'Personal Stylist':    ['Sales Certificate'],                                                          // $150
+  'Mall Manager':        ['Sales Degree', 'Finance Degree', 'Technology Certificate'],                 // $320
 
   // ---- Thrift Store ----
   'Shop Assistant':       [],                                                                            // $70
@@ -694,67 +685,54 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 
   // ---- Pawn Shop ----
   'Counter Assistant':  [],                                                                              // $80
-  'Appraiser':          ['Finance Certificate'],                                                         // $170
-  'Pawnbroker':         ['Finance Diploma', 'Sales Diploma'],                                            // $250
+  'Appraiser':          ['Finance Certificate', 'Sales Certificate'],                                    // $170
+  'Pawnbroker':         ['Finance Degree', 'Sales Degree'],                                            // $290
   // ---- Pawn Shop (Back office) ----
   'Pawn Shop (Back office): Security Guard': [],                                                         // $95
   'Bookkeeper':         ['Finance Certificate'],                                                         // $150
 
   // ---- Bank ----
   'Bank: Security Guard': ['Medicine Certificate'],                                                      // $110 (first aid)
-  'Teller':               ['Finance Certificate'],                                                       // $150
-  'Financial Analyst':    ['Finance Diploma', 'Technology Certificate'],                                 // $240
-  'Investment Associate': ['Finance Degree', 'Technology Diploma', 'Sales Certificate'],                 // $330
-  'Fund Manager':         ['Finance Masters', 'Technology Degree', 'Sales Diploma', 'Engineering Certificate'],   // $440
-  // ---- Bank (Branch) ----
-  'Customer Service Officer': ['Sales Certificate'],                                                     // $120
-  'Loan Officer':             ['Finance Diploma', 'Sales Certificate'],                                  // $210
-  'Branch Manager':           ['Finance Degree', 'Sales Diploma', 'Technology Certificate'],             // $360
+  'Teller':               ['Finance Certificate', 'Sales Certificate'],                                  // $150 (cash handling, customer service)
+  'Financial Analyst':    ['Finance Degree', 'Technology Certificate'],                                 // $240 (reporting, data)
+  'Investment Associate': ['Finance Degree', 'Sales Degree', 'Technology Certificate'],                  // $330 (portfolios, client advice)
+  'Tech Developer':       ['Technology Masters', 'Finance Degree'],                                     // $410 (banking systems, security)
+  'Branch Manager':       ['Finance Masters', 'Sales Degree', 'Technology Certificate'],                // $450 (runs the branch, its staff and its systems)
 
   // ---- Hospital ----
   'Hospital Porter':      [],                                                                            // $90
   'Nursing Aide':         ['Medicine Certificate'],                                                      // $140
-  'Nurse':                ['Medicine Diploma', 'Technology Certificate'],                                // $210
-  'Senior Nurse':         ['Medicine Degree', 'Technology Diploma'],                                     // $290
-  'Junior Doctor':        ['Medicine Honours', 'Technology Diploma', 'Finance Certificate'],             // $380
-  'Specialist Registrar': ['Medicine Masters', 'Technology Degree', 'Finance Certificate', 'Engineering Certificate'],                          // $470
-  'Consultant':           ['Medicine Doctorate', 'Technology Degree', 'Finance Diploma', 'Engineering Diploma', 'Sales Certificate'],         // $580
-  'Chief of Surgery':     ['Medicine Specialist', 'Technology Masters', 'Finance Diploma', 'Engineering Diploma', 'Sales Diploma', 'Food & Beverage Certificate'],   // $720
+  'Nurse':                ['Medicine Degree'],                                                          // $210
+  'Senior Nurse':         ['Medicine Degree', 'Technology Certificate'],                                 // $290
+  'Junior Doctor':        ['Medicine Honours'],                                                          // $330
+  'Specialist Registrar': ['Medicine Masters', 'Technology Certificate'],                                // $460
+  'Consultant':           ['Medicine Masters', 'Finance Degree'],                                        // $620
+  'Chief of Surgery':     ['Medicine Masters', 'Finance Degree', 'Technology Certificate'],              // $900
   // ---- Hospital (Support) ----
   'Cleaner':                [],                                                                          // $75
   'Receptionist':           ['Sales Certificate'],                                                       // $100
-  'Lab Technician':         ['Technology Diploma'],                                                      // $190
-  'Hospital Administrator': ['Finance Degree', 'Medicine Diploma', 'Technology Certificate'],            // $330
-
-  // ---- School ----
-  'Janitor':            [],                                                                              // $75
-  'Lab Assistant':      ['Technology Certificate'],                                                      // $140
-  'Tutor':              ['Technology Diploma', 'Finance Certificate'],                                   // $200
-  'Lecturer':           ['Technology Degree', 'Finance Diploma', 'Sales Certificate'],                   // $320
-  // ---- School (Staff) ----
-  'Library Assistant':  [],                                                                              // $80
-  'Admin Clerk':        ['Finance Certificate'],                                                         // $100
-  'Careers Counsellor': ['Sales Diploma', 'Finance Certificate'],                                        // $210
+  'Lab Technician':         ['Medicine Certificate', 'Technology Certificate'],                          // $180
+  'Hospital Administrator': ['Finance Degree', 'Medicine Degree', 'Technology Certificate'],             // $330
 
   // ---- Electronics Store (Sales) ----
   'Stock Clerk':        [],                                                                              // $90
   'Sales Assistant':    ['Sales Certificate'],                                                           // $130
-  'Sales Director':     ['Sales Diploma', 'Technology Diploma', 'Finance Diploma'],                      // $330
+  'Sales Director':     ['Sales Degree', 'Technology Degree', 'Finance Degree'],                      // $350
   // ---- Electronics Store (Technology) ----
-  'Data Annotator':     ['Technology Certificate'],                                                      // $160
-  'Software Developer': ['Technology Diploma', 'Engineering Certificate'],                               // $240
-  'AI Engineer':        ['Technology Degree', 'Engineering Diploma', 'Finance Certificate'],             // $320
-  'Lead Architect':     ['Technology Masters', 'Engineering Degree', 'Finance Diploma', 'Sales Certificate'],    // $420
-  'Chief Technologist': ['Technology Doctorate', 'Engineering Degree', 'Finance Diploma', 'Sales Diploma'],      // $520
+  'Data Annotator':     ['Technology Certificate'],                                                      // $150
+  'Software Developer': ['Technology Degree'],                                                          // $210
+  'AI Engineer':        ['Technology Degree', 'Finance Certificate'],                                    // $290
+  'Lead Architect':     ['Technology Masters', 'Engineering Degree', 'Finance Certificate'],             // $450
+  'Chief Technologist': ['Technology Masters', 'Engineering Honours', 'Finance Certificate'],            // $660
   // ---- Electronics Store (Service) ----
   'Delivery & Install': [],                                                                              // $95
-  'Electronics Store (Service): Repair Technician': ['Engineering Certificate'],                         // $170
-  'IT Support Lead':    ['Technology Diploma', 'Engineering Certificate'],                               // $240
+  'Electronics Store (Service): Repair Technician': ['Engineering Certificate', 'Technology Certificate'], // $170
+  'IT Support Lead':    ['Technology Degree', 'Engineering Certificate'],                               // $240
 
   // ---- Gym ----
   'Front Desk':           [],                                                                            // $85
   'Gym Instructor':       ['Medicine Certificate'],                                                      // $150
-  'Operations Assistant': ['Sales Diploma', 'Finance Certificate']                                       // $260
+  'Operations Assistant': ['Sales Degree', 'Finance Certificate']                                       // $250
 
       }
     },
@@ -772,15 +750,16 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       minutesPerUnit:36,
       roundTo:15,
       minAction:15,
+      maxWorkMinutes:720,    // most shift time you can work in one day (720 = 12 hours)
       /* Shift length and tiredness by pay. The first row whose pay the job reaches is used.
-         units = shift length (see the table above), energy = % energy a shift costs. */
+         units = shift length (see the table above), energy = % energy a shift costs.
+         Better-paid (more senior) roles work SHORTER shifts, so pay per hour always rises with pay:
+           under $130 = 5h30 ($12-23 an hour), $130-249 = 4h45 ($27-52), $250-449 = 4h15 ($59-106), $450+ = 3h30 ($129+). */
       shifts:[
-        {pay:650, units:15, energy:18},   // 9h
-        {pay:450, units:14, energy:16},   // 8h30
-        {pay:350, units:12, energy:13},   // 7h15
-        {pay:250, units:10, energy:10},   // 6h
-        {pay:130, units:8,  energy:8},    // 4h45
-        {pay:0,   units:6,  energy:6}     // 3h30
+        {pay:450, units:6, energy:6},    // 3h30
+        {pay:250, units:7, energy:8},    // 4h15
+        {pay:130, units:8, energy:8},    // 4h45
+        {pay:0,   units:9, energy:10}    // 5h30
       ]
     },
     clothes:{
@@ -880,14 +859,14 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
          junk:true = junk food (counts towards CONFIG.illness.junkMeals);
          healthy:N = a healthy meal that also adds N health.
          minutes = time in minutes (used instead of units); health = health change (junk food only, replaces junkHealth). */
-      burger: {name:'a burger',                 minutes:60, cost:8,  energy:10, happiness:1, junk:true, health:-5},
-      combo:  {name:'a burger combo meal',      minutes:90, cost:15, energy:20, happiness:1, junk:true, health:-8},
-      dinner: {name:'a sit-down dinner',        units:6, cost:40, energy:25, happiness:10, healthy:1},
-      tasting:{name:'the chef’s tasting menu',  units:7, cost:90, energy:40, happiness:22, healthy:2},
+      burger: {name:'a burger',                 minutes:60, cost:8,  energy:6,  happiness:1, junk:true, health:-5},
+      combo:  {name:'a burger combo meal',      minutes:90, cost:15, energy:12, happiness:1, junk:true, health:-8},
+      dinner: {name:'a sit-down dinner',        units:6, cost:40, energy:16, happiness:10, healthy:1},
+      tasting:{name:'the chef’s tasting menu',  units:7, cost:90, energy:26, happiness:22, healthy:2},
       junkHealth:-1,         // health lost each time you eat a junk meal
       /* Groceries from the Supermarket. health = health gained when you eat it at home. */
-      basic:  {name:'Basic groceries',          cost:30, energy:35, happiness:3, health:1},   // must be cooked
-      premium:{name:'Premium fresh groceries',  cost:55, energy:45, happiness:9, health:2},   // ready to eat
+      basic:  {name:'Basic groceries',          cost:30, energy:22, happiness:3, health:1},   // must be cooked
+      premium:{name:'Premium fresh groceries',  cost:55, energy:30, happiness:9, health:2},   // ready to eat
       buyUnits:2,            // time to buy groceries or a bundle
       bundleSize:3,          // portions in a bundle
       bundleDiscount:0.15,   // bundle saving (0.15 = 15% off)
@@ -928,6 +907,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       healthHit:-15,         // one-off hits when burnout starts
       energyHit:-10,
       happinessHit:-8,
+      workMinutes:540,       // working this many minutes or MORE in a day (540 = 9 hours)...
+      workDaysInARow:3,      // ...this many days running also causes burnout
       pay:0.8                // shifts pay this much while burnt out (0.8 = 20% less)
       /* While burnt out, health also drops each night (CONFIG.health.nightly.burnout)
          and you fall ill more easily (CONFIG.illness.burnoutX). */
@@ -981,6 +962,34 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       winChance:0.12,        // chance each ticket wins
       prizeMin:100, prizeMax:1000,
       winHappiness:15
+    },
+    loan:{
+      /* Loans at the Bank. You can hold ONE loan at a time; what you owe counts against your net worth. */
+      enabled:true,
+      step:50,                   // you borrow and repay in steps of this many dollars
+      baseLimit:1000,            // credit limit before counting what you own...
+      limitPerAsset:2,           // ...plus this many dollars of credit for every $1 you own
+      countCash:true,            // what counts as "owned" for the credit limit
+      countSavings:true,
+      countInvestments:true,
+      maxLoan:5000,              // the credit limit never goes above this
+      /* Tenures you can pick. rate = simple interest per day, on the principal you still owe. */
+      tenures:[
+        {days:3,  rate:0.04},
+        {days:5,  rate:0.05},
+        {days:10, rate:0.06}
+      ],
+      overdueRate:0.08,          // after the due date, the whole balance grows by this much a day...
+      overdueCompounds:true,     // ...true = on principal + interest (compounding), false = on principal only
+      graceDays:5,               // default (game over) if not repaid in full this many days after the due date
+      defaultIfOwedAbove:10000,  // default (game over) if you ever owe more than this
+      borrowMinutes:15           // time it takes to arrange a loan
+    },
+    bankrupt:{
+      /* Bankrupt (game over): net worth under netWorthBelow at the end of daysInARow days running. */
+      netWorthBelow:500,
+      daysInARow:3,
+      fromDay:5                  // the first day that counts (1 = from the very start; a later day gives new players a grace period)
     },
     score:{
       /* Final score = net worth + each vital x its weight + education levels x educationLevel. */
@@ -1064,6 +1073,16 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   var ORD=['zeroth','first','second','third','fourth','fifth','sixth','seventh','eighth','ninth','tenth'];
   function studyLimitTxt(){var m=CONFIG.burnout.studyMinutes;return m%60?hm(m):(m/60)+' hour'+(m===60?'':'s')}
   function dayN(n){return n+' day'+(n===1?'':'s')}
+  /* the burnout and work-limit lines on the rules screen, from CONFIG */
+  function paintBurnRules(){
+    var BR=CONFIG.bankrupt,LN=CONFIG.loan;
+    if($('cfgBankrupt'))$('cfgBankrupt').textContent='net worth under '+money(BR.netWorthBelow)+' at the end of '+numWord(BR.daysInARow)+' days in a row'+(BR.fromDay>1?' (counted from day '+BR.fromDay+')':'')+'.';
+    if($('cfgLoanDefault'))$('cfgLoanDefault').textContent=LN.enabled?'you owe more than '+money(LN.defaultIfOwedAbove)+', or have not repaid your loan in full '+dayN(LN.graceDays)+' after its due date.':'not used (loans are switched off).';
+    if($('cfgLoan'))$('cfgLoan').textContent=LN.enabled?'borrow at the Bank in '+money(LN.step)+' steps, up to your credit limit ('+money(LN.baseLimit)+' plus '+LN.limitPerAsset+' × your '+loanAssetsTxt()+', never more than '+money(LN.maxLoan)+'). Pick '+LN.tenures.map(function(t){return dayN(t.days)+' at '+rateTxt(t.rate)+' a day'}).join(', ')+' (simple interest, only for the days you keep it). Repay any time from cash. After the due date the balance grows '+rateTxt(LN.overdueRate)+' a day'+(LN.overdueCompounds?', compounding':'')+'. One loan at a time, and what you owe counts against your net worth.':'loans are switched off.';
+    var BU=CONFIG.burnout;
+    $('cfgBurn').textContent='studying more than '+studyLimitTxt()+' a day (school plus self-study), or working '+hm(BU.workMinutes)+' or more a day, '+numWord(BU.daysInARow)+' day'+(BU.daysInARow===1?'':'s')+' in a row costs '+Math.abs(BU.healthHit)+' health and cuts shift pay by '+pctTxt(1-BU.pay)+' for '+dayN(BU.lastsDays)+'.';
+    if($('cfgWork'))$('cfgWork').textContent=hm(CONFIG.time.maxWorkMinutes);
+  }
   var NUMW=['zero','one','two','three','four','five','six','seven','eight','nine','ten'];
   function numWord(n){return NUMW[n]||String(n)}
   function sg(n){return (n<0?'−':'+')+Math.abs(n)}   /* +5 / −3 with a proper minus sign */
@@ -1146,12 +1165,12 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   var JOBS={free:{n:'Freelance coding',ap:6,pay:80,en:5,computer:1}};
   var TRACKS={
     /* L = modules grouped by level. Higher levels have more modules. */
-    sal:{n:'Sales',lv:['Certificate','Diploma'],L:[['Customer Service','Product Knowledge'],['Negotiation','Retail Analytics','Sales Leadership']]},
-    fnb:{n:'Food & Beverage',lv:['Certificate','Diploma','Degree'],L:[['Food Hygiene','Cooking Basics'],['Menu Planning','Kitchen Management','Food Costing'],['Advanced Cuisine','Pastry Arts','Master Chef Practicum']]},
-    fin:{n:'Finance',lv:['Certificate','Diploma','Degree','Masters'],L:[['Accounting Basics','Business Maths'],['Corporate Finance','Markets & Investing','Financial Reporting'],['Risk Management','Portfolio Strategy','Econometrics'],['Derivatives','Asset Management','Valuation','Finance Thesis']]},
-    tech:{n:'Technology',lv:['Certificate','Diploma','Degree','Masters','Doctorate'],L:[['Programming Basics','Data Literacy'],['Web Development','Databases','Networking'],['Machine Learning','Data Engineering','Cloud Systems'],['Deep Learning','AI Systems','Cyber Security','Distributed Systems'],['Research Methods','AI Research Seminar','Publication','Tech Thesis','Thesis Defence']]},
-    med:{n:'Medicine',lv:['Certificate','Diploma','Degree','Honours','Masters','Doctorate','Specialist'],L:[['Human Biology','First Aid & Hygiene'],['Anatomy','Physiology','Pharmacology'],['Clinical Skills','Pathology','Diagnostics'],['Surgery Basics','Internal Medicine','Paediatrics','Medical Ethics'],['Clinical Residency I','Clinical Residency II','Emergency Medicine','Public Health'],['Research Methods','Clinical Trials','Publication','Medical Thesis','Thesis Defence'],['Specialist Training I','Specialist Training II','Surgical Rotation','Board Exam Prep','Board Exams']]},
-    eng:{n:'Engineering',lv:['Certificate','Diploma','Degree','Honours','Masters','Doctorate'],L:[['Mechanics Basics','Workshop Safety'],['Circuits & Electronics','CAD Design','Materials Science'],['Thermodynamics','Fluid Mechanics','Systems Engineering'],['Control Theory','Advanced Design','Project Management','Honours Project'],['Robotics','Structural Analysis','Energy Systems','Masters Project'],['Research Methods','Simulation & Modelling','Publication','Engineering Thesis','Thesis Defence']]}
+    sal:{n:'Sales',lv:['Certificate','Degree'],L:[['Customer Service','Product Knowledge'],['Negotiation','Retail Analytics','Merchandising','Sales Leadership']]},
+    fnb:{n:'Food & Beverage',lv:['Certificate','Degree'],L:[['Food Hygiene','Cooking Basics'],['Kitchen Management','Food Costing','Advanced Cuisine','Master Chef Practicum']]},
+    fin:{n:'Finance',lv:['Certificate','Degree','Masters'],L:[['Accounting Basics','Business Maths'],['Financial Reporting','Markets & Investing','Risk Management','Portfolio Strategy'],['Derivatives','Asset Management','Valuation','Finance Thesis']]},
+    tech:{n:'Technology',lv:['Certificate','Degree','Masters'],L:[['Programming Basics','Data Literacy'],['Web Development','Databases','Machine Learning','Cloud Systems'],['Deep Learning','AI Systems','Cyber Security','Distributed Systems']]},
+    med:{n:'Medicine',lv:['Certificate','Degree','Honours','Masters'],L:[['Human Biology','First Aid & Hygiene'],['Anatomy','Pharmacology','Clinical Skills','Pathology'],['Surgery Basics','Internal Medicine','Paediatrics','Medical Ethics'],['Clinical Residency I','Clinical Residency II','Emergency Medicine','Public Health']]},
+    eng:{n:'Engineering',lv:['Certificate','Degree','Honours','Masters'],L:[['Mechanics Basics','Workshop Safety'],['Circuits & Electronics','CAD Design','Thermodynamics','Systems Engineering'],['Control Theory','Advanced Design','Project Management','Honours Project'],['Robotics','Structural Analysis','Energy Systems','Masters Project']]}
   };
   /* derived module data: flat list m, cumulative level ends c */
   Object.keys(TRACKS).forEach(function(t){var T=TRACKS[t],c=0;T.m=[];T.c=[];T.L.forEach(function(l){T.m=T.m.concat(l);c+=l.length;T.c.push(c)})});
@@ -1159,10 +1178,10 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function levelOf(t,n){var c=TRACKS[t].c;for(var i=0;i<c.length;i++)if(n<c[i])return i;return c.length-1}
   function posInLevel(t,n){var i=levelOf(t,n),start=i?TRACKS[t].c[i-1]:0;return {i:i,k:n-start+1,of:TRACKS[t].L[i].length}}
   function modCost(t,n){return 50+levelOf(t,n)*35}
-  /* Qualification -> modules -> lessons. Each lesson is 1-4 hours; higher qualifications have more and longer lessons. */
-  var LES_N=[3,3,4,4,5,5,6], LES_H=[1,2,2,3,3,4,4];
-  function lesCount(t,n){return LES_N[levelOf(t,n)]}
-  function lesHours(t,n){return LES_H[levelOf(t,n)]}
+  /* Qualification -> modules (2-4) -> lessons (2-4). Each lesson is 1-4 hours; higher qualifications have more and longer lessons. */
+  var LES_N={Certificate:2,Degree:3,Honours:3,Masters:4}, LES_H={Certificate:1,Degree:2,Honours:3,Masters:3};
+  function lesCount(t,n){return LES_N[TRACKS[t].lv[levelOf(t,n)]]}
+  function lesHours(t,n){return LES_H[TRACKS[t].lv[levelOf(t,n)]]}
   /* tuition is paid once, when you enrol in a qualification; lessons are then free */
   function qualFee(t,n){var i=levelOf(t,n);return G(modCost(t,n)*TRACKS[t].L[i].length)}
   function lesDone(t){return (S.les&&S.les[t])||0}
@@ -1177,16 +1196,16 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   var CAREERS={
     factory:{n:'Factory',ranks:[
       {r:'Line Worker',pay:120,t:'',l:0,dress:'casual'},
-      {r:'Technician',pay:200,t:'eng',l:1,dress:'suit'},
-      {r:'Design Engineer',pay:260,t:'eng',l:2,dress:'suit'},
-      {r:'Senior Engineer',pay:320,t:'eng',l:3,dress:'suit'},
-      {r:'Project Lead',pay:380,t:'eng',l:4,dress:'suit'},
-      {r:'Principal Engineer',pay:450,t:'eng',l:5,dress:'suit'},
-      {r:'Chief Engineer',pay:560,t:'eng',l:6,dress:'suit'}]},
+      {r:'Technician',pay:180,t:'eng',l:1,dress:'suit'},
+      {r:'Design Engineer',pay:250,t:'eng',l:2,dress:'suit'},
+      {r:'Senior Engineer',pay:330,t:'eng',l:3,dress:'suit'},
+      {r:'Project Lead',pay:400,t:'eng',l:4,dress:'suit'},
+      {r:'Principal Engineer',pay:480,t:'eng',l:5,dress:'suit'},
+      {r:'Chief Engineer',pay:700,t:'eng',l:5,dress:'suit'}]},
     fast:{n:'Fast Food',ranks:[
       {r:'Crew Member',pay:70,t:'',l:0},
       {r:'Shift Supervisor',pay:110,t:'fnb',l:1,dress:'casual'},
-      {r:'Store Manager',pay:170,t:'fnb',l:2,dress:'casual'}]},
+      {r:'Store Manager',pay:180,t:'fnb',l:2,dress:'casual'}]},
     resto:{n:'Restaurant',ranks:[
       {r:'Dishwasher',pay:85,t:'',l:0,dress:'casual'},
       {r:'Waiter',pay:105,t:'fnb',l:1,dress:'casual'},
@@ -1199,50 +1218,46 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       {r:'Supermarket Manager',pay:230,t:'sal',l:2,dress:'suit'}]},
     mall:{n:'Clothes Mall',ranks:[
       {r:'Sales Clerk',pay:95,t:'',l:0,dress:'casual'},
-      {r:'Visual Merchandiser',pay:160,t:'sal',l:1,dress:'casual'},
-      {r:'Boutique Manager',pay:260,t:'sal',l:2,dress:'suit'}]},
+      {r:'Visual Merchandiser',pay:150,t:'sal',l:1,dress:'casual'},
+      {r:'Boutique Manager',pay:250,t:'sal',l:2,dress:'suit'}]},
     thrift:{n:'Thrift Store',ranks:[
       {r:'Shop Assistant',pay:70,t:'',l:0},
       {r:'Thrift Store Manager',pay:130,t:'sal',l:1,dress:'casual'}]},
     pawn:{n:'Pawn Shop',ranks:[
       {r:'Counter Assistant',pay:80,t:'',l:0,dress:'casual'},
       {r:'Appraiser',pay:170,t:'fin',l:1,dress:'casual'},
-      {r:'Pawnbroker',pay:250,t:'fin',l:2,dress:'suit'}]},
+      {r:'Pawnbroker',pay:290,t:'fin',l:2,dress:'suit'}]},
     bank:{n:'Bank',ranks:[
       {r:'Security Guard',pay:110,t:'',l:0,dress:'suit'},
       {r:'Teller',pay:150,t:'fin',l:1,dress:'suit'},
       {r:'Financial Analyst',pay:240,t:'fin',l:2,dress:'suit'},
       {r:'Investment Associate',pay:330,t:'fin',l:3,dress:'suit'},
-      {r:'Fund Manager',pay:440,t:'fin',l:4,dress:'suit'}]},
+      {r:'Tech Developer',pay:410,t:'tech',l:4,dress:'suit'},
+      {r:'Branch Manager',pay:450,t:'fin',l:4,dress:'suit'}]},
     hosp:{n:'Hospital',ranks:[
       {r:'Hospital Porter',pay:90,t:'',l:0,dress:'casual'},
       {r:'Nursing Aide',pay:140,t:'med',l:1,dress:'casual'},
       {r:'Nurse',pay:210,t:'med',l:2,dress:'casual'},
       {r:'Senior Nurse',pay:290,t:'med',l:3,dress:'casual'},
-      {r:'Junior Doctor',pay:380,t:'med',l:4,dress:'suit'},
-      {r:'Specialist Registrar',pay:470,t:'med',l:5,dress:'suit'},
-      {r:'Consultant',pay:580,t:'med',l:6,dress:'suit'},
-      {r:'Chief of Surgery',pay:720,t:'med',l:7,dress:'suit'}]},
-    school:{n:'School',ranks:[
-      {r:'Janitor',pay:75,t:'',l:0},
-      {r:'Lab Assistant',pay:140,t:'tech',l:1,dress:'casual'},
-      {r:'Tutor',pay:200,t:'any',l:2,dress:'casual'},
-      {r:'Lecturer',pay:320,t:'any',l:3,dress:'suit'}]},
+      {r:'Junior Doctor',pay:330,t:'med',l:4,dress:'suit'},
+      {r:'Specialist Registrar',pay:460,t:'med',l:5,dress:'suit'},
+      {r:'Consultant',pay:620,t:'med',l:5,dress:'suit'},
+      {r:'Chief of Surgery',pay:900,t:'med',l:5,dress:'suit'}]},
     elec:{n:'Electronics Store (Sales)',b:'elec',ranks:[
       {r:'Stock Clerk',pay:90,t:'',l:0,dress:'casual'},
       {r:'Sales Assistant',pay:130,t:'sal',l:1,dress:'casual'},
-      {r:'Sales Director',pay:330,t:'sal',l:2,dress:'suit'}]},
+      {r:'Sales Director',pay:350,t:'sal',l:2,dress:'suit'}]},
     elec2:{n:'Electronics Store (Technology)',b:'elec',ranks:[
-      {r:'Data Annotator',pay:160,t:'tech',l:1,dress:'casual'},
-      {r:'Software Developer',pay:240,t:'tech',l:2,dress:'casual'},
-      {r:'AI Engineer',pay:320,t:'tech',l:3,dress:'suit'},
-      {r:'Lead Architect',pay:420,t:'tech',l:4,dress:'suit'},
-      {r:'Chief Technologist',pay:520,t:'tech',l:5,dress:'suit'}]},
+      {r:'Data Annotator',pay:150,t:'tech',l:1,dress:'casual'},
+      {r:'Software Developer',pay:210,t:'tech',l:2,dress:'casual'},
+      {r:'AI Engineer',pay:290,t:'tech',l:3,dress:'suit'},
+      {r:'Lead Architect',pay:450,t:'tech',l:4,dress:'suit'},
+      {r:'Chief Technologist',pay:660,t:'tech',l:4,dress:'suit'}]},
     /* second job line at each workplace (more openings) */
     factory2:{n:'Factory (Logistics)',b:'factory',ranks:[
       {r:'Forklift Driver',pay:110,t:'',l:0,dress:'casual'},
       {r:'Quality Inspector',pay:170,t:'eng',l:1,dress:'smart'},
-      {r:'Logistics Manager',pay:290,t:'eng',l:2,dress:'smart'}]},
+      {r:'Logistics Manager',pay:250,t:'eng',l:2,dress:'smart'}]},
     fast2:{n:'Fast Food (Kitchen)',b:'fast',ranks:[
       {r:'Kitchen Hand',pay:65,t:'',l:0},
       {r:'Delivery Rider',pay:80,t:'',l:0,dress:'casual'},
@@ -1251,15 +1266,15 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     resto2:{n:'Restaurant (Front of house)',b:'resto',ranks:[
       {r:'Busser',pay:80,t:'',l:0,dress:'casual'},
       {r:'Host',pay:95,t:'',l:0,dress:'smart'},
-      {r:'Sommelier',pay:200,t:'fnb',l:2,dress:'smart'},
-      {r:'Restaurant Manager',pay:280,t:'fnb',l:3,dress:'suit'}]},
+      {r:'Sommelier',pay:210,t:'fnb',l:2,dress:'smart'},
+      {r:'Restaurant Manager',pay:310,t:'fnb',l:3,dress:'suit'}]},
     market2:{n:'Supermarket (Fresh)',b:'market',ranks:[
       {r:'Delivery Driver',pay:90,t:'',l:0,dress:'casual'},
       {r:'Butcher',pay:120,t:'fnb',l:1,dress:'casual'},
       {r:'Buyer',pay:190,t:'sal',l:2,dress:'smart'}]},
     mall2:{n:'Clothes Mall (Studio)',b:'mall',ranks:[
       {r:'Stockroom Assistant',pay:85,t:'',l:0},
-      {r:'Personal Stylist',pay:180,t:'sal',l:1,dress:'smart'},
+      {r:'Personal Stylist',pay:150,t:'sal',l:1,dress:'smart'},
       {r:'Mall Manager',pay:320,t:'sal',l:2,dress:'suit'}]},
     thrift2:{n:'Thrift Store (Workshop)',b:'thrift',ranks:[
       {r:'Sorter',pay:65,t:'',l:0},
@@ -1267,19 +1282,11 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     pawn2:{n:'Pawn Shop (Back office)',b:'pawn',ranks:[
       {r:'Security Guard',pay:95,t:'',l:0,dress:'casual'},
       {r:'Bookkeeper',pay:150,t:'fin',l:1,dress:'smart'}]},
-    bank2:{n:'Bank (Branch)',b:'bank',ranks:[
-      {r:'Customer Service Officer',pay:120,t:'',l:0,dress:'smart'},
-      {r:'Loan Officer',pay:210,t:'fin',l:2,dress:'smart'},
-      {r:'Branch Manager',pay:360,t:'fin',l:3,dress:'suit'}]},
     hosp2:{n:'Hospital (Support)',b:'hosp',ranks:[
       {r:'Cleaner',pay:75,t:'',l:0},
       {r:'Receptionist',pay:100,t:'',l:0,dress:'smart'},
-      {r:'Lab Technician',pay:190,t:'tech',l:2,dress:'casual'},
+      {r:'Lab Technician',pay:180,t:'tech',l:2,dress:'casual'},
       {r:'Hospital Administrator',pay:330,t:'fin',l:3,dress:'suit'}]},
-    school2:{n:'School (Staff)',b:'school',ranks:[
-      {r:'Library Assistant',pay:80,t:'',l:0,dress:'casual'},
-      {r:'Admin Clerk',pay:100,t:'',l:0,dress:'smart'},
-      {r:'Careers Counsellor',pay:210,t:'sal',l:2,dress:'smart'}]},
     elec3:{n:'Electronics Store (Service)',b:'elec',ranks:[
       {r:'Delivery & Install',pay:95,t:'',l:0,dress:'casual'},
       {r:'Repair Technician',pay:170,t:'eng',l:1,dress:'casual'},
@@ -1294,10 +1301,10 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   CAREERS.gym={n:'Gym',ranks:[
     {r:'Front Desk',pay:85,t:'',l:0,dress:'casual'},
     {r:'Gym Instructor',pay:150,t:'med',l:1,dress:'casual'},
-    {r:'Operations Assistant',pay:260,t:'sal',l:2,dress:'smart'}]};
+    {r:'Operations Assistant',pay:250,t:'sal',l:2,dress:'smart'}]};
   /* the better the pay, the more qualifications from different fields it asks for.
      q = list of [track, level]. Pay 250+ asks for a second field (up to a Degree); pay 450+ for a third. */
-  var COMP={factory:['eng','tech','fin'],fast:['fnb','sal','fin'],resto:['fnb','sal','fin'],market:['sal','fnb','fin'],mall:['sal','fin','fnb'],thrift:['sal','fin','eng'],pawn:['fin','tech','sal'],bank:['fin','tech','sal'],hosp:['med','tech','eng'],school:['tech','fin','sal'],elec:['sal','tech','fin'],gym:['sal','med']};
+  var COMP={factory:['eng','tech','fin'],fast:['fnb','sal','fin'],resto:['fnb','sal','fin'],market:['sal','fnb','fin'],mall:['sal','fin','fnb'],thrift:['sal','fin','eng'],pawn:['fin','tech','sal'],bank:['fin','tech','sal'],hosp:['med','tech','eng'],elec:['sal','tech','fin'],gym:['sal','med']};
   /* Build each job's qualification list (rk.q) from CONFIG.jobs.
      rk.q is a list of [track, level]; rk.kn is the knowledge needed. */
   var CFG_WARN=[];   /* problems found in CONFIG, shown in the Daily log when the game loads */
@@ -1331,13 +1338,13 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
           rk.q=q;
           rk.l=q.reduce(function(a,x){return Math.max(a,x[1])},0);   /* highest level asked, used for dress code and wording */
           if(q.length)rk.t=q[0][0];
-          rk.kn=kn!=null?kn:autoKn(rk.l);
+          rk.kn=kn!=null?kn:q.reduce(function(a,x){return Math.max(a,knFor(x[0],x[1]))},0);
           rk.picked=1;
           return;
         }
       }
       /* automatic rule */
-      rk.q=[];rk.kn=autoKn(rk.l);
+      rk.q=[];rk.kn=knFor(rk.t,rk.l);
       if(!rk.l)return;
       rk.q.push([rk.t,rk.l]);
       if(rk.pay>=J.secondQualPay){
@@ -1351,10 +1358,10 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       var cards=[];Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk){if(rk.r===k)cards.push('"'+CAREERS[c].n+': '+k+'"')})});
       CFG_WARN.push('Job settings: '+(cards.length>1?'"'+k+'" is a shared name. Use '+cards.join(' or ')+' instead.':'there is no job called "'+k+'". Check the spelling against the Employment Office.'));
     });
-    function autoKn(l){return l>=J.knowledgeFromLevel?(l-(J.knowledgeFromLevel-1))*J.knowledgePerLevel+J.knowledgeBase:0}
+    function knFor(t,l){var T=TRACKS[t];return T?(J.knowledgeByLevel[T.lv[l-1]]||0):0}
   })();
-  var GENLV=['Certificate','Diploma','Degree','Honours','Masters','Doctorate','Specialist'];
-  var BOARD=['factory','factory2','fast','fast2','resto','resto2','market','market2','mall','mall2','thrift','thrift2','pawn','pawn2','bank','bank2','hosp','hosp2','school','school2','elec','elec2','elec3','gym'];
+  var GENLV=['Certificate','Degree','Honours','Masters'];
+  var BOARD=['factory','factory2','fast','fast2','resto','resto2','market','market2','mall','mall2','thrift','thrift2','pawn','pawn2','bank','hosp','hosp2','elec','elec2','elec3','gym'];
   function lvl(t){if(t==='any'){var mx=0;Object.keys(TRACKS).forEach(function(k){mx=Math.max(mx,lvl(k))});return mx}var c=TRACKS[t].c,n=S.edu[t],k=0;c.forEach(function(e){if(n>=e)k++});return k}
   function bestEdu(){var b=null;Object.keys(S.edu).forEach(function(t){if(lvl(t)>0&&(!b||lvl(t)>lvl(b)))b=t});return b}
   function cur(c){var r=S.career[c];return r==null?null:CAREERS[c].ranks[r]}
@@ -1403,7 +1410,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     done();
   }
 
-  function blank(){return {sagaLast:'',slept:0,homeMeals:0,shut:{},cooked:[],health:CONFIG.health.start,gym:[],good:[],studyMin:0,studyStreak:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:2,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:100,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickRest:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,pantry:[],broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
+  function blank(){return {loan:null,broke:0,workMin:0,workStreak:0,sagaLast:'',slept:0,homeMeals:0,shut:{},cooked:[],health:CONFIG.health.start,gym:[],good:[],studyMin:0,studyStreak:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:4,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:100,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickRest:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,pantry:[],broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
     S=blank();T0();PREV=null;
     rollOpenings();loc='apt';view=null;last=null;
@@ -1434,8 +1441,17 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       var b=blank();
       if(!d.S.tmin){d.S.ap=MAX_AP;d.S.tmin=1}
       if(!d.S.enr){d.S.enr={};Object.keys(TRACKS).forEach(function(t){var n=(d.S.edu||{})[t]||0,ls=(d.S.les||{})[t]||0;if(n<TRACKS[t].c[TRACKS[t].c.length-1]&&(ls>0||(n>0&&TRACKS[t].c.indexOf(n)<0)))d.S.enr[t]=TRACKS[t].c.filter(function(e){return n>=e}).length})}
-      if(d.S.ver!==2&&d.S.career){var cr=d.S.career;if(cr.jobs!=null){cr.factory=cr.jobs;delete cr.jobs}['resto','bank','elec'].forEach(function(c){if(cr[c]!=null)cr[c]++});d.S.ver=2}
+      if(!(d.S.ver>=2)&&d.S.career){var cr=d.S.career;if(cr.jobs!=null){cr.factory=cr.jobs;delete cr.jobs}['resto','bank','elec'].forEach(function(c){if(cr[c]!=null)cr[c]++});d.S.ver=2}
+      if(d.S.ver===2&&d.S.career){var cr2=d.S.career;Object.keys(cr2).forEach(function(c){if(!CAREERS[c])delete cr2[c]});d.S.ver=3}
       Object.keys(b).forEach(function(k){if(d.S[k]===undefined)d.S[k]=b[k]});
+      /* Diploma merged into Degree; Doctorate and Specialist removed. Convert finished qualifications to the new pathways; part-done ones are reset. */
+      if(d.S.ver===3&&d.S.edu){
+        var OLDQ={sal:{c:[2,5],lv:['Certificate','Diploma']},fnb:{c:[2,5,8],lv:['Certificate','Diploma','Degree']},fin:{c:[2,5,8,12],lv:['Certificate','Diploma','Degree','Masters']},tech:{c:[2,5,8,12],lv:['Certificate','Diploma','Degree','Masters']},med:{c:[2,5,8,12,16],lv:['Certificate','Diploma','Degree','Honours','Masters']},eng:{c:[2,5,8,12,16],lv:['Certificate','Diploma','Degree','Honours','Masters']}};
+        Object.keys(TRACKS).forEach(function(t){var o=OLDQ[t],n=d.S.edu[t]||0,k=0;o.c.forEach(function(e){if(n>=e)k++});
+          var lab=k?o.lv[k-1]:null;if(lab==='Diploma')lab='Degree';
+          d.S.edu[t]=lab?TRACKS[t].c[TRACKS[t].lv.indexOf(lab)]:0});
+        d.S.enr={};d.S.les={};d.S.cert=null;d.S.ver=4;
+      }
       /* one job at a time: keep the best-paid job from an older save */
       (function(){var cs=Object.keys(d.S.career||{});if(cs.length>1){var best=null,bp=-1;cs.forEach(function(c){var rk=CAREERS[c]&&CAREERS[c].ranks[d.S.career[c]];if(rk&&rk.pay>bp){bp=rk.pay;best=c}});var keep={};if(best)keep[best]=d.S.career[best];d.S.career=keep}
         if(d.S.layoff>0){var c0=Object.keys(d.S.career)[0];if(c0)d.S.shut[CAREERS[c0].b||c0]=Math.min(4,d.S.layoff);d.S.layoff=0}
@@ -1475,7 +1491,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   }
   function score(){return Math.max(0,scoreParts().reduce(function(a,b){return a+b[1]},0))}
   function bestScore(){try{return +localStorage.getItem('dailyGrind.best')||0}catch(e){return 0}}
-  function worth(){return S.cash+S.bank+invTotal()+assets()-S.medDebt-(S.arrears?S.arrears.bal:0)}
+  function worth(){return S.cash+S.bank+invTotal()+assets()-S.medDebt-(S.arrears?S.arrears.bal:0)-loanOwed()}
   function checkWin(){
     if(S.over)return false;
     var t=reachedTier();
@@ -1540,7 +1556,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function spend(u,cost){return spendMin(M(u),cost)}
   function spendMin(min,cost){
     if(S.ap<min)return refuse('Not enough time left today (that takes '+hm(min)+', you have '+hm(S.ap)+'). End the day to reset.');
-    if(S.cash<cost)return refuse('You can’t afford that. You have '+money(S.cash)+'.');
+    if(cost>0&&S.cash<cost)return refuse('You can’t afford that. You have '+money(S.cash)+'.');
     S.ap-=min;S.cash-=cost;outg(cost);return true;
   }
 
@@ -1554,6 +1570,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(S.health<CONFIG.health.poorBelow){m*=CONFIG.health.poorPay;rs.push('poor health')}
     return {m:m,rs:rs};
   }
+  /* what a shift really pays now: base pay x wage/price index x knowledge bonus x any penalty, plus gloves */
+  function shiftPay(base){return Math.round(Math.round(base*payIdx()*(1+S.know/400))*prod().m)+(S.items.clothes?15:0)}
   function work(k){
     var c=CAREERS[k], rk, j;
     if(c){
@@ -1566,8 +1584,11 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(j.dress&&!hasDress(j.dress))return refuse("You don't meet the dress code! This shift needs "+DRESS[j.dress]+'. Visit the Clothes Mall.');
     if(j.computer&&!owns('computer'))return refuse('You need a working computer for freelance work.');
     if(S.energy<20)return refuse('You’re too exhausted to work. Eat or rest first.');
+    var capM=CONFIG.time.maxWorkMinutes;
+    if((S.workMin||0)+M(j.ap)>capM)return refuse('You can work at most '+hm(capM)+' a day. You have already worked '+hm(S.workMin||0)+' today and this shift takes '+hm(M(j.ap))+'. Rest and try again tomorrow.');
     if(!spend(j.ap,0))return;
-    var pr=prod(), pay=Math.round(Math.round(j.pay*payIdx()*(1+S.know/400))*pr.m)+(S.items.clothes?15:0), low=pr.m<1;
+    S.workMin=(S.workMin||0)+M(j.ap);
+    var pr=prod(), pay=shiftPay(j.pay), low=pr.m<1;
     S.cash+=pay;inc(pay);S.energy=clamp(S.energy-j.en);S.flags.worked=1;
     log('You worked a shift as '+j.n+' and earned '+money(pay)+'.'+(low?' Productivity was '+Math.round(pr.m*100)+'% ('+pr.rs.join(', ')+').':''),'good');
     done();
@@ -1923,6 +1944,61 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     log('You sold '+money(Math.round(n))+' of your '+P.n.toLowerCase()+' and received '+money(Math.round(out))+'.'+note,note?'warn':'');
     done();
   }
+  /* ---- loans ---- */
+  var loanTenure=null;
+  function loanOwed(){return S.loan?S.loan.principal+S.loan.interest:0}
+  function rateTxt(x){return (Math.round(x*1000)/10)+'%'}
+  function loanAssets(){var L=CONFIG.loan,a=0;if(L.countCash)a+=Math.max(0,S.cash);if(L.countSavings)a+=S.bank;if(L.countInvestments)a+=invTotal();return a}
+  function loanLimitRaw(){var L=CONFIG.loan;return L.baseLimit+L.limitPerAsset*loanAssets()}
+  function loanLimit(){var L=CONFIG.loan;return Math.floor(Math.min(L.maxLoan,loanLimitRaw())/L.step)*L.step}
+  function loanAssetsTxt(){var L=CONFIG.loan,a=[];if(L.countCash)a.push('cash');if(L.countSavings)a.push('savings');if(L.countInvestments)a.push('investments');return a.length>1?a.slice(0,-1).join(', ')+' and '+a[a.length-1]:(a[0]||'assets')}
+  function tenureOf(days){var T=CONFIG.loan.tenures,r=T[0];T.forEach(function(t){if(t.days===+days)r=t});return r}
+  function loanTotalIfPaidAt(amt,t){return amt+Math.round(amt*t.rate)*t.days}
+  function borrow(){
+    var L=CONFIG.loan;
+    if(!L.enabled)return refuse('The bank is not lending right now.');
+    if(S.loan)return refuse('You still owe '+money(loanOwed())+'. Pay your loan off before borrowing again.');
+    var box=$('amt_loan'),n=Math.round(Math.floor(Number(box?box.value:0))/L.step)*L.step,lim=loanLimit(),t=tenureOf(loanTenure);
+    if(!(n>=L.step))return refuse('Borrow at least '+money(L.step)+'.');
+    if(n>lim)return refuse('Your credit limit is '+money(lim)+' ('+money(L.baseLimit)+' plus '+L.limitPerAsset+' × your '+loanAssetsTxt()+'). You asked for '+money(n)+'.');
+    if(S.ap<L.borrowMinutes)return refuse('Not enough time left today (arranging a loan takes '+hm(L.borrowMinutes)+', you have '+hm(S.ap)+').');
+    S.ap-=L.borrowMinutes;S.cash+=n;
+    S.loan={borrowed:n,principal:n,interest:0,taken:S.day,tenure:t.days,rate:t.rate,due:S.day+t.days};S.flags.loan=1;
+    log('You borrowed '+money(n)+' for '+dayN(t.days)+' at '+rateTxt(t.rate)+' a day. Repay it at the Bank by the end of day '+S.loan.due+', or the balance starts growing '+rateTxt(L.overdueRate)+' a day.','warn');
+    done();
+  }
+  function repay(all){
+    var Ln=S.loan;if(!Ln)return refuse('You have no loan to repay.');
+    var owed=loanOwed(),box=$('amt_repay'),n=all?owed:Math.floor(Number(box?box.value:0));
+    if(!(n>0))return refuse('Enter an amount to repay.');
+    n=Math.min(n,owed);
+    if(n>S.cash)return refuse('You only have '+money(S.cash)+' in cash. Loans are repaid from cash only: withdraw from savings first.');
+    S.cash-=n;
+    var ip=Math.min(n,Ln.interest);Ln.interest-=ip;Ln.principal-=n-ip;
+    if(loanOwed()<=0){S.loan=null;log('You repaid '+money(n)+' and your loan is paid off.','good')}
+    else log('You repaid '+money(n)+'. You still owe '+money(loanOwed())+'.','good');
+    done();
+  }
+  /* each night: add interest, then check the default rules. Returns true if the game ended. */
+  function loanTick(){
+    var Ln=S.loan;if(!Ln)return false;
+    var L=CONFIG.loan,night=S.day-1,add;
+    if(night<Ln.due)add=Math.round(Ln.principal*Ln.rate);
+    else add=Math.round((L.overdueCompounds?Ln.principal+Ln.interest:Ln.principal)*L.overdueRate);
+    Ln.interest+=add;
+    var owed=loanOwed();
+    if(owed>L.defaultIfOwedAbove){finish('Loan default','You owe '+money(owed)+', more than the '+money(L.defaultIfOwedAbove)+' the bank will carry. It calls in the loan and seizes everything in day '+night+'.');return true}
+    if(night>=Ln.due+L.graceDays){finish('Loan default','Your loan was due at the end of day '+Ln.due+' and you still owe '+money(owed)+' '+dayN(L.graceDays)+' later. The bank calls in the debt and seizes everything in day '+night+'.');return true}
+    if(S.day<=Ln.due){
+      var left=Ln.due-S.day;
+      S.notes.push({l:left<=1?'warn':'rem',t:'🏦 Loan: you owe '+money(owed)+'. Due '+(left===0?'tonight (end of day '+Ln.due+')':'in '+dayN(left)+' (end of day '+Ln.due+')')+'. Repay at the Bank.'});
+    }else{
+      var dl=Ln.due+L.graceDays-S.day+1;
+      S.notes.push({l:'bad',t:'🏦 Loan OVERDUE: you owe '+money(owed)+' and it grows '+rateTxt(L.overdueRate)+' a day. Pay in full within '+dayN(dl)+' (by the end of day '+(Ln.due+L.graceDays)+') or the bank ends your game.'});
+      log('Your overdue loan grew by '+money(add)+' to '+money(owed)+'.','bad');
+    }
+    return false;
+  }
   function moveMoney(dir){
     var n=Math.floor(Number($('amt').value));
     if(!(n>0))return refuse('Enter an amount to move.');
@@ -2078,17 +2154,23 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(S.slept)d+=N.sleptAtHome;
     S.health=clamp(S.health+d);S.slept=0;
   }
-  /* burnout: studying more than CONFIG.burnout.studyMinutes in a day, daysInARow days running */
+  /* burnout: studying more than CONFIG.burnout.studyMinutes in a day, or working CONFIG.burnout.workMinutes or more, daysInARow days running */
   function burnTick(){
     var BU=CONFIG.burnout;
     if(S.studyMin>BU.studyMinutes)S.studyStreak++;else S.studyStreak=0;
-    S.studyMin=0;
-    if(S.burn>0){S.burn--;if(!S.burn){S.notes.push({l:'good',t:'😮‍💨 You have recovered from burnout. Pace your studying from now on.'});log('You recovered from burnout.','good')}}
-    else if(S.studyStreak>=BU.daysInARow){
-      S.burn=BU.lastsDays;S.studyStreak=0;S.health=clamp(S.health+BU.healthHit);S.energy=clamp(S.energy+BU.energyHit);S.happy=clamp(S.happy+BU.happinessHit);
-      S.notes.push({l:'bad',t:'🔥 BURNOUT! You studied over '+studyLimitTxt()+' a day for '+dayN(BU.daysInARow)+' running. Health '+sg(BU.healthHit)+', energy '+sg(BU.energyHit)+'%, happiness '+sg(BU.happinessHit)+'. For '+dayN(BU.lastsDays)+' your health keeps dropping and shifts pay '+pctTxt(1-BU.pay)+' less.'});
-      log('Burnout from too much studying: health '+sg(BU.healthHit)+', productivity down for '+dayN(BU.lastsDays)+'.','bad');
-    }else if(BU.daysInARow>1&&S.studyStreak===BU.daysInARow-1)S.notes.push({l:'warn',t:'📚 '+(S.studyStreak===1?'You studied over '+studyLimitTxt()+' yesterday.':'You have studied over '+studyLimitTxt()+' a day '+numWord(S.studyStreak)+' days in a row.')+' Take it easy today or you will burn out tomorrow.'});
+    if((S.workMin||0)>=BU.workMinutes)S.workStreak=(S.workStreak||0)+1;else S.workStreak=0;
+    S.studyMin=0;S.workMin=0;
+    var byStudy=S.studyStreak>=BU.daysInARow,byWork=S.workStreak>=BU.workDaysInARow;
+    if(S.burn>0){S.burn--;if(!S.burn){S.notes.push({l:'good',t:'😮‍💨 You have recovered from burnout. Pace your work and studying from now on.'});log('You recovered from burnout.','good')}}
+    else if(byStudy||byWork){
+      S.burn=BU.lastsDays;S.studyStreak=0;S.workStreak=0;S.health=clamp(S.health+BU.healthHit);S.energy=clamp(S.energy+BU.energyHit);S.happy=clamp(S.happy+BU.happinessHit);
+      var why=byWork&&byStudy?'worked '+hm(BU.workMinutes)+' or more and studied over '+studyLimitTxt()+' a day':byWork?'worked '+hm(BU.workMinutes)+' or more a day':'studied over '+studyLimitTxt()+' a day';
+      S.notes.push({l:'bad',t:'🔥 BURNOUT! You '+why+' for '+dayN(BU.daysInARow)+' running. Health '+sg(BU.healthHit)+', energy '+sg(BU.energyHit)+'%, happiness '+sg(BU.happinessHit)+'. For '+dayN(BU.lastsDays)+' your health keeps dropping and shifts pay '+pctTxt(1-BU.pay)+' less.'});
+      log('Burnout from '+(byWork&&byStudy?'overwork and too much studying':byWork?'working too long':'too much studying')+': health '+sg(BU.healthHit)+', productivity down for '+dayN(BU.lastsDays)+'.','bad');
+    }else{
+      if(BU.daysInARow>1&&S.studyStreak===BU.daysInARow-1)S.notes.push({l:'warn',t:'📚 '+(S.studyStreak===1?'You studied over '+studyLimitTxt()+' yesterday.':'You have studied over '+studyLimitTxt()+' a day '+numWord(S.studyStreak)+' days in a row.')+' Take it easy today or you will burn out tomorrow.'});
+      if(BU.workDaysInARow>1&&S.workStreak===BU.workDaysInARow-1)S.notes.push({l:'warn',t:'💼 '+(S.workStreak===1?'You worked '+hm(BU.workMinutes)+' or more yesterday.':'You have worked '+hm(BU.workMinutes)+' or more a day '+numWord(S.workStreak)+' days in a row.')+' Work less today or you will burn out tomorrow.'});
+    }
   }
   function stressTick(){
     var nw=worth();
@@ -2096,7 +2178,10 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     else if(nw<100){S.happy=clamp(S.happy-3);log('You are almost broke and feel ashamed around everyone (−3 happiness).','warn')}
     S.exh=S.energy<=10?S.exh+1:0;
     S.gloom=S.happy<=10?S.gloom+1:0;
-    if(nw<=-200){finish('Bankrupt','Your net worth fell to '+money(nw)+'. The creditors seized everything in day '+(S.day-1)+'.');return true}
+    var BR=CONFIG.bankrupt;
+    S.broke=(nw<BR.netWorthBelow&&S.day-1>=BR.fromDay)?(S.broke||0)+1:0;
+    if(S.broke>=BR.daysInARow){finish('Bankrupt','Your net worth stayed under '+money(BR.netWorthBelow)+' for '+numWord(BR.daysInARow)+' days in a row ('+money(nw)+' now). The creditors seized everything in day '+(S.day-1)+'.');return true}
+    if(S.broke>0)log('Warning: your net worth is under '+money(BR.netWorthBelow)+' ('+S.broke+' of '+BR.daysInARow+' days). '+(S.broke===BR.daysInARow-1?'One more day and you go bankrupt.':'Get above it soon.'),'bad');
     if(S.hungry>=FD.hungryDaysToHospital){finish('Hospitalised','You went '+numWord(FD.hungryDaysToHospital)+' day'+(FD.hungryDaysToHospital===1?'':'s')+' in a row without a proper meal and collapsed. The hospital bills finish you off.');return true}
     if(S.exh>=2){finish('Exhaustion','You ran on empty for two days in a row and your body gave out in day '+(S.day-1)+'.');return true}
     if(S.gloom>=3){finish('You gave up','Three days of rock-bottom morale. You lost all motivation and left town in day '+(S.day-1)+'.');return true}
@@ -2154,6 +2239,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(S.hosp&&S.hosp.adm&&!S.hosp.inWard)push('warn','🏥 You have been admitted: you will be warded in the Hospital all of tomorrow. Eat today, and keep cash for the '+money(S.hosp.bill)+' bill charged when you are released.');
     if(S.ill)push('bad','🤒 Sick with '+ILL[S.ill.k].n.replace(/^(a|the) /,'')+': you can’t work, and you lose '+hm(M(ILL[S.ill.k].ap))+' and some happiness a day until you recover. '+(S.hosp?'You are booked into the Hospital ward.':'Get treated at the Hospital ('+pctTxt(HP.admitChance)+' chance of a day in the ward), or rest at home to recover sooner (about '+Math.round(recoverChance(true)*100)+'% chance tonight).'));
     else if(S.energy<30)push('warn','🏥 Low energy raises your chance of falling ill, which means hospital bills.');
+    if(S.broke>0)push('warn','💸 Net worth under '+money(CONFIG.bankrupt.netWorthBelow)+' ('+S.broke+' of '+CONFIG.bankrupt.daysInARow+' days in a row): at '+CONFIG.bankrupt.daysInARow+' you go bankrupt.');
+    if(S.loan){var Lx=S.loan;if(S.day>Lx.due)push('bad','🏦 Loan overdue: you owe '+money(loanOwed())+', growing '+rateTxt(CONFIG.loan.overdueRate)+' a day. Default on day '+(Lx.due+CONFIG.loan.graceDays)+'.');else if(Lx.due-S.day<=1)push('warn','🏦 Loan due '+(Lx.due===S.day?'tonight':'tomorrow')+': you owe '+money(loanOwed())+'.')}
     if(S.burn>0)push('bad','🔥 Burnout ('+S.burn+' day'+(S.burn>1?'s':'')+' left): your health keeps dropping and shifts pay '+pctTxt(1-CONFIG.burnout.pay)+' less. Rest, and cut down on studying.');
     else if(CONFIG.burnout.daysInARow>1&&S.studyStreak>=CONFIG.burnout.daysInARow-1)push('warn','📚 '+(S.studyStreak===1?'You studied over '+studyLimitTxt()+' yesterday. Another day like that causes burnout.':'You have studied over '+studyLimitTxt()+' a day '+numWord(S.studyStreak)+' days running. A '+(ORD[CONFIG.burnout.daysInARow]||CONFIG.burnout.daysInARow+'th')+' day causes burnout.'));
     if(S.health<CONFIG.health.poorBelow)push(S.health<=CONFIG.health.poorBelow/2?'bad':'warn','💚 Poor health ('+S.health+'/100): you fall ill more easily and shifts pay '+pctTxt(1-CONFIG.health.poorPay)+' less. Eat well, rest or go to the Gym.');
@@ -2211,6 +2298,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     Object.keys(S.items).forEach(function(k){var it=ITEMS[k];if(S.items[k]&&it&&it.old&&!S.broken[k]&&Math.random()<it.old){S.broken[k]=1;S.notes.push({l:'bad',t:'🔧 Your '+it.n.toLowerCase()+' broke down overnight. Repair it at the Electronics Store (or buy a new one).'});log('Your '+it.n.toLowerCase()+' broke down.','bad')}});
     tickInv();
     healthTick(wasFed);burnTick();
+    if(!Object.keys(TRACKS).some(function(t){return inProgress(t)})){S.enrolled=false;S.sinceClass=0}   /* nothing in progress: nothing to skip */
     if(S.expelled>0){S.expelled--;if(!S.expelled)log('You may enrol at School again.','good')}
     else if(S.enrolled){
       S.sinceClass=S.studied?0:S.sinceClass+1;
@@ -2221,6 +2309,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       }else if(S.sinceClass>=3)log('School warning: you have skipped lessons for '+S.sinceClass+' days. Attend one soon or you may be expelled.','bad');
     }
     S.studied=false;
+    if(loanTick())return;
     if(stressTick())return;
     var i=Math.floor(S.bank*S.rate/100);
     if(i>0){S.bank+=i;inc(i);log('Your bank paid '+money(i)+' in interest.','good')}
@@ -2314,9 +2403,9 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       v=Math.round(rr(50,80));S.cash+=v;inc(v);
       return {icon:'🧾',tag:'Daily event',title:'Tax refund',done:true,tone:'good',text:'The tax office sends you a surprise refund.',fx:['+'+money(v)+' cash']};
     }
-    v=Math.round(rr(50,250));S.cash-=v;outg(v);
+    var ask=Math.round(rr(50,250));v=Math.min(ask,Math.max(0,S.cash));S.cash-=v;outg(v);   /* never takes more than you have */
     return {icon:'🏠',tag:'Daily event',title:'Rent increase',done:true,tone:'bad',
-      text:'Your landlord demands an extra '+money(v)+' immediately.'+(S.cash<0?' You can’t cover it, so you now owe '+money(-S.cash)+'. Get back to positive cash before rent is due or you’re out.':''),
+      text:'Your landlord demands an extra '+money(ask)+' immediately.'+(v<ask?' You only have '+money(v)+' on you, so he takes that and lets the rest go this time.':''),
       fx:['−'+money(v)+' cash']};
   }
   function repairEv(k,title,text,lo,hi){
@@ -2603,7 +2692,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function storyPick(i){
     var ev=S.pending&&S.pending.ev;if(!ev||!ev.story||ev.done)return;
     var st=STORIES[ev.story],step=st.s[ev.step],o=step.o[i];if(!o)return;
-    if(storyCost(o)>S.cash)return;
+    if(storyCost(o)>Math.max(0,S.cash))return;
     var ws=o.o.map(function(x,j){var w=x[0];if(j===0&&o.sk){var v=o.sk==='know'?S.know:o.sk==='happy'?S.happy:S.energy;w*=0.6+v/80}return w});
     var tot=ws.reduce(function(a,b){return a+b},0),roll=Math.random()*tot,k=0;
     while(k<ws.length-1&&roll>=ws[k]){roll-=ws[k];k++}
@@ -2665,10 +2754,10 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(ev.story&&ev.hist&&ev.hist.length)h=h.replace('<div class="say">','<div class="hist">'+ev.hist.map(function(x){return '<div>'+x+'</div>'}).join('')+'</div><div class="say">');
     if(ev.story&&!ev.done){
       var stp=STORIES[ev.story].s[ev.step];
-      h+='<div class="evbtns">'+stp.o.map(function(o,i){var c=storyCost(o);return btn('evopt',String(i),o.t,i>0,c>S.cash)}).join('')+'</div>'+(stp.o.some(function(o){return storyCost(o)>S.cash})?'<p class="bad">Some choices need more cash than you have.</p>':'')+'<p><small>Round '+(ev.hist.length+1)+'. The same choice can turn out differently.</small></p>';
+      h+='<div class="evbtns">'+stp.o.map(function(o,i){var c=storyCost(o);return btn('evopt',String(i),o.t,i>0,c>Math.max(0,S.cash))}).join('')+'</div>'+(stp.o.some(function(o){return storyCost(o)>Math.max(0,S.cash)})?'<p class="bad">Some choices need more cash than you have.</p>':'')+'<p><small>Round '+(ev.hist.length+1)+'. The same choice can turn out differently.</small></p>';
     }else if(!ev.done){
       var need=ev.rep?ev.rep.cost:needCash(ev.y);
-      h+='<div class="evbtns">'+btn('evyes','','Yes',0,need>S.cash)+btn('evno','','No',1)+'</div>'+(need>S.cash?'<p class="bad">You’d need '+money(need)+' in cash to say yes.</p>':'');
+      h+='<div class="evbtns">'+btn('evyes','','Yes',0,need>Math.max(0,S.cash))+btn('evno','','No',1)+'</div>'+(need>Math.max(0,S.cash)?'<p class="bad">You’d need '+money(need)+' in cash to say yes.</p>':'');
     }else{
       if(ev.outcome)h+='<div class="result '+(ev.tone||'')+'">'+ev.outcome+'</div>';
       h+='<div class="chips">'+ev.fx.map(function(f){return '<span>'+f+'</span>'}).join('')+'</div>'+btn('cont','','Start next day');
@@ -2697,27 +2786,30 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(!cs.length)return '';
     var held=cs.filter(function(c){return cur(c)});
     if(!held.length)return '';
-    return '<div class="worksec">'+held.map(jobRow).join('')+'</div>';
+    return '<div class="worksec">'+workLoadTxt()+held.map(jobRow).join('')+'</div>';
   }
+  function workLoadTxt(){var BU=CONFIG.burnout;return '<p class="bad0" style="margin:0 0 4px"><small>⏱ Worked today: <b>'+hm(S.workMin||0)+'</b> of '+hm(CONFIG.time.maxWorkMinutes)+' allowed. Working '+hm(BU.workMinutes)+' or more a day for '+dayN(BU.workDaysInARow)+' running causes burnout'+(S.workStreak?' (streak: '+S.workStreak+' of '+BU.workDaysInARow+')':'')+'.</small></p>'}
   function jobRow(k){
     if(CAREERS[k]){
       var rk=cur(k);
       if(!rk)return '<p><small>You don’t work here yet. Apply at the Employment Office.</small></p>';
       var ef=effort(rk.pay), en=ef.en, ap=ef.ap;
-      var pm=prod().m,sh=shutLeft(bOf(k));return opt(rk.r+' shift · '+money(Math.round(rk.pay*payIdx()))+(pm<1?' <span class="bad">(×'+Math.round(pm*100)+'% now)</span>':''),(sh?'<b class="bad">🔒 Closed for '+sh+' more day'+(sh>1?'s':'')+'. Your job is safe and returns when it reopens.</b> · ':'')+hm(M(ap))+', −'+en+'% energy'+(rk.dress?' · Dress code: '+DSHORT[rk.dress]+(rk.dress==='suit'?'':' or better'):''),btn('work',k,sh?'Closed':'Work a shift',0,!!sh));
+      var pm=prod().m,sh=shutLeft(bOf(k));return opt(rk.r+' shift · '+money(shiftPay(rk.pay))+(pm<1?' <span class="bad">(includes ×'+Math.round(pm*100)+'% penalty)</span>':''),(sh?'<b class="bad">🔒 Closed for '+sh+' more day'+(sh>1?'s':'')+'. Your job is safe and returns when it reopens.</b> · ':'')+hm(M(ap))+', −'+en+'% energy'+(rk.dress?' · Dress code: '+DSHORT[rk.dress]+(rk.dress==='suit'?'':' or better'):''),btn('work',k,sh?'Closed':'Work a shift',0,!!sh));
     }
     var j=JOBS[k], need=(j.computer&&!owns('computer'))?'Needs a working computer':'';
-    return opt(j.n+' shift · '+money(Math.round(j.pay*payIdx())),hm(M(j.ap))+', −'+j.en+'% energy'+(need?' · '+need:''),btn('work',k,'Work a shift',0,!!need));
+    return opt(j.n+' shift · '+money(shiftPay(j.pay)),hm(M(j.ap))+', −'+j.en+'% energy'+(need?' · '+need:''),btn('work',k,'Work a shift',0,!!need));
   }
   var allJobs=false;
   /* bank amount boxes: chosen with −/+ in steps of BK_STEP; the choice is kept while the game is open */
   var BK_STEP=50,bankSel={};
   function bankAmt(id,min){var v=bankSel[id];return v==null||v<min?min:v}
   function stepAmt(arg){
-    var a=String(arg).split('|'),id=a[0],dir=+a[1],min=+a[2],v=bankAmt(id,min);
+    var a=String(arg).split('|'),id=a[0],dir=+a[1],min=+a[2],max=a[3]!=null&&a[3]!==''?+a[3]:Infinity,v=bankAmt(id,min);
     v=dir>0?(v<min?min:Math.floor(v/BK_STEP)*BK_STEP+BK_STEP):Math.max(min,Math.ceil(v/BK_STEP)*BK_STEP-BK_STEP);
+    v=Math.min(v,Math.max(min,max));
     bankSel[id]=v;var box=$(id);if(box)box.value=v;
-    var dn=$('shop').querySelector('[data-act="step"][data-arg="'+id+'|-1|'+min+'"]');if(dn)dn.disabled=v<=min;
+    var dn=$('shop').querySelector('[data-act="step"][data-arg^="'+id+'|-1|"]');if(dn)dn.disabled=v<=min;
+    var up=$('shop').querySelector('[data-act="step"][data-arg^="'+id+'|1|"]');if(up)up.disabled=v>=max;
   }
   function board(){
     var order=[],by={};
@@ -2788,7 +2880,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     /* --- study and work from home --- */
     t+=sec('📚 Study & work from home');
     t+=opt('Self-study online'+(S.studyMin>0?' <small style="display:inline">(studied '+hm(S.studyMin)+' today)</small>':''),hm(M(SS.units))+', '+sg(SS.energy)+'% energy, '+sg(SS.health)+' health · '+(gain?'+'+gain+' knowledge':'needs a computer, tablet or phone')+'. Over '+studyLimitTxt()+' of study a day for '+dayN(CONFIG.burnout.daysInARow)+' running causes burnout.',btn('study','','Study',0,!gain));
-    if(owns('computer'))t+=jobRow('free');
+    if(owns('computer'))t+=workLoadTxt()+jobRow('free');
     /* --- rent and bills --- */
     var due=nextRentWeek();
     t+=sec('🏠 Rent & bills');
@@ -2803,7 +2895,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     jobs:function(){
       var mine=Object.keys(S.career).map(function(c){return CAREERS[c].ranks[S.career[c]].r+' at the '+NAME[CAREERS[c].b||c]});
       return (Object.keys(S.shut).length?'<p class="bad"><b>Closed right now:</b> '+Object.keys(S.shut).map(function(b){return NAME[b]+' ('+S.shut[b]+'d)'}).join(', ')+'. No interviews or shifts there until they reopen.</p>':'')+
-      '<p style="margin:4px 0"><small>Apply here, then go to the workplace to work your shifts. Every interview takes 1h, pass or fail. Openings come and go, and better-paid ranks need qualifications.'+'<br>You can only hold <b>one job at a time</b>: a successful interview replaces your current job. Better-paid roles ask for qualifications in more than one field.'+(mine.length?' <b class="mineTxt">Your job:</b> <span style="color:var(--mine);font-weight:800">'+mine.join('; ')+'</span>.':'')+'</small></p>'+board()},
+      '<p style="margin:4px 0"><small>Base pay. Your actual pay varies with knowledge and condition.<br>Apply here, then go to the workplace to work your shifts. Every interview takes 1h, pass or fail. Openings come and go, and better-paid ranks need qualifications.'+'<br>You can only hold <b>one job at a time</b>: a successful interview replaces your current job. Better-paid roles ask for qualifications in more than one field.'+(mine.length?' <b class="mineTxt">Your job:</b> <span style="color:var(--mine);font-weight:800">'+mine.join('; ')+'</span>.':'')+'</small></p>'+board()},
     factory:function(){
       return '<p>The factory floor hums day and night. '+(shutLeft('factory')>0?'<b class="bad">The factory is closed for '+shutLeft('factory')+' more day'+(shutLeft('factory')>1?'s':'')+'.</b>':'Engineers earn far more than line workers.')+'</p>'},
     school:function(){
@@ -2816,7 +2908,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
           '<div class="mods">'+Lm.map(function(m,i){var g=st+i;return '<span class="mod '+(g<n?'done':g===n?'next':'')+'">'+(g<n?'✅ ':g===n?'▶ ':'')+m+'</span>'}).join('')+'</div>'+
           '<div class="ns-f">Current module: <b>'+T.m[n]+'</b> · lessons '+'<span class="les">'+Array.apply(null,Array(nl)).map(function(_,i){return '<i class="'+(i<k?'on':i===k?'cur':'')+'"></i>'}).join('')+'</span> '+k+' of '+nl+' attended</div></div>';
       }).join('');
-      return (S.studyMin>0?'<p class="'+(S.studyMin>CONFIG.burnout.studyMinutes?'bad':'')+'"><small>📚 Studied today: <b>'+hm(S.studyMin)+'</b>. Over '+studyLimitTxt()+' a day for '+dayN(CONFIG.burnout.daysInARow)+' running causes burnout (streak: '+S.studyStreak+' of '+dayN(CONFIG.burnout.daysInARow)+').'+(S.burn>0?' <b>You are burnt out.</b>':'')+'</small></p>':'')+now+'<p><small>Each pathway is a ladder of qualifications (Certificate → Diploma → Degree → … → Doctorate). You pay tuition once when you enrol in a qualification; lessons are then free. Earn the qualification by completing all its modules, and each module by attending all its lessons (1–4 hours each). You can study several pathways at once.</small></p>'+
+      return (S.studyMin>0?'<p class="'+(S.studyMin>CONFIG.burnout.studyMinutes?'bad':'')+'"><small>📚 Studied today: <b>'+hm(S.studyMin)+'</b>. Over '+studyLimitTxt()+' a day for '+dayN(CONFIG.burnout.daysInARow)+' running causes burnout (streak: '+S.studyStreak+' of '+dayN(CONFIG.burnout.daysInARow)+').'+(S.burn>0?' <b>You are burnt out.</b>':'')+'</small></p>':'')+now+'<p><small>Each pathway is a ladder of qualifications (Certificate → Degree → … → Masters). You pay tuition once when you enrol in a qualification; lessons are then free. Earn the qualification by completing all its modules, and each module by attending all its lessons (1–4 hours each). You can study several pathways at once.</small></p>'+
       '<div class="jb2">'+Object.keys(TRACKS).sort(function(x,y){var f=function(t){return S.edu[t]>0&&!inProgress(t)&&S.edu[t]<totMods(t)?0:1};return f(x)-f(y)}).map(function(t){
         var T=TRACKS[t],n=S.edu[t],lv=lvl(t),tot=totMods(t);
         var title='<b>'+T.n+'</b>'+(lv?' · 🎓 '+T.lv[lv-1]:'');
@@ -2836,6 +2928,28 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
           '<div class="bk-v">'+val+'</div>'+
           '<div class="bk-amt">'+btn('step',inputId+'|-1|'+min,'−',1,amt<=min)+'<input id="'+inputId+'" type="text" readonly value="'+amt+'" aria-label="Amount for '+label+' in dollars">'+btn('step',inputId+'|1|'+min,'+',1)+'</div>'+
           '<div class="bk-b">'+btn(depAct,arg,'Deposit')+btn(wdAct,arg,'Withdraw',1,!canWd)+'</div></div>'};
+      var loanCard=function(){
+        var L=CONFIG.loan;if(!L.enabled)return '';
+        var raw=loanLimitRaw(),lim=loanLimit();
+        var limTxt='Credit limit <b>'+money(lim)+'</b> = '+money(L.baseLimit)+' + '+L.limitPerAsset+' × your '+loanAssetsTxt()+' ('+money(loanAssets())+')'+(raw>L.maxLoan?', capped at '+money(L.maxLoan):'')+'.';
+        if(!S.loan){
+          if(!tenureOf(loanTenure)||tenureOf(loanTenure).days!==+loanTenure)loanTenure=L.tenures[0].days;
+          var t=tenureOf(loanTenure),amt=Math.min(bankAmt('amt_loan',L.step),Math.max(L.step,lim));
+          var tens=L.tenures.map(function(x){return btn('ltenure',String(x.days),dayN(x.days)+' · '+rateTxt(x.rate)+'/day',x.days===t.days?0:1)}).join('');
+          return '<div class="bk-card wide"><div class="bk-h"><b>Loan</b><span>Borrow now, repay from cash</span></div>'+
+            '<small class="bk-d">'+limTxt+' One loan at a time. What you owe counts against your net worth.</small>'+
+            '<div class="bk-ten">'+tens+'</div>'+
+            '<div class="bk-v">Borrow '+money(amt)+' for '+dayN(t.days)+': you would owe <b>'+money(loanTotalIfPaidAt(amt,t))+'</b> if you repay on the due date (simple interest '+rateTxt(t.rate)+' a day, only for the days you keep it). Repay early and you pay less. After the due date it grows '+rateTxt(L.overdueRate)+' a day'+(L.overdueCompounds?', compounding':'')+', and '+dayN(L.graceDays)+' after the due date you default and the game ends.</div>'+
+            '<div class="bk-amt">'+btn('step','amt_loan|-1|'+L.step+'|'+lim,'−',1,amt<=L.step)+'<input id="amt_loan" type="text" readonly value="'+amt+'" aria-label="Amount to borrow in dollars">'+btn('step','amt_loan|1|'+L.step+'|'+lim,'+',1,amt>=lim)+'</div>'+
+            '<div class="bk-b">'+btn('borrow','','Borrow',0,lim<L.step)+'</div></div>';
+        }
+        var Ln=S.loan,owed=loanOwed(),over=S.day>Ln.due,left=Ln.due-S.day,minR=Math.min(BK_STEP,owed),ramt=Math.min(Math.max(bankAmt('amt_repay',minR),minR),owed);
+        var status=over?'<b class="dn">OVERDUE: growing '+rateTxt(L.overdueRate)+' a day. Pay in full by the end of day '+(Ln.due+L.graceDays)+' or the game ends.</b>':'Due at the end of day <b>'+Ln.due+'</b> ('+(left===0?'tonight':'in '+dayN(left)+'')+'), '+rateTxt(Ln.rate)+' a day.';
+        return '<div class="bk-card wide"><div class="bk-h"><b>Loan</b><span>'+(over?'Overdue':'Outstanding')+'</span></div>'+
+          '<small class="bk-d">'+limTxt+' You cannot borrow again until this is paid off.</small>'+
+          '<div class="bk-v">Borrowed <b>'+money(Ln.borrowed)+'</b> on day '+Ln.taken+' for '+dayN(Ln.tenure)+'.<br>You owe now <b class="'+(over?'dn':'')+'">'+money(owed)+'</b> (principal '+money(Ln.principal)+' + interest '+money(Ln.interest)+').<br>'+status+'</div>'+
+          '<div class="bk-amt">'+btn('step','amt_repay|-1|'+minR+'|'+owed,'−',1,ramt<=minR)+'<input id="amt_repay" type="text" readonly value="'+ramt+'" aria-label="Amount to repay in dollars">'+btn('step','amt_repay|1|'+minR+'|'+owed,'+',1,ramt>=owed)+'</div>'+
+          '<div class="bk-b">'+btn('repay','','Repay',0,S.cash<=0)+btn('repayall','','Pay in full · '+money(owed),1,S.cash<owed)+'</div></div>'};
       var rows=card('Savings account','No risk · no minimum','Safe and simple. Earns '+S.rate.toFixed(1)+'% interest each day. Withdraw any time.','Balance: <b>'+money(S.bank)+'</b>','amt',BK_STEP,'savings','dep','wd','',S.bank>0)+
         INVK.map(function(k){
         var P=INV[k],p=S.inv[k],has=p.v>0.5,e=expRet(k);
@@ -2844,7 +2958,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
         var v='Cost: <b>'+money(c0)+'</b>; Current: <b class="'+(pl>0?'up':pl<0?'dn':'')+'">'+money(v0)+'</b>'+(has&&k==='fd'&&S.day<p.lock?'<br><small>Matures on day '+p.lock+' (early withdrawal penalty)</small>':'');
         return card(P.n,P.risk+' risk · min '+money(G(P.min)),d,v,'amt_'+k,G(P.min),P.n,'invest','divest',k,has);
       }).join('');
-      return '<h3 class="bk-title">Investment Options</h3><div class="bk-grid">'+rows+'</div>'},
+      return '<div class="bk-wide">'+loanCard()+'</div><h3 class="bk-title">Savings and investments</h3><div class="bk-grid">'+rows+'</div>'},
     market:function(){
       var fr=owns('fridge');
       return '<p>🥫 <b>Basic groceries</b> need cooking at home. 🥗 <b>Premium groceries</b> are ready to eat, no cooking needed. Both go off. '+(fr?'<span class="life cold">❄️ You own a working fridge: groceries keep for the day you buy them plus '+FD.freshDaysFridge+' more day'+(FD.freshDaysFridge===1?'':'s')+'.</span>':'<span class="life warm">🌡️ No working fridge: groceries only keep for the day you buy them plus '+FD.freshDaysNoFridge+' more day'+(FD.freshDaysNoFridge===1?'':'s')+'. A refrigerator (Electronics Store) stretches that to '+FD.freshDaysFridge+' more day'+(FD.freshDaysFridge===1?'':'s')+'.</span>')+'</p>'+
@@ -3150,7 +3264,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     $('hpBar').style.background=S.happy<25?'var(--red)':'var(--teal)';
     $('homeName').textContent=NAME[S.home];$('homeName').title=NAME[S.home];
     var be=bestEdu();
-    $('edu').textContent=be?TRACKS[be].n+' '+TRACKS[be].lv[lvl(be)-1]:'High School Diploma';$('edu').title=$('edu').textContent;
+    $('edu').textContent=be?TRACKS[be].n+' '+TRACKS[be].lv[lvl(be)-1]:'High School';$('edu').title=$('edu').textContent;
     $('eduSub').textContent=Object.keys(TRACKS).filter(function(t){return S.edu[t]}).map(function(t){return TRACKS[t].n.split(' ')[0]+' '+S.edu[t]+'/'+totMods(t)+' modules'}).join(' · ')||'No courses yet';
     var rw=nextRentWeek(), left=rw-S.day;
     $('rent').textContent=S.rentPaid===rw?'Paid ✓ (day '+rw+')':money(H.rent)+(left===0?' due today':' in '+left+' day'+(left>1?'s':''));$('rent').title='Due at the end of day '+rw;
@@ -3191,8 +3305,6 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(sm2){var sg=function(v,suf){return '<b class="'+(v>0?'up':v<0?'dn':'')+'">'+(v>0?'+':v<0?'−':'±')+(suf==='$'?money(Math.abs(Math.round(v))):Math.abs(Math.round(v))+(suf||''))+'</b>'};
       sc.innerHTML='<span class="st">📊 Day '+sm2.day+' recap</span><span>Earned <b class="up">'+money(Math.round(sm2.earn))+'</b></span><span>Spent <b class="dn">'+money(Math.round(sm2.spend))+'</b></span><span>Net worth '+sg(sm2.dnw,'$')+'</span><span>⚡ '+sg(sm2.de,'%')+'</span><span>😊 '+sg(sm2.dh)+'</span><span>🧠 '+sg(sm2.dk)+'</span>'+
         (sm2.hits.length?'<div class="hits" title="'+sm2.hits.join(' | ').replace(/"/g,'&quot;')+'">What hurt: '+sm2.hits.map(function(x){return x.replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c]})}).join(' · ')+'</div>':'');}
-    $('sheetSum').textContent='Day '+S.day+' · ⏱ '+hm(S.ap)+' · '+money(S.cash)+' · ⚡'+S.energy+'% · 😊'+S.happy+(view?' · '+NAME[view]:'');
-    var col=$('center').classList.contains('collapsed');$('sheetTog').textContent=col?'▴ Show':'▾ Hide';$('sheetbar').setAttribute('aria-expanded',String(!col));
     var al=stressList(),wa=$('warn');
     wa.hidden=!al.length;
     wa.innerHTML=al.slice(0,2).map(function(x){return '<div class="al '+x.l+'">'+x.t+'</div>'}).join('')+(al.length>2?'<div class="al more" title="'+al.slice(2).map(function(x){return x.t}).join(' | ').replace(/"/g,'&quot;')+'">+'+(al.length-2)+' more warning'+(al.length>3?'s':'')+'</div>':'');
@@ -3234,7 +3346,6 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       Object.keys(keep).forEach(function(id){var i=$(id);if(i)i.value=keep[id]});
       if(S.over)$('shop').querySelectorAll('button').forEach(function(b){b.disabled=true});
     }
-    $('endWeek').disabled=S.over;
     [['donutWrap',S.ap,MAX_AP,'Minutes left today'],['enBar',S.energy,100,'Energy'],['hpBar',S.happy,100,'Happiness'],['hlBar',S.health,100,'Health'],['knBar',Math.floor(S.know),100,'Knowledge']].forEach(function(m){
       var b=m[0]==='donutWrap'?$(m[0]):$(m[0]).parentNode;b.setAttribute('role','progressbar');b.setAttribute('aria-label',m[3]);b.setAttribute('aria-valuemin','0');b.setAttribute('aria-valuemax',String(m[2]));b.setAttribute('aria-valuenow',String(m[1]));});
     keyHints();
@@ -3444,8 +3555,6 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 
   $('shop').addEventListener('click',function(e){
     if(S.over)return;
-    if(e.target.closest('[data-leave]')){view=null;render();return}
-    if(e.target.closest('[data-end]')){endWeek(false);return}
     var b=e.target.closest('[data-act]'); if(!b)return;
     var a=b.dataset.act,g=b.dataset.arg;
     if(a==='step'){stepAmt(g);return}   /* amount stepper: no scroll, no re-render */
@@ -3453,6 +3562,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     else if(a==='buy')buy(g);else if(a==='cbuy')buyWear(g);else if(a==='bargain')bargain(g);else if(a==='sell')sell(g);else if(a==='dep'||a==='wd')moveMoney(a);
     else if(a==='treat_ill')treatIll();else if(a==='checkup')checkup();else if(a==='ward')ward();else if(a==='insure')insure();else if(a==='paydebt')payDebt();else if(a==='payrent')payRent();else if(a==='nap')nap();else if(a==='arrears')payArrears();else if(a==='groc')buyGroc(g);else if(a==='bundle')buyBundle(g);else if(a==='chips')chips();else if(a==='lotto')buyTicket();else if(a==='cook')cook(g);else if(a==='eatc')eatCooked(g);else if(a==='eatp')eatPrem(g);else if(a==='binsp')binSpoiled();else if(a==='gym')gymSession(g);else if(a==='study')selfStudy();else if(a==='repair')repair(g);else if(a==='redeem')redeem(g);else if(a==='invest')invest(g);else if(a==='divest')divest(g);
     else if(a==='home')moveHome(g);else if(a==='rest')endWeek(true);
+    else if(a==='borrow')borrow();else if(a==='repay')repay(false);else if(a==='repayall')repay(true);else if(a==='ltenure'){loanTenure=+g;render()}
     toTop();
   });
   /* after any button in a panel, jump back to the top so the new message there is seen */
@@ -3468,7 +3578,6 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     else if(a==='cont'&&S.pending&&S.pending.ev.done)rollover(S.pending.rested);
     toTop();
   });
-  $('endWeek').addEventListener('click',function(){endWeek(false)});
   $('again').addEventListener('click',function(){clearSave();fresh()});
   $('keep').addEventListener('click',function(){$('over').classList.remove('show')});
   var newArm=null;
@@ -3493,7 +3602,6 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     view=null;render();
   });
   $('hudEnd').addEventListener('click',function(){if(S.over||S.pending)return;endWeek(false)});
-  $('sheetbar').addEventListener('click',function(){$('center').classList.toggle('collapsed');render()});
   $('goals').addEventListener('click',function(e){if(e.target.id==='hideGoals'){S.tut=1;render()}});
   $('diffs').addEventListener('click',function(e){
     var b=e.target.closest('[data-diff]');if(!b)return;
@@ -3515,7 +3623,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       var up=TIERS.slice(1),last=TIERS[TIERS.length-1];
       var parts=up.map(function(r){return '<b>'+r.ic+' '+r.n+'</b> at '+money(r.v)});
       $('cfgRanks').innerHTML=(parts.length>1?parts.slice(0,-1).join(', ')+' and '+parts[parts.length-1]:parts[0])+' ('+last.n+' ends the game)';
-      var BU=CONFIG.burnout;$('cfgBurn').textContent='studying more than '+studyLimitTxt()+' a day (school plus self-study) '+numWord(BU.daysInARow)+' day'+(BU.daysInARow===1?'':'s')+' in a row costs '+Math.abs(BU.healthHit)+' health and cuts shift pay by '+pctTxt(1-BU.pay)+' for '+dayN(BU.lastsDays)+'.';
+      paintBurnRules();
       var hd=CONFIG.food.hungryDaysToHospital;$('cfgHungry').textContent=numWord(hd)+' day'+(hd===1?'':'s');
       $('cfgHunger').textContent=Math.abs(CONFIG.food.hungryEnergy)+'% energy and '+Math.abs(CONFIG.food.hungryHappiness)+' happiness';
       var sd=CONFIG.clothes.startCasualDays;$('cfgClothes').textContent=sd+' day'+(sd===1?'':'s');
@@ -3896,7 +4004,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     /* tables that were copied from CONFIG when the game loaded must be rebuilt after a trait changes it */
     function rebuildDerived(){
       [['basic','basic'],['prem','premium']].forEach(function(p){var c=FD[p[1]];GROC[p[0]]={n:c.name,cost:c.cost,en:c.energy,hap:c.happiness,hp:c.health}});
-      var BU=CONFIG.burnout;$('cfgBurn').textContent='studying more than '+studyLimitTxt()+' a day (school plus self-study) '+numWord(BU.daysInARow)+' day'+(BU.daysInARow===1?'':'s')+' in a row costs '+Math.abs(BU.healthHit)+' health and cuts shift pay by '+pctTxt(1-BU.pay)+' for '+dayN(BU.lastsDays)+'.';
+      paintBurnRules();
     }
     function applyTrait(id){
       Object.keys(TBASE).forEach(function(k){var q=tPath(k);q.o[q.key]=TBASE[k]});
