@@ -20,6 +20,7 @@ Everything adjustable lives in the `CONFIG` block near the top of the script: `C
 12. [2,000-game re-run](#12-2000-game-re-run)
 13. [Job list update](#13-job-list-update)
 14. [Interface and gameplay updates](#14-interface-and-gameplay-updates)
+15. [Illness, food, shops and windows](#15-illness-food-shops-and-windows)
 
 ---
 
@@ -176,7 +177,7 @@ Not a sleep bug. Sleeping at home gives +10 health, but every night also costs -
 - At the apartment: energy 3% per hour left, capped at +35 (was +75). Health +1 per hour left, capped at +10 (was a flat +10). Happiness +1 per full hour left.
 - Anywhere else: half of the apartment figures for all three (`CONFIG.sleep.awayShare = 0.5`).
 - Settings: `CONFIG.sleep.maxEnergy`, `awayShare`; `CONFIG.health.sleep.perHour` and `max`. Removed: `CONFIG.sleep.awayMax`, `CONFIG.health.nightly.sleptAtHome`. The Night Owl trait now sets `awayShare` to 0.75.
-- The top-bar button reads **Sleep outside** whenever you are not at home; at home it stays **End day**.
+- The top-bar button reads **Sleep outside** whenever you are not at home; at home it reads **Sleep in Apartment** (see section 14).
 
 ## 11. Known open issues
 
@@ -260,3 +261,50 @@ The full job list and qualifications now follow the list supplied for this game 
 
 ### Employment Office
 - The job board picks 1–5 columns to fit the window (each at least 175px), so cards and Apply buttons no longer overflow on narrower screens.
+
+---
+
+## 15. Illness, food, shops and windows
+
+Earlier changes in this release that were not logged yet. Settings are in `CONFIG.hospital`, `CONFIG.food` and `CONFIG.gadgets`.
+
+### Illness and the Hospital
+- While sick you cannot work. Each sick day you either get treated at the Hospital or recover naturally.
+- Natural recovery: a nightly chance to recover (cold 50%, flu 30%, dengue 15%, pneumonia 10%), with a maximum length of 3, 4, 6 and 7 days. Each 2h rest at home while sick adds 15% (up to 45% a day) and sleeping at home adds 10%. The Apartment shows a "Getting better" box with tonight's chance.
+- Dengue and pneumonia no longer rush you to hospital automatically; they use the same choice, with bigger bills and slower recovery.
+- Treatment: nothing to pay at the time. 80% chance you are warded for the whole next day (`admitChance`, `wardDays`), with no time to act and meals provided; otherwise you are cured and sent home the same day.
+- The bill (treatment + $120 a ward day) is deducted from cash on the morning after release, and the start-of-day message names the amount.
+- Bills you cannot cover work like rent arrears: the shortfall + 10% interest is repaid from cash over 5 days, with a 5% late fee on a missed instalment (`billInterest`, `billPlanDays`, `billLateFee`). This replaces the old medical debt that grew 5% a day. Food-poisoning bills use the same plan.
+- Health check-up: $400 (was $60), halves the chance of falling ill for 10 days (was 4).
+- Recovery ward: $370 (was $120), +30 health (was +12), +14% energy (was +50%), +8 happiness.
+- Health insurance is now **Life insurance**: $620 (was $80), pays 80% of bills for the rest of the game (was 4 days), bought once.
+
+### Food
+- Burger: 1h (was about 2h 30m), −5 health. Burger combo: 1h 30m (was about 3h), −8 health. Per-item `minutes` and `health` in `CONFIG.food`.
+- A fridge keeps food 4 days (was 3).
+- Without a fridge, expired food stays in the kitchen marked spoiled instead of being binned. You can still cook it (it makes spoiled meals) or eat it: it counts as a meal and gives the usual energy, but costs 8 health and 3 happiness, with a 25% chance of food poisoning. "Throw out spoiled food" clears it. The old random spoil-on-cook chance is gone.
+- Supermarket lines now say what you get **when eaten**, including the health gain (buying only costs money and time).
+
+### Gym
+- Yoga $12, 1h, −5% energy, +2 health, +2 happiness. Pilates $18, 1h, −6%, +4, +2. Strength training $23, 2h, −18%, +18, +6. Spin $30, 30m, −20%, +10, +8.
+- Each class shows its description next to its name, and classes are listed cheapest first.
+
+### Thrift Store and Electronics Store
+- New prices: second-hand TV $150, used phone $340, old tablet $430, old computer $520; coffee machine $290, game console $150, tablet $640, computer $710, phone $460, refrigerator $660, microwave $320, Smart TV $450.
+- Devices add each day: phone (new or used) +4 knowledge and +2 happiness; tablet (new or old) +6 and +5; computer (new or old) +9 and +6 (`CONFIG.gadgets.daily`).
+- TVs and the console now reward rest instead of a flat daily boost: for each hour you rest or sleep at home, a TV (either kind) gives +0.2 happiness and +0.1 knowledge and the console +0.8 happiness (`CONFIG.gadgets.perRestHour`). The second-hand TV now breaks down more often.
+- Every phone, tablet and computer says it lets you trade ETFs and study online.
+
+### Bank
+- Savings and each investment are equal-size cards with matching Deposit and Withdraw buttons.
+- Each investment shows **Cost** and **Current** value.
+- Amounts are set with −/+ buttons in $50 steps instead of typing, never below the product's minimum. Asking to withdraw more than you hold withdraws everything.
+
+### Apartment
+- Actions are grouped: Your things, Getting better (when sick), Kitchen and meals, Rest and sleep, Study and work from home, Rent and bills.
+
+### Windows and screens
+- Pressing any button in a window or the end-of-day event scrolls that window back to the top, so the new message is seen.
+- Clicking or tapping the map outside an open window closes it, like Leave (buildings still walk you there). Events, the morning message and pop-ups are not affected.
+- Employment Office: "Show every role and rank" is now **Show all** / **Show fewer**.
+- School: each pathway reads "Qualification: Certificate", then "2 modules (3 × 1h lessons)". Tuition shows on the Enrol button only.
