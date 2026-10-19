@@ -264,3 +264,29 @@ STILL OPEN:
 - The economy is now much harder than the first version: 54% of games reached $2,000
   in a 316-game replay after the shift and work cap changes (was 92%). See section 12
   for the full 2,000-game re-run after the latest changes.
+
+=====================================================================
+12. 2,000-GAME RE-RUN (latest build, bankrupt rule counted from day 5)
+=====================================================================
+Same bot and same 2,000 jobs as the first stress test (smart-human play: eats daily,
+keeps clothes fresh, one focused study pathway, a different target job each time).
+Results:
+  Reached $2,000 or more (win)      992   49.6%   (Comfortable 983, Wealthy 13)
+  Time's up, under $2,000 (loss)    664   33.2%
+  Bankrupt (game over)              222   11.1%   (all on day 8 to 14, average day 8.5)
+  Hospitalised (game over)          118    5.9%   (every one was a deliberate 3-day food lapse by the bot)
+  Games that ended early            340   17.0%
+By difficulty, % reaching $2,000:   Easy 59.8%   Normal 46.7%   Hard 42.9%
+Finishing games (1,660): average score 3,500, net worth $2,242, health 100, happiness 98.
+First time the $2,000 line was crossed: day 12.6 on average (fastest: day 8).
+Compared with the first run (92% reached $2,000), the economy is now much tighter.
+Bankruptcies are players stuck near $370 of cash with net worth under $500, not
+players who skipped food.
+Best pathways (average score, reached target): Mall Manager, Supermarket Manager,
+Boutique Manager, Operations Assistant, Senior Nurse, AI Engineer, Logistics Manager.
+The 32-hour study jobs paying $230 to $290 performed best. The very top jobs
+(Chief of Surgery, Consultant, Chief Engineer and so on, 100+ study hours) were never
+reached in 15 days, so their pay does not matter inside the day limit.
+Test note: a first run of this bot forced the bankrupt start day back to day 1
+(a leftover in the test script), which gave 59% bankruptcies on day 4. That was a
+test fault, not a game bug, and is fixed in the script.
