@@ -1,6 +1,6 @@
 # Daily Grind: Changelog
 
-Changes made in this project. Files changed: `index.html` and `Daily Grind v42.html` (kept identical).
+Changes made in this project. The game is the single file `index.html`. (`Daily Grind v42.html`, an identical copy kept earlier, has been removed from the repo.)
 
 Everything adjustable lives in the `CONFIG` block near the top of the script: `CONFIG.time`, `CONFIG.food`, `CONFIG.burnout`, `CONFIG.loan`, `CONFIG.bankrupt`, `CONFIG.market`, `CONFIG.sleep`, `CONFIG.health`.
 
@@ -23,7 +23,7 @@ Everything adjustable lives in the `CONFIG` block near the top of the script: `C
 
 ## 1. Jobs: School and Bank
 
-- Removed all School jobs (School and School Staff lines). The School building stays for lessons.
+- Removed all School jobs: School (Janitor, Lab Assistant, Tutor, Lecturer) and School (Staff) (Library Assistant, Admin Clerk, Careers Counsellor). The School building stays for lessons.
 - Removed the Bank (Branch) job line (Customer Service Officer, Loan Officer).
 - Bank ladder is now: Security Guard, Teller, Financial Analyst, Investment Associate, Tech Developer (was Fund Manager), Branch Manager (now the top bank role).
 - Old saves: Fund Manager becomes Tech Developer; jobs on removed lines are dropped so the game does not crash on load.
@@ -77,7 +77,7 @@ Unrelated filler qualifications were removed and supporting ones added where the
 
 Pay was rebalanced so a job that pays more needs at least as much study.
 
-**Main changes (old to new, per shift):** Visual Merchandiser 160 to 150, Data Annotator 160 to 150, Personal Stylist 180 to 150, Technician 200 to 180, Lab Technician 190 to 180, Store Manager 170 to 180, Software Developer 240 to 210, Sommelier 200 to 210, Design Engineer 260 to 250, Boutique Manager 260 to 250, Logistics Manager 290 to 250, Operations Assistant 260 to 250, AI Engineer 320 to 290, Pawnbroker 250 to 290, Restaurant Manager 280 to 310, Junior Doctor 380 to 330, Senior Engineer 320 to 330, Sales Director 330 to 350, Tech Developer 440 to 410, Specialist Registrar 470 to 460, Project Lead 380 to 400, Branch Manager 360 to 450, Lead Architect 420 to 450, Principal Engineer 450 to 480.
+**Main changes (old to new, per shift):** Visual Merchandiser 160 to 150, Data Annotator 160 to 150, Personal Stylist 180 to 150, Technician 200 to 180, Lab Technician 190 to 180, Store Manager 170 to 180, Software Developer 240 to 210, Sommelier 200 to 210, Design Engineer 260 to 250, Boutique Manager 260 to 250, Logistics Manager 290 to 250, Operations Assistant 260 to 250, AI Engineer 320 to 290, Pawnbroker 250 to 290, Restaurant Manager 280 to 310, Junior Doctor 380 to 330, Senior Engineer 320 to 330, Sales Director 330 to 350, Tech Developer 440 to 410, Specialist Registrar 470 to 430 then 460, Project Lead 380 to 430 then 400, Branch Manager 360 to 480 to 450, Lead Architect 420 to 450, Principal Engineer 450 to 500 to 480.
 
 **Large raises for the four top roles (formerly Doctorate / Specialist):**
 
@@ -142,6 +142,7 @@ New Loan card on the Bank screen. All settings are in `CONFIG.loan`.
 - 225 text-vs-logic checks (217 matched at the time).
 - 2,000 simulated games with a bot (91% reached $2,000, 8.8% ended early). This was the first build, before sections 5 to 8.
 - 21 loan checks and 3 bankrupt-rule checks passed.
+- A QA report page was published as a private artifact. It describes the build before sections 5 to 8. A copy is in the repo at [`docs/QA_Report.html`](docs/QA_Report.html).
 
 ## 10. Economy, events and health
 
@@ -150,7 +151,7 @@ New Loan card on the Bank screen. All settings are in `CONFIG.loan`.
 - Every macro shock and storyline now moves the savings rate (before, only about half did). Wars, tightening, inflation and currency crises push it up; QE, pandemics, housing crashes, deflation and financial crises push it down.
 - Fixed deposit follows the savings rate (rate x 1.4). ETF, hedge fund and crypto follow market mood and are also pulled down when interest is above normal (and lifted when below): `CONFIG.market.rateBeta` (ETF 0.3, hedge fund 0.4, crypto 0.6 per point above normal).
 - With no news pushing interest, the rate drifts back to normal (`rateBase = 1.0`, `rateReversion` = 10% of the gap each morning). Before, a rate moved by news stayed there forever.
-- The Bank screen has a news line: which story is moving rates and markets, the market mood, and that loan rates are fixed.
+- The Bank screen has a news line: which story is moving rates and markets, the market mood, and that loan rates are fixed. The Savings and investment cards say their return moves with the economy.
 - Loan rates (`CONFIG.loan`) are never touched by news. Checked over 740 simulated days.
 
 ### End-of-day events vs your stats
@@ -160,7 +161,7 @@ New Loan card on the Bank screen. All settings are in `CONFIG.loan`.
 
 ### "I slept all day but health stayed at 80"
 
-Not a sleep bug. Sleeping at home gives +10 health, but every night also costs -1, and -10 if you did not eat that day: +10 - 1 - 10 = -1. Fed and sleeping at home you gain +9 (tested: 80 to 89); unfed, 80 to 79. The game never said so. Now going to bed unfed shows a warning, the log lists every reason for the overnight change, and the morning recap has a health figure.
+Not a sleep bug. Sleeping at home gives +10 health, but every night also costs -1, and -10 if you did not eat that day: +10 - 1 - 10 = -1. Fed and sleeping at home you gain +9 (tested: 80 to 89); unfed, 80 to 79. The game never said so. Now going to bed unfed shows a warning, the log lists every reason for the overnight change (for example "Overnight health +9 (-1 every night, +10 slept at home)"), and the morning recap has a health figure.
 
 ### Sleep rework
 
@@ -187,7 +188,7 @@ Not a sleep bug. Sleeping at home gives +10 health, but every night also costs -
 
 **Still open**
 
-- The economy is much harder than the first version. See section 12.
+- The economy is much harder than the first version: 54% of games reached $2,000 in a 316-game replay after the shift and work-cap changes (it was 92%). See section 12 for the full 2,000-game re-run after the latest changes.
 
 ## 12. 2,000-game re-run
 
@@ -195,7 +196,7 @@ Latest build, bankrupt rule counted from day 5. Same bot and same 2,000 jobs as 
 
 | Outcome | Games | Share |
 |---|---|---|
-| Reached $2,000 or more (win) | 992 | 49.6% |
+| Reached $2,000 or more (win) | 992 (Comfortable 983, Wealthy 13) | 49.6% |
 | Time's up, under $2,000 | 664 | 33.2% |
 | Bankrupt | 222 | 11.1% |
 | Hospitalised | 118 | 5.9% |
@@ -205,7 +206,7 @@ Latest build, bankrupt rule counted from day 5. Same bot and same 2,000 jobs as 
 - Finishing games (1,660): average score 3,500, net worth $2,242, health 100, happiness 98.
 - The $2,000 line was first crossed on day 12.6 on average (fastest: day 8).
 - Compared with the first run (92% reached $2,000), the economy is much tighter.
-- Bankruptcies came on days 8 to 14, from players stuck near $370 of cash with net worth under $500, not from skipped food. Every hospitalisation was a deliberate 3-day food lapse by the bot.
+- Bankruptcies came on days 8 to 14 (average day 8.5), from players stuck near $370 of cash with net worth under $500, not from skipped food. Every hospitalisation was a deliberate 3-day food lapse by the bot.
 - Best pathways: Mall Manager, Supermarket Manager, Boutique Manager, Operations Assistant, Senior Nurse, AI Engineer, Logistics Manager. The 32-hour study jobs paying $230 to $290 did best.
 - The very top jobs (Chief of Surgery, Consultant, Chief Engineer and so on, 100+ study hours) were never reached within 15 days, so their pay does not matter inside the day limit.
 - Test note: an earlier run of this bot forced the bankrupt start day back to day 1 (a leftover in the test script), giving 59% bankruptcies on day 4. That was a test fault, not a game bug, and is fixed.
