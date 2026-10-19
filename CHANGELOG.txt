@@ -246,12 +246,21 @@ SLEEP REWORK (latest):
 - Going to bed unfed warns that the -10 health penalty eats into the sleep bonus.
 
 =====================================================================
-10. KNOWN OPEN ISSUES (not fixed)
+10. KNOWN OPEN ISSUES
 =====================================================================
-- Rules text "Under 15 you may catch a cold and lose 8 time" is garbled.
-- Net-worth rule text omits rent arrears (the code subtracts them).
-- Restaurant meals add health (+1, +2) that the screen does not show; the School
-  Study button does not show its 2%-per-hour energy cost; the coffee machine is
-  also a rest comfort item, which is not mentioned.
-- The economy is now much harder: in a 316-game replay after the shift and work
-  cap changes, 54% reached $2,000 (was 92%).
+FIXED in the latest round:
+- Rules cold text: now reads "Low energy also raises your chance of falling ill
+  overnight: about 40% a night under 11 energy, 29% under 20, 16% under 30, 5% under
+  45 (before health, diet and gym visits lower it)". Built from CONFIG.illness, so
+  it follows any change you make there.
+- Net-worth rule now says "minus hospital debt, rent arrears and any loan you owe".
+- Restaurant meals now show their health (+1 dinner, +2 tasting menu) on the screen
+  and in the log.
+- School Study button now shows its energy cost ("Study . 1h . -2% energy").
+- Coffee machine description now says +6% energy each morning and that it counts as
+  a comfort item (+10% faster rest and sleep), which is why the real gain is more.
+
+STILL OPEN:
+- The economy is now much harder than the first version: 54% of games reached $2,000
+  in a 316-game replay after the shift and work cap changes (was 92%). See section 12
+  for the full 2,000-game re-run after the latest changes.

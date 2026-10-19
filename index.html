@@ -476,7 +476,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 <div class="over" id="rules" role="dialog" aria-modal="true" aria-labelledby="rlT"><div class="card rules">
   <h2 id="rlT">How the game ends</h2>
   <h3 class="win">You win</h3>
-  <ul><li><b>Net worth reaches <span id="cfgGoal2">$2,000</span></b>: cash + bank + investments + the resale value of your things, minus hospital debt<span id="rlWin">, within 30 days</span>. That makes you <b id="cfgRank1">🙂 Comfortable</b> and you have won.</li>
+  <ul><li><b>Net worth reaches <span id="cfgGoal2">$2,000</span></b>: cash + bank + investments + the resale value of your things, minus hospital debt, rent arrears and any loan you owe<span id="rlWin">, within 30 days</span>. That makes you <b id="cfgRank1">🙂 Comfortable</b> and you have won.</li>
   <li>Keep playing for a higher rank: <span id="cfgRanks"><b>💼 Wealthy</b> at $5,000 and <b>👑 Tycoon</b> at $10,000 (Tycoon ends the game)</span>. When time runs out, your best rank is your final result.</li></ul>
   <h3 class="lose">You lose</h3>
   <ul>
@@ -489,7 +489,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   </ul>
   <h3>Stress that builds before then</h3>
   <ul>
-    <li><b>Tired (energy under 30):</b> shifts pay 15% less. Under 15 you may catch a cold and lose 8 time.</li>
+    <li><b>Tired (energy under 30):</b> shifts pay 15% less. Low energy also raises your chance of falling ill overnight: <span id="cfgIllEn">about 40% a night under 11 energy</span> (before health, diet and gym visits lower it).</li>
     <li><b>Morale (happiness under 40 / 25 / 20):</b> shifts pay 10% / 25% / 40% less, and below 20 your boss may demote or fire you.</li>
     <li><b>Hunger:</b> skipping the daily meal costs <span id="cfgHunger">20% energy and 15 happiness</span>, and cuts productivity.</li>
     <li><b>Money shame:</b> net worth under $100 costs 3 happiness a day, under $0 costs 8 happiness and 5% energy.</li>
@@ -1084,6 +1084,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   /* the burnout and work-limit lines on the rules screen, from CONFIG */
   function paintBurnRules(){
     var BR=CONFIG.bankrupt,LN=CONFIG.loan;
+    if($('cfgIllEn')){var IL=CONFIG.illness,pc=function(c){return Math.round(Math.max(0,c*IL.cutForEveryone-IL.minusForEveryone)*100)+'%'};
+      $('cfgIllEn').textContent='about '+IL.byEnergy.filter(function(r){return r.energyUnder<100}).map(function(r){return pc(r.chance)+' a night under '+r.energyUnder+' energy'}).join(', ')}
     if($('cfgBankrupt'))$('cfgBankrupt').textContent='net worth under '+money(BR.netWorthBelow)+' at the end of '+numWord(BR.daysInARow)+' days in a row'+(BR.fromDay>1?' (counted from day '+BR.fromDay+')':'')+'.';
     if($('cfgLoanDefault'))$('cfgLoanDefault').textContent=LN.enabled?'you owe more than '+money(LN.defaultIfOwedAbove)+', or have not repaid your loan in full '+dayN(LN.graceDays)+' after its due date.':'not used (loans are switched off).';
     if($('cfgLoan'))$('cfgLoan').textContent=LN.enabled?'borrow at the Bank in '+money(LN.step)+' steps, up to your credit limit ('+money(LN.baseLimit)+' plus '+LN.limitPerAsset+' × your '+loanAssetsTxt()+', never more than '+money(LN.maxLoan)+'). Pick '+LN.tenures.map(function(t){return dayN(t.days)+' at '+rateTxt(t.rate)+' a day'}).join(', ')+' (simple interest, only for the days you keep it). Repay any time from cash. After the due date the balance grows '+rateTxt(LN.overdueRate)+' a day'+(LN.overdueCompounds?', compounding':'')+'. One loan at a time, and what you owe counts against your net worth.':'loans are switched off.';
@@ -1159,7 +1161,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     tablet:{n:'Tablet',ic:'📲',p:640,shop:'elec',d:dayTxt('tablet')+'. Lets you trade ETFs and study online'},
     phone:{n:'Mobile phone',ic:'📱',p:460,shop:'elec',d:dayTxt('phone')+'. Lets you trade ETFs and study online'},
     microwave:{n:'Microwave',ic:'♨️',p:320,shop:'elec',d:'Cooking at home takes 1h 45m instead of 3h'},
-    coffee:{n:'Coffee machine',ic:'☕',p:290,shop:'elec',d:'+'+CONFIG.gadgets.coffeeEnergy+'% energy each day'}
+    coffee:{n:'Coffee machine',ic:'☕',p:290,shop:'elec',d:'+'+CONFIG.gadgets.coffeeEnergy+'% energy each morning, and it counts as a comfort item (+10% faster rest and sleep)'}
   };
   /* item descriptions built from CONFIG.gadgets */
   function dayTxt(k){var g=CONFIG.gadgets.daily[k]||{};return '+'+(g.knowledge||0)+' knowledge and +'+(g.happiness||0)+' happiness a day'}
@@ -1627,7 +1629,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   /* 'a burger' -> 'Burger', 'the chef’s tasting menu' -> 'Chef’s tasting menu' */
   function cap(n){n=String(n).replace(/^(a|an|the) /i,'');return n.charAt(0).toUpperCase()+n.slice(1)}
   function treatHp(t){return t.junk?(t.hp!=null?t.hp:FD.junkHealth):0}
-  function treatTxt(t){return hm(treatMin(t))+', +'+t.en+'% energy, +'+t.hap+' happiness'+(treatHp(t)?', '+sg(treatHp(t))+' health':'')}
+  function treatShown(t){return treatHp(t)+(t.good||0)}   /* health the meal really adds: junk penalty or healthy-meal bonus */
+  function treatTxt(t){return hm(treatMin(t))+', +'+t.en+'% energy, +'+t.hap+' happiness'+(treatShown(t)?', '+sg(treatShown(t))+' health':'')}
   function treat(k){
     var t=TREATS[k];
     var cost=G(t.cost);
@@ -1635,7 +1638,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     S.energy=clamp(S.energy+t.en);S.happy=clamp(S.happy+t.hap);S.fed=true;S.flags.ate=1;
     if(t.junk){eatJunk();S.health=clamp(S.health+treatHp(t))}
     if(t.good)eatGood(t.good);
-    var fx=[];if(t.en)fx.push('+'+t.en+'% energy');if(t.hap)fx.push('+'+t.hap+' happiness');if(treatHp(t))fx.push(sg(treatHp(t))+' health');
+    var fx=[];if(t.en)fx.push('+'+t.en+'% energy');if(t.hap)fx.push('+'+t.hap+' happiness');if(treatShown(t))fx.push(sg(treatShown(t))+' health');
     log('You paid '+money(cost)+' for '+t.n+' ('+fx.join(', ')+').'+(t.junk&&junkCount()>=CONFIG.illness.junkMeals?' That is '+junkCount()+' fast-food meals in 5 days: your risk of falling ill is up.':''),t.junk&&junkCount()>=CONFIG.illness.junkMeals?'warn':'');
     done();
   }
@@ -2929,7 +2932,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       if(S.lastTrack&&started.indexOf(S.lastTrack)>0){started.splice(started.indexOf(S.lastTrack),1);started.unshift(S.lastTrack)}
       var now=started.map(function(t){
         var T=TRACKS[t],n=S.edu[t],q=posInLevel(t,n),Lm=T.L[q.i],st=q.i?T.c[q.i-1]:0,k=lesDone(t),nl=lesCount(t,n);
-        return '<div class="nowstudy"><div class="ns-top"><div class="ns-h">📘 Now studying: <b>'+T.n+' '+T.lv[q.i]+'</b></div>'+btn('class',t,'📖 Study · '+hm(lesHours(t,n)*60))+'</div>'+
+        return '<div class="nowstudy"><div class="ns-top"><div class="ns-h">📘 Now studying: <b>'+T.n+' '+T.lv[q.i]+'</b></div>'+btn('class',t,'📖 Study · '+hm(lesHours(t,n)*60)+' · −'+2*lesHours(t,n)+'% energy')+'</div>'+
           '<div class="ns-l">Modules for this qualification ('+(n-st)+' of '+q.of+' done):</div>'+
           '<div class="mods">'+Lm.map(function(m,i){var g=st+i;return '<span class="mod '+(g<n?'done':g===n?'next':'')+'">'+(g<n?'✅ ':g===n?'▶ ':'')+m+'</span>'}).join('')+'</div>'+
           '<div class="ns-f">Current module: <b>'+T.m[n]+'</b> · lessons '+'<span class="les">'+Array.apply(null,Array(nl)).map(function(_,i){return '<i class="'+(i<k?'on':i===k?'cur':'')+'"></i>'}).join('')+'</span> '+k+' of '+nl+' attended</div></div>';
