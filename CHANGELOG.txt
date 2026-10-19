@@ -1,9 +1,10 @@
 DAILY GRIND: CHANGELOG
 Changes made in this chat session. Files changed: index.html and "Daily Grind v42.html"
-(kept identical). Nothing has been committed yet.
+(kept identical). All changes are committed to GitHub (sections 1 to 12).
 
 Everything adjustable is in the CONFIG block near the top of the script
-(CONFIG.time, CONFIG.food, CONFIG.burnout, CONFIG.loan, CONFIG.bankrupt).
+(CONFIG.time, CONFIG.food, CONFIG.burnout, CONFIG.loan, CONFIG.bankrupt, CONFIG.market,
+CONFIG.sleep, CONFIG.health).
 
 
 =====================================================================
