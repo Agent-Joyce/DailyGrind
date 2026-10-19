@@ -187,7 +187,7 @@ Not a sleep bug. Sleeping at home gives +10 health, but every night also costs -
 - Rules cold text now reads "Low energy also raises your chance of falling ill overnight: about 40% a night under 11 energy, 29% under 20, 16% under 30, 5% under 45". Built from `CONFIG.illness`.
 - Net-worth rule now says "minus hospital debt, rent arrears and any loan you owe".
 - Restaurant meals show their health (+1 dinner, +2 tasting menu) on screen and in the log.
-- School Study button shows its energy cost.
+- School Study button shows its energy cost (since replaced by the layout in section 13).
 - Coffee machine description says +6% energy each morning and that it counts as a comfort item (+10% faster rest and sleep).
 
 **Still open**
@@ -334,3 +334,10 @@ Earlier changes in this release that were not logged yet. Settings are in `CONFI
 
 ### Checked
 - An automatic scan of every screen (welcome, top bar, overview, all 15 building windows, Employment Office "Show all", rules, end-of-day event, morning message) at 375, 684, 828, 1024 and 1440px found no overlapping elements, cut-off text or sideways scrolling.
+
+## 13. UI changes
+
+- **Loans: no same-day repayment.** On the day you take a loan, the Repay and Pay in full buttons are disabled and the card says "You can start repaying tomorrow". The repay action also refuses if it is triggered anyway. The Rules text now says you can repay from cash any day after the one you borrowed.
+- **Supermarket buttons.** The two white buttons (Bag of chips "Buy" and Lottery "Buy ticket") are now the same green as the other Buy buttons.
+- **Happiness icon.** Now a pink smiley face (was a yellow sun), everywhere the icon appears. In the top bar it moved to sit right after the cash icon, so the order is net worth, cash, happiness, energy, health, knowledge.
+- **School "Now studying".** The button now just says "Study". The lesson length and energy cost moved to a line in the same section, shown with the time and energy icons: "1h" and "−2% energy per lesson".
