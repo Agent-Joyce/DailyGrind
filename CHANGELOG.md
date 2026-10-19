@@ -338,6 +338,6 @@ Earlier changes in this release that were not logged yet. Settings are in `CONFI
 ## 13. UI changes
 
 - **Loans: no same-day repayment.** On the day you take a loan, the Repay and Pay in full buttons are disabled and the card says "You can start repaying tomorrow". The repay action also refuses if it is triggered anyway. The Rules text now says you can repay from cash any day after the one you borrowed.
-- **Supermarket buttons.** The two white buttons (Bag of chips "Buy" and Lottery "Buy ticket") are now the same green as the other Buy buttons.
+- **Supermarket and fast-food buttons.** The white buttons (Bag of chips "Buy", Lottery "Buy ticket" and the fast-food burger "Buy") are now the same green as the other Buy buttons.
 - **Happiness icon.** Now a pink smiley face (was a yellow sun), everywhere the icon appears. In the top bar it moved to sit right after the cash icon, so the order is net worth, cash, happiness, energy, health, knowledge.
 - **School "Now studying".** The button now just says "Study". The lesson length and energy cost moved to a line in the same section, shown with the time and energy icons: "1h" and "−2% energy per lesson".
