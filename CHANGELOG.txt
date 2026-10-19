@@ -194,7 +194,7 @@ ended about 60% of simulated games on day 4, which is why a start day was added.
 
 
 =====================================================================
-11. ECONOMY, EVENTS AND HEALTH (latest round)
+10. ECONOMY, EVENTS AND HEALTH
 =====================================================================
 Savings and investments now follow the economy (loan stays fixed):
 - Every macro shock and storyline now moves the savings rate (before, only about
@@ -247,7 +247,7 @@ SLEEP REWORK (latest):
 - Going to bed unfed warns that the -10 health penalty eats into the sleep bonus.
 
 =====================================================================
-10. KNOWN OPEN ISSUES
+11. KNOWN OPEN ISSUES
 =====================================================================
 FIXED in the latest round:
 - Rules cold text: now reads "Low energy also raises your chance of falling ill
