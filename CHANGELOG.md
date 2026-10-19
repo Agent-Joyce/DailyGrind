@@ -21,6 +21,7 @@ Everything adjustable lives in the `CONFIG` block near the top of the script: `C
 13. [Job list update](#13-job-list-update)
 14. [Interface and gameplay updates](#14-interface-and-gameplay-updates)
 15. [Illness, food, shops and windows](#15-illness-food-shops-and-windows)
+16. [Layout and window tidy-up](#16-layout-and-window-tidy-up)
 
 ---
 
@@ -308,3 +309,28 @@ Earlier changes in this release that were not logged yet. Settings are in `CONFI
 - Clicking or tapping the map outside an open window closes it, like Leave (buildings still walk you there). Events, the morning message and pop-ups are not affected.
 - Employment Office: "Show every role and rank" is now **Show all** / **Show fewer**.
 - School: each pathway reads "Qualification: Certificate", then "2 modules (3 × 1h lessons)". Tuition shows on the Enrol button only.
+
+---
+
+## 16. Layout and window tidy-up
+
+### Overview window
+- Space added below Getting started (and below warnings and the day recap).
+- The Vitals, Life & learning and Rent & clothing cards rearrange when they are narrow, so labels never run into numbers: vitals show the label on top with the bar and number below; life and rent values sit under their labels and wrap instead of being cut off.
+- Vitals numbers share one right edge and the bars are the same length; the Vitals card gets a little more width than the other two.
+- Clicking the map outside the overview hides it so the map is clear. A **📋 Overview** button in the top bar brings it back, and it reopens by itself each new day. Clicking a building opens it directly either way. (Not on phones, where the overview sits below the map.)
+- **New game** button removed (↺ Reset still starts a fresh game). The Daily log has an **Expand log** / **Collapse log** button and can be dragged taller by its corner.
+
+### Building windows
+- The strip under each window title (day, time left, cash, energy, happiness, health) is removed; the top bar already shows it.
+- Number-key shortcut badges are switched off in windows with more than 9 buttons (for example the Employment Office), where the numbers jumped around. Shorter windows keep them.
+
+### School
+- "Now studying" reads **Modules: 1 of 2** (the module you are on).
+- Each module pill is a progress bar: the module in progress fills **green** as you attend its lessons and shows a lesson count (e.g. 1/2), finished modules are **blue** with a tick, later ones stay white. The "Current module … lessons attended" line is removed.
+
+### Action preview
+- "Don't ask me again" is ticked by default, so pressing Do it on the first preview turns previews off (turn them back on with 🔎 Preview).
+
+### Checked
+- An automatic scan of every screen (welcome, top bar, overview, all 15 building windows, Employment Office "Show all", rules, end-of-day event, morning message) at 375, 684, 828, 1024 and 1440px found no overlapping elements, cut-off text or sideways scrolling.

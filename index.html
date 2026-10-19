@@ -368,6 +368,25 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 .trait .tc-m{color:var(--red);font-weight:600}
 @media (max-width:640px){.traits{grid-template-columns:1fr}}
 @media (min-width:641px){#diffsWrap{position:sticky;bottom:-26px;margin:0 -26px -26px;padding:0 26px 18px;background:var(--surface);border-top:1px solid var(--line)}}
+/* overview: space under Getting started; the three cards adapt when narrow so nothing overlaps */
+.goals{margin-bottom:10px}.alerts:not([hidden]),.sumcard:not([hidden]){margin-bottom:8px}
+.three .grp{container-type:inline-size;min-width:0;overflow:hidden}
+.mrow b,.kv b,.wr em,.parts b{font-variant-numeric:tabular-nums}
+@container (max-width:190px){
+  .mrow{grid-template-columns:minmax(0,1fr) 52px;row-gap:2px;column-gap:6px;margin:4px 0 7px}.mrow>span{grid-column:1/-1;overflow:hidden;text-overflow:ellipsis}.mrow .bar{grid-column:1}.g-vit .mrow b{grid-column:2;min-width:0;text-align:right;line-height:1;white-space:nowrap}
+  .three .kv{flex-direction:column;align-items:flex-start;gap:0;padding:2px 0 3px}.three .kv b{text-align:left;white-space:normal;max-width:100%}
+  .three .wr{display:grid;grid-template-columns:minmax(0,1fr);gap:1px 0;margin-top:4px}.three .wr>*{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.three .wr em{margin-left:0;text-align:left;min-width:0}.three .wr .bar{order:3}
+}
+@media (min-width:641px){.three{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr) minmax(0,1fr)}}
+.g-vit .mrow b .tr{font-size:.7em}
+@container (min-width:191px){.g-vit .mrow{grid-template-columns:5.8em minmax(0,1fr) auto}}
+#log{resize:vertical}#log.big{height:min(60vh,420px)}
+/* School "Now studying": each module pill fills like a progress bar (--p) */
+.nowstudy .ns-l{font-size:.8rem;margin-top:6px}.nowstudy .mods{gap:6px;margin-top:6px}
+.nowstudy .mod{font-size:.8rem;padding:4px 12px;border-width:2px;background:var(--surface)}
+.nowstudy .mod.next{border-color:#2f8f5b;background:linear-gradient(90deg,color-mix(in srgb,#2f8f5b 34%,var(--surface)) var(--p,0%),var(--surface) var(--p,0%))}
+.nowstudy .mod.done{border-color:#4b78c2;background:color-mix(in srgb,#4b78c2 26%,var(--surface));color:#2a4f8f}
+.nowstudy .mod small{font-weight:700;color:var(--muted);margin-left:4px}
 </style>
 </head>
 <body>
@@ -401,7 +420,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     <div class="tcell" id="hInvC" hidden><span class="l">Invest</span><b id="hInv">$0</b><small id="hInvPL"></small></div>
     <div class="tcell sc" data-tip="score" tabindex="0"><span class="l"><span class="sclbl">Score </span><i class="hinfo" aria-label="How the score is worked out">i</i></span><b id="hScore">0</b><small id="hBest"></small></div>
   </div>
-  <div class="actbar" id="actbar"><button class="btn alt" id="hudLeave">← Leave</button><button class="btn" id="hudEnd">Sleep in Apartment ☾</button></div>
+  <div class="actbar" id="actbar"><button class="btn alt" id="hudLeave">← Leave</button><button class="btn alt" id="hudOv" hidden title="Show the overview window">📋 Overview</button><button class="btn" id="hudEnd">Sleep in Apartment ☾</button></div>
   <div class="daybar" id="daybar" aria-hidden="true"></div>
 </header>
 <main class="board" id="board">
@@ -455,13 +474,12 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
         <div class="invline" id="invline" hidden></div>
         <div class="invline" id="debtline" hidden></div>
       </div>
-      <div class="loghead"><h2>Daily log</h2><span style="display:flex;gap:8px"><button class="btn alt" id="newBtn" title="Start over">New game</button><button class="btn alt" id="rulesBtn" title="How the game ends">How it ends</button></span></div>
+      <div class="loghead"><h2>Daily log</h2><span style="display:flex;gap:8px"><button class="btn alt" id="logBig" aria-expanded="false" aria-controls="log" title="Show more of the log">Expand log</button><button class="btn alt" id="rulesBtn" title="How the game ends">How it ends</button></span></div>
       <div id="log" role="log"></div>
     </div>
 
     <div id="shop" hidden>
       <div class="shophead"><h2 id="shopTitle" style="margin:0"></h2></div>
-      <div class="strip" id="strip"></div>
       <div class="say" id="say"></div>
       <div class="result" id="result"></div>
       <div id="shopBody"></div>
@@ -553,7 +571,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 <div class="over" id="pvpop" role="dialog" aria-modal="true" aria-labelledby="pvT"><div class="card pv">
   <h2 id="pvT">Do this?</h2><p class="pv-sub" id="pvSub"></p>
   <div id="pvRows"></div><div id="pvWarn"></div><p class="pv-note" id="pvNote"></p>
-  <label class="pv-skip"><input type="checkbox" id="pvSkip"> Don’t ask me again (turn it back on with the 🔎 button on the Overview)</label>
+  <label class="pv-skip"><input type="checkbox" id="pvSkip" checked> Don’t ask me again (turn it back on with the 🔎 button on the Overview)</label>
   <div class="pv-btns"><button class="btn" id="pvGo">Do it</button><button class="btn alt" id="pvNo">Not now</button></div>
 </div></div>
 <div id="toasts" aria-live="polite"></div>
@@ -2349,6 +2367,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     return {hap:Math.round(hap),know:know,hrs:hrs};
   }
   function rollover(rested){
+    ovHidden=false;   /* a new day shows the overview again */
     if(S.over)return;
     S.pending=null;
     var h=HOUSE[S.home];
@@ -2898,6 +2917,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     return opt(j.n+' shift · '+money(shiftPay(j.pay)),hm(M(j.ap))+', −'+j.en+'% energy'+(need?' · '+need:''),btn('work',k,'Work a shift',0,!!need));
   }
   var allJobs=false;
+  var ovHidden=false;   /* true after clicking the map outside the overview window */
   /* bank amount boxes: chosen with −/+ in steps of BK_STEP; the choice is kept while the game is open */
   var BK_STEP=50,bankSel={};
   function bankAmt(id,min){var v=bankSel[id];return v==null||v<min?min:v}
@@ -3002,9 +3022,10 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       var now=started.map(function(t){
         var T=TRACKS[t],n=S.edu[t],q=posInLevel(t,n),Lm=T.L[q.i],st=q.i?T.c[q.i-1]:0,k=lesDone(t),nl=lesCount(t,n);
         return '<div class="nowstudy"><div class="ns-top"><div class="ns-h">📘 Now studying: <b>'+T.n+' '+T.lv[q.i]+'</b></div>'+btn('class',t,'📖 Study · '+hm(lesHours(t,n)*60)+' · −'+2*lesHours(t,n)+'% energy')+'</div>'+
-          '<div class="ns-l">Modules for this qualification ('+(n-st)+' of '+q.of+' done):</div>'+
-          '<div class="mods">'+Lm.map(function(m,i){var g=st+i;return '<span class="mod '+(g<n?'done':g===n?'next':'')+'">'+(g<n?'✅ ':g===n?'▶ ':'')+m+'</span>'}).join('')+'</div>'+
-          '<div class="ns-f">Current module: <b>'+T.m[n]+'</b> · lessons '+'<span class="les">'+Array.apply(null,Array(nl)).map(function(_,i){return '<i class="'+(i<k?'on':i===k?'cur':'')+'"></i>'}).join('')+'</span> '+k+' of '+nl+' attended</div></div>';
+          '<div class="ns-l">Modules: <b>'+(n-st+1)+' of '+q.of+'</b></div>'+
+          /* each module pill is a progress bar: full when done, filled by lessons attended for the current one */
+          '<div class="mods">'+Lm.map(function(m,i){var g=st+i,ln=lesCount(t,g),pc=g<n?100:g===n?Math.round(k/ln*100):0;
+            return '<span class="mod '+(g<n?'done':g===n?'next':'')+'" style="--p:'+pc+'%" title="'+(g<n?'Done':g===n?k+' of '+ln+' lessons attended':'Not started')+'">'+(g<n?'✅ ':'')+m+(g===n?' <small>'+k+'/'+ln+'</small>':'')+'</span>'}).join('')+'</div></div>';
       }).join('');
       return (S.studyMin>0?'<p class="'+(S.studyMin>CONFIG.burnout.studyMinutes?'bad':'')+'"><small>📚 Studied today: <b>'+hm(S.studyMin)+'</b>. Over '+studyLimitTxt()+' a day for '+dayN(CONFIG.burnout.daysInARow)+' running causes burnout (streak: '+S.studyStreak+' of '+dayN(CONFIG.burnout.daysInARow)+').'+(S.burn>0?' <b>You are burnt out.</b>':'')+'</small></p>':'')+now+'<p><small>Each pathway is a ladder of qualifications (Certificate → Degree → … → Masters). You pay tuition once when you enrol in a qualification; lessons are then free. Earn the qualification by completing all its modules, and each module by attending all its lessons (1–4 hours each). You can study several pathways at once.</small></p>'+
       '<div class="jb2">'+Object.keys(TRACKS).sort(function(x,y){var f=function(t){return S.edu[t]>0&&!inProgress(t)&&S.edu[t]<totMods(t)?0:1};return f(x)-f(y)}).map(function(t){
@@ -3431,6 +3452,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     $('center').classList.toggle('wide',(view==='jobs'||view==='school'||view==='bank')&&!pend);
     var pk=view+'|'+pend;if(window.__pk!==pk){window.__pk=pk;$('center').scrollTop=0}
     $('overview').hidden=!!view||pend;
+    /* overview hidden by a click on the map: hide the whole window until the Overview button (or a new day) */
+    var ovOff=!view&&!pend&&ovHidden;$('center').hidden=ovOff;$('hudOv').hidden=!ovOff;
     $('shop').hidden=!view||pend;
     /* overview window (no building open): only as tall as the vitals row, centred on the map, scroll for net worth and the log */
     (function(){var c=$('center'),ov=!view&&!pend&&window.innerWidth>640,t3=c.querySelector('.three');
@@ -3440,7 +3463,6 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(pend){renderEvent();setTimeout(function(){var f=$('event').querySelector('button:not(:disabled)');if(f&&was)f.focus()},0);if(was){var c=$('event');c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop')}}
     if(view&&!pend){
       $('shopTitle').textContent=ICON[view]+' '+NAME[view];
-      $('strip').innerHTML='<span>Day '+S.day+'</span><span>'+ic('time')+hm(S.ap)+' left</span><span>'+ic('cash')+money(S.cash)+'</span><span>'+ic('energy')+S.energy+'%</span><span>'+ic('happy')+S.happy+'</span><span>'+ic('health')+S.health+'</span>';
       if(!sayLine||sayLine.k!==view)sayLine={k:view,t:greetLine(view)};
       $('say').innerHTML='<b>'+GREET[view][0]+'</b>“'+sayLine.t+'”';
       var r=$('result');
@@ -3465,7 +3487,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   }
   function keyHints(){
     document.querySelectorAll('[data-k]').forEach(function(b){b.removeAttribute('data-k')});
-    actionButtons().slice(0,9).forEach(function(b,i){b.setAttribute('data-k',String(i+1))});
+    var bs=actionButtons();if(bs.length>9)return;   /* long lists (Employment Office, Bank...): no number shortcuts, they would jump around */
+    bs.forEach(function(b,i){b.setAttribute('data-k',String(i+1))});
   }
   document.addEventListener('keydown',function(e){
     if(e.ctrlKey||e.metaKey||e.altKey)return;
@@ -3479,7 +3502,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       return;
     }
     if(typing)return;
-    if(/^[1-9]$/.test(k)){var bs=actionButtons(),b=bs[+k-1];if(b){e.preventDefault();b.click()}return}
+    if(/^[1-9]$/.test(k)){var bs=actionButtons(),b=bs.length>9?null:bs[+k-1];if(b){e.preventDefault();b.click()}return}
     if(document.querySelector('.over.show'))return;
     if((k==='e'||k==='E')&&!S.pending&&!S.over){e.preventDefault();endWeek(false);return}
     if(k==='h'||k==='H'){$('rulesBtn').click();return}
@@ -3685,11 +3708,11 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   });
   $('again').addEventListener('click',function(){clearSave();fresh()});
   $('keep').addEventListener('click',function(){$('over').classList.remove('show')});
-  var newArm=null;
-  $('newBtn').addEventListener('click',function(){
-    var b=$('newBtn');
-    if(newArm){clearTimeout(newArm);newArm=null;b.textContent='New game';clearSave();fresh();return}
-    b.textContent='Click again to restart';newArm=setTimeout(function(){newArm=null;b.textContent='New game'},3000);
+  /* Daily log: Expand shows many more lines (the log can also be dragged taller by its corner) */
+  $('logBig').addEventListener('click',function(){
+    var lg=$('log'),big=!lg.classList.contains('big');lg.classList.toggle('big',big);lg.style.height='';
+    this.textContent=big?'Collapse log':'Expand log';this.setAttribute('aria-expanded',String(big));
+    if(big)setTimeout(function(){lg.scrollIntoView({block:'nearest',behavior:'smooth'})},30);
   });
   function muteUI(){$('muteBtn').textContent=MUTE?'🔇':'🔊';$('muteBtn').setAttribute('aria-pressed',String(MUTE));$('muteBtn').setAttribute('aria-label',MUTE?'Sound off. Turn sound on':'Sound on. Turn sound off')}
   muteUI();
@@ -3701,11 +3724,14 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   $('mnGo').addEventListener('click',function(){S.morning=null;render()});
   $('hudLeave').addEventListener('click',function(){if(S.over||S.pending)return;view=null;render()});
   /* clicking or tapping the map outside the open window works like Leave (buildings still walk you there) */
+  /* ...and with no building open, it hides the overview window so the map is clear (the Overview button brings it back) */
   document.addEventListener('click',function(e){
-    if(!view||S.over||S.pending||document.querySelector('.over.show'))return;
-    if(!e.target.closest||!document.contains(e.target)||e.target.closest('#center,.tile,.over,button,a,input,select,textarea,label'))return;
-    view=null;render();
+    if(S.over||S.pending||document.querySelector('.over.show'))return;
+    if(!e.target.closest||!document.contains(e.target)||e.target.closest('#center,.tile,.over,#hud,button,a,input,select,textarea,label'))return;
+    if(view){view=null;render()}
+    else if(!ovHidden&&window.innerWidth>640){ovHidden=true;render()}
   });
+  $('hudOv').addEventListener('click',function(){ovHidden=false;view=null;render()});
   $('hudEnd').addEventListener('click',function(){if(S.over||S.pending)return;endWeek(false)});
   $('goals').addEventListener('click',function(e){if(e.target.id==='hideGoals'){S.tut=1;render()}});
   $('diffs').addEventListener('click',function(e){
@@ -3960,7 +3986,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       if(r.cert)warn.push('🎓 This finishes a qualification.');
       $('pvWarn').innerHTML=warn.map(function(w){return '<div class="pv-warn">'+esc(w)+'</div>'}).join('');
       $('pvNote').textContent=r.notes.length?'Likely result: '+r.notes.slice(0,2).join(' '):'';
-      $('pvSkip').checked=false;
+      $('pvSkip').checked=true;   /* "Don't ask me again" is ticked by default */
       pvPending={a:a,arg:arg};$('toasts').innerHTML='';
       $('pvpop').classList.add('show');keyHints();
       setTimeout(function(){$('pvGo').focus()},0);
