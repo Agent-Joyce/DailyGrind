@@ -1,9 +1,10 @@
 DAILY GRIND: CHANGELOG
 Changes made in this chat session. Files changed: index.html and "Daily Grind v42.html"
-(kept identical). Nothing has been committed yet.
+(kept identical). All changes are committed to GitHub (sections 1 to 12).
 
 Everything adjustable is in the CONFIG block near the top of the script
-(CONFIG.time, CONFIG.food, CONFIG.burnout, CONFIG.loan, CONFIG.bankrupt).
+(CONFIG.time, CONFIG.food, CONFIG.burnout, CONFIG.loan, CONFIG.bankrupt, CONFIG.market,
+CONFIG.sleep, CONFIG.health).
 
 
 =====================================================================
@@ -193,12 +194,100 @@ ended about 60% of simulated games on day 4, which is why a start day was added.
 
 
 =====================================================================
-10. KNOWN OPEN ISSUES (not fixed)
+10. ECONOMY, EVENTS AND HEALTH
 =====================================================================
-- Rules text "Under 15 you may catch a cold and lose 8 time" is garbled.
-- Net-worth rule text omits rent arrears (the code subtracts them).
-- Restaurant meals add health (+1, +2) that the screen does not show; the School
-  Study button does not show its 2%-per-hour energy cost; the coffee machine is
-  also a rest comfort item, which is not mentioned.
-- The economy is now much harder: in a 316-game replay after the shift and work
-  cap changes, 54% reached $2,000 (was 92%).
+Savings and investments now follow the economy (loan stays fixed):
+- Every macro shock and storyline now moves the savings rate (before, only about
+  half of them did). Examples: wars, tightening, inflation, currency crises push it
+  UP; QE, pandemics, housing crashes, deflation, financial crises push it DOWN.
+- Fixed deposit follows the savings rate (rate x 1.4). ETF, hedge fund and crypto
+  follow the market mood, and are now also pulled down when interest is above its
+  normal level (and lifted when below): CONFIG.market.rateBeta
+  (ETF 0.3, hedge fund 0.4, crypto 0.6 per point of interest above normal).
+- With no news pushing interest, the rate now drifts back to normal by itself
+  (CONFIG.market.rateBase = 1.0, rateReversion = 10% of the gap each morning).
+  Before, a rate moved by news stayed there for ever.
+- The Bank screen has a news line: which story is moving rates and markets, the
+  market mood, and that loan rates are fixed. Savings and investment cards say
+  their return moves with the economy.
+- Loan rates (CONFIG.loan) are never touched by news. Checked over 740 simulated
+  days: the loan rate never changed.
+
+End-of-day events vs your stats:
+- Audited 1,500 random end-of-day events (news, decisions, stories, storylines,
+  repairs, daily events). The cash, happiness, energy and knowledge numbers shown
+  on the event matched the real change in every case.
+- Gap found: NO event could change health (there was no health effect at all).
+  Added a health effect ("+2 health") and used it on health-themed outcomes:
+  gym membership (+3), masks and sanitiser (+2 / -2 if you skip), hospitals
+  overwhelmed (-2), vaccine approved (+3).
+
+"I slept all day but health stayed at 80":
+- Not a bug in the sleep itself. Sleeping at home gives +10 health, but the night
+  also costs -1 for everyone and -10 if you did not eat that day: +10 -1 -10 = -1.
+  Fed and sleeping at home you gain +9 (tested: 80 to 89); unfed, 80 to 79.
+- The game never told you. Now: going to bed unfed shows a warning, the log shows
+  "Overnight health +9 (-1 every night, +10 slept at home)" with every reason, and
+  the morning recap has a new health figure.
+
+SLEEP REWORK (latest):
+- Sleeping at the apartment: energy is 3% per hour left, capped at +35 (was +75).
+  Health is +1 per hour left, capped at +10 (was a flat +10). Happiness is still
+  +1 per full hour left.
+- Sleeping anywhere else: health, happiness and energy are all HALF of what the
+  apartment would give (CONFIG.sleep.awayShare = 0.5; before only energy was
+  reduced, to 25% with a cap of 15, and health and happiness were zero).
+  Examples: 8h left = home +24% energy, +8 health, +8 happy; outside +12, +4, +4.
+  16h or more left = home +35, +10, +16/+24; outside +18, +5, +8/+12.
+- Settings: CONFIG.sleep.maxEnergy, awayShare; CONFIG.health.sleep.perHour and max.
+  CONFIG.sleep.awayMax and CONFIG.health.nightly.sleptAtHome were removed.
+  Night Owl trait now sets awayShare to 0.75 ("helps 50% more").
+- The top-bar "End day" button reads "Sleep outside" whenever you are not at home.
+  At home it stays "End day" (and the apartment has its own Sleep button).
+- Going to bed unfed warns that the -10 health penalty eats into the sleep bonus.
+
+=====================================================================
+11. KNOWN OPEN ISSUES
+=====================================================================
+FIXED in the latest round:
+- Rules cold text: now reads "Low energy also raises your chance of falling ill
+  overnight: about 40% a night under 11 energy, 29% under 20, 16% under 30, 5% under
+  45 (before health, diet and gym visits lower it)". Built from CONFIG.illness, so
+  it follows any change you make there.
+- Net-worth rule now says "minus hospital debt, rent arrears and any loan you owe".
+- Restaurant meals now show their health (+1 dinner, +2 tasting menu) on the screen
+  and in the log.
+- School Study button now shows its energy cost ("Study . 1h . -2% energy").
+- Coffee machine description now says +6% energy each morning and that it counts as
+  a comfort item (+10% faster rest and sleep), which is why the real gain is more.
+
+STILL OPEN:
+- The economy is now much harder than the first version: 54% of games reached $2,000
+  in a 316-game replay after the shift and work cap changes (was 92%). See section 12
+  for the full 2,000-game re-run after the latest changes.
+
+=====================================================================
+12. 2,000-GAME RE-RUN (latest build, bankrupt rule counted from day 5)
+=====================================================================
+Same bot and same 2,000 jobs as the first stress test (smart-human play: eats daily,
+keeps clothes fresh, one focused study pathway, a different target job each time).
+Results:
+  Reached $2,000 or more (win)      992   49.6%   (Comfortable 983, Wealthy 13)
+  Time's up, under $2,000 (loss)    664   33.2%
+  Bankrupt (game over)              222   11.1%   (all on day 8 to 14, average day 8.5)
+  Hospitalised (game over)          118    5.9%   (every one was a deliberate 3-day food lapse by the bot)
+  Games that ended early            340   17.0%
+By difficulty, % reaching $2,000:   Easy 59.8%   Normal 46.7%   Hard 42.9%
+Finishing games (1,660): average score 3,500, net worth $2,242, health 100, happiness 98.
+First time the $2,000 line was crossed: day 12.6 on average (fastest: day 8).
+Compared with the first run (92% reached $2,000), the economy is now much tighter.
+Bankruptcies are players stuck near $370 of cash with net worth under $500, not
+players who skipped food.
+Best pathways (average score, reached target): Mall Manager, Supermarket Manager,
+Boutique Manager, Operations Assistant, Senior Nurse, AI Engineer, Logistics Manager.
+The 32-hour study jobs paying $230 to $290 performed best. The very top jobs
+(Chief of Surgery, Consultant, Chief Engineer and so on, 100+ study hours) were never
+reached in 15 days, so their pay does not matter inside the day limit.
+Test note: a first run of this bot forced the bankrupt start day back to day 1
+(a leftover in the test script), which gave 59% bankruptcies on day 4. That was a
+test fault, not a game bug, and is fixed in the script.
