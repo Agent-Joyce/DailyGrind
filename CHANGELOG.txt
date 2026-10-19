@@ -229,6 +229,22 @@ End-of-day events vs your stats:
   "Overnight health +9 (-1 every night, +10 slept at home)" with every reason, and
   the morning recap has a new health figure.
 
+SLEEP REWORK (latest):
+- Sleeping at the apartment: energy is 3% per hour left, capped at +35 (was +75).
+  Health is +1 per hour left, capped at +10 (was a flat +10). Happiness is still
+  +1 per full hour left.
+- Sleeping anywhere else: health, happiness and energy are all HALF of what the
+  apartment would give (CONFIG.sleep.awayShare = 0.5; before only energy was
+  reduced, to 25% with a cap of 15, and health and happiness were zero).
+  Examples: 8h left = home +24% energy, +8 health, +8 happy; outside +12, +4, +4.
+  16h or more left = home +35, +10, +16/+24; outside +18, +5, +8/+12.
+- Settings: CONFIG.sleep.maxEnergy, awayShare; CONFIG.health.sleep.perHour and max.
+  CONFIG.sleep.awayMax and CONFIG.health.nightly.sleptAtHome were removed.
+  Night Owl trait now sets awayShare to 0.75 ("helps 50% more").
+- The top-bar "End day" button reads "Sleep outside" whenever you are not at home.
+  At home it stays "End day" (and the apartment has its own Sleep button).
+- Going to bed unfed warns that the -10 health penalty eats into the sleep bonus.
+
 =====================================================================
 10. KNOWN OPEN ISSUES (not fixed)
 =====================================================================

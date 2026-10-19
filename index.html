@@ -458,7 +458,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   <h2 id="wlT">Welcome to Daily Grind</h2>
   <p style="color:var(--ink)">Build a life from scratch. Reach <b><span id="cfgGoal">$2,000</span> net worth</b> without going broke, burning out or skipping meals.</p>
   <ul>
-    <li><b>Each day has 24 hours.</b> Walking (<span id="cfgWalk">5 minutes</span> per building), working, studying and shopping all use time. Click <b>End day</b> when you are done.</li>
+    <li><b>Each day has 24 hours.</b> Walking (<span id="cfgWalk">5 minutes</span> per building), working, studying and shopping all use time. Click <b>End day</b> (at home) or <b>Sleep outside</b> (anywhere else) when you are done.</li>
     <li><b>Eat once a day</b> and keep an eye on energy and happiness. Low energy makes you ill; low happiness cuts your pay.</li>
     <li><b>Rent is due <span id="cfgRent">every 4 days</span>.</b> If your cash is negative when it is due, you are evicted.</li>
     <li><b>Start simple:</b> you begin with Casual Clothes that last <span id="cfgClothes">5 days</span>. Get a job at the Employment Office, work shifts, then study for better jobs. Replace your clothes at the Clothes Mall before they wear out.</li>
@@ -793,9 +793,11 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
         sick:-6,             // extra while you have an illness
         lowEnergy:-2,        // extra if energy is below lowEnergyBelow
         lowEnergyBelow:20,
-        burnout:-3,          // extra while burnt out
-        sleptAtHome:10        // gained for sleeping at home
+        burnout:-3           // extra while burnt out
       },
+      /* Health gained from sleep: perHour x the hours you still have left when you go to bed, never more than max.
+         Sleeping anywhere but home gives sleep.awayShare of it. */
+      sleep:{ perHour:1, max:10 },
       poorBelow:30,          // health below this counts as poor health...
       poorPay:0.9,           // ...and shifts pay this much (0.9 = 10% less)
       healthyMealCount:3     // healthy meals in the last 5 days needed for the bigger illness cut (see illness)
@@ -955,9 +957,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     sleep:{
       rateX:1,               // multiplies how fast resting and sleeping restore energy (1 = normal; the Night Owl trait raises it)
       happinessPerHour:1,    // happiness next morning for each full hour slept at home
-      maxEnergy:75,          // most energy a night's sleep can give
-      awayShare:0.25,        // sleeping away from home gives this share of the energy...
-      awayMax:15,            // ...and never more than this
+      maxEnergy:35,          // most energy a night's sleep at home can give
+      awayShare:0.5,         // sleeping away from home gives this share of the energy, health and happiness a night at home gives
       napMinutes:120,        // length of a rest at home
       napHappiness:2         // happiness from a rest at home
     },
@@ -1045,7 +1046,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     },
     /* Group 10, Version 40: starting traits.
        The player picks one on the welcome screen (or none). Each trait is a list of CONFIG changes:
-         {k:'sleep.awayMax', v:30}     sets that value to 30
+         {k:'sleep.awayShare', v:0.75}     sets that value to 0.75
          {k:'food.basic.cost', x:0.7}  multiplies the normal value by 0.7
        k is the path to any number in CONFIG above. 'plus' and 'minus' are the lines shown on the card, so keep them in step
        with the numbers. Remove a trait by deleting its block; set on:false to switch traits off. */
@@ -1053,9 +1054,9 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       on:true,
       list:[
         {id:'owl', icon:'🦉', name:'Night Owl',
-         plus:'Resting and sleeping restore 25% more energy, and a night away from home helps twice as much.',
+         plus:'Resting and sleeping restore 25% more energy, and a night away from home helps 50% more.',
          minus:'Burning the candle: 1 extra health lost every night.',
-         set:[{k:'sleep.rateX', x:1.25}, {k:'sleep.awayMax', v:30}, {k:'health.nightly.always', v:-2}]},
+         set:[{k:'sleep.rateX', x:1.25}, {k:'sleep.awayShare', v:0.75}, {k:'health.nightly.always', v:-2}]},
         {id:'frugal', icon:'🪙', name:'Frugal',
          plus:'Groceries cost 30% less, and bundles save 30% instead of 15%.',
          minus:'Cheap tastes: home meals cheer you up less.',
@@ -2160,7 +2161,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(S.ill){d+=N.sick;why.push(sg(N.sick)+' illness')}
     if(S.energy<N.lowEnergyBelow){d+=N.lowEnergy;why.push(sg(N.lowEnergy)+' very low energy')}
     if(S.burn>0){d+=N.burnout;why.push(sg(N.burnout)+' burnout')}
-    if(S.slept){d+=N.sleptAtHome;why.push(sg(N.sleptAtHome)+' slept at home')}
+    if(S.slept>0){d+=S.slept;why.push(sg(S.slept)+' sleep')}
     var h0=S.health;S.health=clamp(S.health+d);S.slept=0;
     log('Overnight health '+sg(S.health-h0)+' ('+why.join(', ')+').',S.health-h0<0?'warn':'good');
   }
@@ -2743,10 +2744,11 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(S.over||S.pending)return;
     var home=rested||loc===S.home;
     var SL=CONFIG.sleep;
-    S.restBonus=home?sleepGain(S.ap):Math.min(SL.awayMax,Math.round(sleepGain(S.ap)*SL.awayShare));
-    S.restHap=home?Math.floor(S.ap/60)*SL.happinessPerHour:0;S.slept=home?1:0;S.sickSleep=home&&S.ill?1:0;if(home)S.restHrs=(S.restHrs||0)+S.ap/60;
-    log(home?'You went to bed at home with '+hm(S.ap)+' left. Tomorrow you start with +'+S.restBonus+'% energy and +'+S.restHap+' happiness ('+CONFIG.sleep.happinessPerHour+' for every full hour of rest).':'You ended the day away from home and dozed off where you were. Tomorrow you start with only +'+S.restBonus+'% energy (sleeping at home would give +'+sleepGain(S.ap)+'%).');
-    if(home&&!S.fed)log('You have not eaten today, so the '+sg(CONFIG.health.nightly.skippedMeal)+' health penalty will cancel out the '+sg(CONFIG.health.nightly.sleptAtHome)+' you get for sleeping at home. Eat something first to recover health.','warn');
+    var share=home?1:SL.awayShare,HS=CONFIG.health.sleep;
+    S.restBonus=Math.round(sleepGain(S.ap)*share);
+    S.restHap=Math.round(Math.floor(S.ap/60)*SL.happinessPerHour*share);S.slept=Math.round(Math.min(HS.max,S.ap/60*HS.perHour)*share);S.sickSleep=home&&S.ill?1:0;if(home)S.restHrs=(S.restHrs||0)+S.ap/60;
+    log(home?'You went to bed at home with '+hm(S.ap)+' left. Tomorrow you start with +'+S.restBonus+'% energy and +'+S.restHap+' happiness ('+CONFIG.sleep.happinessPerHour+' for every full hour of rest), and sleep adds +'+S.slept+' health tonight.':'You ended the day away from home and dozed off where you were. Tomorrow you start with only +'+S.restBonus+'% energy, +'+S.restHap+' happiness and +'+S.slept+' health (sleeping at home would give +'+sleepGain(S.ap)+'%, +'+Math.floor(S.ap/60)*SL.happinessPerHour+' and +'+Math.round(Math.min(HS.max,S.ap/60*HS.perHour))+').');
+    if(!S.fed&&S.slept>0)log('You have not eaten today, so the '+sg(CONFIG.health.nightly.skippedMeal)+' health penalty will eat into the +'+S.slept+' you get from sleep. Eat something first to recover health.','warn');
     snd('day');
     var ev=pickEvent();
     S.pending={rested:!!rested,ev:ev};
@@ -2900,7 +2902,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     t+='<p style="margin:6px 0"><small>😌 Comfort: '+(ci.length?ci.join(', ')+' (+'+ci.length*10+'% rest)':'none yet. A TV, console, fridge, coffee machine or computer at home makes rest work better')+'. Resting gives about '+rr0.toFixed(1)+'% energy per hour.</small></p>';
     var SL=CONFIG.sleep,nh=SL.napMinutes/60;
     t+=opt('Rest for '+(SL.napMinutes%60?hm(SL.napMinutes):nh+' hour'+(nh===1?'':'s')),hm(SL.napMinutes)+' · +'+Math.round(nh*rr0)+'% energy now, +'+SL.napHappiness+' happiness'+(SL.napHappiness===nh?' (1 per hour)':'')+(S.ill?' · <b>+'+pctTxt(HP.restRecover)+' chance to recover tonight</b>':''),btn('nap','','Rest '+hm(SL.napMinutes),0,S.ap<SL.napMinutes||(S.energy>=100&&!S.ill)));
-    t+=opt('Sleep and end the day','Sleep the remaining '+hm(S.ap)+'. You start tomorrow with +'+sleepGain(S.ap)+'% energy and +'+Math.floor(S.ap/60)*CONFIG.sleep.happinessPerHour+' happiness ('+CONFIG.sleep.happinessPerHour+' per hour)'+(HOUSE[S.home].hap?', plus +'+HOUSE[S.home].hap+' for the bed':'')+' (the more hours left, the more you recover).',btn('rest','','Sleep'));
+    t+=opt('Sleep and end the day','Sleep the remaining '+hm(S.ap)+'. You start tomorrow with +'+sleepGain(S.ap)+'% energy, +'+Math.min(CONFIG.health.sleep.max,Math.round(S.ap/60*CONFIG.health.sleep.perHour))+' health and +'+Math.floor(S.ap/60)*CONFIG.sleep.happinessPerHour+' happiness ('+CONFIG.sleep.happinessPerHour+' per hour)'+(HOUSE[S.home].hap?', plus +'+HOUSE[S.home].hap+' for the bed':'')+' (the more hours left, the more you recover).',btn('rest','','Sleep'));
     /* --- study and work from home --- */
     t+=sec('📚 Study & work from home');
     t+=opt('Self-study online'+(S.studyMin>0?' <small style="display:inline">(studied '+hm(S.studyMin)+' today)</small>':''),hm(M(SS.units))+', '+sg(SS.energy)+'% energy, '+sg(SS.health)+' health · '+(gain?'+'+gain+' knowledge':'needs a computer, tablet or phone')+'. Over '+studyLimitTxt()+' of study a day for '+dayN(CONFIG.burnout.daysInARow)+' running causes burnout.',btn('study','','Study',0,!gain));
@@ -3321,7 +3323,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     $('hEn').style.color=S.energy<30?'#ef7d72':'';$('hHp').style.color=S.happy<30?'#ef7d72':'';$('hCash').style.color=S.cash<0?'#ef7d72':'';
     var hiv=invTotal();$('hInvC').hidden=!anyInv();if(anyInv()){var pl0=hiv-invSum('c');$('hInv').textContent=money(hiv);$('hInvPL').textContent=sm(pl0)+' ('+(pl0>=0?'+':'−')+Math.abs(invSum('c')?pl0/invSum('c')*100:0).toFixed(1)+'%)';$('hInvPL').style.color=pl0>=0?'#7fe0a6':'#ef7d72'}
     $('hScore').textContent=score().toLocaleString();var bs0=bestScore();$('hBest').textContent=bs0?'best '+bs0.toLocaleString():'';
-    $('hudLeave').hidden=!view||!!S.pending;$('hudEnd').disabled=!!S.over||!!S.pending;
+    $('hudLeave').hidden=!view||!!S.pending;$('hudEnd').disabled=!!S.over||!!S.pending;$('hudEnd').textContent=loc===S.home?'End day ☾':'Sleep outside ☾';
     var pi=payInfo(),pm0=prod().m;$('pay').textContent=money(pi.v)+(pi.n?'/shift':'');$('payRole').textContent=pi.txt+(pi.n&&pm0<1?' · ×'+Math.round(pm0*100)+'% today':'');
     $('dayMax').textContent=maxDays()===Infinity?'':' / '+maxDays();$('diffTag').textContent=Df().n;
     $('rlWin').textContent=maxDays()===Infinity?' (no time limit on Easy)':', within '+maxDays()+' days';$('rlTime').textContent=maxDays()===Infinity?'Not on Easy: there is no day limit.':'Day '+maxDays()+' passes and you are still under '+money(GOAL)+'.';
