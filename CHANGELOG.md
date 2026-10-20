@@ -22,6 +22,11 @@ Everything adjustable lives in the `CONFIG` block near the top of the script: `C
 14. [Interface and gameplay updates](#14-interface-and-gameplay-updates)
 15. [Illness, food, shops and windows](#15-illness-food-shops-and-windows)
 16. [Layout and window tidy-up](#16-layout-and-window-tidy-up)
+17. [Customer Service pathway](#17-customer-service-pathway)
+18. [Review merge: DeepSeek, ChatGPT, Grok](#18-review-merge-deepseek-chatgpt-grok)
+19. [Running stories: realistic daily effects](#19-running-stories-realistic-daily-effects-and-plainer-wording)
+20. [Reset button fix](#20-reset-button-fix)
+21. [Start energy, tuition, study button and happiness icon](#21-start-energy-certificate-tuition-study-button-and-happiness-icon)
 
 ---
 
@@ -187,7 +192,7 @@ Not a sleep bug. Sleeping at home gives +10 health, but every night also costs -
 - Rules cold text now reads "Low energy also raises your chance of falling ill overnight: about 40% a night under 11 energy, 29% under 20, 16% under 30, 5% under 45". Built from `CONFIG.illness`.
 - Net-worth rule now says "minus hospital debt, rent arrears and any loan you owe".
 - Restaurant meals show their health (+1 dinner, +2 tasting menu) on screen and in the log.
-- School Study button shows its energy cost (since replaced by the layout in section 13).
+- School Study button shows its energy cost.
 - Coffee machine description says +6% energy each morning and that it counts as a comfort item (+10% faster rest and sleep).
 
 **Still open**
@@ -335,9 +340,207 @@ Earlier changes in this release that were not logged yet. Settings are in `CONFI
 ### Checked
 - An automatic scan of every screen (welcome, top bar, overview, all 15 building windows, Employment Office "Show all", rules, end-of-day event, morning message) at 375, 684, 828, 1024 and 1440px found no overlapping elements, cut-off text or sideways scrolling.
 
-## 13. UI changes
+---
+
+## 17. Customer Service pathway
+
+20 October 2026.
+
+### New pathway
+- **Customer Service** (`TRACKS.cus`): a Certificate only. One module, **Customer Care Essentials**, of 3 lessons × 3 hours = **9 hours** of study. Tuition $50.
+- Other Certificates are 4 hours (2 modules × 2 × 1h), so this one is deliberately heavier. A 3-hour lesson means one lesson a day keeps a player under the 5-hour study burnout line.
+- Pathways can now set their own lessons per module and hours per lesson by level (`les:{Certificate:3}`, `hrs:{Certificate:3}` on the pathway). `lesCount` and `lesHours` read these and fall back to the usual defaults.
+- Rule change: a level may now have **1 to 4 modules** (was 2 to 4).
+- Sales Certificate module "Customer Service" renamed **Customer Relations**, so the names don't overlap.
+
+### Jobs switched from Sales Certificate to Customer Service Certificate
+| Role | Building | Needs now | Pay |
+|---|---|---|---|
+| Waiter | Restaurant | Customer Service Cert | $105 |
+| Store Supervisor | Supermarket | Customer Service Cert | $140 |
+| Visual Merchandiser | Clothes Mall | Customer Service Cert | $150 |
+| Sales Promoter | Clothes Mall | Customer Service Cert | $150 |
+| Thrift Store Manager | Thrift Store | Customer Service Cert | $130 to **$140** |
+| Sales Assistant | Electronics Store | Customer Service Cert | $130 to **$170** |
+| Store Manager | Fast Food | Food & Beverage Cert + Customer Service Cert | $180 |
+
+- Thrift Store Manager and Sales Assistant were raised so they no longer pay less than easier jobs in the same building (Repair Technician, Data Annotator). Both keep 4h45 shifts.
+- Gym Instructor and Appraiser still use the Sales Certificate.
+
+### Code housekeeping
+- Very old saves (version 3) skip pathways added later instead of crashing (`if(!o)return;` in the save converter).
+- MASTER CONFIG comment lists the right pathway names ("Medical Health" corrected to "Medicine").
+
+### Checked
+- Rule checker: 7 pathways, 71 roles, no errors or warnings.
+- Browser test (118 checks): no script errors, every building opens, School and Employment Office list everything, Customer Service enrols and its module completes lesson by lesson, older saves load with the pathway at 0, all switched jobs can be applied for once qualified, and the two raised jobs show 4h 45m shifts.
+
+## 18. Review merge: DeepSeek, ChatGPT, Grok
+
+Changes merged from three AI-written variants of `index.html` (see `docs/Other AI inputs/`).
+
+### Fixes and housekeeping
+- Removed the stray duplicate document shell at the top of the file and the duplicate `</body></html>` at the end (ChatGPT and DeepSeek both flagged it).
+- The rent cycle, game length and win/time-limit text on the welcome and Rules screens now say 5 days, 15 days (matching `CONFIG.time`). The welcome-screen buttons were still saying 10 days.
+- `.tag` styling for the map is scoped to `.tags .tag`, so overview chips no longer pick up the boxed map-tag style.
+- The "Sleep in Apartment" label now shows "Sleep at Bungalow" when the bungalow is home.
+- Reset asks for a second click (the button reads "Click again to wipe" for 4 seconds) before wiping the save. It no longer uses a browser confirm box, which some embedded browsers block silently, so the button appeared to do nothing.
+- The text-to-icon regex no longer uses a lookbehind, which older Safari cannot parse.
+- The mobile event popup sits above the action bar, and the action bar is hidden while a popup is pending.
+- Food that will spoil overnight is warned about in the Daily log.
+- The "you are here" tile on the map pulses.
+
+### Economy
+- New `CONFIG.macro.priceReversion` (0.03): each night prices drift 3% of the way back towards the difficulty's base price, so news cannot push them away for ever.
+- The "show all jobs" toggle is removed: the Employment Office always lists every rank, with locked ones greyed out.
+
+### Interface
+- A 📍 Places button (phone width only) opens a list of every location sorted by walking distance, with a Go button for each.
+- A short confetti burst plays when you rank up.
+- A one-line summary of the top activities sits under the day bar on phones.
+- The job board shows a ⚠ warning when a job needs experience you do not have yet.
+
+### Not included
+- The debug test harness (`window.__DG`) from the Grok variant: it belongs in a throwaway test copy, not the shipped file (see CLAUDE.md).
+- The Grok "Next steps" panel and optional side goals (score bonuses).
+
+### Checked
+- Loaded in headless Chrome: no script errors on the welcome screen, the Places list (15 rows, one per location), the day summary line, or about 4 simulated days of End day / event clicks. Baseline gave the same result. The rank-up and experience-warning paths were not reached in that run, so they need a play-through.
+
+## 19. Running stories: realistic daily effects and plainer wording
+
+Problem: multi-day news and storylines (oil crisis, war, pandemic...) applied the same fixed daily change to prices, pay and interest for the whole run, and the screens listed exact numbers and "job-loss risk" / "closure risk" that do not affect you directly.
+
+### Changes
+- A running story's daily effect now follows a curve: it builds, peaks mid-story and fades, with a random swing each day (`trendGain()`). The story's listed size is its average, not a constant. Its `t.age` counter is saved with the story.
+- New `CONFIG.macro` keys: `curveLow` (0.5, effect on the first and last day), `curvePeak` (1.4, effect at the middle day) and `dailyJitter` (0.3, plus or minus per day).
+- Stories no longer show exact daily numbers. Morning notes, the "Still going" line on storyline cards, the Daily log, the news card and the Bank tooltip use a short description instead (`trendNow()`), e.g. "prices rising fast, pay falling, interest rates rising, markets under pressure".
+- "Job-loss risk" and "workplace-closure risk" are no longer listed. The risks still apply in the background; a closure is still reported when it happens.
+- The news-card line "Each day: ..." is now "Effects: ...".
+- The helper `trendTxt()` is removed (replaced by `trendNow()`).
+
+### Checked
+- Headless Chrome: no script errors on the welcome screen, the Places list, or the day summary. The new daily curve and descriptions were not exercised in a play-through; they need one.
+
+## 20. Reset button fix
+
+- The Reset button used `window.confirm()`. Some embedded browsers block that box silently, so the button did nothing. It now takes two clicks: the first changes the label to "Click again to wipe" for 4 seconds, and the second wipes the save.
+- Checked in headless Chrome: the first click does not reset, the second click returns to the welcome screen, with no script errors.
+
+## 21. Start energy, Certificate tuition, study button and happiness icon
+
+### Changes
+- New game starts with 85% energy (was 100). Set in `CONFIG.start.energy`.
+- Certificate tuition is now set per track in `CONFIG.education.certFee`: Technology $52, Food & Beverage $45, Medicine $55, Customer Service $95, Sales $43, Finance $79, Engineering $58. These are the first-level (Certificate) fees only. Degree, Honours and Masters fees still use the old per-module formula.
+- Each new game moves every track's Certificate fee by up to `CONFIG.education.certVariance` (5%) either way, stored per save as `S.certVar`. The daily price index still applies on top.
+- The study button reads "📖 Study" with the time and energy cost shown with the game's icons instead of plain text.
+- The happiness icon is now a white smiley face (it was a sun-shaped icon). It is drawn once in the icon set, so the top bar, vitals and text all use it.
+
+### Checked
+- Headless Chrome: new game shows 85% energy, the happiness icon is the white smiley, and there are no script errors. The School fee and study button were not opened in that run.
+
+## 22. Study button text and bungalow sleep label
+
+- The study button reads just **Study**. Its time and energy cost ("[time icon] 1h · [energy icon] −2% energy") is shown as text next to the button instead of inside it.
+- The top-bar sleep button read "Sleep in Apartment" in this copy because `sleepLabel()` returned a fixed string. It now reads "Sleep at Bungalow" when the bungalow is your home, and "Sleep at Apartment" otherwise. (The `DailyGrind/` copy already had this fix.)
+- Checked in headless Chrome: moving into the bungalow changes the button to "Sleep at Bungalow", with no script errors. The study button was not opened in that run.
+
+## 23. UI changes carried over from the root copy
 
 - **Loans: no same-day repayment.** On the day you take a loan, the Repay and Pay in full buttons are disabled and the card says "You can start repaying tomorrow". The repay action also refuses if it is triggered anyway. The Rules text now says you can repay from cash any day after the one you borrowed.
 - **Supermarket and fast-food buttons.** The white buttons (Bag of chips "Buy", Lottery "Buy ticket" and the fast-food burger "Buy") are now the same green as the other Buy buttons.
-- **Happiness icon.** Now a pink smiley face (was a yellow sun), everywhere the icon appears. In the top bar it moved to sit right after the cash icon, so the order is net worth, cash, happiness, energy, health, knowledge.
+- **Happiness icon.** Now a pink smiley face (was a yellow sun; later changed to a white smiley, see section 21), everywhere the icon appears. In the top bar it moved to sit right after the cash icon, so the order is net worth, cash, happiness, energy, health, knowledge.
 - **School "Now studying".** The button now just says "Study". The lesson length and energy cost moved to a line in the same section, shown with the time and energy icons: "1h" and "−2% energy per lesson".
+
+
+## 24. Buy buttons match the other green buttons
+
+- The Bag of chips "Buy" and Lottery "Buy ticket" in the Supermarket, and the snack "Buy" in Fast Food, were white (the secondary style). They now use the same green as the other Buy buttons.
+- Checked in headless Chrome: no script errors. The buttons were not visually inspected in that run.
+
+## 25. Investment minimums stay fixed
+
+- The minimum amounts for the Fixed deposit ($100), Index ETF ($50), Hedge fund ($500) and Cryptocurrency ($20) no longer move with the daily price index. They are the values in `INV` (`min`), used directly in the investment card and in the "Amount too low" check.
+- Checked in headless Chrome: no script errors. The minimums were not tested by entering amounts.
+
+## 26. Event odds in CONFIG
+
+- The chances used to pick each end-of-day event moved from hard-coded numbers in `pickEvent()` and `sagaEvent()` into `CONFIG.events`: `saga` (0.5, new saga on a night none is running), `macro` (0.18), `macroMaxTrends` (3, macro shocks only while fewer trends run), `story` (0.2), `item` (0.3), `basic` (0.15) and `news` (0.4). Whatever is left becomes a Yes/No decision. Same odds as before, so default play is unchanged.
+- Checked in headless Chrome: no script errors. Event frequencies were not measured after the move.
+
+## 27. Night events: macro shock rules and new weights
+
+- **Macro shocks are no longer one of the picks.** Each night a macro shock may start with `CONFIG.events.macro` (0.1). At most `CONFIG.events.macroMax` (1) macro shocks can run at once. A macro shock that starts that night is that night's event card.
+- **Otherwise exactly one event is picked** from story, item, news, basic and decision, with the relative weights `CONFIG.events` story 0.3, item 0.3, news 0.2, basic 0.2 and decision 0. The decision (Yes/No) event is kept but set to 0, so it never comes up unless you raise its weight. If an item event is picked but none applies, the pick is redone from the other types.
+- Other events can still happen while a macro shock is running.
+- Macro shock trends are marked `macro` so the running-shock limit can count them. Saves made before this change have no mark, so their running shocks are not counted until they end.
+- The saga chance (`saga`, 0.5) still runs first and is unchanged.
+- Checked in headless Chrome: no script errors. Event frequencies were not measured.
+
+## 28. Big events, daily events and one-card-a-day rules
+
+### Big events (saga or macro shock)
+- Each day a big event may start with `CONFIG.events.bigChance` (0.2), but only when no saga or macro shock is running and `bigGap` (3) days have passed since the last one ended. Only one can run at a time.
+- A big event is a saga with chance `sagaShare` (0.5), otherwise a macro shock.
+- Macro shocks now last `macroDays` (3 to 5 days, was 7 to 14). They are marked `macro` and no longer have a separate limit (`macroMax` is removed).
+- Saga chapters play one per day, as before. A saga no longer starts itself, so the old `saga` and `sagaGap` keys are gone.
+
+### Daily events
+- Each day one daily event may happen: story 0.2, item 0.2, news 0.1, decision 0.3, none 0.2 (`CONFIG.events`). Basic events are set to 0 (`basic:0`) and can be turned back on there.
+- The daily event is rolled even while a saga or macro shock is running.
+- A "none" roll is shown as a short "Quiet night" card, so the end-of-day step stays the same.
+
+### Cards at night
+- A night can show two cards: the big event's card (saga chapter or new big event) first, then the daily event. The second card shows after you press **Next**.
+- Checked in headless Chrome: no script errors. Event frequencies were not measured.
+
+## 29. Day-change arrows moved to the morning window
+
+- The ▲/▼ arrows next to energy, happiness and health in the top bar are gone.
+- The morning window ("☀️ Day N of 15") now ends with a "📊 Your day" line showing how energy, happiness, health and knowledge changed over the day that just ended, with arrows. Small changes (under 1 point) are not shown.
+- The day's change is measured from the start of the day to the moment you close the day, before overnight effects such as rent, hunger and sleep, so it shows what happened during the day.
+- Checked in headless Chrome: no script errors. The morning line was not checked on screen.
+
+## 30. Top-bar arrows flash on the new day
+
+- The ▲/▼ arrows next to energy, happiness and health in the top bar are back. They appear at the moment a new day starts, the same time as the "☀️ Day N of 15" morning window, and show the change over the night (sleep, rent, hunger and other overnight effects).
+- They stay on for about 2.5 seconds, then disappear. On a day with nothing to report, they still flash, because they don't depend on the morning window.
+- The "📊 Your day" line from section 29 is removed. The arrows replace it.
+- Checked in headless Chrome: at the start of day 2 the arrows showed the overnight change, and they were gone 2.5 seconds later.
+
+## 31. Employment Office: experience text removed, buttons say Apply
+
+- The "Experience: x/5 shifts at <building> (interview still costs 1h)" line and the completed "shifts worked" line are removed from every job's requirements.
+- The "⚠ need experience" tag is removed from job rows.
+- Every job button now reads just "Apply" (the "Apply (need exp)" label is gone).
+- Interview failure messages in the log still explain why an interview went wrong.
+- Checked in headless Chrome: no script errors. The Employment Office was not opened in that run.
+
+## 32. Employment Office: Show all / Show fewer restored
+
+- Reverts the removal of the "show all jobs" toggle (section 25 of the earlier history). The Employment Office again hides less relevant jobs by default:
+  - ranks you have already passed ("Past rank") are hidden;
+  - for each career, only the first job you cannot yet apply for is shown, so the list does not show the whole ladder at once.
+- The **Show all** button under the list shows every rank, locked ones included, and changes to **Show fewer** to hide them again.
+- Checked in headless Chrome: 38 rows by default, 71 after Show all, and the button label switches. No script errors.
+
+## 33. Vitals moved into the Current pay box
+
+- The Vitals card (Energy, Happy, Health, Know and the "No meal yet today" line) now sits inside the Current pay box in the overview, under the pay line. It is no longer a separate card, so the row of cards below has Life & learning and Rent & clothing.
+- The vitals keep their element IDs, so their numbers and the arrows still update.
+- Checked with headless Chrome screenshots at 390px and 1280px: the box lays out without overlaps. Not checked with a day in progress (arrows and pending events).
+
+## 34. Life & learning and Rent & clothing share the row equally
+
+- The two cards below the Current pay box now each take half the row, so they are the same width. Before, the row was set for three cards.
+- Checked with headless Chrome screenshots at 390px and 1280px: the two cards are equal width and nothing overlaps.
+
+## 35. Vitals always show %, coloured by value
+
+- Energy, Happy, Health and Know always show a % sign, in the Vitals box and in the top bar (the top-bar Know now shows %).
+- The number's colour follows its value: red below 10%, amber from 10% to 29%, yellow from 30% to 60%, green above 60%. Set in `vitColor()`.
+- Checked in a headless Chrome screenshot at 390px: green (85%, 70%, 80%) and amber (10%) show correctly. Yellow and red were not seen on screen.
+
+## 36. Score number in blue
+
+- The score number in the top bar is blue (`#6aa9ff`) instead of gold.

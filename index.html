@@ -1,4 +1,3 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,13 +7,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--mine:#b45309;--bg:#e9eef1;--surface:#fff;--ink:#16222e;--muted:#566676;--line:#cfd9e0;--teal:#0f7f82;--teal-ink:#fff;--gold:#e0a526;--red:#c8453b;--green:#2f8f5b;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+box-sizing:border-box;color-scheme:light}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--mine:#f0bd4a;--bg:#0f1a22;--surface:#18262f;--ink:#e8eef2;--muted:#94a6b3;--line:#2a3b47;--teal:#3cc0c3;--teal-ink:#06262a;--gold:#f0bd4a;--red:#ef7d72;--green:#5fcf92}}
 :root[data-theme="dark"]{--mine:#f0bd4a;--bg:#0f1a22;--surface:#18262f;--ink:#e8eef2;--muted:#94a6b3;--line:#2a3b47;--teal:#3cc0c3;--teal-ink:#06262a;--gold:#f0bd4a;--red:#ef7d72;--green:#5fcf92}
 *,*::before,*::after{box-sizing:inherit}
 [hidden]{display:none!important}
 html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.4}
+body{background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.4;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 h1{font-size:1.5rem;margin:0;font-weight:800}
 h2{font-size:1.1rem;margin:0 0 8px;font-weight:800}
 .sub{color:var(--muted);font-size:.85rem}
@@ -40,12 +39,13 @@ background:radial-gradient(circle at 18% 22%,rgba(255,255,255,.12),transparent 2
 .tile .scene{position:relative;display:block}
 .tile svg{display:block;width:100%;height:auto;overflow:visible;transition:transform .15s}
 .tile:hover svg{transform:translateY(-3px) scale(1.03)}
-.tile.here svg{filter:drop-shadow(0 0 5px #ffd45e) drop-shadow(0 0 2px #ffd45e)}
+.tile.here svg{filter:drop-shadow(0 0 5px #ffd45e) drop-shadow(0 0 2px #ffd45e);animation:herePulse 2s ease-in-out infinite}
+@keyframes herePulse{0%,100%{filter:drop-shadow(0 0 3px #ffd45e) drop-shadow(0 0 1px #ffd45e)}50%{filter:drop-shadow(0 0 10px #ffd45e) drop-shadow(0 0 3px #ffd45e)}}
 .tile.open svg{filter:drop-shadow(0 0 6px var(--teal)) drop-shadow(0 0 2px var(--teal))}
 .tile .lab{position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);width:max-content;max-width:150%;background:rgba(20,32,43,.93);color:#fff;font-size:.78rem;font-weight:800;line-height:1.15;text-align:center;padding:1px 8px;border-radius:8px}
 .tags{position:absolute;top:-4px;left:0;display:flex;flex-direction:column;gap:3px;align-items:flex-start;z-index:2}
-.tag{font-size:.68rem;font-weight:800;border:2px solid #16222e;border-radius:6px;padding:0 5px;background:#fff;color:#16222e}
-.tag.you{background:var(--gold)}
+.tags .tag{font-size:.68rem;font-weight:800;border:2px solid #16222e;border-radius:6px;padding:0 5px;background:#fff;color:#16222e}
+.tags .tag.you{background:var(--gold)}
 .cost{position:absolute;top:-4px;right:0;z-index:2;font-size:.72rem;font-weight:800;color:#fff;background:#16222e;border-radius:6px;padding:0 6px}
 .cost:empty{display:none}
 
@@ -126,7 +126,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 /* overview layout */
 .top{display:grid;grid-template-columns:1fr;gap:8px;margin:6px 0;align-items:stretch}
 .tcell.pay small{display:block;font-size:.68rem;opacity:.8}
-.top .tcell.econ{grid-column:1/-1}
+.top .tcell.econ{grid-column:1/-1}.tcell.pay .g-vit.inpay{border:0;background:none;padding:0;margin:8px 0 0;box-shadow:none}.tcell.pay .g-vit.inpay .gh{color:inherit;margin:0 0 4px;font-size:.78rem;opacity:.85}
 .tcell{background:rgba(20,32,43,.93);color:#fff;border-radius:12px;padding:6px 12px}
 .tcell .l{display:block;font-size:.64rem;text-transform:uppercase;letter-spacing:.08em;opacity:.75}
 .tcell b{font-size:1.35rem}.tcell small{font-size:.8rem;opacity:.7}
@@ -138,7 +138,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 #econ span.up{color:var(--red)}#econ span.dn{color:var(--green)}
 .grp{border-radius:14px;padding:8px 12px 10px;margin:8px 0;border:2px solid var(--line);background:var(--surface)}
 .gh{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
-.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.three .grp{margin:0;padding:7px 9px 9px}
+.three{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.three .grp{margin:0;padding:7px 9px 9px}
 .three .kv{flex-wrap:nowrap}.three .kv b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}.three .kv span{white-space:nowrap}.three .wr span{width:auto}.three .wr{flex-wrap:wrap;gap:2px 6px}.three .wr em{min-width:0;margin-left:auto}
 .center.wide{width:94%}
 .jb{columns:175px 5;column-gap:12px}.jb>div{break-inside:avoid;margin-bottom:6px}.result:empty{display:none}.jb2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px}
@@ -188,7 +188,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 .hud{position:sticky;top:0;z-index:4500;max-width:1100px;margin:0 auto 6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 8px;border-radius:16px;background:rgba(20,32,43,.96);color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 .hstats{display:flex;gap:6px;flex-wrap:wrap;flex:1;min-width:0}
 .hud .tcell{background:rgba(255,255,255,.08);padding:3px 10px;border-radius:10px}
-.hud .tcell b{font-size:1.05rem}#hInvC small{display:block;font-size:.62rem;font-weight:700}.hud .tcell.sc b{color:#ffd45e}.hud .tcell.sc small{display:block;font-size:.6rem;opacity:.75}
+.hud .tcell b{font-size:1.05rem}#hInvC small{display:block;font-size:.62rem;font-weight:700}.hud .tcell.sc b{color:#6aa9ff}.hud .tcell.sc small{display:block;font-size:.6rem;opacity:.75}
 .hud .donut{width:38px;height:38px}
 .actbar{display:flex;gap:8px}.actbar .btn{min-height:40px;padding:6px 16px}
 #overScore{margin:8px 0 10px}.bigscore{font-size:1.6rem;font-weight:800;margin:4px 0}.topscore{font-weight:800;color:#1f7a4a;font-size:1.05rem}.prevtop{color:var(--muted);font-size:.9rem}
@@ -197,7 +197,6 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 .ns-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.ns-top .btn{min-height:36px;padding:4px 12px}.ns-l{font-size:.74rem;color:var(--muted);margin-top:4px}
 .les{display:inline-flex;gap:3px;vertical-align:middle}.les i{width:12px;height:12px;border-radius:50%;background:var(--line);display:inline-block}.les i.on{background:#2f8f5b}.les i.cur{background:#fff;border:2px solid #4b78c2;width:10px;height:10px}
 .nowstudy{margin:4px 0 8px;padding:8px 10px;border:2px solid #4b78c2;border-radius:12px;background:color-mix(in srgb,#4b78c2 10%,var(--surface))}
-.ns-c{display:flex;align-items:center;gap:4px;font-size:.82rem;margin-top:4px}.ns-c .ic{width:1.3em;height:1.3em}.ns-c .sep{display:inline-block;width:10px}
 .ns-h{font-size:.9rem}.ns-h span{color:var(--muted);font-size:.78rem}.ns-f{font-size:.8rem;margin-top:4px}
 .mods{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}.mod{font-size:.74rem;padding:2px 8px;border-radius:99px;border:1.5px solid var(--line);background:var(--surface);color:var(--muted)}.mod.done{color:#1f7a4a;border-color:#7cc59c}.mod.next{color:var(--ink);font-weight:800;border-color:#4b78c2;background:color-mix(in srgb,#4b78c2 18%,var(--surface))}
 .lvpath{display:flex;gap:3px;margin-top:3px}.lvpath i{font-style:normal;font-size:.62rem;padding:0 5px;border-radius:5px;background:var(--line);color:var(--muted)}.lvpath i.got{background:#e0a526;color:#16222e;font-weight:800}
@@ -266,7 +265,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   .three,.jb,.jb2{grid-template-columns:minmax(0,1fr)}.jb{columns:1}.nwrow b{font-size:1.6rem}.parts{font-size:.7rem}
   .evcard{padding:24px 18px 18px}.evcard .evtitle{font-size:1.45rem}.evicon{font-size:2.3rem}
   .tile .lab{font-size:.55rem;padding:0 3px;max-width:130%;white-space:normal}
-  .tag,.cost{font-size:.55rem;padding:0 3px}
+  .tags .tag,.cost{font-size:.55rem;padding:0 3px}
   /* phones: map on top, the full panel flows below it (no hiding, the page simply scrolls) */
   .board{height:430px;min-height:0}
   .hud{border-radius:0 0 14px 14px;margin:0 0 6px;padding:5px 6px}.hud .tcell{padding:2px 7px}.hud .tcell b{font-size:.92rem}.hud .tcell .l{font-size:.55rem}.hud .donut{width:30px;height:30px}
@@ -279,7 +278,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   .actbar .btn{flex:1;min-height:48px;font-size:1rem}
   body{padding-bottom:76px}
   .center,.center.wide{position:static;transform:none;width:auto;max-height:none;overflow:visible;margin:10px 6px 28px;padding:10px 12px 14px;border-width:3px;border-radius:18px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
-  #evwrap{position:fixed}
+  #evwrap{position:fixed;z-index:4700}
+  body.pending .actbar{display:none}
   .top{grid-template-columns:auto 1fr}.top .tcell.pay{grid-column:1/-1}
   .loghead{flex-wrap:wrap;gap:6px}.loghead span{flex-wrap:wrap}
   .center h1{font-size:1.15rem}
@@ -378,7 +378,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   .three .kv{flex-direction:column;align-items:flex-start;gap:0;padding:2px 0 3px}.three .kv b{text-align:left;white-space:normal;max-width:100%}
   .three .wr{display:grid;grid-template-columns:minmax(0,1fr);gap:1px 0;margin-top:4px}.three .wr>*{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.three .wr em{margin-left:0;text-align:left;min-width:0}.three .wr .bar{order:3}
 }
-@media (min-width:641px){.three{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr) minmax(0,1fr)}}
+@media@media (min-width:641px){.three{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 .g-vit .mrow b .tr{font-size:.7em}
 @container (min-width:191px){.g-vit .mrow{grid-template-columns:5.8em minmax(0,1fr) auto}}
 #log{resize:vertical}#log.big{height:min(60vh,420px)}
@@ -388,6 +388,30 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 .nowstudy .mod.next{border-color:#2f8f5b;background:linear-gradient(90deg,color-mix(in srgb,#2f8f5b 34%,var(--surface)) var(--p,0%),var(--surface) var(--p,0%))}
 .nowstudy .mod.done{border-color:#4b78c2;background:color-mix(in srgb,#4b78c2 26%,var(--surface));color:#2a4f8f}
 .nowstudy .mod small{font-weight:700;color:var(--muted);margin-left:4px}
+.nowstudy .ns-cost{font-size:.8rem;font-weight:700;color:var(--muted);display:inline-flex;align-items:center;gap:3px;margin-left:8px;white-space:nowrap}
+.nowstudy .ns-cost .ic{width:14px;height:14px}
+
+/* rank-up celebration */
+.rankburst{position:fixed;inset:0;pointer-events:none;z-index:6000;overflow:hidden}
+.rankburst i{position:absolute;top:-12px;width:8px;height:8px;border-radius:2px;opacity:0;animation:rankfall 1.4s ease-in forwards}
+@keyframes rankfall{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(540deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){.rankburst{display:none}}
+/* places list (mobile map alternative) */
+.places{position:absolute;inset:8px;z-index:1200;background:var(--surface);border:3px solid var(--ink);border-radius:16px;overflow:auto;padding:10px 12px;box-shadow:0 10px 28px rgba(0,0,0,.35)}
+.places h3{margin:0 0 8px;font-size:1rem}
+.places .prow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:.88rem}
+.places .prow:last-child{border-bottom:0}
+.places .prow b{font-size:.95rem}
+.places .prow small{color:var(--muted);display:block}
+.places .pclose{float:right;min-height:32px;padding:2px 10px;font-size:.8rem}
+/* day-bar phone summary */
+.daybar .sumline{display:none;font-size:.62rem;opacity:.9;padding:0 2px}
+@media (max-width:640px){
+  .daybar .sumline{display:block}
+  .hud .places-btn{display:inline-flex}
+}
+.places-btn{display:none;min-height:36px;padding:4px 10px;font-size:.8rem}
+
 </style>
 </head>
 <body>
@@ -414,14 +438,14 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
         
     <div class="tcell" id="hNwC" data-tip="Net worth: cash + bank + investments + the resale value of your things, minus any loan and bills you owe. Reach the next rank to win." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Net worth"><use href="#ic-worth"/></svg></span><b id="hNw">$200</b></div>
     <div class="tcell" data-tip="Cash in hand. Pays for food, shopping and rent. Bank savings and investments are not included." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Cash"><use href="#ic-cash"/></svg></span><b id="hCash">$200</b></div>
-    <div class="tcell" data-tip="Happiness: fun, good food and comfort at home raise it. Low happiness cuts your pay, and too long at rock bottom ends the game." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Happiness"><use href="#ic-happy"/></svg></span><b id="hHp">70</b></div>
     <div class="tcell" data-tip="Energy: work and study use it up; food, rest and sleep restore it. Under 30% your shifts pay less and you fall ill more easily." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Energy"><use href="#ic-energy"/></svg></span><b id="hEn">100%</b></div>
+    <div class="tcell" data-tip="Happiness: fun, good food and comfort at home raise it. Low happiness cuts your pay, and too long at rock bottom ends the game." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Happiness"><use href="#ic-happy"/></svg></span><b id="hHp">70</b></div>
     <div class="tcell" data-tip="Health: healthy meals, the gym and sleeping at home raise it. Junk food, hunger and illness lower it. Poor health means more illness and lower pay." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Health"><use href="#ic-health"/></svg></span><b id="hHl">80</b></div>
     <div class="tcell" data-tip="Knowledge: grows with study, devices and investing. Better jobs need more of it, and it raises your shift pay." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Knowledge"><use href="#ic-know"/></svg></span><b id="hKn">10</b></div>
     <div class="tcell" id="hInvC" hidden><span class="l">Invest</span><b id="hInv">$0</b><small id="hInvPL"></small></div>
     <div class="tcell sc" data-tip="score" tabindex="0"><span class="l"><span class="sclbl">Score </span><i class="hinfo" aria-label="How the score is worked out">i</i></span><b id="hScore">0</b><small id="hBest"></small></div>
   </div>
-  <div class="actbar" id="actbar"><button class="btn alt" id="hudLeave">← Leave</button><button class="btn alt" id="hudOv" hidden title="Show the overview window">📋 Overview</button><button class="btn" id="hudEnd">Sleep in Apartment ☾</button></div>
+  <div class="actbar" id="actbar"><button class="btn alt" id="hudLeave">← Leave</button><button class="btn alt places-btn" id="hudPlaces" title="List of places">📍 Places</button><button class="btn alt" id="hudOv" hidden title="Show the overview window">📋 Overview</button><button class="btn" id="hudEnd">Sleep in Apartment ☾</button></div>
   <div class="daybar" id="daybar" aria-hidden="true"></div>
 </header>
 <main class="board" id="board">
@@ -432,21 +456,22 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     <div id="overview">
       <h1>Daily Grind</h1> <button class="mute" id="muteBtn" aria-pressed="false" title="Sound on/off">🔊</button><button class="mute reset" id="resetBtn" title="Wipe the save and start a fresh game">↺ Reset</button><button class="mute" id="previewBtn" aria-pressed="true" title="Ask before big actions, showing what they will cost">🔎 Preview: on</button><span class="saved" title="Your progress is saved in this browser">💾 Auto-saved · <span id="diffTag">Normal</span></span>
       <div class="top">
-        <div class="tcell pay"><span class="l">Current pay</span><b id="pay">$0</b><small id="payRole">no job</small></div>
+        <div class="tcell pay"><span class="l">Current pay</span><b id="pay">$0</b><small id="payRole">no job</small>
+          <div class="grp g-vit inpay">
+            <div class="gh">❤️ Vitals</div>
+            <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-energy"/></svg>Energy</span><div class="bar"><i id="enBar"></i></div><b id="energy">100%</b></div>
+            <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-happy"/></svg>Happy</span><div class="bar"><i id="hpBar"></i></div><b id="happy">70%</b></div>
+            <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-health"/></svg>Health</span><div class="bar"><i id="hlBar"></i></div><b id="health">80%</b></div>
+            <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-know"/></svg>Know</span><div class="bar kb"><i id="knBar"></i></div><b id="know">10</b></div>
+            <div class="meal" id="meal"></div>
+          </div>
+        </div>
         <div class="tcell econ"><span class="l">Economy</span><div id="econ"></div></div>
       </div>
       <div class="goals" id="goals" hidden></div>
       <div class="alerts" id="warn" hidden></div>
       <div class="sumcard" id="sumcard" hidden></div>
       <div class="three">
-        <div class="grp g-vit">
-          <div class="gh">❤️ Vitals</div>
-          <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-energy"/></svg>Energy</span><div class="bar"><i id="enBar"></i></div><b id="energy">100%</b></div>
-          <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-happy"/></svg>Happy</span><div class="bar"><i id="hpBar"></i></div><b id="happy">70%</b></div>
-          <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-health"/></svg>Health</span><div class="bar"><i id="hlBar"></i></div><b id="health">80%</b></div>
-          <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-know"/></svg>Know</span><div class="bar kb"><i id="knBar"></i></div><b id="know">10</b></div>
-          <div class="meal" id="meal"></div>
-        </div>
         <div class="grp g-life">
           <div class="gh">🏠 Life &amp; learning</div>
           <div class="kv"><span>Home</span><b id="homeName"></b></div>
@@ -495,7 +520,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   <ul>
     <li><b>Each day has 24 hours.</b> Walking (<span id="cfgWalk">5 minutes</span> per building), working, studying and shopping all use time. Click <b>Sleep in Apartment</b> (at home) or <b>Sleep outside</b> (anywhere else) when you are done.</li>
     <li><b>Eat once a day</b> and keep an eye on energy and happiness. Low energy makes you ill; low happiness cuts your pay.</li>
-    <li><b>Rent is due <span id="cfgRent">every 4 days</span>.</b> If your cash is negative when it is due, you are evicted.</li>
+    <li><b>Rent is due <span id="cfgRent">every 5 days</span>.</b> If your cash is negative when it is due, you are evicted.</li>
     <li><b>Start simple:</b> you begin with Casual Clothes that last <span id="cfgClothes">5 days</span>. Get a job at the Employment Office, work shifts, then study for better jobs. Replace your clothes at the Clothes Mall before they wear out.</li>
   </ul>
   <p style="font-size:.85rem">The <b>Getting started</b> checklist on the main panel will guide your first days. Your game saves automatically.</p>
@@ -503,15 +528,15 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   <div class="traits" id="traits" role="radiogroup" aria-label="Starting trait"></div></div>
   <div id="diffsWrap"><h3>Choose a difficulty</h3>
   <div class="diffs" id="diffs">
-    <button class="btn alt" data-diff="easy"><b>Easy</b><small>$500 to start, 10 days, cheaper prices, fewer illnesses</small></button>
-    <button class="btn" data-diff="normal" id="welcomeGo"><b>Normal</b><small>$200 to start, 10 days, standard prices</small></button>
-    <button class="btn alt" data-diff="hard"><b>Hard</b><small>$100 to start, 10 days, prices +15%, pay −5%, more illness</small></button>
+    <button class="btn alt" data-diff="easy"><b>Easy</b><small>$500 to start, 15 days, cheaper prices, fewer illnesses</small></button>
+    <button class="btn" data-diff="normal" id="welcomeGo"><b>Normal</b><small>$200 to start, 15 days, standard prices</small></button>
+    <button class="btn alt" data-diff="hard"><b>Hard</b><small>$100 to start, 15 days, prices +15%, pay −5%, more illness</small></button>
   </div></div>
 </div></div>
 <div class="over" id="rules" role="dialog" aria-modal="true" aria-labelledby="rlT"><div class="card rules">
   <h2 id="rlT">How the game ends</h2>
   <h3 class="win">You win</h3>
-  <ul><li><b>Net worth reaches <span id="cfgGoal2">$2,000</span></b>: cash + bank + investments + the resale value of your things, minus hospital debt, rent arrears and any loan you owe<span id="rlWin">, within 30 days</span>. That makes you <b id="cfgRank1">🙂 Comfortable</b> and you have won.</li>
+  <ul><li><b>Net worth reaches <span id="cfgGoal2">$2,000</span></b>: cash + bank + investments + the resale value of your things, minus hospital debt, rent arrears and any loan you owe<span id="rlWin">, within 15 days</span>. That makes you <b id="cfgRank1">🙂 Comfortable</b> and you have won.</li>
   <li>Keep playing for a higher rank: <span id="cfgRanks"><b>💼 Wealthy</b> at $5,000 and <b>👑 Tycoon</b> at $10,000 (Tycoon ends the game)</span>. When time runs out, your best rank is your final result.</li></ul>
   <h3 class="lose">You lose</h3>
   <ul>
@@ -520,7 +545,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     <li><b>Exhaustion:</b> energy at 10% or less at the end of two days in a row.</li>
     <li><b>You gave up:</b> happiness at 10 or less for three days in a row.</li>
     <li><b>Hospitalised:</b> <span id="cfgHungry">three days</span> in a row without a meal.</li>
-    <li><b>Time’s up:</b> <span id="rlTime">Day 30 passes and you are still under $2,000.</span></li>
+    <li><b>Time’s up:</b> <span id="rlTime">Day 15 passes and you are still under $2,000.</span></li>
   </ul>
   <h3>Stress that builds before then</h3>
   <ul>
@@ -580,257 +605,268 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 <script>
 (function(){
   /* ================= MASTER CONFIG =================
-     Change these numbers to tune the game. Nothing else needs editing.
-     Group 1: world news, macro storylines and the price index.
-     Group 2: job qualifications.
-     Group 3: time (day length, walking, rent cycle, game length, how long actions take).
-     Group 4: clothes (price, how long they last, bargaining).
-     Group 5: health, illness and the hospital.
-     Group 6: food, cooking, the fridge and hunger.
-     Group 7: burnout from too much studying.
-     Group 8: self-study, sleep and rest, the lottery, score and ranks.
-     (More groups will be added here, one at a time.) */
+    Change these numbers to tune the game. Nothing else needs editing.
+    Group 1: world news, macro storylines and the price index.
+    Group 2: job qualifications.
+    Group 3: time (day length, walking, rent cycle, game length, how long actions take).
+    Group 4: clothes (price, how long they last, bargaining).
+    Group 5: health, illness and the hospital.
+    Group 6: food, cooking, the fridge and hunger.
+    Group 7: burnout from too much studying.
+    Group 8: self-study, sleep and rest, the lottery, score and ranks.
+    (More groups will be added here, one at a time.) */
   var CONFIG={
+    /* Starting values for a new game. */
+    start:{energy:85},
+    /* Certificate tuition: the first qualification of each track, before the price index. Each new game moves each track's fee by up to certVariance either way. */
+    education:{certFee:{sal:43,fnb:45,fin:79,tech:52,med:55,cus:95,eng:58},certVariance:0.05},
+    /* Night events. Each night: a big event may start (bigChance), but only when no saga or macro shock is running and bigGap days have passed since one ended. A big event is a saga (sagaShare) or a macro shock. Separately, one daily event may happen (story, item, news, basic, decision, or none); the odds are relative weights and do not need to add to 1. The daily event happens even while a saga or macro shock is running. macroDays is how many days a macro shock lasts. */
+    events:{bigChance:0.2,sagaShare:0.5,bigGap:3,macroDays:[3,5],story:0.2,item:0.2,news:0.1,basic:0,decision:0.3,none:0.2},
     macro:{
       /* Master dial for ALL world news, macro shocks and storylines.
-         1 = normal, 0 = news has no economic effect, 2 = twice as strong. */
+        1 = normal, 0 = news has no economic effect, 2 = twice as strong. */
       strength:2,
       /* Fine dials, multiplied on top of the master dial (1 = normal). */
       priceStrength:0.3,    // how much news moves the price index
-      wageStrength:0.6,     // how much news moves shift pay
-      rateStrength:1.5,     // how much news moves bank interest
-      marketStrength:1.4,   // how much news moves investments (market mood)
-      layoffStrength:1.5,   // chance of layoffs and workplace closures during a crisis
+      wageStrength:0.6,    // how much news moves shift pay
+      rateStrength:1.5,    // how much news moves bank interest
+      marketStrength:1.4,  // how much news moves investments (market mood)
+      layoffStrength:1.5,  // chance of layoffs and workplace closures during a crisis
       illnessStrength:2,  // extra illness during pandemics and outbreaks
       /* A news headline hits partly today; the rest drifts in over the next days. */
       shareToday:0.35,          // 0.35 = 35% today, 65% spread over the following days
-      bigNewsDays:[4,14],       // how long big stories (war, crisis, boom...) keep drifting
+      bigNewsDays:[4,14],      // how long big stories (war, crisis, boom...) keep drifting
       smallNewsDays:[3,7],      // how long ordinary economic news keeps drifting
       badNewsMarket:-0.35,      // daily market mood during bad headlines (war, crash...)
       goodNewsMarket:0.25,      // daily market mood during good headlines (boom, rally...)
       outbreakIllness:1.6,      // illness multiplier during pandemic/lockdown news
-      shockMarketScale:0.6      // dampens market mood from one-off macro shocks
+      shockMarketScale:0.6,    // dampens market mood from one-off macro shocks
+      priceReversion:0.03,     // each day, prices drift this share of the way back towards the difficulty's base price
+      /* A running story does not hit at a constant rate. Each day its effect follows a curve: it builds, peaks mid-story, then fades, with a random daily swing on top. */
+      curveLow:0.5,            // a story's daily effect on its first and last day (× its listed size)
+      curvePeak:1.4,           // a story's daily effect at its middle day
+      dailyJitter:0.3          // each day's effect varies by plus or minus this share
     },
     limits:{
       /* Hard floors and ceilings, however bad or good the news gets. */
-      priceMin:0.5, priceMax:3,     // price index: 0.5 = half price, 3 = triple price
+      priceMin:0.5, priceMax:3,    // price index: 0.5 = half price, 3 = triple price
       /* Each new game starts with a random price index in this range (on top of the difficulty's prices). */
       startPriceMin:0.94, startPriceMax:1.06,
       wageMin:0.7,  wageMax:1.5,    // pay index
       rateMin:0,    rateMax:5,      // bank interest, % per day
-      marketMin:-4, marketMax:4     // market mood (drives ETF, hedge fund, crypto)
+      marketMin:-4, marketMax:4    // market mood (drives ETF, hedge fund, crypto)
     },
     market:{
       /* How investments react to the economy. */
       rateHit:1.5,      // mood drop per +1 point of interest rate
-      priceHit:8,       // mood drop per +100% prices (8 = a 10% price jump costs 0.8)
-      closureHit:1.5,   // mood drop when a workplace closes
-      reopenLift:0.5,   // mood lift when a workplace reopens
-      dailyCalm:0.75,   // each day mood keeps 75% of yesterday (lower = settles faster)
-      dailyNoise:0.7,   // random daily swing in mood, plus or minus
+      priceHit:8,      // mood drop per +100% prices (8 = a 10% price jump costs 0.8)
+      closureHit:1.5,  // mood drop when a workplace closes
+      reopenLift:0.5,  // mood lift when a workplace reopens
+      dailyCalm:0.75,  // each day mood keeps 75% of yesterday (lower = settles faster)
+      dailyNoise:0.7,  // random daily swing in mood, plus or minus
       /* Savings and investments follow the economy. News (central bank moves, crises, booms)
-         changes the savings rate, and the savings rate drives the fixed deposit.
-         ETF, hedge fund and crypto follow the market mood, and are also pulled down when
-         interest is above its normal level. The LOAN is not affected: its rates are fixed in CONFIG.loan. */
-      rateBase:1,         // the normal savings rate (% a day) that interest drifts back to
+        changes the savings rate, and the savings rate drives the fixed deposit.
+        ETF, hedge fund and crypto follow the market mood, and are also pulled down when
+        interest is above its normal level. The LOAN is not affected: its rates are fixed in CONFIG.loan. */
+      rateBase:1,        // the normal savings rate (% a day) that interest drifts back to
       rateReversion:0.1,  // each morning interest closes this share of its gap to rateBase (0 = never drifts back)
-      rateBeta:{etf:0.3, hf:0.4, cry:0.6}   // expected daily return lost per +1 point of interest above rateBase (gained when below)
+      rateBeta:{etf:0.3, hf:0.4, cry:0.6}  // expected daily return lost per +1 point of interest above rateBase (gained when below)
     },
     jobs:{
       /* Each new game, every job's pay (as set in CAREERS) is moved up or down at random by up to this much.
-         0.05 = ±5%. The variation is fixed for the whole game. */
+        0.05 = ±5%. The variation is fixed for the whole game. */
       payVary:0.05,
       /* Work experience: jobs paying MORE than payAbove a shift (as shown on the board) need this many
-         shifts already worked at the same workplace (any role there counts). Without them the interview
-         still takes 1h and fails with "Not enough relevant working experience". shifts:0 switches this off. */
+        shifts already worked at the same workplace (any role there counts). Without them the interview
+        still takes 1h and fails with "Not enough relevant working experience". shifts:0 switches this off. */
       experience:{payAbove:150, shifts:5},
       /* ---- Automatic rule (used for every job NOT listed in 'pick' below) ----
-         A job always needs its own track at its own level (set in CAREERS).
-         Better-paid jobs also need a second, then a third qualification, taken in order
-         from that building's list in COMP. */
+        A job always needs its own track at its own level (set in CAREERS).
+        Better-paid jobs also need a second, then a third qualification, taken in order
+        from that building's list in COMP. */
       secondQualPay:250,      // jobs paying this much or more need a second qualification
-      thirdQualPay:450,       // ...and this much or more need a third
-      secondQualMaxLevel:2,   // highest level asked for the second one (2 = Degree)
-      thirdQualLevel:1,       // level asked for the third one (1 = Certificate)
+      thirdQualPay:450,      // ...and this much or more need a third
+      secondQualMaxLevel:2,  // highest level asked for the second one (2 = Degree)
+      thirdQualLevel:1,      // level asked for the third one (1 = Certificate)
       /* Knowledge needed on top: from this job level up, base + perLevel for each level above 2.
-         With the defaults: Degree jobs need 20, Honours 35, Masters 50. */
-      knowledgeByLevel:{Degree:20, Honours:35, Masters:50},   // a job asks for the knowledge of its highest qualification
+        With the defaults: Degree jobs need 20, Honours 35, Masters 50. */
+      knowledgeByLevel:{Degree:20, Honours:35, Masters:50},  // a job asks for the knowledge of its highest qualification
       /* ---- Hand-picked qualifications (these replace the automatic rule) ----
-         Write the role name exactly as the Employment Office shows it, then a list of
-         qualifications as '<Track> <Level>'.
-         Tracks: Sales, Food & Beverage, Finance, Technology, Medical Health, Engineering.
-         Levels: Certificate, Degree, Honours, Masters
-         (not every track has every level; Sales and Food & Beverage stop at Degree, Finance and Technology at Masters).
-         An empty list [] means no qualification is needed.
-         One role name is shared (Repair Technician: Thrift Store and Electronics Store); for it, put the
-         card name first, e.g. 'Thrift Store (Workshop): Repair Technician'.
-         If a line has a typo, the game keeps the automatic rule for that job and shows
-         a red warning in the Daily log when the game loads.
-         Add 'knowledge:<number>' as the last item to set the knowledge needed directly.
-         Example lines (remove the // to use them):
-           'Gym Instructor': ['Medicine Certificate', 'Sales Certificate'],
-           'Line Worker': ['Engineering Certificate'],
-           'Bank Investment Associate': ['Finance Degree', 'Technology Degree', 'knowledge:30'],  */
+        Write the role name exactly as the Employment Office shows it, then a list of
+        qualifications as '<Track> <Level>'.
+        Tracks: Sales, Food & Beverage, Finance, Technology, Medicine, Engineering, Customer Service.
+        Levels: Certificate, Degree, Honours, Masters
+        (not every track has every level; Customer Service is a Certificate only, Sales and Food & Beverage stop at Degree, Finance and Technology at Masters).
+        An empty list [] means no qualification is needed.
+        One role name is shared (Repair Technician: Thrift Store and Electronics Store); for it, put the
+        card name first, e.g. 'Thrift Store (Workshop): Repair Technician'.
+        If a line has a typo, the game keeps the automatic rule for that job and shows
+        a red warning in the Daily log when the game loads.
+        Add 'knowledge:<number>' as the last item to set the knowledge needed directly.
+        Example lines (remove the // to use them):
+          'Gym Instructor': ['Medicine Certificate', 'Sales Certificate'],
+          'Line Worker': ['Engineering Certificate'],
+          'Bank Investment Associate': ['Finance Degree', 'Technology Degree', 'knowledge:30'],  */
       pick:{
 
   // ---- Factory ----
-  'Line Worker':        ['Engineering Certificate'],                                                     // $120
-  'Technician':         ['Engineering Certificate', 'Technology Certificate'],                           // $180
+  'Line Worker':        ['Engineering Certificate'],                                                    // $120
+  'Technician':        ['Engineering Certificate', 'Technology Certificate'],                          // $180
   'Design Engineer':    ['Engineering Degree', 'Technology Certificate'],                                // $250
   'Senior Engineer':    ['Engineering Degree', 'Technology Degree', 'Finance Certificate'],              // $330
-  'Project Lead':       ['Engineering Honours', 'Technology Degree', 'Finance Certificate'],             // $400
+  'Project Lead':      ['Engineering Honours', 'Technology Degree', 'Finance Certificate'],            // $400
   'Principal Engineer': ['Engineering Masters', 'Technology Certificate', 'Finance Certificate'],        // $480
-  'Chief Engineer':     ['Engineering Masters', 'Technology Degree', 'Finance Certificate'],             // $700
-  'Forklift Driver':    ['Engineering Certificate'],                                                     // $110
+  'Chief Engineer':    ['Engineering Masters', 'Technology Degree', 'Finance Certificate'],            // $700
+  'Forklift Driver':    ['Engineering Certificate'],                                                    // $110
 
   // ---- Fast Food ----
   'Crew Member':        [],                                                                              // $70
-  'Shift Supervisor':   ['Food & Beverage Certificate'],                                                 // $110
-  'Store Manager':      ['Food & Beverage Certificate', 'Sales Certificate'],                            // $180
-  'Kitchen Hand':       [],                                                                              // $65
-  'Delivery Rider':     [],                                                                              // $80
-  'Grill Cook':         ['Food & Beverage Certificate'],                                                 // $120
-  'Area Manager':       ['Food & Beverage Degree', 'Finance Certificate'],                               // $220
+  'Shift Supervisor':  ['Food & Beverage Certificate'],                                                // $110
+  'Store Manager':      ['Food & Beverage Certificate', 'Customer Service Certificate'],                // $180
+  'Kitchen Hand':      [],                                                                              // $65
+  'Delivery Rider':    [],                                                                              // $80
+  'Grill Cook':        ['Food & Beverage Certificate'],                                                // $120
+  'Area Manager':      ['Food & Beverage Degree', 'Finance Certificate'],                              // $220
 
   // ---- Restaurant ----
-  'Dishwasher':         [],                                                                              // $85
-  'Waiter':             ['Sales Certificate'],                                                           // $105
-  'Chef':               ['Food & Beverage Degree'],                                                      // $180
+  'Dishwasher':        [],                                                                              // $85
+  'Waiter':            ['Customer Service Certificate'],                                                // $105
+  'Chef':              ['Food & Beverage Degree'],                                                      // $180
   'Master Chef':        ['Food & Beverage Degree', 'Sales Degree'],                                      // $300
-  'Restaurant Manager': ['Food & Beverage Degree', 'Sales Degree', 'Finance Certificate'],               // $310
+  'Restaurant Manager': ['Food & Beverage Degree', 'Sales Degree', 'Finance Certificate'],              // $310
 
   // ---- Supermarket ----
-  'Shelf Stacker':       [],                                                                             // $75
-  'Cashier':             [],                                                                             // $85
-  'Store Supervisor':    ['Sales Certificate'],                                                          // $140
+  'Shelf Stacker':      [],                                                                            // $75
+  'Cashier':            [],                                                                            // $85
+  'Store Supervisor':    ['Customer Service Certificate'],                                              // $140
   'Supermarket Manager': ['Sales Degree', 'Finance Certificate'],                                        // $230
-  'Delivery Driver':     [],                                                                             // $90
-  'Product Promoter':    ['Sales Degree'],                                                               // $190
+  'Delivery Driver':    [],                                                                            // $90
+  'Product Promoter':    ['Sales Degree'],                                                              // $190
 
   // ---- Clothes Mall ----
-  'Sales Clerk':         [],                                                                             // $95
-  'Visual Merchandiser': ['Sales Certificate'],                                                          // $150
+  'Sales Clerk':        [],                                                                            // $95
+  'Visual Merchandiser': ['Customer Service Certificate'],                                              // $150
   'Boutique Manager':    ['Sales Degree', 'Finance Certificate'],                                        // $250
-  'Sales Promoter':      ['Sales Certificate'],                                                          // $150
-  'Mall Manager':        ['Sales Degree', 'Finance Degree', 'Technology Certificate'],                   // $320
+  'Sales Promoter':      ['Customer Service Certificate'],                                              // $150
+  'Mall Manager':        ['Sales Degree', 'Finance Degree', 'Technology Certificate'],                  // $320
 
   // ---- Thrift Store ----
-  'Shop Assistant':       [],                                                                            // $70
-  'Thrift Store Manager': ['Sales Certificate'],                                                         // $130
-  'Sorter':               [],                                                                            // $65
-  'Thrift Store (Workshop): Repair Technician': ['Engineering Certificate'],                             // $140
+  'Shop Assistant':      [],                                                                            // $70
+  'Thrift Store Manager': ['Customer Service Certificate'],                                              // $140
+  'Sorter':              [],                                                                            // $65
+  'Thrift Store (Workshop): Repair Technician': ['Engineering Certificate'],                            // $140
 
   // ---- Pawn Shop ----
   'Counter Assistant':  [],                                                                              // $80
   'Appraiser':          ['Finance Certificate', 'Sales Certificate'],                                    // $170
-  'Pawnbroker':         ['Finance Degree', 'Sales Degree'],                                              // $290
-  'Security Guard':     [],                                                                              // $95
-  'Bookkeeper':         ['Finance Certificate'],                                                         // $150
+  'Pawnbroker':        ['Finance Degree', 'Sales Degree'],                                              // $290
+  'Security Guard':    [],                                                                              // $95
+  'Bookkeeper':        ['Finance Certificate'],                                                        // $150
 
   // ---- Bank ----
   'Teller':              ['Finance Certificate'],                                                        // $110
-  'Internal Auditor':    ['Finance Degree'],                                                             // $150
-  'Market Risk Analyst': ['Finance Degree', 'Technology Certificate'],                                   // $240
-  'Rates Trader':        ['Finance Degree', 'Sales Degree', 'Technology Certificate'],                   // $330
-  'Tech Developer':      ['Technology Masters', 'Finance Degree'],                                       // $410
-  'Head Trader':         ['Finance Masters', 'Sales Degree', 'Technology Certificate'],                  // $450
+  'Internal Auditor':    ['Finance Degree'],                                                            // $150
+  'Market Risk Analyst': ['Finance Degree', 'Technology Certificate'],                                  // $240
+  'Rates Trader':        ['Finance Degree', 'Sales Degree', 'Technology Certificate'],                  // $330
+  'Tech Developer':      ['Technology Masters', 'Finance Degree'],                                      // $410
+  'Head Trader':        ['Finance Masters', 'Sales Degree', 'Technology Certificate'],                  // $450
 
   // ---- Hospital ----
   'Hospital Porter':      [],                                                                            // $90
-  'Nursing Aide':         ['Medicine Certificate'],                                                      // $140
-  'Nurse':                ['Medicine Degree'],                                                           // $210
-  'Senior Nurse':         ['Medicine Degree', 'Technology Certificate'],                                 // $290
+  'Nursing Aide':        ['Medicine Certificate'],                                                      // $140
+  'Nurse':                ['Medicine Degree'],                                                          // $210
+  'Senior Nurse':        ['Medicine Degree', 'Technology Certificate'],                                // $290
   'Junior Doctor':        ['Medicine Honours'],                                                          // $330
   'Specialist Doctor':    ['Medicine Masters', 'Technology Certificate'],                                // $460
-  'Consultant':           ['Medicine Masters', 'Finance Degree'],                                        // $620
-  'Chief of Surgery':     ['Medicine Masters', 'Finance Degree', 'Technology Certificate'],              // $900
+  'Consultant':          ['Medicine Masters', 'Finance Degree'],                                        // $620
+  'Chief of Surgery':    ['Medicine Masters', 'Finance Degree', 'Technology Certificate'],              // $900
   'Cleaner':              [],                                                                            // $75
-  'Lab Technician':       ['Medicine Certificate', 'Technology Certificate'],                            // $180
-  'General Manager':      ['Finance Degree', 'Medicine Degree', 'Technology Certificate'],               // $330
+  'Lab Technician':      ['Medicine Certificate', 'Technology Certificate'],                            // $180
+  'General Manager':      ['Finance Degree', 'Medicine Degree', 'Technology Certificate'],              // $330
 
   // ---- Electronics Store ----
   'Stock Clerk':        [],                                                                              // $90
-  'Sales Assistant':    ['Sales Certificate'],                                                           // $130
-  'Sales Director':     ['Sales Degree', 'Technology Degree', 'Finance Degree'],                         // $350
-  'Data Annotator':     ['Technology Certificate'],                                                      // $150
-  'Software Developer': ['Technology Degree'],                                                           // $210
+  'Sales Assistant':    ['Customer Service Certificate'],                                                // $170
+  'Sales Director':    ['Sales Degree', 'Technology Degree', 'Finance Degree'],                        // $350
+  'Data Annotator':    ['Technology Certificate'],                                                      // $150
+  'Software Developer': ['Technology Degree'],                                                          // $210
   'AI Engineer':        ['Technology Degree', 'Engineering Certificate'],                                // $290
-  'Lead Architect':     ['Technology Masters', 'Engineering Degree', 'Finance Certificate'],             // $450
-  'Chief Technologist': ['Technology Masters', 'Engineering Honours', 'Finance Certificate'],             // $660
+  'Lead Architect':    ['Technology Masters', 'Engineering Degree', 'Finance Certificate'],            // $450
+  'Chief Technologist': ['Technology Masters', 'Engineering Honours', 'Finance Certificate'],            // $660
   'Delivery & Install': [],                                                                              // $95
   'Electronics Store (Service): Repair Technician': ['Engineering Certificate', 'Technology Certificate'], // $170
   'IT Support Lead':    ['Technology Degree', 'Engineering Certificate'],                                // $240
 
   // ---- Gym ----
-  'Front Desk':           [],                                                                            // $85
-  'Gym Instructor':       ['Sales Certificate'],                                                         // $150
+  'Front Desk':          [],                                                                            // $85
+  'Gym Instructor':      ['Sales Certificate'],                                                        // $150
   'Operations Assistant': ['Sales Degree', 'Finance Certificate']                                        // $250
 
       }
     },
     time:{
-      dayMinutes:1440,     // length of a day in minutes (1440 = 24 hours). Unused time is slept at day end.
-      walkMinutes:15,       // minutes to walk past one building on the ring road
-      rentEveryDays:5,     // rent is due every this many days
-      gameDays:15,         // how many days a game lasts (all difficulties)
+      dayMinutes:1440,    // length of a day in minutes (1440 = 24 hours). Unused time is slept at day end.
+      walkMinutes:15,      // minutes to walk past one building on the ring road
+      rentEveryDays:5,    // rent is due every this many days
+      gameDays:15,        // how many days a game lasts (all difficulties)
       /* Most actions (eating, studying, shopping, working...) have a cost in 'units' in their
-         own tables. Each unit is turned into minutes like this:
-           minutes = units x minutesPerUnit, rounded to the nearest roundTo, never below minAction.
-         So minutesPerUnit is a dial for how long EVERYTHING takes. With 36:
-           1 unit = 30m, 2 = 1h15, 3 = 1h45, 4 = 2h30, 6 = 3h30, 8 = 4h45, 10 = 6h, 12 = 7h15
-         (Gym classes and walking are set in minutes directly, so this dial doesn't touch them.) */
+        own tables. Each unit is turned into minutes like this:
+          minutes = units x minutesPerUnit, rounded to the nearest roundTo, never below minAction.
+        So minutesPerUnit is a dial for how long EVERYTHING takes. With 36:
+          1 unit = 30m, 2 = 1h15, 3 = 1h45, 4 = 2h30, 6 = 3h30, 8 = 4h45, 10 = 6h, 12 = 7h15
+        (Gym classes and walking are set in minutes directly, so this dial doesn't touch them.) */
       minutesPerUnit:36,
       roundTo:15,
       minAction:15,
       maxWorkMinutes:720,    // most shift time you can work in one day (720 = 12 hours)
       /* Shift length and tiredness by pay. The first row whose pay the job reaches is used.
-         units = shift length (see the table above), energy = % energy a shift costs.
-         Better-paid (more senior) roles work SHORTER shifts, so pay per hour always rises with pay:
-           under $130 = 5h30 ($12-23 an hour), $130-249 = 4h45 ($27-52), $250-449 = 4h15 ($59-106), $450+ = 3h30 ($129+). */
+        units = shift length (see the table above), energy = % energy a shift costs.
+        Better-paid (more senior) roles work SHORTER shifts, so pay per hour always rises with pay:
+          under $130 = 5h30 ($12-23 an hour), $130-249 = 4h45 ($27-52), $250-449 = 4h15 ($59-106), $450+ = 3h30 ($129+). */
       shifts:[
         {pay:450, units:6, energy:6},    // 3h30
         {pay:250, units:7, energy:8},    // 4h15
         {pay:130, units:8, energy:8},    // 4h45
-        {pay:0,   units:9, energy:10}    // 5h30
+        {pay:0,  units:9, energy:10}    // 5h30
       ]
     },
     clothes:{
       /* The three outfits sold at the Clothes Mall.
-         price = base price in $ (prices still move with the economy and difficulty)
-         days  = how many days a new set lasts before it wears out */
+        price = base price in $ (prices still move with the economy and difficulty)
+        days  = how many days a new set lasts before it wears out */
       casual:{name:'Casual Clothes', price:100, days:5},
-      smart: {name:'Smart Casual',   price:180, days:6},
+      smart: {name:'Smart Casual',  price:180, days:6},
       suit:  {name:'Business Suit',  price:300, days:6},
-      startCasualDays:5,   // days left on the Casual Clothes you own at the start (0 = start with none)
+      startCasualDays:5,  // days left on the Casual Clothes you own at the start (0 = start with none)
       wearPerDay:1,        // days of wear lost each night (2 = clothes wear out twice as fast)
       buyUnits:2,          // time to buy an outfit, in units (see CONFIG.time)
       bargainUnits:1,      // time to haggle, in units
       bargainMin:10,        // haggling moves the price by between bargainMin%...
-      bargainMax:10,       // ...and bargainMax%
+      bargainMax:10,      // ...and bargainMax%
       bargainWinChance:0.5 // chance the price goes DOWN when you haggle (0.5 = 50/50)
     },
     health:{
       start:80,              // health at the start of a game (0-100)
       /* Each night health changes by these amounts, added together. */
       nightly:{
-        always:-1,           // everyone loses a little each day
+        always:-1,          // everyone loses a little each day
         skippedMeal:-10,      // extra if you did not eat today
-        sick:-6,             // extra while you have an illness
+        sick:-6,            // extra while you have an illness
         lowEnergy:-2,        // extra if energy is below lowEnergyBelow
         lowEnergyBelow:20,
-        burnout:-3           // extra while burnt out
+        burnout:-3          // extra while burnt out
       },
       /* Health gained from sleep: perHour x the hours you still have left when you go to bed, never more than max.
-         Sleeping anywhere but home gives sleep.awayShare of it. */
+        Sleeping anywhere but home gives sleep.awayShare of it. */
       sleep:{ perHour:1, max:10 },
       poorBelow:30,          // health below this counts as poor health...
-      poorPay:0.9,           // ...and shifts pay this much (0.9 = 10% less)
-      healthyMealCount:3     // healthy meals in the last 5 days needed for the bigger illness cut (see illness)
+      poorPay:0.9,          // ...and shifts pay this much (0.9 = 10% less)
+      healthyMealCount:3    // healthy meals in the last 5 days needed for the bigger illness cut (see illness)
     },
     illness:{
       /* Chance of falling ill each night, by energy. The first row your energy is UNDER is used. */
       byEnergy:[
-        {energyUnder:11,  chance:0.55},   // energy 10 or less
+        {energyUnder:11,  chance:0.55},  // energy 10 or less
         {energyUnder:20,  chance:0.40},
         {energyUnder:30,  chance:0.22},
         {energyUnder:45,  chance:0.08},
@@ -851,146 +887,146 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       junkX:1.8,            // ...multiplies the chance by this
       healthyManyX:0.75,    // healthy meals reaching health.healthyMealCount in 5 days
       healthyFewX:0.9,      // at least one healthy meal in 5 days
-      gymPerVisitCut:0.1,   // each gym visit in the last 5 days takes this much off...
+      gymPerVisitCut:0.1,  // each gym visit in the last 5 days takes this much off...
       gymBestX:0.55,        // ...down to this at most
-      burnoutX:1.5,         // while burnt out
-      checkupX:0.5,         // after a hospital check-up (0.5 = halved)
-      maxChance:0.9         // never higher than this
+      burnoutX:1.5,        // while burnt out
+      checkupX:0.5,        // after a hospital check-up (0.5 = halved)
+      maxChance:0.9        // never higher than this
     },
     hospital:{
       /* Illnesses. While sick you cannot work. Each sick day you choose: get treated at the Hospital,
-         or recover naturally (resting at home raises the nightly chance of recovering).
-         timeUnits = time lost each sick day, happiness = happiness lost each sick day,
-         recover = chance of recovering naturally each night, days = the most it can last untreated,
-         treatCost = treatment fee in $ (or billMin-billMax for serious illnesses). */
-      cold:  {name:'a cold',       timeUnits:6,  happiness:3,  recover:0.50, days:3, treatCost:40},
-      flu:   {name:'the flu',      timeUnits:12, happiness:10, recover:0.30, days:4, treatCost:90},
+        or recover naturally (resting at home raises the nightly chance of recovering).
+        timeUnits = time lost each sick day, happiness = happiness lost each sick day,
+        recover = chance of recovering naturally each night, days = the most it can last untreated,
+        treatCost = treatment fee in $ (or billMin-billMax for serious illnesses). */
+      cold:  {name:'a cold',      timeUnits:6,  happiness:3,  recover:0.50, days:3, treatCost:40},
+      flu:  {name:'the flu',      timeUnits:12, happiness:10, recover:0.30, days:4, treatCost:90},
       dengue:{name:'dengue fever', timeUnits:14, happiness:12, recover:0.15, days:6, billMin:250, billMax:450},
       pneu:  {name:'pneumonia',    timeUnits:16, happiness:15, recover:0.10, days:7, billMin:400, billMax:700},
       /* Natural recovery: extra nightly chance for resting at home while sick. */
       restRecover:0.15,      // each rest (nap) at home while sick adds this...
-      restRecoverMax:0.45,   // ...up to this much in one day
-      sleepRecover:0.10,     // ending the day asleep at home adds this
+      restRecoverMax:0.45,  // ...up to this much in one day
+      sleepRecover:0.10,    // ending the day asleep at home adds this
       /* Treatment at the Hospital: admitChance = chance you are warded for the whole of the next day.
-         The bill (treatment + ward) is charged on the morning after you are released. */
+        The bill (treatment + ward) is charged on the morning after you are released. */
       admitChance:0.8,
       wardDays:1,            // full days spent in the ward when admitted
-      wardDayCost:120,       // ward fee per day (before insurance and price changes)
+      wardDayCost:120,      // ward fee per day (before insurance and price changes)
       hospitalMinEnergy:45,  // energy is raised to at least this when released from the ward
       treatUnits:3, treatEnergy:10, treatHealth:3,
       checkupCost:400, checkupUnits:3, checkupDays:10, checkupHealth:5,
       wardCost:370, wardUnits:6, wardEnergy:14, wardHappiness:8, wardHealth:30,
-      insuranceCost:620, insuranceUnits:1, insuranceCovers:0.8,   // life insurance: bought once, pays 80% of bills for the rest of the game
-      staffDiscount:0.5,     // hospital staff pay this share of bills (0.5 = half price)
+      insuranceCost:620, insuranceUnits:1, insuranceCovers:0.8,  // life insurance: bought once, pays 80% of bills for the rest of the game
+      staffDiscount:0.5,    // hospital staff pay this share of bills (0.5 = half price)
       /* Bills you cannot pay in full work like rent arrears: the shortfall plus interest
-         is repaid automatically from cash each morning, with a late fee on missed instalments. */
-      billInterest:0.10,     // added once to the unpaid part (0.10 = 10%)
+        is repaid automatically from cash each morning, with a late fee on missed instalments. */
+      billInterest:0.10,    // added once to the unpaid part (0.10 = 10%)
       billPlanDays:5,        // repaid over this many days
-      billLateFee:0.05       // late fee on a missed instalment (0.05 = 5% of what was missed)
+      billLateFee:0.05      // late fee on a missed instalment (0.05 = 5% of what was missed)
     },
     food:{
       /* Eating out. units = time (see CONFIG.time), cost in $, energy in %.
-         junk:true = junk food (counts towards CONFIG.illness.junkMeals);
-         healthy:N = a healthy meal that also adds N health.
-         minutes = time in minutes (used instead of units); health = health change (junk food only, replaces junkHealth). */
-      burger: {name:'a burger',                 minutes:60, cost:8,  energy:6,  happiness:1, junk:true, health:-5},
+        junk:true = junk food (counts towards CONFIG.illness.junkMeals);
+        healthy:N = a healthy meal that also adds N health.
+        minutes = time in minutes (used instead of units); health = health change (junk food only, replaces junkHealth). */
+      burger: {name:'a burger',                minutes:60, cost:8,  energy:6,  happiness:1, junk:true, health:-5},
       combo:  {name:'a burger combo meal',      minutes:90, cost:15, energy:12, happiness:1, junk:true, health:-8},
       dinner: {name:'a sit-down dinner',        units:6, cost:40, energy:16, happiness:10, healthy:1},
       tasting:{name:'the chef’s tasting menu',  units:7, cost:90, energy:26, happiness:22, healthy:2},
-      junkHealth:-1,         // health lost each time you eat a junk meal
+      junkHealth:-1,        // health lost each time you eat a junk meal
       /* Groceries from the Supermarket. health = health gained when you eat it at home. */
-      basic:  {name:'Basic groceries',          cost:30, energy:22, happiness:3, health:1},   // must be cooked
-      premium:{name:'Premium fresh groceries',  cost:55, energy:30, happiness:9, health:2},   // ready to eat
+      basic:  {name:'Basic groceries',          cost:30, energy:22, happiness:3, health:1},  // must be cooked
+      premium:{name:'Premium fresh groceries',  cost:55, energy:30, happiness:9, health:2},  // ready to eat
       buyUnits:2,            // time to buy groceries or a bundle
       bundleSize:3,          // portions in a bundle
-      bundleDiscount:0.15,   // bundle saving (0.15 = 15% off)
+      bundleDiscount:0.15,  // bundle saving (0.15 = 15% off)
       kitchenSpace:6,        // grocery items your kitchen can hold
-      cookedSpace:6,         // cooked meals you can keep
-      homeMealsPerDay:3,     // most meals you can eat at home in one day
-      eatMinutes:30,         // time to eat a meal at home
+      cookedSpace:6,        // cooked meals you can keep
+      homeMealsPerDay:3,    // most meals you can eat at home in one day
+      eatMinutes:30,        // time to eat a meal at home
       /* Cooking time in minutes: the first day's meal, then each extra day cooked at the same time. */
       cookFirst:180, cookExtra:30,
       cookFirstMicrowave:105, cookExtraMicrowave:15,
       /* How long food stays fresh: extra days after the day you buy or cook it. */
-      freshDaysFridge:4,     // groceries and cooked meals, with a working fridge
-      freshDaysNoFridge:1,   // ...without one
+      freshDaysFridge:4,    // groceries and cooked meals, with a working fridge
+      freshDaysNoFridge:1,  // ...without one
       bundleDaysFridge:4,    // sealed bundle packs, with a fridge
       bundleDaysNoFridge:2,  // ...without one
       /* Food that goes off WITHOUT a fridge stays in your kitchen marked spoiled. You can still cook it
-         (it makes spoiled meals) and eat it, but it hurts your health. (With a fridge, expired food is thrown out.) */
+        (it makes spoiled meals) and eat it, but it hurts your health. (With a fridge, expired food is thrown out.) */
       spoiledHealth:-8,      // health lost each time you eat spoiled food
-      spoiledHappiness:-3,   // happiness change from eating spoiled food (instead of the usual gain)
+      spoiledHappiness:-3,  // happiness change from eating spoiled food (instead of the usual gain)
       spoiledPoisonChance:0.25, // chance that spoiled food also gives you food poisoning
-      poisonCost:45,         // clinic bill for food poisoning (before insurance and price changes)
+      poisonCost:45,        // clinic bill for food poisoning (before insurance and price changes)
       poisonEnergy:-25,
       poisonHealth:-8,
       /* A bag of chips: a junk snack, not a meal. */
       chips:{cost:6, units:1, happiness:8, energy:-3, health:-2},
       /* Skipping meals */
       hungryEnergy:-20,      // energy lost at night if you did not eat
-      hungryHappiness:-15,   // happiness lost at night if you did not eat
-      hungryPay:0.9,         // shifts pay this much while hungry (0.9 = 10% less)
+      hungryHappiness:-15,  // happiness lost at night if you did not eat
+      hungryPay:0.9,        // shifts pay this much while hungry (0.9 = 10% less)
       hungryDaysToHospital:3 // this many days in a row without a meal ends the game
     },
     burnout:{
       /* Studying (school lessons plus self-study) for MORE than studyMinutes in a day,
-         daysInARow days running, causes burnout. */
+        daysInARow days running, causes burnout. */
       studyMinutes:300,      // 300 = 5 hours
       daysInARow:3,
-      lastsDays:3,           // how long burnout lasts
-      healthHit:-15,         // one-off hits when burnout starts
+      lastsDays:3,          // how long burnout lasts
+      healthHit:-15,        // one-off hits when burnout starts
       energyHit:-10,
       happinessHit:-8,
-      workMinutes:540,       // working this many minutes or MORE in a day (540 = 9 hours)...
+      workMinutes:540,      // working this many minutes or MORE in a day (540 = 9 hours)...
       workDaysInARow:3,      // ...this many days running also causes burnout
       pay:0.8                // shifts pay this much while burnt out (0.8 = 20% less)
       /* While burnt out, health also drops each night (CONFIG.health.nightly.burnout)
-         and you fall ill more easily (CONFIG.illness.burnoutX). */
+        and you fall ill more easily (CONFIG.illness.burnoutX). */
     },
     selfStudy:{
       /* Studying online at home. You need one of these devices; the best one you own counts. */
-      gain:{computer:6, tablet:5, phone:4},   // knowledge per session (was 4/3/2; +2 each)
-      units:5,               // session length (see CONFIG.time; 5 = 3h)
+      gain:{computer:6, tablet:5, phone:4},  // knowledge per session (was 4/3/2; +2 each)
+      units:5,              // session length (see CONFIG.time; 5 = 3h)
       energy:-3,
       health:-3,
       minEnergy:15,          // too tired to study below this
       /* Knowledge also changes by itself each night: */
       nightlyLoss:-1,        // everyone forgets a little
-      nightlyInvesting:1     // having any investment adds this much each night
+      nightlyInvesting:1    // having any investment adds this much each night
       /* Devices add knowledge and happiness each night too: see CONFIG.gadgets. */
     },
     gadgets:{
       /* Each night, every working device you own adds this (phone, tablet and computer add up;
-         if you own the old and new version of one device, only one counts). */
+        if you own the old and new version of one device, only one counts). */
       daily:{
         phone:      {knowledge:4, happiness:2},
-        phoneold:   {knowledge:4, happiness:2},
-        tablet:     {knowledge:6, happiness:5},
+        phoneold:  {knowledge:4, happiness:2},
+        tablet:    {knowledge:6, happiness:5},
         tabletold:  {knowledge:6, happiness:5},
-        computer:   {knowledge:9, happiness:6},
+        computer:  {knowledge:9, happiness:6},
         computerold:{knowledge:9, happiness:6}
       },
       /* For every hour you rest at home (the 2h Rest, plus the hours you sleep at home), these add this much.
-         Applied the next morning; happiness is rounded to whole points. */
+        Applied the next morning; happiness is rounded to whole points. */
       perRestHour:{
         console:{happiness:0.8},
-        tv:     {happiness:0.2, knowledge:0.1},   // second-hand TV
+        tv:    {happiness:0.2, knowledge:0.1},  // second-hand TV
         tvnew:  {happiness:0.2, knowledge:0.1}    // smart TV (only one TV counts)
       },
-      coffeeEnergy:6         // coffee machine: % energy each morning
+      coffeeEnergy:6        // coffee machine: % energy each morning
     },
     sleep:{
-      rateX:1,               // multiplies how fast resting and sleeping restore energy (1 = normal; the Night Owl trait raises it)
+      rateX:1,              // multiplies how fast resting and sleeping restore energy (1 = normal; the Night Owl trait raises it)
       happinessPerHour:1,    // happiness next morning for each full hour slept at home
       maxEnergy:35,          // most energy a night's sleep at home can give
-      awayShare:0.5,         // sleeping away from home gives this share of the energy, health and happiness a night at home gives
+      awayShare:0.5,        // sleeping away from home gives this share of the energy, health and happiness a night at home gives
       napMinutes:120,        // length of a rest at home
-      napHappiness:2         // happiness from a rest at home
+      napHappiness:2        // happiness from a rest at home
     },
     lottery:{
       ticketCost:10,
-      ticketUnits:1,         // time to buy a ticket
-      drawEveryDays:5,       // draws at the end of day 5, 10, 15...
+      ticketUnits:1,        // time to buy a ticket
+      drawEveryDays:5,      // draws at the end of day 5, 10, 15...
       maxTickets:5,          // tickets you can hold for one draw
       winChance:0.12,        // chance each ticket wins
       prizeMin:100, prizeMax:1000,
@@ -999,9 +1035,9 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     loan:{
       /* Loans at the Bank. You can hold ONE loan at a time; what you owe counts against your net worth. */
       enabled:true,
-      step:50,                   // you borrow and repay in steps of this many dollars
+      step:50,                  // you borrow and repay in steps of this many dollars
       baseLimit:1000,            // credit limit before counting what you own...
-      limitPerAsset:2,           // ...plus this many dollars of credit for every $1 you own
+      limitPerAsset:2,          // ...plus this many dollars of credit for every $1 you own
       countCash:true,            // what counts as "owned" for the credit limit
       countSavings:true,
       countInvestments:true,
@@ -1013,10 +1049,10 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
         {days:10, rate:0.06}
       ],
       overdueRate:0.08,          // after the due date, the whole balance grows by this much a day...
-      overdueCompounds:true,     // ...true = on principal + interest (compounding), false = on principal only
-      graceDays:5,               // default (game over) if not repaid in full this many days after the due date
+      overdueCompounds:true,    // ...true = on principal + interest (compounding), false = on principal only
+      graceDays:5,              // default (game over) if not repaid in full this many days after the due date
       defaultIfOwedAbove:10000,  // default (game over) if you ever owe more than this
-      borrowMinutes:15           // time it takes to arrange a loan
+      borrowMinutes:15          // time it takes to arrange a loan
     },
     bankrupt:{
       /* Bankrupt (game over): net worth under netWorthBelow at the end of daysInARow days running. */
@@ -1029,10 +1065,10 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       energy:1, happiness:5, health:5, knowledge:5, educationLevel:50
     },
     /* Net-worth ranks, lowest first. Reaching the first one wins the game; reaching the last one ends it.
-       Keep at least two rows. */
+      Keep at least two rows. */
     ranks:[
       {name:'Comfortable', netWorth:2000,  icon:'🙂'},
-      {name:'Wealthy',     netWorth:5000,  icon:'💼'},
+      {name:'Wealthy',    netWorth:5000,  icon:'💼'},
       {name:'Tycoon',      netWorth:10000, icon:'👑'}
     ],
     /* Group 9, Version 39: clock, trend arrows, toasts, action preview, recap */
@@ -1049,8 +1085,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       toasts:{
         on:true, seconds:2, max:3, vitalWarnings:true,
         words:['you passed the interview','didn’t pass the interview','not enough relevant working experience','no openings now','you were promoted','laid off from','qualification earned',
-               'lottery win','food poisoning','rushed to hospital','is admitting you','released from the hospital','expelled from school','demotes you','late fee','broke down',
-               'milestone:','you reached ']
+              'lottery win','food poisoning','rushed to hospital','is admitting you','released from the hospital','expelled from school','demotes you','late fee','broke down',
+              'milestone:','you reached ']
       },
       /* 4. Action preview: pressing one of these buttons first shows what it will cost, and asks you to confirm.
             actions = button names. More you can add: 'nap','cook','treat','eatc','eatp','checkup','ward','treat_ill','buy','groc','bundle','lotto' */
@@ -1072,36 +1108,36 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       ]
     },
     /* Group 10, Version 40: starting traits.
-       The player picks one on the welcome screen (or none). Each trait is a list of CONFIG changes:
-         {k:'sleep.awayShare', v:0.75}     sets that value to 0.75
-         {k:'food.basic.cost', x:0.7}  multiplies the normal value by 0.7
-       k is the path to any number in CONFIG above. 'plus' and 'minus' are the lines shown on the card, so keep them in step
-       with the numbers. Remove a trait by deleting its block; set on:false to switch traits off. */
+      The player picks one on the welcome screen (or none). Each trait is a list of CONFIG changes:
+        {k:'sleep.awayShare', v:0.75}    sets that value to 0.75
+        {k:'food.basic.cost', x:0.7}  multiplies the normal value by 0.7
+      k is the path to any number in CONFIG above. 'plus' and 'minus' are the lines shown on the card, so keep them in step
+      with the numbers. Remove a trait by deleting its block; set on:false to switch traits off. */
     traits:{
       on:true,
       list:[
         {id:'owl', icon:'🦉', name:'Night Owl',
-         plus:'Resting and sleeping restore 25% more energy, and a night away from home helps 50% more.',
-         minus:'Burning the candle: 1 extra health lost every night.',
-         set:[{k:'sleep.rateX', x:1.25}, {k:'sleep.awayShare', v:0.75}, {k:'health.nightly.always', v:-2}]},
+        plus:'Resting and sleeping restore 25% more energy, and a night away from home helps 50% more.',
+        minus:'Burning the candle: 1 extra health lost every night.',
+        set:[{k:'sleep.rateX', x:1.25}, {k:'sleep.awayShare', v:0.75}, {k:'health.nightly.always', v:-2}]},
         {id:'frugal', icon:'🪙', name:'Frugal',
-         plus:'Groceries cost 30% less, and bundles save 30% instead of 15%.',
-         minus:'Cheap tastes: home meals cheer you up less.',
-         set:[{k:'food.basic.cost', x:0.7}, {k:'food.premium.cost', x:0.7}, {k:'food.bundleDiscount', v:0.3},
+        plus:'Groceries cost 30% less, and bundles save 30% instead of 15%.',
+        minus:'Cheap tastes: home meals cheer you up less.',
+        set:[{k:'food.basic.cost', x:0.7}, {k:'food.premium.cost', x:0.7}, {k:'food.bundleDiscount', v:0.3},
               {k:'food.basic.happiness', v:1}, {k:'food.premium.happiness', v:6}]},
         {id:'book', icon:'📚', name:'Bookworm',
-         plus:'Self-study teaches more (computer +8, tablet +6, phone +5) and you stop forgetting things overnight.',
-         minus:'Long sessions wear you out (−6% energy each) and burnout starts after 4 hours of study a day.',
-         set:[{k:'selfStudy.gain.computer', v:8}, {k:'selfStudy.gain.tablet', v:6}, {k:'selfStudy.gain.phone', v:5},
+        plus:'Self-study teaches more (computer +8, tablet +6, phone +5) and you stop forgetting things overnight.',
+        minus:'Long sessions wear you out (−6% energy each) and burnout starts after 4 hours of study a day.',
+        set:[{k:'selfStudy.gain.computer', v:8}, {k:'selfStudy.gain.tablet', v:6}, {k:'selfStudy.gain.phone', v:5},
               {k:'selfStudy.nightlyLoss', v:0}, {k:'selfStudy.energy', v:-6}, {k:'burnout.studyMinutes', v:240}]},
         {id:'hardy', icon:'🛡️', name:'Hardy',
-         plus:'You start with 90 health and fall ill about a fifth less often.',
-         minus:'All work and no play: resting at home no longer lifts your mood.',
-         set:[{k:'health.start', v:90}, {k:'illness.cutForEveryone', v:0.6}, {k:'sleep.napHappiness', v:0}]},
+        plus:'You start with 90 health and fall ill about a fifth less often.',
+        minus:'All work and no play: resting at home no longer lifts your mood.',
+        set:[{k:'health.start', v:90}, {k:'illness.cutForEveryone', v:0.6}, {k:'sleep.napHappiness', v:0}]},
         {id:'lucky', icon:'🍀', name:'Lucky',
-         plus:'Lottery tickets cost $8 and win 20% of the time instead of 12%.',
-         minus:'Your luck does not cover your body: you start with 70 health.',
-         set:[{k:'lottery.ticketCost', v:8}, {k:'lottery.winChance', v:0.2}, {k:'health.start', v:70}]}
+        plus:'Lottery tickets cost $8 and win 20% of the time instead of 12%.',
+        minus:'Your luck does not cover your body: you start with 70 health.',
+        set:[{k:'lottery.ticketCost', v:8}, {k:'lottery.winChance', v:0.2}, {k:'health.start', v:70}]}
       ]
     }
   };
@@ -1122,7 +1158,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   }
   var NUMW=['zero','one','two','three','four','five','six','seven','eight','nine','ten'];
   function numWord(n){return NUMW[n]||String(n)}
-  function sg(n){return (n<0?'−':'+')+Math.abs(n)}   /* +5 / −3 with a proper minus sign */
+  function sg(n){return (n<0?'−':'+')+Math.abs(n)}  /* +5 / −3 with a proper minus sign */
   function pctTxt(x){return Math.round(x*100)+'%'}
   /* --- helpers that read CONFIG --- */
   function mk(k){var C=CONFIG.macro;return C.strength*(C[k]==null?1:C[k])}
@@ -1146,7 +1182,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function hm(m){m=Math.max(0,Math.round(m));var h=Math.floor(m/60),mm=m%60;return h?(h+'h'+(mm?' '+mm+'m':'')):mm+'m'}
   /* ranks, built from CONFIG.ranks (sorted lowest first) */
   var TIERS=CONFIG.ranks.slice().sort(function(a,b){return a.netWorth-b.netWorth}).map(function(r){return {n:r.name,v:r.netWorth,ic:r.icon}});
-  GOAL=TIERS[0].v;   /* the winning net worth = the first rank */
+  GOAL=TIERS[0].v;  /* the winning net worth = the first rank */
   function reachedTier(){var w=worth(),t=-1;TIERS.forEach(function(x,i){if(w>=x.v)t=i});return t}
   function nextGoal(){return TIERS[Math.min(S.tier+1,TIERS.length-1)].v}
   var DIFF={
@@ -1162,7 +1198,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   var ICO={
     cash:'<rect x="1.6" y="5.6" width="20.8" height="12.8" rx="2" fill="#2f8f5b" stroke="#16222e" stroke-width="1.7"/><rect x="4" y="8" width="16" height="8" rx="1" fill="none" stroke="#bfe6cf" stroke-width="1"/><circle cx="12" cy="12" r="3.4" fill="#bfe6cf" stroke="#16222e" stroke-width="1.1"/><path d="M13.2 10.7c-.3-.4-.7-.6-1.2-.6-.7 0-1.2.4-1.2.9 0 1.3 2.5.7 2.5 2 0 .5-.6.9-1.3.9-.6 0-1.1-.3-1.3-.7M12 9.4v.7M12 13.9v.7" fill="none" stroke="#16222e" stroke-width="1.1" stroke-linecap="round"/><circle cx="5.6" cy="12" r=".9" fill="#bfe6cf"/><circle cx="18.4" cy="12" r=".9" fill="#bfe6cf"/>',
     energy:'<path d="M13.6 2.2 4.8 13.4h6.1l-1.5 8.4 9-11.4h-6.2z" fill="#3b8fe0" stroke="#16222e" stroke-width="1.8" stroke-linejoin="round"/>',
-    happy:'<circle cx="12" cy="12" r="9.6" fill="#f27fae" stroke="#16222e" stroke-width="1.9"/><circle cx="8.5" cy="10" r="1.4" fill="#16222e"/><circle cx="15.5" cy="10" r="1.4" fill="#16222e"/><path d="M7.2 14c1.1 2.5 2.9 3.6 4.8 3.6s3.7-1.1 4.8-3.6" fill="none" stroke="#16222e" stroke-width="1.9" stroke-linecap="round"/>',
+    happy:'<circle cx="12" cy="12" r="9.4" fill="#fff" stroke="#16222e" stroke-width="1.9"/><circle cx="8.8" cy="10" r="1.3" fill="#16222e"/><circle cx="15.2" cy="10" r="1.3" fill="#16222e"/><path d="M7.7 14.1c1 2.1 2.5 3.2 4.3 3.2s3.3-1.1 4.3-3.2" fill="none" stroke="#16222e" stroke-width="1.9" stroke-linecap="round"/>',
     know:'<path d="M12 4.4 1.8 9.2 12 14l10.2-4.8z" fill="#8a5cc2" stroke="#16222e" stroke-width="1.9" stroke-linejoin="round"/><path d="M6 11.2v4.4c1.6 1.6 3.6 2.4 6 2.4s4.4-.8 6-2.4v-4.4L12 14z" fill="#6c45a3" stroke="#16222e" stroke-width="1.9" stroke-linejoin="round"/>',
     health:'<path d="M12 20.6s-8.4-4.9-8.4-11.1C3.6 6.6 5.8 4.4 8.5 4.4c1.5 0 2.8.7 3.5 1.9.7-1.2 2-1.9 3.5-1.9 2.7 0 4.9 2.2 4.9 5.1 0 6.2-8.4 11.1-8.4 11.1z" fill="#e2564a" stroke="#16222e" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 9.2v6M9 12.2h6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>',
     time:'<circle cx="12" cy="12.6" r="9.2" fill="#0f7f82" stroke="#16222e" stroke-width="1.8"/><circle cx="12" cy="12.6" r="6.4" fill="#fbf3e2"/><path d="M12 12.6V8.8M12 12.6l2.8 1.7" stroke="#16222e" stroke-width="2" stroke-linecap="round"/>'
@@ -1194,9 +1230,13 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       if(el&&el!==cur){show(el);hideT=setTimeout(hide,6000)}else hide()});
     window.addEventListener('scroll',hide,true);
   })();
-  /* turn "1h 30m, +12% energy, +1 happiness, −8 health" into icon + number: used for every option line */
+  /* turn "1h 30m, +12% energy, +1 happiness, −8 health" into icon + number: used for every option line.
+    Offset-based check replaces the previous lookbehind (?<!of ), which older Safari cannot parse. */
   function statIcons(s){
-    s=String(s).replace(/(^|[\s(>])(?<!of )(\d+h(?: \d+m)?|\d+m)(?=,| ·| to buy|\s*$)/g,function(_,a,t){return a+ic('time')+t})
+    s=String(s).replace(/(^|[\s(>])(\d+h(?: \d+m)?|\d+m)(?=,| ·| to buy|\s*$)/g,function(_,pre,t,off,str){
+      if(off>=2&&str.substr(off-2,3)==='of ')return _;
+      return pre+ic('time')+t;
+    })
       .replace(/([+\-−]?\d+(?:\.\d+)?%) energy\b/g,function(_,v){return ic('energy')+v})
       .replace(/([+\-−]?\d+(?:\.\d+)?) happiness\b/g,function(_,v){return ic('happy')+v})
       .replace(/([+\-−]?\d+(?:\.\d+)?) health\b/g,function(_,v){return ic('health')+v})
@@ -1220,7 +1260,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   var COMFORT={tv:'TV',tvnew:'Smart TV',console:'Game console',fridge:'Refrigerator',fridgeold:'Refrigerator',microwave:'Microwave',coffee:'Coffee machine',computer:'Computer',computerold:'Computer',tablet:'Tablet',tabletold:'Tablet'};
   function comfortItems(){var seen={},a=[];Object.keys(COMFORT).forEach(function(k){if(S.items[k]&&!S.broken[k]&&!seen[COMFORT[k]]){seen[COMFORT[k]]=1;a.push(COMFORT[k])}});return a}
   function comfortMult(){return 1+0.1*comfortItems().length}
-  function restRate(){return HOUSE[S.home].rate*comfortMult()*(CONFIG.sleep.rateX||1)}   /* energy % per hour of rest */
+  function restRate(){return HOUSE[S.home].rate*comfortMult()*(CONFIG.sleep.rateX||1)}  /* energy % per hour of rest */
   function sleepGain(min){return Math.min(CONFIG.sleep.maxEnergy,Math.round(min/60*restRate()))}
   var ITEMS={
     clothes:{n:'Work gloves',ic:'🧤',p:25,shop:'thrift',d:'Adds $15 to every shift you work'},
@@ -1250,12 +1290,14 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   var JOBS={free:{n:'Freelance coding',ap:6,pay:80,en:5,computer:1}};
   var TRACKS={
     /* L = modules grouped by level. Higher levels have more modules. */
-    sal:{n:'Sales',lv:['Certificate','Degree'],L:[['Customer Service','Product Knowledge'],['Negotiation','Retail Analytics','Merchandising','Sales Leadership']]},
+    sal:{n:'Sales',lv:['Certificate','Degree'],L:[['Customer Relations','Product Knowledge'],['Negotiation','Retail Analytics','Merchandising','Sales Leadership']]},
     fnb:{n:'Food & Beverage',lv:['Certificate','Degree'],L:[['Food Hygiene','Cooking Basics'],['Kitchen Management','Food Costing','Advanced Cuisine','Master Chef Practicum']]},
     fin:{n:'Finance',lv:['Certificate','Degree','Masters'],L:[['Accounting Basics','Business Maths'],['Financial Reporting','Markets & Investing','Risk Management','Portfolio Strategy'],['Derivatives','Asset Management','Valuation','Finance Thesis']]},
     tech:{n:'Technology',lv:['Certificate','Degree','Masters'],L:[['Programming Basics','Data Literacy'],['Web Development','Databases','Machine Learning','Cloud Systems'],['Deep Learning','AI Systems','Cyber Security','Distributed Systems']]},
     med:{n:'Medicine',lv:['Certificate','Degree','Honours','Masters'],L:[['Human Biology','First Aid & Hygiene'],['Anatomy','Pharmacology','Clinical Skills','Pathology'],['Surgery Basics','Internal Medicine','Paediatrics','Medical Ethics'],['Clinical Residency I','Clinical Residency II','Emergency Medicine','Public Health']]},
-    eng:{n:'Engineering',lv:['Certificate','Degree','Honours','Masters'],L:[['Mechanics Basics','Workshop Safety'],['Circuits & Electronics','CAD Design','Thermodynamics','Systems Engineering'],['Control Theory','Advanced Design','Project Management','Honours Project'],['Robotics','Structural Analysis','Energy Systems','Masters Project']]}
+    eng:{n:'Engineering',lv:['Certificate','Degree','Honours','Masters'],L:[['Mechanics Basics','Workshop Safety'],['Circuits & Electronics','CAD Design','Thermodynamics','Systems Engineering'],['Control Theory','Advanced Design','Project Management','Honours Project'],['Robotics','Structural Analysis','Energy Systems','Masters Project']]},
+    /* Customer Service: a single-module Certificate with longer lessons (3 lessons x 3h = 9h) */
+    cus:{n:'Customer Service',lv:['Certificate'],L:[['Customer Care Essentials']],les:{Certificate:3},hrs:{Certificate:3}}
   };
   /* derived module data: flat list m, cumulative level ends c */
   Object.keys(TRACKS).forEach(function(t){var T=TRACKS[t],c=0;T.m=[];T.c=[];T.L.forEach(function(l){T.m=T.m.concat(l);c+=l.length;T.c.push(c)})});
@@ -1263,12 +1305,13 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function levelOf(t,n){var c=TRACKS[t].c;for(var i=0;i<c.length;i++)if(n<c[i])return i;return c.length-1}
   function posInLevel(t,n){var i=levelOf(t,n),start=i?TRACKS[t].c[i-1]:0;return {i:i,k:n-start+1,of:TRACKS[t].L[i].length}}
   function modCost(t,n){return 50+levelOf(t,n)*35}
-  /* Qualification -> modules (2-4) -> lessons (2-4). Each lesson is 1-4 hours; higher qualifications have more and longer lessons. */
+  /* Qualification -> modules (1-4) -> lessons (2-4). Each lesson is 1-3 hours; higher qualifications have more and longer lessons. */
   var LES_N={Certificate:2,Degree:3,Honours:3,Masters:4}, LES_H={Certificate:1,Degree:2,Honours:3,Masters:3};
-  function lesCount(t,n){return LES_N[TRACKS[t].lv[levelOf(t,n)]]}
-  function lesHours(t,n){return LES_H[TRACKS[t].lv[levelOf(t,n)]]}
+  /* a pathway can override the defaults with les:{Level:n} (lessons per module) and hrs:{Level:h} (hours per lesson) */
+  function lesCount(t,n){var T=TRACKS[t],lv=T.lv[levelOf(t,n)];return (T.les&&T.les[lv])||LES_N[lv]}
+  function lesHours(t,n){var T=TRACKS[t],lv=T.lv[levelOf(t,n)];return (T.hrs&&T.hrs[lv])||LES_H[lv]}
   /* tuition is paid once, when you enrol in a qualification; lessons are then free */
-  function qualFee(t,n){var i=levelOf(t,n);return G(modCost(t,n)*TRACKS[t].L[i].length)}
+  function qualFee(t,n){var i=levelOf(t,n);if(i===0)return G(Math.round(CONFIG.education.certFee[t]*((S.certVar&&S.certVar[t])||1)));return G(modCost(t,n)*TRACKS[t].L[i].length)}
   function lesDone(t){return (S.les&&S.les[t])||0}
   function inProgress(t){return S.edu[t]<totMods(t)&&S.enr&&S.enr[t]===levelOf(t,S.edu[t])}
   /* shift length (units) and energy cost, from CONFIG.time.shifts */
@@ -1293,21 +1336,21 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       {r:'Store Manager',pay:180,t:'fnb',l:2,dress:'casual'}]},
     resto:{n:'Restaurant',ranks:[
       {r:'Dishwasher',pay:85,t:'',l:0,dress:'casual'},
-      {r:'Waiter',pay:105,t:'fnb',l:1,dress:'casual'},
+      {r:'Waiter',pay:105,t:'cus',l:1,dress:'casual'},
       {r:'Chef',pay:180,t:'fnb',l:2,dress:'casual'},
       {r:'Master Chef',pay:300,t:'fnb',l:3,dress:'suit'}]},
     market:{n:'Supermarket',ranks:[
       {r:'Shelf Stacker',pay:75,t:'',l:0},
       {r:'Cashier',pay:85,t:'',l:0,dress:'casual'},
-      {r:'Store Supervisor',pay:140,t:'sal',l:1,dress:'casual'},
+      {r:'Store Supervisor',pay:140,t:'cus',l:1,dress:'casual'},
       {r:'Supermarket Manager',pay:230,t:'sal',l:2,dress:'suit'}]},
     mall:{n:'Clothes Mall',ranks:[
       {r:'Sales Clerk',pay:95,t:'',l:0,dress:'casual'},
-      {r:'Visual Merchandiser',pay:150,t:'sal',l:1,dress:'casual'},
+      {r:'Visual Merchandiser',pay:150,t:'cus',l:1,dress:'casual'},
       {r:'Boutique Manager',pay:250,t:'sal',l:2,dress:'suit'}]},
     thrift:{n:'Thrift Store',ranks:[
       {r:'Shop Assistant',pay:70,t:'',l:0},
-      {r:'Thrift Store Manager',pay:130,t:'sal',l:1,dress:'casual'}]},
+      {r:'Thrift Store Manager',pay:140,t:'cus',l:1,dress:'casual'}]},
     pawn:{n:'Pawn Shop',ranks:[
       {r:'Counter Assistant',pay:80,t:'',l:0,dress:'casual'},
       {r:'Appraiser',pay:170,t:'fin',l:1,dress:'casual'},
@@ -1330,7 +1373,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       {r:'Chief of Surgery',pay:900,t:'med',l:5,dress:'suit'}]},
     elec:{n:'Electronics Store (Sales)',b:'elec',ranks:[
       {r:'Stock Clerk',pay:90,t:'',l:0,dress:'casual'},
-      {r:'Sales Assistant',pay:130,t:'sal',l:1,dress:'casual'},
+      {r:'Sales Assistant',pay:170,t:'cus',l:1,dress:'casual'},
       {r:'Sales Director',pay:350,t:'sal',l:2,dress:'suit'}]},
     elec2:{n:'Electronics Store (Technology)',b:'elec',ranks:[
       {r:'Data Annotator',pay:150,t:'tech',l:1,dress:'casual'},
@@ -1352,7 +1395,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       {r:'Delivery Driver',pay:90,t:'',l:0,dress:'casual'},
       {r:'Product Promoter',pay:190,t:'sal',l:2,dress:'smart'}]},
     mall2:{n:'Clothes Mall (Promotions)',b:'mall',ranks:[
-      {r:'Sales Promoter',pay:150,t:'sal',l:1,dress:'smart'},
+      {r:'Sales Promoter',pay:150,t:'cus',l:1,dress:'smart'},
       {r:'Mall Manager',pay:320,t:'sal',l:2,dress:'suit'}]},
     thrift2:{n:'Thrift Store (Workshop)',b:'thrift',ranks:[
       {r:'Sorter',pay:65,t:'',l:0},
@@ -1389,11 +1432,11 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     })});
   }
   /* the better the pay, the more qualifications from different fields it asks for.
-     q = list of [track, level]. Pay 250+ asks for a second field (up to a Degree); pay 450+ for a third. */
+    q = list of [track, level]. Pay 250+ asks for a second field (up to a Degree); pay 450+ for a third. */
   var COMP={factory:['eng','tech','fin'],fast:['fnb','sal','fin'],resto:['fnb','sal','fin'],market:['sal','fnb','fin'],mall:['sal','fin','fnb'],thrift:['sal','fin','eng'],pawn:['fin','tech','sal'],bank:['fin','tech','sal'],hosp:['med','tech','eng'],elec:['sal','tech','fin'],gym:['sal','med']};
   /* Build each job's qualification list (rk.q) from CONFIG.jobs.
-     rk.q is a list of [track, level]; rk.kn is the knowledge needed. */
-  var CFG_WARN=[];   /* problems found in CONFIG, shown in the Daily log when the game loads */
+    rk.q is a list of [track, level]; rk.kn is the knowledge needed. */
+  var CFG_WARN=[];  /* problems found in CONFIG, shown in the Daily log when the game loads */
   (function buildQuals(){
     var J=CONFIG.jobs, pick=J.pick||{};
     /* turn 'Finance Degree' into ['fin',3]; returns null if the name is not recognised */
@@ -1422,7 +1465,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
         if(bad.length){CFG_WARN.push('Job settings: "'+key+'" lists something I do not recognise ('+bad.join(', ')+'), so the automatic rule is used for it.')}
         else{
           rk.q=q;
-          rk.l=q.reduce(function(a,x){return Math.max(a,x[1])},0);   /* highest level asked, used for dress code and wording */
+          rk.l=q.reduce(function(a,x){return Math.max(a,x[1])},0);  /* highest level asked, used for dress code and wording */
           if(q.length)rk.t=q[0][0];
           rk.kn=kn!=null?kn:q.reduce(function(a,x){return Math.max(a,knFor(x[0],x[1]))},0);
           rk.picked=1;
@@ -1454,7 +1497,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function kreq(rk){return rk.kn||0}
   function qTxt(q){return q[0]==='any'?'Any '+GENLV[q[1]-1]:TRACKS[q[0]].n+' '+TRACKS[q[0]].lv[q[1]-1]}
   function meets(rk){return (rk.q||[]).every(function(q){return lvl(q[0])>=q[1]})}
-  function needTxt(rk,c){return (rk.q&&rk.q.length?rk.q.map(qTxt).join(' + '):'No qualification')+(kreq(rk)?' · Knowledge '+kreq(rk):'')+(c&&needsExp(rk)?' · '+expTxt(c):'')}
+  function needTxt(rk,c){var parts=[];parts.push(rk.q&&rk.q.length?rk.q.map(qTxt).join(' + '):'No qualification');if(kreq(rk))parts.push('Knowledge '+kreq(rk));return parts.join(' · ')}
   /* work experience (CONFIG.jobs.experience): better-paid jobs need shifts already worked at the same workplace */
   function shiftPayNow(rk){return Math.round(rk.pay*payIdx())}
   function needsExp(rk){var E=CONFIG.jobs.experience;return !!E&&E.shifts>0&&shiftPayNow(rk)>E.payAbove}
@@ -1462,7 +1505,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function expShort(c,rk){return needsExp(rk)&&shiftsAt(c)<CONFIG.jobs.experience.shifts}
   function expTxt(c){var n=CONFIG.jobs.experience.shifts;return n+' shift'+(n===1?'':'s')+' worked at the '+NAME[bOf(c)]+' (you have '+Math.min(n,shiftsAt(c))+')'}
   function bOf(c){return CAREERS[c].b||c}
-  function sleepLabel(){return 'Sleep in Apartment'}
+  function sleepLabel(){return 'Sleep at '+(S.home==='bung'?'Bungalow':'Apartment')}
   function myJob(){var c=Object.keys(S.career)[0];return c&&CAREERS[c]&&cur(c)?{c:c,b:bOf(c),rk:cur(c)}:null}
   function shutLeft(b){return (S.shut&&S.shut[b])||0}
   function shutSum(){var n=0;Object.keys(S.shut||{}).forEach(function(b){n+=S.shut[b]||0});return n}
@@ -1503,9 +1546,9 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     done();
   }
 
-  function blank(){return {loan:null,broke:0,workMin:0,workStreak:0,sagaLast:'',slept:0,homeMeals:0,shut:{},cooked:[],health:CONFIG.health.start,gym:[],good:[],studyMin:0,studyStreak:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:4,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:100,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickRest:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,pantry:[],broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
+  function blank(){return {loan:null,broke:0,workMin:0,workStreak:0,sagaLast:'',slept:0,homeMeals:0,shut:{},cooked:[],health:CONFIG.health.start,gym:[],good:[],studyMin:0,studyStreak:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:4,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickRest:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,pantry:[],broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
-    S=blank();T0();PREV=null;applyPayVar();
+    S=blank();T0();PREV=null;applyPayVar();S.certVar={};Object.keys(TRACKS).forEach(function(t){S.certVar[t]=1+(Math.random()*2-1)*CONFIG.education.certVariance});
     rollOpenings();loc='apt';view=null;last=null;
     $('log').innerHTML='';S.logs=[];
     $('over').classList.remove('show');$('welcome').classList.add('show');
@@ -1540,7 +1583,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       /* Diploma merged into Degree; Doctorate and Specialist removed. Convert finished qualifications to the new pathways; part-done ones are reset. */
       if(d.S.ver===3&&d.S.edu){
         var OLDQ={sal:{c:[2,5],lv:['Certificate','Diploma']},fnb:{c:[2,5,8],lv:['Certificate','Diploma','Degree']},fin:{c:[2,5,8,12],lv:['Certificate','Diploma','Degree','Masters']},tech:{c:[2,5,8,12],lv:['Certificate','Diploma','Degree','Masters']},med:{c:[2,5,8,12,16],lv:['Certificate','Diploma','Degree','Honours','Masters']},eng:{c:[2,5,8,12,16],lv:['Certificate','Diploma','Degree','Honours','Masters']}};
-        Object.keys(TRACKS).forEach(function(t){var o=OLDQ[t],n=d.S.edu[t]||0,k=0;o.c.forEach(function(e){if(n>=e)k++});
+        Object.keys(TRACKS).forEach(function(t){var o=OLDQ[t];if(!o)return;var n=d.S.edu[t]||0,k=0;o.c.forEach(function(e){if(n>=e)k++});
           var lab=k?o.lv[k-1]:null;if(lab==='Diploma')lab='Degree';
           d.S.edu[t]=lab?TRACKS[t].c[TRACKS[t].lv.indexOf(lab)]:0});
         d.S.enr={};d.S.les={};d.S.cert=null;d.S.ver=4;
@@ -1582,11 +1625,28 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function scoreParts(){
     var ed=0;Object.keys(TRACKS).forEach(function(t){ed+=lvl(t)});
     var W=CONFIG.score;
-    return [['Net worth',Math.round(worth())],['Energy ×'+W.energy,S.energy*W.energy],['Happiness ×'+W.happiness,S.happy*W.happiness],['Health ×'+W.health,S.health*W.health],['Knowledge ×'+W.knowledge,Math.floor(S.know)*W.knowledge],['Education levels ×'+W.educationLevel,ed*W.educationLevel]];
+    var parts=[['Net worth',Math.round(worth())],['Energy ×'+W.energy,S.energy*W.energy],['Happiness ×'+W.happiness,S.happy*W.happiness],['Health ×'+W.health,S.health*W.health],['Knowledge ×'+W.knowledge,Math.floor(S.know)*W.knowledge],['Education levels ×'+W.educationLevel,ed*W.educationLevel]];
+    return parts;
   }
   function score(){return Math.max(0,scoreParts().reduce(function(a,b){return a+b[1]},0))}
   function bestScore(){try{return +localStorage.getItem('dailyGrind.best')||0}catch(e){return 0}}
   function worth(){return S.cash+S.bank+invTotal()+assets()-S.medDebt-(S.arrears?S.arrears.bal:0)-loanOwed()}
+  function rankBurst(){
+    /* short celebratory particles over the rank-up modal */
+    var host=$('over');if(!host)return;
+    var box=document.createElement('div');box.className='rankburst';box.setAttribute('aria-hidden','true');
+    var cols=['#e0a526','#3cc0c3','#ef7d72','#5fcf92','#f0bd4a','#4b78c2'];
+    for(var i=0;i<28;i++){
+      var p=document.createElement('i');
+      p.style.left=(8+Math.random()*84)+'%';
+      p.style.background=cols[i%cols.length];
+      p.style.animationDelay=(Math.random()*0.45)+'s';
+      p.style.animationDuration=(0.9+Math.random()*0.8)+'s';
+      box.appendChild(p);
+    }
+    host.appendChild(box);
+    setTimeout(function(){if(box.parentNode)box.parentNode.removeChild(box)},2200);
+  }
   function checkWin(){
     if(S.over)return false;
     var t=reachedTier();
@@ -1595,12 +1655,14 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(t===TIERS.length-1){
       log('You reached '+T.n+' status with '+money(worth())+'. You win!','good');
       snd('win');finish(T.ic+' '+T.n+'!','You built a net worth of '+money(worth())+' in '+S.day+' day'+(S.day>1?'s':'')+'. That is the top rank.');
+      rankBurst();
       return true;
     }
     log('Milestone: '+T.n+' ('+money(T.v)+' net worth reached). Next: '+TIERS[t+1].n+' at '+money(TIERS[t+1].v)+'.','good');
     $('overTitle').textContent=T.ic+' You are '+T.n+'!';
     $('overText').textContent='Net worth: '+money(worth())+' after '+S.day+' day'+(S.day>1?'s':'')+'. '+(t===0?'You have won the game. ':'')+'Keep playing to reach '+TIERS[t+1].n+' ('+money(TIERS[t+1].v)+')'+(maxDays()===Infinity?'':' before day '+maxDays()+' ends')+', or start a new game.';
     $('keep').hidden=false;$('overScore').hidden=true;$('over').classList.add('show');snd('win');
+    rankBurst();
     render();
     return false;
   }
@@ -1686,7 +1748,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     S.workMin=(S.workMin||0)+M(j.ap);
     var pr=prod(), pay=shiftPay(j.pay), low=pr.m<1;
     S.cash+=pay;inc(pay);S.energy=clamp(S.energy-j.en);S.flags.worked=1;
-    if(c){if(!S.shiftsAt)S.shiftsAt={};S.shiftsAt[bOf(k)]=(S.shiftsAt[bOf(k)]||0)+1}   /* work experience per workplace */
+    if(c){if(!S.shiftsAt)S.shiftsAt={};S.shiftsAt[bOf(k)]=(S.shiftsAt[bOf(k)]||0)+1}  /* work experience per workplace */
     log('You worked a shift as '+j.n+' and earned '+money(pay)+'.'+(low?' Productivity was '+Math.round(pr.m*100)+'% ('+pr.rs.join(', ')+').':''),'good');
     done();
   }
@@ -1717,7 +1779,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   /* 'a burger' -> 'Burger', 'the chef’s tasting menu' -> 'Chef’s tasting menu' */
   function cap(n){n=String(n).replace(/^(a|an|the) /i,'');return n.charAt(0).toUpperCase()+n.slice(1)}
   function treatHp(t){return t.junk?(t.hp!=null?t.hp:FD.junkHealth):0}
-  function treatShown(t){return treatHp(t)+(t.good||0)}   /* health the meal really adds: junk penalty or healthy-meal bonus */
+  function treatShown(t){return treatHp(t)+(t.good||0)}  /* health the meal really adds: junk penalty or healthy-meal bonus */
   function treatTxt(t){return hm(treatMin(t))+', +'+t.en+'% energy, +'+t.hap+' happiness'+(treatShown(t)?', '+sg(treatShown(t))+' health':'')}
   function treat(k){
     var t=TREATS[k];
@@ -1881,7 +1943,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     done();
   }
   /* basic groceries must be cooked (choose how many days to cook for); premium groceries are ready to eat.
-     Cooked food and premium groceries last longer in a fridge. */
+    Cooked food and premium groceries last longer in a fridge. */
   function cookMin(n){return owns('microwave')?FD.cookFirstMicrowave+(n-1)*FD.cookExtraMicrowave:FD.cookFirst+(n-1)*FD.cookExtra}
   function cookLife(c){return {fr:owns('fridge'),sp:!!c.sp,last:c.w+freshDays(),left:c.sp?0:Math.max(0,c.w+freshDays()-S.day+1)}}
   /* spoiled food (gone off without a fridge) can still be eaten, but it hurts your health and may poison you */
@@ -2019,7 +2081,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function invest(k){
     var P=INV[k],p=S.inv[k],box=$('amt_'+k),n=Math.floor(Number(box?box.value:0));
     if(!(n>0))return refuse('Enter an amount to put into the '+P.n.toLowerCase()+'.');
-    if(n<G(P.min))return refuse('Amount too low: the minimum for '+(/^[aeiou]/i.test(P.n)?'an ':'a ')+P.n.toLowerCase()+' is '+money(G(P.min))+' and you entered '+money(n)+'. Nothing was invested.');
+    if(n<P.min)return refuse('Amount too low: the minimum for '+(/^[aeiou]/i.test(P.n)?'an ':'a ')+P.n.toLowerCase()+' is '+money(P.min)+' and you entered '+money(n)+'. Nothing was invested.');
     if(S.know<P.know)return refuse('Not enough knowledge. The '+P.n.toLowerCase()+' needs Knowledge '+P.know+' (you have '+Math.floor(S.know)+').');
     if(P.dev&&!P.dev.split('|').some(owns))return refuse('You need a working '+P.dev.replace(/\|/g,', ').replace(/, ([a-z]+)$/,' or $1')+' to trade online.');
     if(n>S.cash)return refuse('You only have '+money(S.cash)+' in cash.');
@@ -2036,7 +2098,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(p.v<=0.5)return refuse('You have nothing in the '+P.n.toLowerCase()+'.');
     var box=$('amt_'+k),n=Math.floor(Number(box?box.value:0));
     if(!(n>0))return refuse('Enter an amount to withdraw from the '+P.n.toLowerCase()+'.');
-    if(n>=p.v-0.5)n=p.v;   /* asking for more than you hold withdraws everything */
+    if(n>=p.v-0.5)n=p.v;  /* asking for more than you hold withdraws everything */
     var frac=n/p.v,out=n,note='';
     if(k==='fd'&&S.day<p.lock){var prin=n*(p.c/p.v),pen=Math.round(prin*0.03);out=prin-pen;note=' Early withdrawal: interest forfeited and a '+money(pen)+' penalty charged.'}
     if(!spend(1,0))return;
@@ -2109,7 +2171,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       S.cash-=n;S.bank+=n;log('You deposited '+money(n)+' in the bank.');
     }else{
       if(S.bank<=0)return refuse('Your bank balance is empty.');
-      if(n>S.bank)n=S.bank;   /* asking for more than the balance withdraws everything */
+      if(n>S.bank)n=S.bank;  /* asking for more than the balance withdraws everything */
       S.bank-=n;S.cash+=n;log('You withdrew '+money(n)+' from the bank.');
     }
     done();
@@ -2216,7 +2278,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     {k:'pilates',n:'Pilates class',ic:'🤸',min:60,cost:18,en:6,hp:4,hap:2,d:'Core strength and posture'},
     {k:'spin',n:'Spin class',ic:'🚴',min:30,cost:30,en:20,hp:10,hap:8,d:'A loud, sweaty ride to nowhere'},
     {k:'weights',n:'Strength training',ic:'🏋️',min:120,cost:23,en:18,hp:18,hap:6,d:'Free weights and machines'}
-  ].sort(function(a,b){return a.cost-b.cost});   /* listed cheapest first */
+  ].sort(function(a,b){return a.cost-b.cost});  /* listed cheapest first */
   function isGymStaff(){var j=myJob();return !!j&&j.b==='gym'}
   function gymCost(g){return Math.round(G(g.cost)*(isGymStaff()?0.5:1))}
   function gymCount(){return (S.gym||[]).filter(function(d){return S.day-d<5}).length}
@@ -2242,7 +2304,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function illChance(){
     var I=CONFIG.illness,rows=I.byEnergy.slice().sort(function(a,b){return a.energyUnder-b.energyUnder}),base=rows[rows.length-1].chance;
     for(var i=0;i<rows.length;i++)if(S.energy<rows[i].energyUnder){base=rows[i].chance;break}
-    var ch=Math.max(0,base*I.cutForEveryone-I.minusForEveryone);   /* fixed cut for everyone */
+    var ch=Math.max(0,base*I.cutForEveryone-I.minusForEveryone);  /* fixed cut for everyone */
     ch*=healthF()*dietF()*gymF()*Df().ill*trendIll()*(S.burn>0?I.burnoutX:1);
     if(S.immune>0)ch*=I.checkupX;
     return Math.min(I.maxChance,ch);
@@ -2358,6 +2420,11 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(S.enrolled&&S.sinceClass>=3)push('bad','🎓 No lesson for '+S.sinceClass+' days: attend one soon or you may be expelled.');
     if(S.expelled>0)push('bad','🚫 Expelled from School. You can re-enrol in '+S.expelled+' day'+(S.expelled>1?'s':'')+'.');
     if(S.day>=maxDays()-(maxDays()>10?6:1))push('warn','⏳ Only '+(maxDays()-S.day+1)+' day'+(maxDays()-S.day?'s':'')+' left to reach '+money(nextGoal())+'.');
+    /* 3.8: warn about food that will not be fresh tomorrow */
+    var spoilTonight=0,hasFridge=owns('fridge');
+    (S.pantry||[]).forEach(function(p){if(!p.sp&&grocLife(p).left===1)spoilTonight++});
+    (S.cooked||[]).forEach(function(c){if(!c.sp&&cookLife(c).left===1)spoilTonight++});
+    if(spoilTonight)push(hasFridge?'warn':'bad','🍲 '+spoilTonight+' food item'+(spoilTonight>1?'s':'')+' in your kitchen lose freshness tonight. '+(hasFridge?'Your fridge will throw out anything uneaten.':'With no fridge they will spoil: cook or eat them, or they will cost health.'));
     a.sort(function(x,y){return (y.l==='bad')-(x.l==='bad')});
     return a;
   }
@@ -2369,8 +2436,9 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     return {hap:Math.round(hap),know:know,hrs:hrs};
   }
   function rollover(rested){
-    ovHidden=false;   /* a new day shows the overview again */
+    ovHidden=false;  /* a new day shows the overview again */
     if(S.over)return;
+    FLASH={e:S.energy,h:S.happy,l:S.health,until:Date.now()+2500};setTimeout(function(){render()},2600);
     S.pending=null;
     var h=HOUSE[S.home];
     S.day++;S.ap=MAX_AP;S.offer={};S.barg={};rollOpenings();
@@ -2402,7 +2470,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     Object.keys(S.items).forEach(function(k){var it=ITEMS[k];if(S.items[k]&&it&&it.old&&!S.broken[k]&&Math.random()<it.old){S.broken[k]=1;S.notes.push({l:'bad',t:'🔧 Your '+it.n.toLowerCase()+' broke down overnight. Repair it at the Electronics Store (or buy a new one).'});log('Your '+it.n.toLowerCase()+' broke down.','bad')}});
     tickInv();
     healthTick(wasFed);burnTick();
-    if(!Object.keys(TRACKS).some(function(t){return inProgress(t)})){S.enrolled=false;S.sinceClass=0}   /* nothing in progress: nothing to skip */
+    if(!Object.keys(TRACKS).some(function(t){return inProgress(t)})){S.enrolled=false;S.sinceClass=0}  /* nothing in progress: nothing to skip */
     if(S.expelled>0){S.expelled--;if(!S.expelled)log('You may enrol at School again.','good')}
     else if(S.enrolled){
       S.sinceClass=S.studied?0:S.sinceClass+1;
@@ -2439,7 +2507,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var mn=(S.notes||[]).slice(),rw2=nextRentWeek(),H2=HOUSE[S.home];S.notes=[];
     if((S.tickets||[]).some(function(t){return t.draw===S.day}))mn.push({l:'rem',t:'🎟️ Lottery draw tonight (end of day '+S.day+'). Results tomorrow morning.'});
     (function(){var jb=myJob();if(jb&&shutLeft(jb.b)>0)mn.push({l:'bad',t:'🔒 The '+NAME[jb.b]+' is closed ('+shutLeft(jb.b)+' day'+(shutLeft(jb.b)>1?'s':'')+' left, counting today). Work is disabled there. Your job as '+jb.rk.r+' stays on record and returns automatically.'})})();
-    S.trends.forEach(function(t){if(t.left>0&&(t.term||t.lay||t.r))mn.push({l:'rem',t:'🌐 '+t.n+' continues'+(t.last?' (latest: '+t.last+')':'')+' · '+t.left+' day'+(t.left>1?'s':'')+' left: '+trendTxt(t,false).replace(' today',' a day')+(t.lay?', job-loss risk':'')+(t.cls?', closure risk':'')+'.'})});
+    S.trends.forEach(function(t){if(t.left>0&&(t.term||t.lay||t.r))mn.push({l:'rem',t:'🌐 '+t.n+' continues'+(t.last?' (latest: '+t.last+')':'')+' · '+t.left+' day'+(t.left>1?'s':'')+' left: '+trendNow(t)+'.'})});
     if(S.inv.fd.v>0.5&&S.inv.fd.lock-S.day===1)mn.push({l:'rem',t:'🏦 Your fixed deposit matures tomorrow morning ('+money(Math.round(S.inv.fd.v))+' so far).'});
     if(junkCount()>=CONFIG.illness.junkMeals)mn.push({l:'warn',t:'🍟 You have had junk food '+junkCount()+' times in 5 days. Your chance of falling ill is higher.'});
     if(rw2-S.day===1&&S.rentPaid!==rw2)mn.push({l:'rem',t:'🏠 Reminder: rent of '+money(H2.rent)+' is due at the end of tomorrow (day '+rw2+'). Keep it in cash, or pay early at home.'});
@@ -2508,7 +2576,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       v=Math.round(rr(50,80));S.cash+=v;inc(v);
       return {icon:'🧾',tag:'Daily event',title:'Tax refund',done:true,tone:'good',text:'The tax office sends you a surprise refund.',fx:['+'+money(v)+' cash']};
     }
-    var ask=Math.round(rr(50,250));v=Math.min(ask,Math.max(0,S.cash));S.cash-=v;outg(v);   /* never takes more than you have */
+    var ask=Math.round(rr(50,250));v=Math.min(ask,Math.max(0,S.cash));S.cash-=v;outg(v);  /* never takes more than you have */
     return {icon:'🏠',tag:'Daily event',title:'Rent increase',done:true,tone:'bad',
       text:'Your landlord demands an extra '+money(ask)+' immediately.'+(v<ask?' You only have '+money(v)+' on you, so he takes that and lets the rest go this time.':''),
       fx:['−'+money(v)+' cash']};
@@ -2544,8 +2612,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     return c[Math.floor(Math.random()*c.length)].mk();
   }
   /* ---------- long-running macro trends ----------
-     A news shock lands partly today (35%); the rest drifts in day by day.
-     Big stories (war, crisis, recession, pandemic, crash, boom, strike) last 7-14 days, others 3-6. */
+    A news shock lands partly today (35%); the rest drifts in day by day.
+    Big stories (war, crisis, recession, pandemic, crash, boom, strike) last 7-14 days, others 3-6. */
   var BIG=/war|crisis|recession|pandemic|crash|collapse|boom|strike|lockdown|tariff/i;
   function newsEvent(n){
     var C=CONFIG.macro,dr=BIG.test(n[0])?C.bigNewsDays:C.smallNewsDays,big=BIG.test(n[0]),days=dr[0]+Math.floor(Math.random()*(dr[1]-dr[0]+1));
@@ -2562,7 +2630,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     scaleTrend(tr);delete tr.lay;delete tr.cls;
     var fx=applyFx(now.join(' '),true);
     var lasting=tr.p||tr.w||tr.r||tr.mkt||tr.ill!==1;
-    if(lasting){S.trends.push(tr);fx.push('Over the next '+days+' days: '+trendTxt(tr,true))}
+    if(lasting){S.trends.push(tr);fx.push('Over the next '+days+' days: '+trendNow(tr))}
     return {icon:big?'🌐':'📰',tag:big?'Major world event':'Economic news',title:n[0],text:n[1],fx:fx.length?fx:['No direct effect on you today'],done:true,tone:''};
   }
   /* Bank screen: which running news story is moving the savings rate and the investment returns */
@@ -2573,16 +2641,23 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       mood=S.mkt>0.5?'buoyant':S.mkt<-0.5?'weak':'steady';
     return '<small class="bk-d">📰 '+(a.length?'In the news: '+a.join('; ')+'. ':'No big story is moving rates right now'+(Math.abs(S.rate-M.rateBase)>0.05?', so interest is drifting back towards '+M.rateBase.toFixed(1)+'%. ':'. '))+
       'Market mood: '+mood+'. Savings, fixed deposit, ETF, hedge fund and crypto all follow the economy. Loan rates are fixed and never change.</small>'}
-  function trendTxt(t,total){
-    var k=total?t.left:1,a=[];
-    if(t.p)a.push('prices '+(t.p>0?'+':'−')+Math.abs(t.p*k).toFixed(1)+'%');
-    if(t.w)a.push('pay '+(t.w>0?'+':'−')+Math.abs(t.w*k).toFixed(1)+'%');
-    if(t.r)a.push('interest '+(t.r>0?'+':'−')+Math.abs(t.r*k).toFixed(2)+'%');
-    if(t.mkt)a.push(t.mkt<0?'markets under pressure':'markets buoyant');
-    if(t.ill!==1)a.push('illness more likely');
-    if(t.cls)a.push('workplace-closure risk');
-    return a.join(', ')+(total?'':' today');
+  /* a running story's effect on this day: it builds, peaks mid-story and fades, with a random daily swing */
+  function trendGain(t){
+    var C=CONFIG.macro,i=t.age||0,n=i+t.left,x=(i+0.5)/Math.max(1,n);
+    t.age=i+1;
+    return (C.curveLow+(C.curvePeak-C.curveLow)*Math.sin(Math.PI*x))*(1+C.dailyJitter*(2*Math.random()-1));
   }
+  /* plain-language summary of what a running story is doing to you (no fixed daily numbers) */
+  function trendNow(t){
+    var a=[];
+    if(t.p)a.push(t.p>0?(t.p>=1.5?'prices rising fast':'prices rising'):'prices falling');
+    if(t.w)a.push(t.w>0?'pay rising':'pay falling');
+    if(t.r)a.push(t.r>0?'interest rates rising':'interest rates falling');
+    if(t.mkt)a.push(t.mkt<0?'markets under pressure':'markets rising');
+    if(t.ill!==1)a.push('illness more likely');
+    return a.length?a.join(', '):'little direct effect on you';
+  }
+
   /* workplace closures count down each morning; the player is told when the job is back */
   function shutTick(){
     Object.keys(S.shut||{}).forEach(function(b){
@@ -2593,10 +2668,11 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   }
   function trendTick(){
     S.trends=S.trends.filter(function(t){
-      if(t.p)S.px=clampPx(S.px*(1+t.p/100));
-      if(t.w)S.wage=clampWage(S.wage*(1+t.w/100));
-      if(t.r)S.rate=clampRate(Math.round((S.rate+t.r)*100)/100);
-      if(t.mkt)S.mkt=clampMkt(S.mkt+t.mkt);
+      var g=trendGain(t);
+      if(t.p)S.px=clampPx(S.px*(1+t.p*g/100));
+      if(t.w)S.wage=clampWage(S.wage*(1+t.w*g/100));
+      if(t.r)S.rate=clampRate(Math.round((S.rate+t.r*g)*100)/100);
+      if(t.mkt)S.mkt=clampMkt(S.mkt+t.mkt*g);
       /* two separate events. Laid off: the job is gone for good. Closure: work is disabled for 1-4 days, the job stays on your record. */
       var jb0=myJob();
       if(t.lay&&jb0&&Math.random()<t.lay){delete S.career[jb0.c];
@@ -2604,16 +2680,18 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       if(t.cls&&jb0&&!shutLeft(jb0.b)&&Math.random()<t.cls){var nd=1+Math.floor(Math.random()*4);S.shut[jb0.b]=nd;
         log('The '+NAME[jb0.b]+' is CLOSED for '+nd+' day'+(nd>1?'s':'')+' because of: '+t.n+'. Work is disabled, but your job stays on record.','bad')}
       t.left--;
-      log('Ongoing: '+t.n+' ('+trendTxt(t,false).replace(' today','')+(t.left>0?'; '+t.left+' more day'+(t.left>1?'s':''):'; this was the last day')+').',t.p>0||t.w<0||t.mkt<0||t.ill>1?'warn':'good');
+      log('Ongoing: '+t.n+' ('+trendNow(t)+(t.left>0?'; '+t.left+' more day'+(t.left>1?'s':''):'; this was the last day')+').',t.p>0||t.w<0||t.mkt<0||t.ill>1?'warn':'good');
       return t.left>0;
     });
     /* with no news pushing interest, it drifts back towards its normal level */
     var M=CONFIG.market;
     if(!S.trends.some(function(t){return t.r}))S.rate=clampRate(Math.round((S.rate+(M.rateBase-S.rate)*M.rateReversion)*100)/100);
+    /* 3.2: prices drift back towards the difficulty's base price a little each day, so news cannot push them away forever */
+    S.px=clampPx(S.px+(Df().px-S.px)*(CONFIG.macro.priceReversion||0));
   }
   /* ---------- macro shocks: multi-day stories with daily effects ----------
-     [title, what happens, economic term explained, minDays, maxDays, daily effects]
-     daily effects: p prices %, w pay %, r interest pts, mkt market mood, ill illness x, lay chance of losing a job per day */
+    [title, what happens, economic term explained, minDays, maxDays, daily effects]
+    daily effects: p prices %, w pay %, r interest pts, mkt market mood, ill illness x, lay chance of losing a job per day */
   var MACRO=[
     ['War erupts in a major oil-producing region','Energy prices spike and central banks scramble.','Supply shock: a sudden drop in supply that pushes prices up across the economy.',7,14,{p:2.2,r:0.08,mkt:-0.45,lay:0.04,cls:0.06}],
     ['Central bank starts a tightening cycle','Rates will rise step by step to fight inflation.','Monetary tightening: raising interest rates to cool spending and slow inflation.',6,12,{r:0.12,p:-0.3,mkt:-0.25}],
@@ -2632,58 +2710,58 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     ['Ceasefire and peace deal','Trade routes reopen and confidence returns.','Recovery: the economy grows again after a downturn.',5,10,{p:-0.8,mkt:0.4,r:-0.05,w:0.2}]
   ];
   /* ---------- macro storylines ----------
-     A storyline starts on some evening and then advances ONE chapter every in-game day (onset, escalation, peak, easing).
-     Each day's end-of-day event is that day's chapter, picked at random from the chapters written for that phase.
-     [title, text, fx]  or, for a decision,  [title, question, '', yes-outcome, no-outcome]. */
+    A storyline starts on some evening and then advances ONE chapter every in-game day (onset, escalation, peak, easing).
+    Each day's end-of-day event is that day's chapter, picked at random from the chapters written for that phase.
+    [title, text, fx]  or, for a decision,  [title, question, '', yes-outcome, no-outcome]. */
   var SAGAS=[
     {id:'oil',ic:'🛢️',n:'Oil crisis',term:'Supply shock: a sudden loss of supply (here, oil) that pushes costs up across the whole economy.',len:[5,8],eff:{p:0.8,w:-0.2,r:0.03,mkt:-0.25,lay:0.03,cls:0.05},ph:[
       [["OPEC+ announces a surprise oil output cut","Crude jumps 12% overnight. Petrol stations raise prices before lunch.","p+2"],["Tanker attack closes a key shipping lane","Insurers refuse cover and freight rates spike. Imports start to cost more.","p+2 h-2"]],
       [["Fuel rationing starts at the pumps","Queues stretch around the block, and delivery firms add fuel surcharges to every order.","p+2 e-4"],["Airlines ground flights to save fuel","Cargo space is scarce and supermarket shelves thin out.","p+1.5 h-3"],
-       ["Stockpiling rumour","A neighbour says oil will hit record highs and sells you a stock of supplies for $40. Buy?","",[0.6,"Prices keep climbing, so the stock saves you money later.","c+30","The rumour fades and prices dip. You overpaid.","c-40"],[1,"You keep your cash and hope for the best.",""]]],
+      ["Stockpiling rumour","A neighbour says oil will hit record highs and sells you a stock of supplies for $40. Buy?","",[0.6,"Prices keep climbing, so the stock saves you money later.","c+30","The rumour fades and prices dip. You overpaid.","c-40"],[1,"You keep your cash and hope for the best.",""]]],
       [["Petrol hits an all-time high","Transport costs feed through to everything: food, furniture, electronics.","p+3 h-3"],["Truckers strike over diesel costs","Deliveries stall for days and shops ration popular goods.","p+2 e-3"],
-       ["Overtime offer","A logistics firm pays cash for a long night loading trucks. Take it?","",[0.8,"Hard work, good pay.","c+60 e-12","The shift is cancelled after you arrive. A wasted evening.","e-5"],[1,"You head home and rest.","e+4"]]],
+      ["Overtime offer","A logistics firm pays cash for a long night loading trucks. Take it?","",[0.8,"Hard work, good pay.","c+60 e-12","The shift is cancelled after you arrive. A wasted evening.","e-5"],[1,"You head home and rest.","e+4"]]],
       [["OPEC+ agrees to raise output","Crude falls sharply on the news. Pump prices ease slowly.","p-2 h+3"],["Strategic reserves released","Governments release stockpiles and the panic fades.","p-1.5 h+2"]]]},
     {id:'war',ic:'⚔️',n:'Regional war',term:'Sanctions: penalties that cut off trade with a country, which disrupts supply chains and raises prices.',len:[5,9],eff:{p:0.7,w:-0.15,r:0.03,mkt:-0.35,lay:0.025,cls:0.04},ph:[
       [["Border clash erupts into open conflict","Two regional powers are at war. Stocks drop as investors rush to “safe-haven” assets.","p+1 h-3"],["Embassies evacuate and sanctions are announced","Trade between the warring countries stops overnight and supply chains scramble.","p+1.5 h-2"]],
       [["Grain shipments blocked at the border","Wheat and cooking oil prices jump.","p+2"],["Grim headlines every hour","A wave of bad news weighs on morale across town.","h-4"],
-       ["Donation drive","A charity helping refugees asks you for $20. Give?","",[1,"You donate and feel better for helping.","c-20 h+6"],[1,"You keep walking. It nags at you a little.","h-2"]]],
+      ["Donation drive","A charity helping refugees asks you for $20. Give?","",[1,"You donate and feel better for helping.","c-20 h+6"],[1,"You keep walking. It nags at you a little.","h-2"]]],
       [["Sanctions on exports bite","Factories short of parts cut shifts and some workers are sent home.","p+1.5 w-0.5"],["Markets sink as defence stocks soar","Investors flee risk. Pension funds take a hit.","h-3"],
-       ["War bond tip","A coworker says a $60 war bond is a safe, patriotic investment. Buy?","",[0.65,"Safe and steady, it pays a little interest.","c+15","Yields lag inflation. You lose a little in real terms.","c-10"],[1,"You pass.",""]]],
+      ["War bond tip","A coworker says a $60 war bond is a safe, patriotic investment. Buy?","",[0.65,"Safe and steady, it pays a little interest.","c+15","Yields lag inflation. You lose a little in real terms.","c-10"],[1,"You pass.",""]]],
       [["Ceasefire talks begin","Negotiators meet. Oil, grain and shares all steady.","p-1 h+3"],["The ceasefire holds","Shipping lanes reopen and confidence returns.","p-1.5 h+4"]]]},
     {id:'fin',ic:'🏦',n:'Financial crisis',term:'Credit crunch: banks suddenly stop lending, so firms cannot borrow and cut jobs.',len:[6,9],eff:{p:-0.2,w:-0.3,r:-0.05,mkt:-0.5,lay:0.05,cls:0.04},ph:[
       [["A major investment bank wobbles","Rumours of huge bad loans on its books send its share price tumbling.","h-3"],["Mortgage defaults surge","Households that borrowed too much stop paying, and banks start counting losses.","h-2"]],
       [["Bank run: depositors queue outside branches","People withdraw savings in a panic, fearing the bank will fail. This is called a “bank run”.","h-4"],["Credit freezes up","Banks stop lending to each other and to firms. Hiring stops.","w-0.5 h-2"],
-       ["Buy the dip?","A friend begs you to buy shares at the bottom for $80. Risky!","",[0.4,"The market bounces and you sell at a profit.","c+160","The market keeps falling.","c-80"],[1,"You sit it out.",""]]],
+      ["Buy the dip?","A friend begs you to buy shares at the bottom for $80. Risky!","",[0.4,"The market bounces and you sell at a profit.","c+160","The market keeps falling.","c-80"],[1,"You sit it out.",""]]],
       [["Stock market crashes 15% in a day","Trading is halted twice. Retirement funds are shattered.","h-5 w-0.5"],["Firms announce mass layoffs","Offices and shops across town cut staff and hours.","h-4"],
-       ["Evening gig","A struggling café needs help tonight and offers $50 cash. Take it?","",[0.85,"Busy night, nice tips.","c+60 e-10","The café can only pay part of what it promised.","c+20 e-10"],[1,"You rest instead.","e+5"]]],
+      ["Evening gig","A struggling café needs help tonight and offers $50 cash. Take it?","",[0.85,"Busy night, nice tips.","c+60 e-10","The café can only pay part of what it promised.","c+20 e-10"],[1,"You rest instead.","e+5"]]],
       [["Central bank slashes rates and bails out the banks","A rescue package restores confidence. Rates drop and markets rally.","r-0.2 h+4"],["Markets stabilise","Credit starts flowing again and hiring slowly resumes.","w+0.3 h+3"]]]},
     {id:'pan',ic:'🦠',n:'Pandemic',term:'Lockdown: orders to stay home and close non-essential businesses, which pauses parts of the economy.',len:[6,9],eff:{p:0.4,r:-0.06,mkt:-0.3,ill:1.7,lay:0.025,cls:0.12},ph:[
       [["A new virus spreads rapidly","Hospitals report a surge of cases and face masks sell out.","h-3 p+0.5"],["First cases reach town","Health officials urge hand-washing and distancing.","h-2"]],
       [["Lockdown announced","Non-essential businesses are ordered to close. Streets go quiet.","h-5"],["Hospitals overwhelmed","Wards are full and waiting times double.","e-3 h-3 l-2"],
-       ["Masks and sanitiser","A pharmacy sells a $20 pack of masks and sanitiser. Buy?","",[1,"You feel safer and stay well.","c-20 h+3 l+2"],[1,"You skip it and worry about it.","h-2 l-2"]]],
+      ["Masks and sanitiser","A pharmacy sells a $20 pack of masks and sanitiser. Buy?","",[1,"You feel safer and stay well.","c-20 h+3 l+2"],[1,"You skip it and worry about it.","h-2 l-2"]]],
       [["Panic buying empties the shelves","Staples cost more and queues form outside shops.","p+1.5 h-2"],["Everything moves online","Learning and work go remote. Anyone with a device picks up new skills.","n+3"],
-       ["Free online course","A free remote course runs all evening. Spend the evening on it?","",[1,"You learn a lot.","n+4 e-8"],[1,"You relax instead.","h+3"]]],
+      ["Free online course","A free remote course runs all evening. Spend the evening on it?","",[1,"You learn a lot.","n+4 e-8"],[1,"You relax instead.","h+3"]]],
       [["Vaccine approved","Jabs begin to roll out and cases fall.","h+5 l+3"],["Restrictions lift","Shops reopen and life returns to something like normal.","h+4 p-0.5"]]]},
     {id:'inf',ic:'📈',n:'Inflation and rate hikes',term:'Monetary tightening: the central bank raises interest rates to cool spending and slow inflation.',len:[5,8],eff:{p:0.9,r:0.06,mkt:-0.2,lay:0.015},ph:[
       [["Inflation hits a 40-year high","Everything from eggs to rent costs more each week.","p+2"],["Central bank signals rate hikes","Analysts expect borrowing to get more expensive.","r+0.1 h-2"]],
       [["Interest rates rise again","Savers smile; borrowers wince. Savings accounts pay more.","r+0.1"],["Wage demands spread","Workers demand pay rises to keep up with prices, and employers push back.","p+1 w+0.3"],
-       ["Clearance sale","A shop sells stockpiled goods for $50 cash. Buy to resell?","",[0.8,"You resell them at a profit.","c+30","The goods turn out to be poor quality.","c-50"],[1,"You pass.",""]]],
+      ["Clearance sale","A shop sells stockpiled goods for $50 cash. Buy to resell?","",[0.8,"You resell them at a profit.","c+30","The goods turn out to be poor quality.","c-50"],[1,"You pass.",""]]],
       [["Rates hit a 15-year high","Housing and stock markets cool sharply.","r+0.1 h-3"],["Firms freeze hiring","Higher borrowing costs force firms to cut back.","w-0.3 h-2"],
-       ["Side hustle","A neighbour pays $45 to help repaint a flat. Take it?","",[1,"Easy money.","c+45 e-8"],[1,"You rest.","e+4"]]],
+      ["Side hustle","A neighbour pays $45 to help repaint a flat. Take it?","",[1,"Easy money.","c+45 e-8"],[1,"You rest.","e+4"]]],
       [["Inflation finally cools","Price rises slow for the first time in months.","p-1 h+3"],["Central bank pauses its rate hikes","Markets cheer the pause.","r-0.1 h+3"]]]},
     {id:'trade',ic:'🚢',n:'Trade war',term:'Tariffs: taxes on imports that make foreign goods pricier and often provoke retaliation.',len:[5,8],eff:{p:0.6,w:-0.2,r:0.02,mkt:-0.2,lay:0.02,cls:0.03},ph:[
       [["Two giant economies exchange tariffs","Taxes on imports make foreign goods pricier overnight.","p+1.5"],["Retaliation announced","Exporters brace for lost sales abroad.","h-2"]],
       [["Factories hit by tariffs on parts","Local plants pay more for imported parts and slow production.","w-0.4 p+1"],["Shipping backlogs build","Containers pile up at ports waiting for inspection.","p+1 h-2"],
-       ["Pre-tariff phones","A trader offers a batch of pre-tariff phones for $60 to resell. Buy?","",[0.55,"Prices rise and you resell at a premium.","c+110","Customers balk at the price. You are stuck with the batch.","c-60"],[1,"You pass.",""]]],
+      ["Pre-tariff phones","A trader offers a batch of pre-tariff phones for $60 to resell. Buy?","",[0.55,"Prices rise and you resell at a premium.","c+110","Customers balk at the price. You are stuck with the batch.","c-60"],[1,"You pass.",""]]],
       [["Export orders collapse","Overseas buyers go elsewhere and some workers are sent home early.","w-0.5 h-3"],["Consumer prices climb","Everyday goods inch up.","p+1.5"],
-       ["Buy local","A local maker sells handmade goods for $25. Buy?","",[1,"Nice quality, and it feels good to support them.","c-25 h+5"],[1,"You skip it.",""]]],
+      ["Buy local","A local maker sells handmade goods for $25. Buy?","",[1,"Nice quality, and it feels good to support them.","c-25 h+5"],[1,"You skip it.",""]]],
       [["Trade truce signed","Tariffs roll back in phases and shipping speeds up.","p-1.5 h+3"],["Exporters rejoice","Orders come back and employers start hiring.","w+0.4 h+3"]]]},
     {id:'boom',ic:'🚀',n:'Tech boom',term:'Bull market: a sustained period of rising share prices and optimism.',len:[5,8],eff:{p:0.2,w:0.3,r:0.03,mkt:0.35},ph:[
       [["AI start-up raises record funding","Investors pour money into tech and headlines call it a new golden age.","h+3"],["Chipmaker posts blowout profits","Share indices jump on the news.","w+0.3 h+2"]],
       [["Hiring frenzy in tech","Recruiters call everyone with a pulse and salaries rise.","w+0.5"],["Everyone is talking about their portfolio","Lunch conversations are all about shares.","h+3"],
-       ["Hot IPO","A new tech company is floating. Invest $80?","",[0.6,"The IPO pops on day one.","c+140","The IPO flops.","c-80"],[1,"You watch from the sidelines.","h-1"]]],
+      ["Hot IPO","A new tech company is floating. Invest $80?","",[0.6,"The IPO pops on day one.","c+140","The IPO flops.","c-80"],[1,"You watch from the sidelines.","h-1"]]],
       [["Valuations look stretched","Some economists warn of a bubble. Everyday prices drift up too.","p+1 h+2"],["Markets hit a record high","The index closes at an all-time high.","h+3"],
-       ["Weekend bootcamp","A coding bootcamp offers a $50 weekend course. Join?","",[1,"You come out sharper.","c-50 n+5 e-10"],[1,"You pass.",""]]],
+      ["Weekend bootcamp","A coding bootcamp offers a $50 weekend course. Join?","",[1,"You come out sharper.","c-50 n+5 e-10"],[1,"You pass.",""]]],
       [["The bubble cools","A few overpriced firms fall back to earth and markets settle.","h-2"],["A soft landing","Growth slows gently without a crash. Pay settles higher than before.","w+0.2 h+2"]]]}
   ];
   function sagaOf(id){var r=null;SAGAS.forEach(function(x){if(x.id===id)r=x});return r}
@@ -2695,11 +2773,6 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   }
   /* today's chapter of the running storyline (or null when none is running) */
   function sagaEvent(){
-    if(!S.saga){
-      if(S.sagaGap>0){S.sagaGap--;return null}
-      if(Math.random()>=0.5)return null;
-      sagaStart();
-    }
     var st=S.saga,sg=sagaOf(st.id);
     if(!sg){S.saga=null;return null}
     var k=st.day,N=st.len,phase=k===0?0:k>=N-1?3:k<Math.ceil(N*0.55)?1:2,list=sg.ph[phase].filter(function(c){return c[0]!==st.last});
@@ -2709,22 +2782,22 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var ev={icon:sg.ic,tag:tag,title:c[0],text:c[1]+(k===0?' <br><small>📘 <strong>'+sg.term.split(':')[0]+':</strong>'+sg.term.slice(sg.term.indexOf(':')+1)+'</small>':''),done:true,tone:'',fx:[],story:null};
     if(c[3]){ev.choice=true;ev.done=false;ev.y=c[3];ev.n=c[4]}
     else{ev.fx=applyFx(c[2],true);ev.tone=/h\+|w\+|p-|r-/.test(c[2])&&!/h-|p\+|w-/.test(c[2])?'good':/h-|p\+|w-|e-/.test(c[2])?'bad':''}
-    if(tr){tr.last=c[0];if(!ev.choice&&tr)ev.fx.push('Still going: '+trendTxt(tr,false).replace(' today',' a day'))}
+    if(tr){tr.last=c[0];if(!ev.choice&&tr)ev.fx.push('Still going: '+trendNow(tr))}
     st.last=c[0];st.day++;
-    if(st.day>=N){S.saga=null;S.sagaLast=sg.id;S.sagaGap=2}
+    if(st.day>=N){S.saga=null;S.sagaLast=sg.id}
     return ev;
   }
   function macroEvent(){
-    var m=MACRO[Math.floor(Math.random()*MACRO.length)],days=m[3]+Math.floor(Math.random()*(m[4]-m[3]+1)),e=m[5];
-    var tr=scaleTrend({n:m[0],left:days,tot:days,p:e.p||0,w:e.w||0,r:e.r||0,mkt:(e.mkt||0)*CONFIG.macro.shockMarketScale,ill:e.ill||1,lay:e.lay||0,cls:e.cls||0,term:m[2]});
+    var m=MACRO[Math.floor(Math.random()*MACRO.length)],days=CONFIG.events.macroDays[0]+Math.floor(Math.random()*(CONFIG.events.macroDays[1]-CONFIG.events.macroDays[0]+1)),e=m[5];
+    var tr=scaleTrend({n:m[0],left:days,tot:days,p:e.p||0,w:e.w||0,r:e.r||0,mkt:(e.mkt||0)*CONFIG.macro.shockMarketScale,ill:e.ill||1,lay:e.lay||0,cls:e.cls||0,term:m[2],macro:1});
     S.trends.push(tr);
     return {icon:'🌐',tag:'Major world event · '+days+' days',title:m[0],text:m[1]+' <br><small>📘 <strong>'+m[2].split(':')[0]+':</strong>'+m[2].slice(m[2].indexOf(':')+1)+'</small>',done:true,tone:(e.mkt||0)<0||(e.p||0)>1||e.lay?'bad':'good',
-      fx:['Lasts '+days+' days','Each day: '+trendTxt(tr,false).replace(' today','')+(tr.lay?', job-loss risk':'')]};
+      fx:['Lasts '+days+' days','Effects: '+trendNow(tr)]};
   }
   function trendIll(){var m=1;S.trends.forEach(function(t){m*=t.ill||1});return m}
   /* ---------- multi-round stories ----------
-     Each step has options; each option rolls one weighted outcome [weight, text, fx, nextStep?].
-     The same choice can turn out differently. 'sk' boosts the first (best) outcome by a stat. */
+    Each step has options; each option rolls one weighted outcome [weight, text, fx, nextStep?].
+    The same choice can turn out differently. 'sk' boosts the first (best) outcome by a stat. */
   var TWISTS=[['Later, a friend thanks you for being sensible.','h+3'],['You spend the saved time reading something useful.','n+2'],['On the way home you find $10 on the ground.','c+10'],['Still, you can’t stop wondering what might have been.','h-3'],['The decision costs you a bit of sleep.','e-5'],['Someone buys you a coffee for no reason.','e+5 h+2']];
   var STORIES={
     stall:{ic:'🛒',t:'A friend’s street stall',s:{
@@ -2820,18 +2893,47 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     else{ev.done=true;ev.outcome=res[1];ev.tone=tone}
     render();
   }
-  function pickEvent(){
-    var sgEv=sagaEvent();if(sgEv)return sgEv;
-    if(Math.random()<0.18&&S.trends.length<3)return macroEvent();
-    if(Math.random()<0.2)return storyEvent();
-    if(Math.random()<0.3){var ie=itemEvent();if(ie)return ie}
-    var r=Math.random();
-    if(r<.15)return basicEvent(Math.floor(Math.random()*3));
-    if(r<.55){
-      var n=draw('deckN',NEWS);return newsEvent(n);
-    }
+  function decisionEvent(){
     var c=draw('deckC',CHOICES);
     return {icon:'❓',tag:'Decision',title:'You face a choice',text:c[0],choice:true,y:c[1],n:c[2],done:false,fx:[],tone:''};
+  }
+  function macroRunning(){return S.trends.some(function(t){return t.macro&&t.left>0})}
+  function quietCard(){return {icon:'🌙',tag:'Quiet night',title:'Nothing happens',text:'A quiet evening. Nothing in the news or around town needs your attention.',done:true,tone:'',fx:[]}}
+  /* one big event: a saga chapter is handled by sagaEvent; this starts a new saga or macro shock */
+  function startBig(){
+    if(Math.random()<CONFIG.events.sagaShare){sagaStart();return sagaEvent()}
+    return macroEvent();
+  }
+  /* one daily event from the weighted list; null means no event today */
+  function dailyPick(){
+    var E=CONFIG.events,opts=[['story',E.story],['item',E.item],['news',E.news],['basic',E.basic],['decision',E.decision],['none',E.none]];
+    while(true){
+      var tot=0;opts.forEach(function(o){tot+=Math.max(0,o[1])});
+      if(tot<=0)return null;
+      var r=Math.random()*tot,pick=opts[opts.length-1];
+      for(var i=0;i<opts.length;i++){r-=Math.max(0,opts[i][1]);if(r<0){pick=opts[i];break}}
+      var key=pick[0];
+      if(key==='story')return storyEvent();
+      if(key==='news')return newsEvent(draw('deckN',NEWS));
+      if(key==='basic')return basicEvent(Math.floor(Math.random()*3));
+      if(key==='decision')return decisionEvent();
+      if(key==='none')return null;
+      var ie=itemEvent();if(ie)return ie;
+      opts=opts.filter(function(o){return o!==pick});
+    }
+  }
+  /* cards for tonight, in order: the big event (if one starts or a saga chapter plays), then the daily event */
+  function pickNight(){
+    var E=CONFIG.events,cards=[],wasActive=!!S.saga||macroRunning(),big=null;
+    if(S.saga)big=sagaEvent();
+    else if(!macroRunning()){
+      if((S.bigCool||0)>0)S.bigCool--;
+      if(!(S.bigCool>0)&&Math.random()<E.bigChance)big=startBig();
+    }
+    if(big)cards.push(big);
+    var daily=dailyPick();if(daily)cards.push(daily);
+    if(wasActive||S.saga||macroRunning())S.bigCool=E.bigGap;
+    return cards;
   }
   function endWeek(rested){
     if(S.over||S.pending)return;
@@ -2843,9 +2945,9 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     log(home?'You went to bed at home with '+hm(S.ap)+' left. Tomorrow you start with +'+S.restBonus+'% energy and +'+S.restHap+' happiness ('+CONFIG.sleep.happinessPerHour+' for every full hour of rest), and sleep adds +'+S.slept+' health tonight.':'You ended the day away from home and dozed off where you were. Tomorrow you start with only +'+S.restBonus+'% energy, +'+S.restHap+' happiness and +'+S.slept+' health (sleeping at home would give +'+sleepGain(S.ap)+'%, +'+Math.floor(S.ap/60)*SL.happinessPerHour+' and +'+Math.round(Math.min(HS.max,S.ap/60*HS.perHour))+').');
     if(!S.fed&&S.slept>0)log('You have not eaten today, so the '+sg(CONFIG.health.nightly.skippedMeal)+' health penalty will eat into the +'+S.slept+' you get from sleep. Eat something first to recover health.','warn');
     snd('day');
-    var ev=pickEvent();
-    S.pending={rested:!!rested,ev:ev};
-    if(ev.done)log('Event: '+ev.title+(ev.fx.length?' ('+ev.fx.join(', ')+')':''),ev.tone==='good'?'good':ev.tone==='bad'?'bad':'');
+    var cards=pickNight();if(!cards.length)cards=[quietCard()];
+    S.pending={rested:!!rested,ev:cards[0],q:cards.slice(1)};
+    cards.forEach(function(ev){if(ev.done)log('Event: '+ev.title+(ev.fx.length?' ('+ev.fx.join(', ')+')':''),ev.tone==='good'?'good':ev.tone==='bad'?'bad':'')});
     view=null;
     render();
   }
@@ -2879,7 +2981,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       h+='<div class="evbtns">'+btn('evyes','','Yes',0,need>Math.max(0,S.cash))+btn('evno','','No',1)+'</div>'+(need>Math.max(0,S.cash)?'<p class="bad">You’d need '+money(need)+' in cash to say yes.</p>':'');
     }else{
       if(ev.outcome)h+='<div class="result '+(ev.tone||'')+'">'+ev.outcome+'</div>';
-      h+='<div class="chips">'+ev.fx.map(function(f){return '<span>'+f+'</span>'}).join('')+'</div>'+btn('cont','','Start next day');
+      h+='<div class="chips">'+ev.fx.map(function(f){return '<span>'+f+'</span>'}).join('')+'</div>'+btn('cont','',S.pending.q&&S.pending.q.length?'Next':'Start next day');
     }
     $('event').innerHTML=h;
   }
@@ -2918,8 +3020,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var j=JOBS[k], need=(j.computer&&!owns('computer'))?'Needs a working computer':'';
     return opt(j.n+' shift · '+money(shiftPay(j.pay)),hm(M(j.ap))+', −'+j.en+'% energy'+(need?' · '+need:''),btn('work',k,'Work a shift',0,!!need));
   }
-  var allJobs=false;
-  var ovHidden=false;   /* true after clicking the map outside the overview window */
+  var ovHidden=false;  /* true after clicking the map outside the overview window */
   /* bank amount boxes: chosen with −/+ in steps of BK_STEP; the choice is kept while the game is open */
   var BK_STEP=50,bankSel={};
   function bankAmt(id,min){var v=bankSel[id];return v==null||v<min?min:v}
@@ -2931,6 +3032,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var dn=$('shop').querySelector('[data-act="step"][data-arg^="'+id+'|-1|"]');if(dn)dn.disabled=v<=min;
     var up=$('shop').querySelector('[data-act="step"][data-arg^="'+id+'|1|"]');if(up)up.disabled=v>=max;
   }
+  var allJobs=false;
   function board(){
     var order=[],by={};
     BOARD.forEach(function(c){var b=bOf(c);if(!by[b]){by[b]=[];order.push(b)}by[b].push(c)});
@@ -2951,8 +3053,9 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       rows.sort(function(x,y){return x.rk.pay-y.rk.pay});
       h+='<div class="bcard"><h4 class="jh"><span>'+ICON[b]+' '+NAME[b]+'</span>'+(sh?'<em>🔒 closed '+sh+'d</em>':'')+'</h4>'+rows.map(function(o){
         var rk=o.rk;
+        var expBad=!o.mine&&!o.have&&expShort(o.c,rk);
         return opt('<span class="rn">'+rk.r+'</span> · '+money(Math.round(rk.pay*payIdx()))+'/shift',needTxt(rk,o.mine||o.have?null:o.c)+(rk.dress?' · '+DSHORT[rk.dress]:'')+(o.ok||o.mine?'':' · 🔒'),
-          o.mine?'<span class="tag">Your job</span>':o.have?'<span class="tag">Past rank</span>':btn('apply',o.c+'_'+o.i,'Apply',!o.ok,!o.ok||sh>0),o.mine?'mine':'');
+          o.mine?'<span class="tag">Your job</span>':o.have?'<span class="tag">Past rank</span>':btn('apply',o.c+'_'+o.i,'Apply',!o.ok,!o.ok||sh>0),o.mine?'mine':(expBad?'nextstep':''));
       }).join('')+'</div>';
     });
     return h+'</div><p style="margin:6px 0 0"><button class="linkbtn" data-act="alljobs" style="margin:0">'+(allJobs?'Show fewer':'Show all')+'</button></p>';
@@ -3023,8 +3126,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       if(S.lastTrack&&started.indexOf(S.lastTrack)>0){started.splice(started.indexOf(S.lastTrack),1);started.unshift(S.lastTrack)}
       var now=started.map(function(t){
         var T=TRACKS[t],n=S.edu[t],q=posInLevel(t,n),Lm=T.L[q.i],st=q.i?T.c[q.i-1]:0,k=lesDone(t),nl=lesCount(t,n);
-        return '<div class="nowstudy"><div class="ns-top"><div class="ns-h">📘 Now studying: <b>'+T.n+' '+T.lv[q.i]+'</b></div>'+btn('class',t,'Study')+'</div>'+
-          '<div class="ns-c">'+ic('time')+hm(lesHours(t,n)*60)+'<span class="sep"></span>'+ic('energy')+'−'+2*lesHours(t,n)+'% energy per lesson</div>'+
+        return '<div class="nowstudy"><div class="ns-top"><div class="ns-h">📘 Now studying: <b>'+T.n+' '+T.lv[q.i]+'</b></div>'+btn('class',t,'Study')+'<small class="ns-cost">'+ic('time')+' '+hm(lesHours(t,n)*60)+' · '+ic('energy')+' −'+2*lesHours(t,n)+'% energy</small>'+'</div>'+
           '<div class="ns-l">Modules: <b>'+(n-st+1)+' of '+q.of+'</b></div>'+
           /* each module pill is a progress bar: full when done, filled by lessons attended for the current one */
           '<div class="mods">'+Lm.map(function(m,i){var g=st+i,ln=lesCount(t,g),pc=g<n?100:g===n?Math.round(k/ln*100):0;
@@ -3071,14 +3173,15 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
           '<small class="bk-d">'+limTxt+' You cannot borrow again until this is paid off.</small>'+
           '<div class="bk-v">Borrowed <b>'+money(Ln.borrowed)+'</b> on day '+Ln.taken+' for '+dayN(Ln.tenure)+'.<br>You owe now <b class="'+(over?'dn':'')+'">'+money(owed)+'</b> (principal '+money(Ln.principal)+' + interest '+money(Ln.interest)+').<br>'+status+'</div>'+
           '<div class="bk-amt">'+btn('step','amt_repay|-1|'+minR+'|'+owed,'−',1,ramt<=minR)+'<input id="amt_repay" type="text" readonly value="'+ramt+'" aria-label="Amount to repay in dollars">'+btn('step','amt_repay|1|'+minR+'|'+owed,'+',1,ramt>=owed)+'</div>'+
-          '<div class="bk-b">'+btn('repay','','Repay',0,S.cash<=0||Ln.taken===S.day)+btn('repayall','','Pay in full · '+money(owed),1,S.cash<owed||Ln.taken===S.day)+'</div></div>'};
+          '<div class="bk-b">'+btn('repay','','Repay',0,S.cash<=0||Ln.taken===S.day)+btn('repayall','','Pay in full · '+money(owed),1,S.cash<owed||Ln.taken===S.day)+'</div></div>';
+      };
       var rows=card('Savings account','No risk · no minimum','Safe and simple. Earns '+S.rate.toFixed(1)+'% interest each day (the rate moves with the economy). Withdraw any time.','Balance: <b>'+money(S.bank)+'</b>','amt',BK_STEP,'savings','dep','wd','',S.bank>0)+
         INVK.map(function(k){
         var P=INV[k],p=S.inv[k],has=p.v>0.5,e=expRet(k);
         var d=P.d+(k==='fd'?' Rate now: +'+e.toFixed(1)+'%/day (follows the savings rate).':' Expected today: '+(e>=0?'+':'−')+Math.abs(e).toFixed(1)+'% ± '+VOL[k]+'%. Withdraw any time.');
         var c0=has?Math.round(p.c):0,v0=has?Math.round(p.v):0,pl=v0-c0;
         var v='Cost: <b>'+money(c0)+'</b>; Current: <b class="'+(pl>0?'up':pl<0?'dn':'')+'">'+money(v0)+'</b>'+(has&&k==='fd'&&S.day<p.lock?'<br><small>Matures on day '+p.lock+' (early withdrawal penalty)</small>':'');
-        return card(P.n,P.risk+' risk · min '+money(G(P.min)),d,v,'amt_'+k,G(P.min),P.n,'invest','divest',k,has);
+        return card(P.n,P.risk+' risk · min '+money(P.min),d,v,'amt_'+k,P.min,P.n,'invest','divest',k,has);
       }).join('');
       return '<div class="bk-wide">'+loanCard()+'</div><h3 class="bk-title">Savings and investments</h3>'+econNote()+'<div class="bk-grid">'+rows+'</div>'},
     market:function(){
@@ -3369,6 +3472,10 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   }
   var sayLine=null;
 
+  /* the top-bar arrows flash for a few seconds when a new day starts (see FLASH) */
+  var FLASH=null;
+  /* vital number colour: red below 10, amber 10 to 29, yellow 30 to 60, green above 60 */
+  function vitColor(v){return v<10?'#ef7d72':v<30?'#f0a030':v<=60?'#f0d040':'#5fcf92'}
   function render(){
     var H=HOUSE[S.home];
     $('day').textContent=Math.min(S.day,maxDays());
@@ -3393,7 +3500,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var pxs=Math.round(S.px*100), ws=Math.round(payIdx()*100);
     $('econ').innerHTML='<span class="'+(pxs>100?'up':pxs<100?'dn':'')+'">Prices '+pxs+'%</span><span>Shift pay '+ws+'%</span><span>Interest '+S.rate.toFixed(1)+'%/day</span>'+(function(){var jb=myJob();return jb&&shutLeft(jb.b)>0?'<span class="up">🔒 '+NAME[jb.b]+' closed: '+shutLeft(jb.b)+'d</span>':''})();
     if(S.trends.length){var t0=S.trends[0],bad=S.trends.some(function(t){return t.p>0||t.w<0||t.mkt<0||t.ill>1}),sh=t0.n.length>28?t0.n.slice(0,26)+'…':t0.n;
-      $('econ').innerHTML+='<span class="trend '+(bad?'up':'dn')+'" title="'+S.trends.map(function(t){return t.n+' ('+t.left+' days left): '+trendTxt(t,true)}).join(' | ').replace(/"/g,'&quot;')+'">🌐 '+sh+' · '+t0.left+'d'+(S.trends.length>1?' (+'+(S.trends.length-1)+' more)':'')+'</span>'}
+      $('econ').innerHTML+='<span class="trend '+(bad?'up':'dn')+'" title="'+S.trends.map(function(t){return t.n+' ('+t.left+' days left): '+trendNow(t)}).join(' | ').replace(/"/g,'&quot;')+'">🌐 '+sh+' · '+t0.left+'d'+(S.trends.length>1?' (+'+(S.trends.length-1)+' more)':'')+'</span>'}
     var wr=function(k,n,max){var w=S.clothes[k];return '<div class="wr"><span>'+n+'</span><div class="bar"><i style="width:'+Math.min(100,w/max*100)+'%;background:'+(w<=1?'var(--red)':'var(--teal)')+'"></i></div><em>'+(w?w+' day'+(w>1?'s':'')+' left':'none')+'</em></div>'};
     $('wardrobe').innerHTML=wr('casual','Casual',WEAR.casual.w)+wr('smart','Smart',WEAR.smart.w)+wr('suit','Suit',WEAR.suit.w);
     var as=assets(), nw=worth(), tot=Math.max(nextGoal(),nw);
@@ -3406,7 +3513,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     placeCenter();
     renderGoals();
     var gp=$('goalpop');
-    if(S.goalPop&&!S.over&&!S.pending&&!S.cert&&!S.morning){$('gpList').innerHTML=goals().map(function(x){return '<li>✅ '+x[1]+'</li>'}).join('');$('gpMsg').textContent='You have the basics down. Next target: '+TIERS[Math.max(0,S.tier+1)].n+' at '+money(nextGoal())+' net worth'+(maxDays()===Infinity?'.':', within '+maxDays()+' days.');gp.classList.add('show')}else gp.classList.remove('show');
+    if(S.goalPop&&!S.over&&!S.pending&&!S.cert&&!S.morning){$('gpList').innerHTML=goals().map(function(x){return '<li>✅ '+x[1]+'</li>'}).join('');$('gpMsg').textContent='You have the basics down. Next target: '+TIERS[Math.max(0,S.tier+1)].n+' at '+money(nextGoal())+' net worth'+(maxDays()===Infinity?'.':', within '+maxDays()+' days.')+'';gp.classList.add('show')}else gp.classList.remove('show');
     var cp=$('certpop');
     if(S.cert&&!S.over){var C=S.cert,TT=TRACKS[C.t];$('cpT').textContent=TT.n+' '+TT.lv[C.l-1];$('cpMods').textContent='Modules: '+C.mods.join(' · ');$('cpDay').textContent='Awarded on day '+C.d;
       var opens=[],close=[];Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk){if((rk.q||[]).some(function(q){return q[0]===C.t&&q[1]===C.l})){if(meets(rk))opens.push(rk.r);else close.push(rk.r)}})});
@@ -3415,7 +3522,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       var cn=$('cpNext');cn.hidden=!nxT;if(nxT){cn.textContent='Enrol in the '+TT.lv[C.l]+' · '+money(nxF);cn.disabled=S.cash<nxF||S.expelled>0}
       cp.classList.add('show')}else cp.classList.remove('show');
     var mo=$('morning');if(S.morning&&!S.over&&!S.pending&&!S.cert){$('mnT').textContent='☀️ Day '+S.day+(maxDays()!==Infinity?' of '+maxDays():'');$('mnSub').textContent='Before you start, a few things need your attention:';$('mnList').innerHTML=S.morning.map(function(x){return '<li class="'+x.l+'">'+x.t+'</li>'}).join('');mo.classList.add('show')}else mo.classList.remove('show');
-    $('hNw').textContent=kMoney(worth());$('hNw').style.color=worth()<0?'#ef7d72':'';$('hKn').textContent=Math.floor(S.know);$('hCash').textContent=kMoney(S.cash);$('hNw').title=money(worth());$('hCash').title=money(S.cash);$('hEn').textContent=S.energy+'%';$('hHp').textContent=S.happy;$('hHl').textContent=S.health;$('hHl').style.color=S.health<30?'#ef7d72':'';
+    $('hNw').textContent=kMoney(worth());$('hNw').style.color=worth()<0?'#ef7d72':'';$('hKn').textContent=Math.floor(S.know)+'%';$('hCash').textContent=kMoney(S.cash);$('hNw').title=money(worth());$('hCash').title=money(S.cash);$('hEn').textContent=S.energy+'%';$('hHp').textContent=S.happy;$('hHl').textContent=S.health;$('hHl').style.color=S.health<30?'#ef7d72':'';
     $('hEn').style.color=S.energy<30?'#ef7d72':'';$('hHp').style.color=S.happy<30?'#ef7d72':'';$('hCash').style.color=S.cash<0?'#ef7d72':'';
     var hiv=invTotal();$('hInvC').hidden=!anyInv();if(anyInv()){var pl0=hiv-invSum('c');$('hInv').textContent=money(hiv);$('hInvPL').textContent=sm(pl0)+' ('+(pl0>=0?'+':'−')+Math.abs(invSum('c')?pl0/invSum('c')*100:0).toFixed(1)+'%)';$('hInvPL').style.color=pl0>=0?'#7fe0a6':'#ef7d72'}
     $('hScore').textContent=score().toLocaleString();var bs0=bestScore();$('hBest').textContent=bs0?'best '+bs0.toLocaleString():'';
@@ -3452,6 +3559,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     });
 
     var pend=!!S.pending;
+    document.body.classList.toggle('pending',pend);
     $('center').classList.toggle('wide',(view==='jobs'||view==='school'||view==='bank')&&!pend);
     var pk=view+'|'+pend;if(window.__pk!==pk){window.__pk=pk;$('center').scrollTop=0}
     $('overview').hidden=!!view||pend;
@@ -3490,7 +3598,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   }
   function keyHints(){
     document.querySelectorAll('[data-k]').forEach(function(b){b.removeAttribute('data-k')});
-    var bs=actionButtons();if(bs.length>9)return;   /* long lists (Employment Office, Bank...): no number shortcuts, they would jump around */
+    var bs=actionButtons();if(bs.length>9)return;  /* long lists (Employment Office, Bank...): no number shortcuts, they would jump around */
     bs.forEach(function(b,i){b.setAttribute('data-k',String(i+1))});
   }
   document.addEventListener('keydown',function(e){
@@ -3517,7 +3625,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   var KN=[[20,24],[34,22],[50,25],[64,22],[80,24],[84,36],[81,50],[84,64],[80,77],[64,79],[48,76],[34,79],[20,77],[16,64],[19,50],[16,36]];
   var SPUR={school:0,jobs:1,bung:3,bank:4,fast:5,hosp:6,factory:14,resto:7,mall:8,apt:9,gym:10,elec:11,pawn:12,thrift:13,market:15};
   var PARKS=[[25.5,12,4.2,6.5,'pond'],[48.5,12,4,6,'trees'],[74,12,3,5,'trees'],[23,89,4.8,5.5,'fountain'],
-             [73,89,4.5,5.5,'trees']];
+            [73,89,4.5,5.5,'trees']];
 
   LOCS.forEach(function(l){
     var k=l[0], b=document.createElement('button');
@@ -3621,15 +3729,15 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       }
     });
     s+='<g fill="none" stroke-linecap="round" stroke-linejoin="round">'+
-       '<path d="'+loop+' '+spurs+'" stroke="#c9c6bd" stroke-width="'+(rw+12)+'"/>'+
-       '<path d="'+loop+'" stroke="#454a50" stroke-width="'+rw+'"/>'+
-       '<path d="'+spurs+'" stroke="#454a50" stroke-width="'+(rw*.62)+'"/>'+
-       '<path d="'+loop+'" stroke="#f2d16b" stroke-width="1.6" stroke-dasharray="9 8"/></g>';
+      '<path d="'+loop+' '+spurs+'" stroke="#c9c6bd" stroke-width="'+(rw+12)+'"/>'+
+      '<path d="'+loop+'" stroke="#454a50" stroke-width="'+rw+'"/>'+
+      '<path d="'+spurs+'" stroke="#454a50" stroke-width="'+(rw*.62)+'"/>'+
+      '<path d="'+loop+'" stroke="#f2d16b" stroke-width="1.6" stroke-dasharray="9 8"/></g>';
     pts.forEach(function(p,i){
       if(i%4!==2)return;
       var a=pts[(i+n0-1)%n0],b=pts[(i+1)%n0],ang=Math.atan2(b[1]-a[1],b[0]-a[0])*180/Math.PI;
       s+='<g transform="translate('+p[0].toFixed(1)+' '+p[1].toFixed(1)+') rotate('+ang.toFixed(1)+')" fill="#fff" opacity=".8">'+
-         [-2,-1,0,1,2].map(function(k){return '<rect x="'+(k*5.2*sc-1.3)+'" y="'+(-rw/2+1.5)+'" width="2.6" height="'+(rw-3)+'"/>'}).join('')+'</g>';
+        [-2,-1,0,1,2].map(function(k){return '<rect x="'+(k*5.2*sc-1.3)+'" y="'+(-rw/2+1.5)+'" width="2.6" height="'+(rw-3)+'"/>'}).join('')+'</g>';
     });
     pts.forEach(function(p,i){
       var dx=p[0]-W/2,dy=p[1]-H/2,m=Math.hypot(dx,dy)||1;
@@ -3688,8 +3796,9 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(S.over)return;
     var b=e.target.closest('[data-act]'); if(!b)return;
     var a=b.dataset.act,g=b.dataset.arg;
-    if(a==='step'){stepAmt(g);return}   /* amount stepper: no scroll, no re-render */
-    if(a==='work')work(g);else if(a==='treat')treat(g);else if(a==='class')study(g);else if(a==='enrol')enrol(g);else if(a==='apply')apply(g);else if(a==='alljobs'){allJobs=!allJobs;render()}
+    if(a==='step'){stepAmt(g);return}  /* amount stepper: no scroll, no re-render */
+    if(a==='work')work(g);else if(a==='treat')treat(g);else if(a==='class')study(g);else if(a==='enrol')enrol(g);else if(a==='apply')apply(g)
+    else if(a==='alljobs'){allJobs=!allJobs;render()}
     else if(a==='buy')buy(g);else if(a==='cbuy')buyWear(g);else if(a==='bargain')bargain(g);else if(a==='sell')sell(g);else if(a==='dep'||a==='wd')moveMoney(a);
     else if(a==='treat_ill')treatIll();else if(a==='checkup')checkup();else if(a==='ward')ward();else if(a==='insure')insure();else if(a==='paydebt')payDebt();else if(a==='payrent')payRent();else if(a==='nap')nap();else if(a==='arrears')payArrears();else if(a==='groc')buyGroc(g);else if(a==='bundle')buyBundle(g);else if(a==='chips')chips();else if(a==='lotto')buyTicket();else if(a==='cook')cook(g);else if(a==='eatc')eatCooked(g);else if(a==='eatp')eatPrem(g);else if(a==='binsp')binSpoiled();else if(a==='gym')gymSession(g);else if(a==='study')selfStudy();else if(a==='repair')repair(g);else if(a==='redeem')redeem(g);else if(a==='invest')invest(g);else if(a==='divest')divest(g);
     else if(a==='home')moveHome(g);else if(a==='rest')endWeek(true);
@@ -3706,7 +3815,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var b=e.target.closest('[data-act]');if(!b||S.over)return;
     var a=b.dataset.act;
     if(a==='evyes')decide(true);else if(a==='evno')decide(false);else if(a==='evopt')storyPick(+b.dataset.arg);
-    else if(a==='cont'&&S.pending&&S.pending.ev.done)rollover(S.pending.rested);
+    else if(a==='cont'&&S.pending&&S.pending.ev.done){if(S.pending.q&&S.pending.q.length){S.pending.ev=S.pending.q.shift();render()}else rollover(S.pending.rested)}
     toTop();
   });
   $('again').addEventListener('click',function(){clearSave();fresh()});
@@ -3719,7 +3828,13 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   });
   function muteUI(){$('muteBtn').textContent=MUTE?'🔇':'🔊';$('muteBtn').setAttribute('aria-pressed',String(MUTE));$('muteBtn').setAttribute('aria-label',MUTE?'Sound off. Turn sound on':'Sound on. Turn sound off')}
   muteUI();
-  $('resetBtn').addEventListener('click',function(){clearSave();$('over').classList.remove('show');$('rules').classList.remove('show');fresh()});
+  /* Reset takes a second click instead of window.confirm(), which some embedded browsers block silently */
+  var resetArmed=0;
+  $('resetBtn').addEventListener('click',function(){
+    var b=this;
+    if(!resetArmed){resetArmed=setTimeout(function(){resetArmed=0;b.textContent='↺ Reset'},4000);b.textContent='Click again to confirm';return}
+    clearTimeout(resetArmed);resetArmed=0;b.textContent='↺ Reset';
+    clearSave();$('over').classList.remove('show');$('rules').classList.remove('show');fresh()});
   $('muteBtn').addEventListener('click',function(){MUTE=!MUTE;try{localStorage.setItem('dailyGrind.mute',MUTE?'1':'0')}catch(e){}muteUI();if(!MUTE)snd('coin')});
   $('gpGo').addEventListener('click',function(){S.goalPop=0;render()});
   $('cpGo').addEventListener('click',function(){S.cert=null;render()});
@@ -3735,6 +3850,26 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     else if(!ovHidden&&window.innerWidth>640){ovHidden=true;render()}
   });
   $('hudOv').addEventListener('click',function(){ovHidden=false;view=null;render()});
+  function closePlaces(){var p=$('placesList');if(p&&p.parentNode)p.parentNode.removeChild(p)}
+  function showPlaces(){
+    closePlaces();
+    var box=document.createElement('div');box.id='placesList';box.className='places';box.setAttribute('role','dialog');box.setAttribute('aria-label','Places in town');
+    var rows=LOCS.slice().sort(function(a,b){return dist(loc,a[0])-dist(loc,b[0])});
+    box.innerHTML='<button class="btn alt pclose" type="button" id="placesClose">Close</button><h3>📍 Places</h3>'+
+      rows.map(function(l){
+        var k=l[0],d=dist(loc,k)*WALK,here=k===loc,home=k===S.home,sh=shutLeft(k);
+        return '<div class="prow"><div><b>'+l[1]+' '+l[2]+'</b><small>'+(here?'You are here':hm(d)+' walk')+(home?' · Home':'')+(sh?' · 🔒 closed '+sh+'d':'')+'</small></div>'+
+          (here?'<span class="tags" style="position:static;flex-direction:row"><span class="tag you">Here</span></span>':'<button class="btn" type="button" data-go="'+k+'" style="min-height:34px;padding:4px 12px;font-size:.8rem">Go</button>')+'</div>';
+      }).join('');
+    $('board').appendChild(box);
+    box.addEventListener('click',function(e){
+      if(e.target.id==='placesClose'){closePlaces();return}
+      var b=e.target.closest('[data-go]');if(!b)return;
+      closePlaces();enter(b.dataset.go);
+    });
+  }
+  $('hudPlaces').addEventListener('click',function(){if(S.over||S.pending)return;showPlaces()});
+
   $('hudEnd').addEventListener('click',function(){if(S.over||S.pending)return;endWeek(false)});
   $('goals').addEventListener('click',function(e){if(e.target.id==='hideGoals'){S.tut=1;render()}});
   $('diffs').addEventListener('click',function(e){
@@ -3765,17 +3900,17 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     }catch(e){}
   })();
   /* =====================================================================
-     VERSION 39 ADD-ONS
-     Five features that sit on top of the game without changing the older functions:
-       1. Clock + day bar      2. Vital trend arrows      3. Toasts
-       4. Action preview       5. End-of-run recap
-     They work by wrapping render(), log() and finish(): the old code runs first, then the add-on
-     reads the game state and draws. Each feature is a separate section below, so deleting one section
-     removes that feature. All their settings live in CONFIG.ui (near the top of the script).
-     ===================================================================== */
+    VERSION 39 ADD-ONS
+    Five features that sit on top of the game without changing the older functions:
+      1. Clock + day bar      2. Vital trend arrows      3. Toasts
+      4. Action preview      5. End-of-run recap
+    They work by wrapping render(), log() and finish(): the old code runs first, then the add-on
+    reads the game state and draws. Each feature is a separate section below, so deleting one section
+    removes that feature. All their settings live in CONFIG.ui (near the top of the script).
+    ===================================================================== */
   (function addons39(){
     var UI=CONFIG.ui||{};
-    var HOOK={before:[],after:[],onLog:[],onFinish:[]};   /* what each feature asks to run */
+    var HOOK={before:[],after:[],onLog:[],onFinish:[]};  /* what each feature asks to run */
     function safe(list,a,b){list.forEach(function(f){try{f(a,b)}catch(e){console.warn('Add-on problem:',e)}})}
     (function wrap(){
       var _render=render,_log=log,_finish=finish;
@@ -3787,13 +3922,13 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
     /* first sentence (or two, if the first is very short) of a log line, trimmed to fit a toast or a list row */
     function shortText(msg){
-      return String(msg).trim();   /* the full message: toasts grow to fit and stay up longer for longer text */
+      return String(msg).trim();  /* the full message: toasts grow to fit and stay up longer for longer text */
     }
 
     /* ---------- 1. CLOCK + DAY BAR ----------
-       S.ap is "minutes left today". The clock is just: start hour + minutes already used.
-       The day bar remembers WHAT each used chunk was spent on (S.tl), by noticing which button or
-       building you just clicked when the minutes dropped. */
+      S.ap is "minutes left today". The clock is just: start hour + minutes already used.
+      The day bar remembers WHAT each used chunk was spent on (S.tl), by noticing which button or
+      building you just clicked when the minutes dropped. */
     var CK=UI.clock||{};
     var CK_START=(CK.startHour>=0&&CK.startHour<24)?Math.floor(CK.startHour):7;
     function pad2(n){return (n<10?'0':'')+n}
@@ -3808,7 +3943,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
               food:['Food','#5fcf92'],health:['Health','#ff9ecb'],errand:['Errands','#3cc0c3'],other:['Other','#6b7885']};
     var ACT_KIND={work:'work','class':'study',study:'study',gym:'gym',nap:'rest',cook:'food',eatc:'food',eatp:'food',treat:'food',chips:'food',
                   groc:'food',bundle:'food',treat_ill:'health',checkup:'health',ward:'health'};
-    var nextKind=null;   /* what the player just pressed; used by the next render */
+    var nextKind=null;  /* what the player just pressed; used by the next render */
     document.addEventListener('click',function(e){
       var el=e.target;if(!el||!el.closest)return;
       if(el.closest('.tile')){nextKind='walk';return}
@@ -3820,7 +3955,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       var d=S.tl;
       if(!d||d.day!==S.day){
         d=S.tl={day:S.day,last:S.ap,seg:[]};
-        if(MAX_AP-S.ap>0)d.seg.push(['other',MAX_AP-S.ap]);   /* minutes already gone when the day started (illness) or before this save */
+        if(MAX_AP-S.ap>0)d.seg.push(['other',MAX_AP-S.ap]);  /* minutes already gone when the day started (illness) or before this save */
       }else if(S.ap<d.last){
         var k=nextKind||'other',n=d.last-S.ap,s=d.seg[d.seg.length-1];
         if(s&&s[0]===k)s[1]+=n;else d.seg.push([k,n]);
@@ -3838,38 +3973,39 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       var kinds=Object.keys(by).sort(function(a,b){return by[b]-by[a]});
       var tip='Used so far: '+(kinds.map(function(k){return (KIND[k]||KIND.other)[0]+' '+hm(by[k])}).join(', ')||'nothing yet')+'. Left: '+hm(S.ap)+'.';
       var legend=kinds.map(function(k){var K=KIND[k]||KIND.other;return '<span><i style="background:'+K[1]+'"></i>'+K[0]+' '+hm(by[k])+'</span>'}).join('');
-      bar.innerHTML='<div class="track" title="'+esc(tip)+'">'+html+'</div>'+(legend?'<div class="legend">'+legend+'<span class="lg-left">'+hm(S.ap)+' left</span></div>':'');
+      var topKinds=kinds.slice(0,3).map(function(k){return (KIND[k]||KIND.other)[0]+' '+hm(by[k])}).join(' · ');
+      var sumline=topKinds?(topKinds+' · '+hm(S.ap)+' left'):(hm(S.ap)+' left');
+      bar.innerHTML='<div class="track" title="'+esc(tip)+'">'+html+'</div>'+(legend?'<div class="legend">'+legend+'<span class="lg-left">'+hm(S.ap)+' left</span></div>':'')+'<div class="sumline">'+esc(sumline)+'</div>';
     }
     HOOK.before.push(trackTime);HOOK.after.push(paintClock);
 
     /* ---------- 2. VITAL TREND ARROWS ----------
-       On the first render of each day we remember the morning values (S.vs). After that every vital
-       shows ▲ or ▼ with how far it has moved since you woke up. */
+      On the first render of each day we remember the morning values (S.vs). After that every vital
+      shows ▲ or ▼ with how far it has moved since you woke up. */
     var TR_MIN=(UI.trend&&UI.trend.minChange)||1;
     function trackVitals(){
       if(!S.vs||S.vs.day!==S.day)S.vs={day:S.day,energy:S.energy,happy:S.happy,health:S.health,know:Math.floor(S.know)};
     }
+    /* top-bar arrows: shown for a few seconds when a new day starts, measured from the moment the night began (sleep and other overnight effects included) */
     function arrow(key,now){
-      var d=Math.round(now-S.vs[key]);
+      if(!FLASH||Date.now()>FLASH.until)return '';
+      var base={energy:FLASH.e,happy:FLASH.h,health:FLASH.l}[key];
+      var d=Math.round(now-base);
       if(Math.abs(d)<TR_MIN)return '';
-      return '<span class="tr '+(d>0?'up':'dn')+'" title="Since you woke up today: '+(d>0?'+':'−')+Math.abs(d)+'">'+(d>0?'▲':'▼')+Math.abs(d)+'</span>';
+      return '<span class="tr '+(d>0?'up':'dn')+'" title="Overnight: '+(d>0?'+':'−')+Math.abs(d)+'">'+(d>0?'▲':'▼')+Math.abs(d)+'</span>';
     }
     function paintTrends(){
-      var k=Math.floor(S.know);
-      $('hEn').innerHTML=S.energy+'%'+arrow('energy',S.energy);
-      $('hHp').innerHTML=S.happy+arrow('happy',S.happy);
-      $('hHl').innerHTML=S.health+arrow('health',S.health);
-      $('energy').innerHTML=S.energy+'%'+arrow('energy',S.energy);
-      $('happy').innerHTML=S.happy+'%'+arrow('happy',S.happy);
-      $('health').innerHTML=S.health+'%'+arrow('health',S.health);
-      $('know').innerHTML=k+arrow('know',k);
+      var k=Math.min(100,Math.floor(S.know));
+      var pairs=[['hEn',S.energy,'%'],['hHp',S.happy,'%'],['hHl',S.health,'%'],['hKn',k,'%'],['energy',S.energy,'%'],['happy',S.happy,'%'],['health',S.health,'%'],['know',k,'%']];
+      var arr={hEn:arrow('energy',S.energy),hHp:arrow('happy',S.happy),hHl:arrow('health',S.health),hKn:'',energy:arrow('energy',S.energy),happy:arrow('happy',S.happy),health:arrow('health',S.health),know:arrow('know',k)};
+      pairs.forEach(function(p){var el=$(p[0]);if(!el)return;el.innerHTML=p[1]+p[2]+(arr[p[0]]||'');el.style.color=vitColor(p[1])});
     }
     HOOK.before.push(trackVitals);HOOK.after.push(paintTrends);
 
     /* ---------- 3. TOASTS ----------
-       Two sources: (a) a NEW warning appearing in the same list the Overview shows (tired, rent due, no meal...),
-       (b) a log line containing one of CONFIG.ui.toasts.words. No toasts while a pop-up is open, because
-       the morning card, event card and game-over card already tell you the news. */
+      Two sources: (a) a NEW warning appearing in the same list the Overview shows (tired, rent due, no meal...),
+      (b) a log line containing one of CONFIG.ui.toasts.words. No toasts while a pop-up is open, because
+      the morning card, event card and game-over card already tell you the news. */
     var TS=UI.toasts||{};
     var toastQ=[],seenWarn=null,lastS=null;
     function modalOpen(){return !!(S.over||S.pending||S.morning||S.cert||document.querySelector('.over.show'))}
@@ -3887,9 +4023,9 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     }
     function makeToast(t){
       var box=$('toasts'),el=document.createElement('div');
-      if([].some.call(box.children,function(c){return c.dataset.txt===t.txt}))return;   /* already on screen */
+      if([].some.call(box.children,function(c){return c.dataset.txt===t.txt}))return;  /* already on screen */
       el.className='toast '+t.cls;el.innerHTML=t.txt;el.dataset.txt=t.txt;
-      if(t.quiet)el.setAttribute('aria-hidden','true');   /* log lines are already read out by the live region */
+      if(t.quiet)el.setAttribute('aria-hidden','true');  /* log lines are already read out by the live region */
       el.addEventListener('click',function(){dismiss(el)});
       box.appendChild(el);
       while(box.children.length>(TS.max||3))dismiss(box.firstChild,true);
@@ -3904,21 +4040,21 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       if((TS.words||[]).some(function(w){return m.indexOf(w)>=0}))toast(shortText(msg),cls==='bad'?'bad':cls==='good'?'good':'warn',true);
     }
     /* warnings: compare this render's warning list with the last one and queue what is new.
-       While a pop-up is open we only update the list, so news that arrived overnight is not repeated as a toast. */
+      While a pop-up is open we only update the list, so news that arrived overnight is not repeated as a toast. */
     function watchWarnings(modal){
       var keys={};
       stressList().forEach(function(x){keys[x.t.replace(/[\d$,%.]+/g,'#').slice(0,24)]=x});
       if(!modal&&seenWarn&&TS.vitalWarnings!==false){
         var fresh=Object.keys(keys).filter(function(k){return !seenWarn[k]});
-        if(fresh.length)toast(keys[fresh[0]].t,keys[fresh[0]].l==='bad'?'bad':'warn');   /* the list is sorted worst-first, so the first new one is the one that matters */
+        if(fresh.length)toast(keys[fresh[0]].t,keys[fresh[0]].l==='bad'?'bad':'warn');  /* the list is sorted worst-first, so the first new one is the one that matters */
       }
       seenWarn=keys;
     }
     function paintToasts(){
-      if(lastS!==S){lastS=S;seenWarn=null;toastQ=[];$('toasts').innerHTML=''}   /* a different game: start clean */
+      if(lastS!==S){lastS=S;seenWarn=null;toastQ=[];$('toasts').innerHTML=''}  /* a different game: start clean */
       var modal=modalOpen();
       watchWarnings(modal);
-      if(modal){toastQ=[];$('toasts').innerHTML='';return}   /* the pop-up already tells the news */
+      if(modal){toastQ=[];$('toasts').innerHTML='';return}  /* the pop-up already tells the news */
       if(!toastQ.length)return;
       var hud=$('hud');$('toasts').style.top=(hud?Math.round(hud.getBoundingClientRect().bottom)+8:72)+'px';
       var q=toastQ;toastQ=[];q.forEach(makeToast);
@@ -3926,11 +4062,11 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     HOOK.onLog.push(logToast);HOOK.after.push(paintToasts);
 
     /* ---------- 4. ACTION PREVIEW ----------
-       Pressing one of the chosen buttons (CONFIG.ui.preview.actions) first runs the REAL action on a throw-away
-       copy of the game, reads off what changed, then shows it. Only "Do it" runs the action for real.
-       Because it uses the real code, the preview always matches CONFIG and never needs its own price list.
-       Anything unusual (the action would be refused, nothing changes, something throws) skips the preview
-       and lets the normal button behave exactly as before. */
+      Pressing one of the chosen buttons (CONFIG.ui.preview.actions) first runs the REAL action on a throw-away
+      copy of the game, reads off what changed, then shows it. Only "Do it" runs the action for real.
+      Because it uses the real code, the preview always matches CONFIG and never needs its own price list.
+      Anything unusual (the action would be refused, nothing changes, something throws) skips the preview
+      and lets the normal button behave exactly as before. */
     var PV=UI.preview||{};
     var PV_ACTIONS=PV.actions||['work','class','study','gym'];
     var pvOn=PV.on!==false;
@@ -3952,7 +4088,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
         save=function(){};clearSave=function(){};finish=function(){};checkWin=function(){return false};
         log=function(m){notes.push(m)};
         refuse=function(){refused=true;return false};
-        Math.random=function(){return 0.5};   /* any luck-based part gets a middle-of-the-road roll */
+        Math.random=function(){return 0.5};  /* any luck-based part gets a middle-of-the-road roll */
         fn(arg);
         out={before:before,after:pvVitals(),notes:notes,refused:refused,cert:!!S.cert,over:!!S.over,day:S.day!==keep.S.day};
       }catch(e){out=null}
@@ -3961,14 +4097,14 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       finish=keep.finish;checkWin=keep.checkWin;Math.random=keep.rnd;
       return out;
     }
-    var pvPending=null;   /* {a, arg} waiting for the player's answer */
+    var pvPending=null;  /* {a, arg} waiting for the player's answer */
     function pvRow(icon,label,delta,after,fmt){
       if(!delta)return '';
       return '<div class="pv-row"><span class="pv-i">'+icon+'</span><span class="pv-l">'+label+'</span><span class="pv-d '+(delta>0?'up':'dn')+'">'+(delta>0?'+':'−')+fmt(Math.abs(delta))+'</span><span class="pv-a">'+after+'</span></div>';
     }
     function pvTitle(b){
       var ns=b.closest('.nowstudy'),nb=ns&&ns.querySelector('.ns-h b');
-      if(nb)return 'Go to class: '+nb.textContent.trim();   /* the Study button at School */
+      if(nb)return 'Go to class: '+nb.textContent.trim();  /* the Study button at School */
       var o=b.closest('.opt'),t=o&&o.firstElementChild?o.firstElementChild.cloneNode(true):null;
       if(t){[].forEach.call(t.querySelectorAll('small'),function(x){x.parentNode.removeChild(x)});var s=t.textContent.replace(/\s+/g,' ').trim();if(s)return s}
       return b.textContent.replace(/\s+/g,' ').trim();
@@ -3989,7 +4125,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       if(r.cert)warn.push('🎓 This finishes a qualification.');
       $('pvWarn').innerHTML=warn.map(function(w){return '<div class="pv-warn">'+esc(w)+'</div>'}).join('');
       $('pvNote').textContent=r.notes.length?'Likely result: '+r.notes.slice(0,2).join(' '):'';
-      $('pvSkip').checked=true;   /* "Don't ask me again" is ticked by default */
+      $('pvSkip').checked=true;  /* "Don't ask me again" is ticked by default */
       pvPending={a:a,arg:arg};$('toasts').innerHTML='';
       $('pvpop').classList.add('show');keyHints();
       setTimeout(function(){$('pvGo').focus()},0);
@@ -4009,7 +4145,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     /* capture phase: this runs BEFORE the Shop panel's own click handler, and can stop it */
     $('shop').addEventListener('click',function(e){
       var b=e.target.closest('[data-act]');if(!b||b.disabled)return;
-      if(b.dataset.pv==='1')return;                                   /* the player already said "Do it" */
+      if(b.dataset.pv==='1')return;                                  /* the player already said "Do it" */
       if(!pvOn||S.over||S.pending||PV_ACTIONS.indexOf(b.dataset.act)<0)return;
       var a=b.dataset.act,arg=b.dataset.arg||'',r=dryRun(a,arg);
       if(!r||r.refused||r.over||r.day||r.before.ap===r.after.ap)return;  /* nothing useful to show: act normally */
@@ -4025,17 +4161,17 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     setPreview(pvOn);
 
     /* ---------- 5. END-OF-RUN RECAP ----------
-       While you play we quietly keep (a) your net worth at the end of each day (S.hist) and
-       (b) any big log lines that match CONFIG.ui.moments (S.moments). When the game ends, finish() shows
-       the old score table, then this recap is added underneath: a net-worth line, your 3 biggest moments,
-       and a Share button. */
+      While you play we quietly keep (a) your net worth at the end of each day (S.hist) and
+      (b) any big log lines that match CONFIG.ui.moments (S.moments). When the game ends, finish() shows
+      the old score table, then this recap is added underneath: a net-worth line, your 3 biggest moments,
+      and a Share button. */
     var MOMENTS=UI.moments||[];
     function trackWorth(){
       var nw=Math.round(worth());
       if(!S.hist)S.hist=[];
       var h=S.hist;
       if(h.length&&h[h.length-1][0]===S.day)h[h.length-1][1]=nw;else h.push([S.day,nw]);
-      if(S.flags&&S.flags.diff&&S.nw0===undefined)S.nw0=nw;   /* net worth at the very start, once the difficulty is chosen */
+      if(S.flags&&S.flags.diff&&S.nw0===undefined)S.nw0=nw;  /* net worth at the very start, once the difficulty is chosen */
     }
     function logMoment(msg){
       var m=String(msg).toLowerCase(),best=null;
@@ -4045,7 +4181,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       if(!best)return;
       if(!S.moments)S.moments=[];
       S.moments.push({d:S.day,p:best.points,i:best.icon,t:shortText(msg)});
-      if(S.moments.length>60){S.moments.sort(function(a,b){return b.p-a.p});S.moments.length=30}   /* keep the file small */
+      if(S.moments.length>60){S.moments.sort(function(a,b){return b.p-a.p});S.moments.length=30}  /* keep the file small */
     }
     function bestDays(){
       var h=S.hist||[],out=[],prev=S.nw0,best=null,worst=null;
@@ -4070,7 +4206,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       if(S.nw0!==undefined)pts.unshift({x:0,y:S.nw0});
       if(pts.length<2)return '';
       var W=320,H=130,L=10,R=10,T=16,Bm=20,ys=pts.map(function(p){return p.y}),lo=Math.min.apply(null,ys),hi=Math.max.apply(null,ys);
-      TIERS.forEach(function(t){if(hi>0&&t.v>hi&&t.v<=hi*1.15)hi=t.v});   /* show the next rank line if you were close to it */
+      TIERS.forEach(function(t){if(hi>0&&t.v>hi&&t.v<=hi*1.15)hi=t.v});  /* show the next rank line if you were close to it */
       if(hi===lo){hi+=1;lo-=1}
       var pad=(hi-lo)*0.08;lo-=pad;hi+=pad;
       var x0=pts[0].x,x1=pts[pts.length-1].x;if(x1===x0)x1=x0+1;
@@ -4113,18 +4249,18 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
         '<div class="rc-actions"><button class="btn alt" id="rcShare" type="button">Share result</button><span id="rcMsg" role="status"></span></div><textarea id="rcText" readonly hidden aria-label="Result text to copy"></textarea></div>');
       $('rcShare').addEventListener('click',function(){shareResult(txt)});
     }
-    function clearRecap(){if(!S.over){var r=$('recap');if(r&&r.parentNode)r.parentNode.removeChild(r)}}   /* nothing left over after New game */
+    function clearRecap(){if(!S.over){var r=$('recap');if(r&&r.parentNode)r.parentNode.removeChild(r)}}  /* nothing left over after New game */
     HOOK.before.push(trackWorth);HOOK.after.push(clearRecap);HOOK.onLog.push(logMoment);HOOK.onFinish.push(showRecap);
 
     /* ---------- 6. STARTING TRAITS (Version 40) ----------
-       On the welcome screen you pick one trait (or none). A trait is just a short list of CONFIG changes in
-       CONFIG.traits.list: {k:'path.to.value', v:newValue} sets a value, {k:'path.to.value', x:1.25} multiplies it.
-       We remember every value a trait could touch, put them all back to normal, then apply the chosen trait,
-       so switching games never leaves a trait's numbers behind. The choice is saved in S.trait. */
+      On the welcome screen you pick one trait (or none). A trait is just a short list of CONFIG changes in
+      CONFIG.traits.list: {k:'path.to.value', v:newValue} sets a value, {k:'path.to.value', x:1.25} multiplies it.
+      We remember every value a trait could touch, put them all back to normal, then apply the chosen trait,
+      so switching games never leaves a trait's numbers behind. The choice is saved in S.trait. */
     var TCFG=CONFIG.traits||{};
     var TLIST=TCFG.on===false?[]:(TCFG.list||[]);
     function tPath(k){var o=CONFIG,p=String(k).split('.');for(var i=0;i<p.length-1&&o;i++)o=o[p[i]];return {o:o,key:p[p.length-1]}}
-    var TBASE={};                       /* path -> the normal value, taken before any trait is applied */
+    var TBASE={};                      /* path -> the normal value, taken before any trait is applied */
     TLIST.forEach(function(t){
       (t.set||[]).forEach(function(r){
         var q=tPath(r.k);
@@ -4194,5 +4330,3 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 </script>
 </body>
 </html>
-
-</body></html>
