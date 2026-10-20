@@ -156,6 +156,10 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 .sumcard{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;margin:6px 0 0;padding:5px 10px;border-radius:12px;border:2px solid var(--line);background:var(--surface);font-size:.76rem}
 .sumcard .st{font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:.68rem;color:var(--muted)}.sumcard .up{color:var(--green)}.sumcard .dn{color:var(--red)}
 .sumcard .hits{flex-basis:100%;color:var(--red);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wins{flex-basis:100%;color:var(--green,#2f8f5b);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bestday{font-weight:800;color:#c98a12}
+.goals ul.gl{list-style:none;margin:2px 0;padding:0}.goal.gdue{color:var(--muted);font-style:italic}
+.bk-cmp-w{overflow-x:auto;margin:6px 0 10px}.bk-cmp{width:100%;border-collapse:collapse;font-size:.78rem}.bk-cmp caption{text-align:left;font-weight:800;padding-bottom:3px}
+.bk-cmp th,.bk-cmp td{padding:3px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}.bk-cmp th:first-child,.bk-cmp td:first-child{text-align:left}.bk-cmp th{color:var(--muted);font-weight:700}
 .diffs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:6px}.diffs .btn{display:flex;flex-direction:column;gap:3px;text-align:left;padding:8px 10px}.diffs small{font-weight:600;font-size:.72rem;opacity:.85}
 @media (max-width:640px){.diffs{grid-template-columns:1fr}}
 .mute.reset{font-size:.72rem;font-weight:800;padding:1px 8px;color:var(--red);border-color:color-mix(in srgb,var(--red) 45%,var(--line))}
@@ -555,7 +559,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   <h2 id="rlT">How the game ends</h2>
   <h3 class="win">You win</h3>
   <ul><li><b>Net worth reaches <span id="cfgGoal2">$2,000</span></b>: cash + bank + investments + the resale value of your things, minus hospital debt, rent arrears and any loan you owe<span id="rlWin">, within 15 days</span>. That makes you <b id="cfgRank1">🙂 Comfortable</b> and you have won.</li>
-  <li>Keep playing for a higher rank: <span id="cfgRanks"><b>💼 Wealthy</b> at $5,000 and <b>👑 Tycoon</b> at $10,000 (Tycoon ends the game)</span>. When time runs out, your best rank is your final result.</li></ul>
+  <li>Keep playing for a higher rank: <span id="cfgRanks"><b>💼 Wealthy</b> at $5,000 and <b>👑 Tycoon</b> at $10,000 (Tycoon ends the game)</span>. When time runs out, your best rank is your final result.</li>
+  <li><span id="cfgOnTime">Reach a rank by its target day for bonus points.</span></li></ul>
   <h3 class="lose">You lose</h3>
   <ul>
     <li><b>Bankrupt:</b> <span id="cfgBankrupt">net worth under $500 for three days in a row.</span></li>
@@ -639,8 +644,9 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     start:{energy:85},
     /* Certificate tuition: the first qualification of each track, before the price index. Each new game moves each track's fee by up to certVariance either way. */
     education:{certFee:{sal:43,fnb:45,fin:79,tech:52,med:55,cus:95,eng:58},certVariance:0.05},
-    /* Night events. Each night: a big event may start (bigChance), but only when no saga or macro shock is running and bigGap days have passed since one ended. A big event is a saga (sagaShare) or a macro shock. Separately, one daily event may happen (story, item, news, basic, decision, or none); the odds are relative weights and do not need to add to 1. The daily event happens even while a saga or macro shock is running. macroDays is how many days a macro shock lasts. */
-    events:{bigChance:0.2,sagaShare:0.5,bigGap:3,macroDays:[3,5],story:0.2,item:0.2,news:0.1,basic:0,decision:0.3,none:0.2},
+    /* Night events. Each night: a big event may start (bigChance), but only when no saga or macro shock is running and bigGap days have passed since one ended. A big event is a saga (sagaShare) or a macro shock. Separately, one daily event may happen (story, item, news, basic, decision, or none); the odds are relative weights and do not need to add to 1. The daily event happens even while a saga or macro shock is running. macroDays is how many days a macro shock lasts.
+      forecast: when tonight's daily event is economic news, the chance the headline is tipped off that morning (morning notes and the Bank screen), so the player has the day to move money. 0 = never, 1 = always. */
+    events:{bigChance:0.2,sagaShare:0.5,bigGap:3,macroDays:[3,5],story:0.2,item:0.2,news:0.1,basic:0,decision:0.3,none:0.2,forecast:0.7},
     macro:{
       /* Master dial for ALL world news, macro shocks and storylines.
         1 = normal, 0 = news has no economic effect, 2 = twice as strong. */
@@ -1079,18 +1085,21 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       /* Bankrupt (game over): net worth under netWorthBelow at the end of daysInARow days running. */
       netWorthBelow:500,
       daysInARow:3,
-      fromDay:5                  // the first day that counts (1 = from the very start; a later day gives new players a grace period)
+      fromDay:5,                 // the first day that counts (1 = from the very start; a later day gives new players a grace period)
+      warnDaysBefore:2           // net worth under the line shows a warning with a way out from this many days before fromDay
     },
     score:{
       /* Final score = net worth + each vital x its weight + education levels x educationLevel. */
       energy:1, happiness:5, health:5, knowledge:5, educationLevel:50
     },
     /* Net-worth ranks, lowest first. Reaching the first one wins the game; reaching the last one ends it.
-      Keep at least two rows. */
+      Keep at least two rows.
+      byDay: target day. Reaching the rank by the end of that day adds 'bonus' points to the score (an "on-time" rank).
+      Reaching it later still counts as the rank, without the bonus. byDay:0 = no target. A byDay past the game length is treated as the last day. */
     ranks:[
-      {name:'Comfortable', netWorth:2000,  icon:'🙂'},
-      {name:'Wealthy',    netWorth:5000,  icon:'💼'},
-      {name:'Tycoon',      netWorth:10000, icon:'👑'}
+      {name:'Comfortable', netWorth:2000,  icon:'🙂', byDay:8,  bonus:500},
+      {name:'Wealthy',    netWorth:5000,  icon:'💼', byDay:12, bonus:1000},
+      {name:'Tycoon',      netWorth:10000, icon:'👑', byDay:15, bonus:2000}
     ],
     /* Group 9, Version 39: clock, trend arrows, toasts, action preview, recap */
     ui:{
@@ -1211,10 +1220,17 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function everyDays(n){return n===1?'every day':'every '+n+' days'}
   function hm(m){m=Math.max(0,Math.round(m));var h=Math.floor(m/60),mm=m%60;return h?(h+'h'+(mm?' '+mm+'m':'')):mm+'m'}
   /* ranks, built from CONFIG.ranks (sorted lowest first) */
-  var TIERS=CONFIG.ranks.slice().sort(function(a,b){return a.netWorth-b.netWorth}).map(function(r){return {n:r.name,v:r.netWorth,ic:r.icon}});
+  var TIERS=CONFIG.ranks.slice().sort(function(a,b){return a.netWorth-b.netWorth}).map(function(r){return {n:r.name,v:r.netWorth,ic:r.icon,d:r.byDay||0,b:r.bonus||0}});
   GOAL=TIERS[0].v;  /* the winning net worth = the first rank */
   function reachedTier(){var w=worth(),t=-1;TIERS.forEach(function(x,i){if(w>=x.v)t=i});return t}
   function nextGoal(){return TIERS[Math.min(S.tier+1,TIERS.length-1)].v}
+  /* rank target days (CONFIG.ranks byDay): reaching a rank by its day earns its bonus */
+  function tierDue(i){var d=TIERS[i]&&TIERS[i].d;return d?Math.min(d,maxDays()):0}
+  function onTime(i){var due=tierDue(i),rd=S.rankDay&&S.rankDay[i];return !!due&&rd!=null&&rd<=due}
+  function rankBonus(){var b=0;TIERS.forEach(function(x,i){if(onTime(i))b+=x.b});return b}
+  /* " by day 8" while the next rank's target day has not passed, else "" */
+  function nextDueTxt(){var t=S.tier+1,due=tierDue(t);return t<TIERS.length&&due&&S.day<=due?' by day '+due:''}
+  var nightRank=false;  /* true while the overnight pipeline checks ranks: gains made overnight belong to the day that just ended */
   var DIFF={
     easy:{n:'Easy',cash:500,days:CONFIG.time.gameDays,px:0.9,wage:1.05,ill:0.6,d:'$500 to start, '+CONFIG.time.gameDays+' days, cheaper prices, fewer illnesses.'},
     normal:{n:'Normal',cash:200,days:CONFIG.time.gameDays,px:1,wage:1,ill:1,d:'$200 to start, '+CONFIG.time.gameDays+' days, standard prices.'},
@@ -1243,7 +1259,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var tip=document.createElement('div');tip.id='tip';tip.setAttribute('role','tooltip');document.body.appendChild(tip);var cur=null,hideT=null;
     function scoreTip(){
       var W=CONFIG.score,p=scoreParts(),tot=p.reduce(function(a,b){return a+b[1]},0);
-      return '<b>How your score is worked out</b><br>Net worth + energy × '+W.energy+' + happiness × '+W.happiness+' + health × '+W.health+' + knowledge × '+W.knowledge+' + education levels × '+W.educationLevel+
+      return '<b>How your score is worked out</b><br>Net worth + energy × '+W.energy+' + happiness × '+W.happiness+' + health × '+W.health+' + knowledge × '+W.knowledge+' + education levels × '+W.educationLevel+' + bonuses for ranks reached by their target day'+
         '<table>'+p.map(function(r){return '<tr><td>'+r[0]+'</td><td>'+(r[1]<0?'−':'')+Math.abs(r[1]).toLocaleString()+'</td></tr>'}).join('')+'<tr class="tot"><td>Score</td><td>'+Math.max(0,tot).toLocaleString()+'</td></tr></table>';
     }
     function show(el){
@@ -1576,10 +1592,10 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     done();
   }
 
-  function blank(){return {loan:null,broke:0,workMin:0,workStreak:0,sagaLast:'',slept:0,homeMeals:0,shut:{},cooked:[],health:CONFIG.health.start,gym:[],good:[],studyMin:0,studyStreak:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:4,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickRest:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,pantry:[],broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
+  function blank(){return {rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,workStreak:0,sagaLast:'',slept:0,homeMeals:0,shut:{},cooked:[],health:CONFIG.health.start,gym:[],good:[],studyMin:0,studyStreak:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:4,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickRest:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,pantry:[],broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
     S=blank();T0();PREV=null;applyPayVar();S.certVar={};Object.keys(TRACKS).forEach(function(t){S.certVar[t]=1+(Math.random()*2-1)*CONFIG.education.certVariance});
-    rollOpenings();loc='apt';view=null;last=null;
+    rollOpenings();planNews();loc='apt';view=null;last=null;
     $('log').innerHTML='';S.logs=[];
     $('over').classList.remove('show');$('welcome').classList.add('show');
     log('Day 1 begins. You rent the Low-End Apartment and own '+(CONFIG.clothes.startCasualDays>0?'one set of '+WEAR.casual.n+' (good for '+CONFIG.clothes.startCasualDays+' day'+(CONFIG.clothes.startCasualDays===1?'':'s')+')':'no work clothes yet, so buy some at the Clothes Mall')+'. Rent is due at the end of day '+RENT_EVERY+'.');
@@ -1655,7 +1671,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function scoreParts(){
     var ed=0;Object.keys(TRACKS).forEach(function(t){ed+=lvl(t)});
     var W=CONFIG.score;
-    var parts=[['Net worth',Math.round(worth())],['Energy ×'+W.energy,S.energy*W.energy],['Happiness ×'+W.happiness,S.happy*W.happiness],['Health ×'+W.health,S.health*W.health],['Knowledge ×'+W.knowledge,Math.floor(S.know)*W.knowledge],['Education levels ×'+W.educationLevel,ed*W.educationLevel]];
+    var parts=[['Net worth',Math.round(worth())],['Energy ×'+W.energy,S.energy*W.energy],['Happiness ×'+W.happiness,S.happy*W.happiness],['Health ×'+W.health,S.health*W.health],['Knowledge ×'+W.knowledge,Math.floor(S.know)*W.knowledge],['Education levels ×'+W.educationLevel,ed*W.educationLevel],['On-time ranks',rankBonus()]];
     return parts;
   }
   function score(){return Math.max(0,scoreParts().reduce(function(a,b){return a+b[1]},0))}
@@ -1681,16 +1697,24 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(S.over)return false;
     var t=reachedTier();
     if(t<=S.tier)return false;
+    /* record the day each new rank was reached (overnight gains count for the day that just ended) */
+    var day=S.day-(nightRank?1:0),from=S.tier+1;if(!S.rankDay)S.rankDay={};
+    for(var i=from;i<=t;i++)if(S.rankDay[i]==null)S.rankDay[i]=day;
     S.tier=t;var T=TIERS[t];
+    /* one line per new rank: on time (with its bonus) or late */
+    var notes=[];for(var j=from;j<=t;j++){var due=tierDue(j);if(due)notes.push(onTime(j)?'⭐ '+TIERS[j].n+' on time (target day '+due+'): +'+TIERS[j].b.toLocaleString()+' score.':TIERS[j].n+' came after its target day ('+due+'), so no on-time bonus.')}
+    for(var w=from;w<=t;w++)addWin(TIERS[w].ic+' '+TIERS[w].n+(onTime(w)?' on time':''));
+    var nt=notes.length?' '+notes.join(' '):'';
     if(t===TIERS.length-1){
-      log('You reached '+T.n+' status with '+money(worth())+'. You win!','good');
-      snd('win');finish(T.ic+' '+T.n+'!','You built a net worth of '+money(worth())+' in '+S.day+' day'+(S.day>1?'s':'')+'. That is the top rank.');
+      log('You reached '+T.n+' status with '+money(worth())+'. You win!'+nt,'good');
+      snd('win');finish(T.ic+' '+T.n+'!','You built a net worth of '+money(worth())+' in '+day+' day'+(day>1?'s':'')+'. That is the top rank.'+nt);
       rankBurst();
       return true;
     }
-    log('Milestone: '+T.n+' ('+money(T.v)+' net worth reached). Next: '+TIERS[t+1].n+' at '+money(TIERS[t+1].v)+'.','good');
+    var nx=TIERS[t+1],ndue=tierDue(t+1),nxDue=ndue&&day<=ndue?' by day '+ndue+' for +'+nx.b.toLocaleString()+' score':'';
+    log('Milestone: '+T.n+' ('+money(T.v)+' net worth reached). Next: '+nx.n+' at '+money(nx.v)+nxDue+'.'+nt,'good');
     $('overTitle').textContent=T.ic+' You are '+T.n+'!';
-    $('overText').textContent='Net worth: '+money(worth())+' after '+S.day+' day'+(S.day>1?'s':'')+'. '+(t===0?'You have won the game. ':'')+'Keep playing to reach '+TIERS[t+1].n+' ('+money(TIERS[t+1].v)+')'+(maxDays()===Infinity?'':' before day '+maxDays()+' ends')+', or start a new game.';
+    $('overText').textContent='Net worth: '+money(worth())+' after '+day+' day'+(day>1?'s':'')+'. '+(t===0?'You have won the game. ':'')+(notes.length?notes.join(' ')+' ':'')+'Keep playing to reach '+nx.n+' ('+money(nx.v)+')'+(nxDue?nxDue:maxDays()===Infinity?'':' before day '+maxDays()+' ends')+', or start a new game.';
     $('keep').hidden=false;$('overScore').hidden=true;$('over').classList.add('show');snd('win');
     rankBurst();
     render();
@@ -1738,7 +1762,9 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     PREV=cur;
   }
   function refuse(msg){log(msg,'bad');snd('err');render();return false}
-  function T0(){if(!S.today)S.today={earn:0,spend:0,hits:[],nw:worth(),e:S.energy,h:S.happy,hl:S.health,k:S.know,cash:S.cash}}
+  function T0(){if(!S.today)S.today={earn:0,spend:0,hits:[],wins:[],nw:worth(),e:S.energy,h:S.happy,hl:S.health,k:S.know,cash:S.cash}}
+  /* a good thing that happened today, shown in the next morning's day recap (overnight ones go into the recap being shown) */
+  function addWin(t){var a;if(nightRank&&S.summary)a=S.summary.wins=S.summary.wins||[];else{T0();a=S.today.wins=S.today.wins||[]}if(a.length<6)a.push(t)}
   function inc(v){T0();if(v>0)S.today.earn+=v}
   function outg(v){T0();if(v>0)S.today.spend+=v}
   function spend(u,cost){return spendMin(M(u),cost)}
@@ -1803,6 +1829,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     S.career={};S.career[c]=i;S.jobName=rk.r;S.flags.job=1;
     if(old&&old.c!==c)log('You resigned as '+old.rk.r+' at the '+NAME[old.b]+' to take the new job. You can only hold one job at a time.','warn');
     else if(old)log('You were promoted from '+old.rk.r+'.','good');
+    addWin('💼 '+(old&&old.c===c?'Promoted to ':'New job: ')+rk.r);
     log('You passed the interview! You are now a '+rk.r+' at the '+who+' ('+money(Math.round(rk.pay*payIdx()))+' a shift). Work your shifts at the '+NAME[CAREERS[c].b||c]+'.','good');
     done();
   }
@@ -1849,7 +1876,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(k<nl){log('Lesson '+k+' of '+nl+' done: "'+T.m[n]+'" ('+T.n+' '+T.lv[q.i]+', '+hm(h*60)+(vitTxt(v0)?'; '+vitTxt(v0):'')+').');return done()}
     S.les[t]=0;S.edu[t]++;S.know=clamp(S.know+2+q.i);
     log('Module complete: "'+T.m[n]+'" ('+T.n+' '+T.lv[q.i]+', module '+q.k+' of '+q.of+(vitTxt(v0)?'; last lesson and module: '+vitTxt(v0):'')+').','good');
-    if(lvl(t)>lv0){log('Qualification earned: '+T.n+' '+T.lv[lvl(t)-1]+'!'+(S.edu[t]<tot?' To continue to the '+T.lv[lvl(t)]+', enrol again at School (tuition '+money(qualFee(t,S.edu[t]))+').':' You have finished the whole pathway.'),'good');S.cert={t:t,l:lvl(t),d:S.day,mods:T.L[lvl(t)-1].slice()};snd('win')}
+    if(lvl(t)>lv0){log('Qualification earned: '+T.n+' '+T.lv[lvl(t)-1]+'!'+(S.edu[t]<tot?' To continue to the '+T.lv[lvl(t)]+', enrol again at School (tuition '+money(qualFee(t,S.edu[t]))+').':' You have finished the whole pathway.'),'good');S.cert={t:t,l:lvl(t),d:S.day,mods:T.L[lvl(t)-1].slice()};addWin('🎓 '+T.n+' '+T.lv[lvl(t)-1]);snd('win')}
     done();
   }
   /* treatment: nothing to pay now. Usually you are warded all of tomorrow; the bill is charged the morning after release. */
@@ -2090,6 +2117,16 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var M=CONFIG.market,adj=-(S.rate-M.rateBase)*((M.rateBeta||{})[k]||0);
     return k==='fd'?S.rate*1.4:k==='etf'?0.9+0.8*S.mkt+adj:k==='hf'?1.4+1.6*S.mkt+adj:2+3*S.mkt+adj}
   var VOL={fd:0,etf:3,hf:8,cry:22},CAP={fd:[-30,35],etf:[-30,35],hf:[-30,35],cry:[-60,90]};
+  /* investment odds for the Bank screen, from the same numbers tickInv uses: a usual day (2 days in 3) is expected ± VOL, within CAP */
+  function phi(x){var t=1/(1+0.2316419*Math.abs(x)),p=0.3989423*Math.exp(-x*x/2)*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return x>0?1-p:p}
+  function invOdds(k){var e=expRet(k),v=VOL[k];return {e:e,lo:Math.max(CAP[k][0],e-v),hi:Math.min(CAP[k][1],e+v),loss:v?phi(-e/v):(e<0?1:0)}}
+  function pctS(x){return (x<0?'−':'+')+Math.abs(x).toFixed(1)+'%'}
+  function invTable(){
+    var row=function(n,o,note){return '<tr><td>'+n+'</td><td class="'+(o.e>0?'up':o.e<0?'dn':'')+'">'+pctS(o.e)+'</td><td>'+(o.lo===o.hi?pctS(o.lo):pctS(o.lo)+' to '+pctS(o.hi))+'</td><td>'+(note||Math.round(o.loss*100)+'%')+'</td></tr>'};
+    var sv={e:S.rate,lo:S.rate,hi:S.rate,loss:0};
+    return '<div class="bk-cmp-w"><table class="bk-cmp"><caption>How they compare today</caption><tr><th>Product</th><th>Expected</th><th>Usual day</th><th>Losing days</th></tr>'+
+      row('Savings',sv,'none')+INVK.map(function(k){return row(INV[k].n,invOdds(k),k==='fd'?'none':'')}).join('')+
+      '</table><small class="bk-d">Expected = average change a day. Usual day = the range for 2 days in 3. Losing days = how often it falls. The fixed deposit is locked for 4 days. These follow market mood and interest rates, so they change every day. On a bad news night the swing can be bigger than the usual range.</small></div>'}
   function nrm(){var u=1-Math.random(),v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
   function sm(x){return (x<0?'−':'+')+money(Math.abs(Math.round(x)))}
   function tickInv(){
@@ -2406,7 +2443,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       ['job','💼 Get a job at the Employment Office (many entry jobs need no degree)'],
       ['study','📚 Attend a lesson at School (qualifications unlock better jobs)'],
       ['worked','🛠️ Work a shift at your workplace (not the Employment Office)'],
-      ['buy','🛍️ Buy an item (Electronics Store, Thrift Store or Clothes Mall)']
+      ['buy','🛍️ Buy an item (Electronics Store, Thrift Store or Clothes Mall)'],
+      ['rent','🏠 Pay your rent (early at home, or it comes out of your cash at the end of day '+RENT_EVERY+')']
     ];
   }
   function renderGoals(){
@@ -2414,8 +2452,12 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(!left&&!S.tut){S.tut=1;S.goalPop=1;snd('win');log('You finished the getting-started goals. You are on your own now!','good')}
     el.hidden=!!S.tut;
     if(S.tut)return;
-    el.innerHTML='<div class="gh">🎯 Getting started <span>'+(g.length-left)+'/'+g.length+'</span><button class="linkbtn" id="hideGoals">Hide</button></div>'+
-      '<div class="pips">'+g.map(function(x){return '<i class="'+(S.flags[x[0]]?'on':'')+'"></i>'}).join('')+'</div>'+g.filter(function(x){return !S.flags[x[0]]}).slice(0,1).map(function(x){return '<div class="goal">Next: '+x[1]+'</div>'}).join('');
+    /* first-week checklist: every step, ticked as done, with a target day (the day the bankruptcy count starts) */
+    var by=CONFIG.bankrupt.fromDay;
+    el.innerHTML='<div class="gh">🎯 First week <span>'+(g.length-left)+'/'+g.length+'</span><button class="linkbtn" id="hideGoals">Hide</button></div>'+
+      '<div class="pips">'+g.map(function(x){return '<i class="'+(S.flags[x[0]]?'on':'')+'"></i>'}).join('')+'</div>'+
+      '<ul class="gl">'+g.map(function(x){var ok=S.flags[x[0]];return '<li class="goal'+(ok?' done':'')+'">'+(ok?'✓ ':'○ ')+x[1]+'</li>'}).join('')+'</ul>'+
+      '<div class="goal gdue">'+(S.day>by?'Day '+S.day+': you are behind. Finish these to get your money moving.':'Aim to finish by day '+by+', when the bankruptcy check starts.')+'</div>';
   }
   /* best-paid job you currently hold (pay per shift before productivity) */
   function payInfo(){
@@ -2435,7 +2477,15 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(S.hosp&&S.hosp.adm&&!S.hosp.inWard)push('warn','🏥 You have been admitted: you will be warded in the Hospital all of tomorrow. Eat today, and keep cash for the '+money(S.hosp.bill)+' bill charged when you are released.');
     if(S.ill)push('bad','🤒 Sick with '+ILL[S.ill.k].n.replace(/^(a|the) /,'')+': you can’t work, and you lose '+hm(M(ILL[S.ill.k].ap))+' and some happiness a day until you recover. '+(S.hosp?'You are booked into the Hospital ward.':'Get treated at the Hospital ('+pctTxt(HP.admitChance)+' chance of a day in the ward), or rest at home to recover sooner (about '+Math.round(recoverChance(true)*100)+'% chance tonight).'));
     else if(S.energy<30)push('warn','🏥 Low energy raises your chance of falling ill, which means hospital bills.');
-    if(S.broke>0)push('warn','💸 Net worth under '+money(CONFIG.bankrupt.netWorthBelow)+' ('+S.broke+' of '+CONFIG.bankrupt.daysInARow+' days in a row): at '+CONFIG.bankrupt.daysInARow+' you go bankrupt.');
+    /* bankruptcy: warn from a few days before the count starts (CONFIG.bankrupt.warnDaysBefore), with the gap and a way out */
+    (function(){var BR=CONFIG.bankrupt;if(!(nw<BR.netWorthBelow&&S.day>=BR.fromDay-(BR.warnDaysBefore||0)))return;
+      var gap=BR.netWorthBelow-nw,counts=S.day>=BR.fromDay,pi=payInfo(),sh=pi.n?Math.ceil(gap/Math.max(1,pi.v)):0;
+      push(counts?'bad':'warn','💸 Net worth '+money(nw)+' is under '+money(BR.netWorthBelow)+': you need '+money(gap)+' more. '+
+        (counts?'If today ends under the line, that is day '+(S.broke+1)+' of '+BR.daysInARow+' in a row towards bankruptcy.':'From the end of day '+BR.fromDay+', '+numWord(BR.daysInARow)+' days in a row under the line is bankruptcy.')+
+        ' Way out: '+(pi.n?'about '+sh+' shift'+(sh>1?'s':'')+' at '+money(pi.v)+' each':'get a job at the Employment Office (some entry jobs need no qualification)')+', and hold off on spending (things you buy count at only half their price).')})();
+    /* the next rank's target day is close */
+    (function(){var i=S.tier+1,due=tierDue(i);if(i>=TIERS.length||!due||S.day>due||due-S.day>2)return;
+      push('warn','⭐ '+TIERS[i].ic+' '+TIERS[i].n+' ('+money(TIERS[i].v)+') by the end of day '+due+' earns +'+TIERS[i].b.toLocaleString()+' score: you need '+money(Math.max(0,TIERS[i].v-nw))+' more'+(due===S.day?' today.':' in '+(due-S.day+1)+' days.'))})();
     if(S.loan){var Lx=S.loan;if(S.day>Lx.due)push('bad','🏦 Loan overdue: you owe '+money(loanOwed())+', growing '+rateTxt(CONFIG.loan.overdueRate)+' a day. Default on day '+(Lx.due+CONFIG.loan.graceDays)+'.');else if(Lx.due-S.day<=1)push('warn','🏦 Loan due '+(Lx.due===S.day?'tonight':'tomorrow')+': you owe '+money(loanOwed())+'.')}
     if(S.burn>0)push('bad','🔥 Burnout ('+S.burn+' day'+(S.burn>1?'s':'')+' left): your health keeps dropping and shifts pay '+pctTxt(1-CONFIG.burnout.pay)+' less. Rest, and cut down on studying.');
     else if(CONFIG.burnout.daysInARow>1&&S.studyStreak>=CONFIG.burnout.daysInARow-1)push('warn','📚 '+(S.studyStreak===1?'You studied over '+studyLimitTxt()+' yesterday. Another day like that causes burnout.':'You have studied over '+studyLimitTxt()+' a day '+numWord(S.studyStreak)+' days running. A '+(ORD[CONFIG.burnout.daysInARow]||CONFIG.burnout.daysInARow+'th')+' day causes burnout.'));
@@ -2537,10 +2587,16 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     }
     arrearsTick();
     T0();var t=S.today;
-    S.summary={day:S.day-1,earn:t.earn,spend:t.spend,dnw:worth()-t.nw,de:S.energy-t.e,dh:S.happy-t.h,dl:S.health-(t.hl==null?S.health:t.hl),dk:Math.floor(S.know)-Math.floor(t.k),hits:t.hits.slice(0,3)};
+    var dnw=worth()-t.nw,best=false;
+    if(dnw>(S.bestDay||0)){best=(S.bestDay||0)>0;S.bestDay=dnw}  /* the first good day sets the bar; later ones that beat it are flagged */
+    S.summary={day:S.day-1,earn:t.earn,spend:t.spend,dnw:dnw,de:S.energy-t.e,dh:S.happy-t.h,dl:S.health-(t.hl==null?S.health:t.hl),dk:Math.floor(S.know)-Math.floor(t.k),hits:t.hits.slice(0,3),wins:(t.wins||[]).slice(),best:best};
     S.today=null;T0();
     lottoDraw();
+    planNews();
     var mn=(S.notes||[]).slice(),rw2=nextRentWeek(),H2=HOUSE[S.home];S.notes=[];
+    if(S.newsPlan&&S.newsPlan.tip)mn.push({l:'rem',t:'📡 Tip-off: tonight’s headline is expected to be “'+S.newsPlan.n[0]+'” ('+newsHint(S.newsPlan.n)+'). You have today to move your savings and investments at the Bank.'});
+    /* a rank target day passed yesterday without the rank */
+    (function(){var i=S.tier+1,due=tierDue(i);if(i<TIERS.length&&due&&S.day===due+1&&reachedTier()<i)mn.push({l:'warn',t:'⭐ You missed the day-'+due+' target for '+TIERS[i].ic+' '+TIERS[i].n+' ('+money(TIERS[i].v)+'), so its +'+TIERS[i].b.toLocaleString()+' on-time bonus is gone. It still counts as a rank if you reach it'+(maxDays()===Infinity?'':' by day '+maxDays())+'.'+(i+1<TIERS.length&&tierDue(i+1)?' Next target: '+TIERS[i+1].n+' by day '+tierDue(i+1)+'.':'')})})();
     if((S.tickets||[]).some(function(t){return t.draw===S.day}))mn.push({l:'rem',t:'🎟️ Lottery draw tonight (end of day '+S.day+'). Results tomorrow morning.'});
     (function(){var jb=myJob();if(jb&&shutLeft(jb.b)>0)mn.push({l:'bad',t:'🔒 The '+NAME[jb.b]+' is closed ('+shutLeft(jb.b)+' day'+(shutLeft(jb.b)>1?'s':'')+' left, counting today). Work is disabled there. Your job as '+jb.rk.r+' stays on record and returns automatically.'})})();
     S.trends.forEach(function(t){if(t.left>0&&(t.term||t.lay||t.r))mn.push({l:'rem',t:'🌐 '+t.n+' continues'+(t.last?' (latest: '+t.last+')':'')+' · '+t.left+' day'+(t.left>1?'s':'')+' left: '+trendNow(t)+'.'})});
@@ -2553,7 +2609,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     S.morning=mn.length?mn:null;
     loc=S.hosp&&S.hosp.inWard?'hosp':S.home;view=null;
     log(S.hosp&&S.hosp.inWard?'A new day starts in the hospital ward.':'A new day starts. You have 24 hours.');
-    done();
+    nightRank=true;try{done()}finally{nightRank=false}
   }
 
   /* ---------- daily events: personal, economic news, yes/no decisions ---------- */
@@ -2674,12 +2730,34 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       tr[m[1]]=v*(1-C.shareToday)/days;
     });
     if(/pandemic|lockdown/i.test(n[0]))tr.ill=C.outbreakIllness;
-    if(/war|crisis|recession|crash|collapse|lockdown|pandemic/i.test(n[0]))tr.mkt=C.badNewsMarket;else if(/boom|soft landing|record|rally/i.test(n[0]))tr.mkt=C.goodNewsMarket;
+    var md=newsMood(n[0]);if(md<0)tr.mkt=C.badNewsMarket;else if(md>0)tr.mkt=C.goodNewsMarket;
     scaleTrend(tr);delete tr.lay;delete tr.cls;
     var fx=applyFx(now.join(' '),true);
     var lasting=tr.p||tr.w||tr.r||tr.mkt||tr.ill!==1;
     if(lasting){S.trends.push(tr);fx.push('Over the next '+days+' days: '+trendNow(tr))}
     return {icon:big?'🌐':'📰',tag:big?'Major world event':'Economic news',title:n[0],text:n[1],fx:fx.length?fx:['No direct effect on you today'],done:true,tone:''};
+  }
+  /* a headline's effect on market mood: -1 bad, 1 good, 0 none */
+  function newsMood(title){return /war|crisis|recession|crash|collapse|lockdown|pandemic/i.test(title)?-1:/boom|soft landing|record|rally/i.test(title)?1:0}
+  /* plain-language guess at what a headline will do, for the morning tip-off */
+  function newsHint(n){
+    var a=[];
+    n[2].split(' ').forEach(function(tok){
+      var m=tokRe.exec(tok);if(!m)return;var up=m[2]!=='-';
+      if(m[1]==='p')a.push(up?'prices up':'prices down');
+      else if(m[1]==='w')a.push(up?'pay up':'pay down');
+      else if(m[1]==='r')a.push(up?'savings rates up, which weighs on ETF, hedge fund and crypto':'savings rates down, which helps ETF, hedge fund and crypto');
+      else if(m[1]==='j'&&up)a.push('workplaces may close');
+      else if(m[1]==='c'&&up)a.push('a cash handout');
+    });
+    var md=newsMood(n[0]);if(md<0)a.push('markets likely to fall');else if(md>0)a.push('markets likely to rise');
+    return a.length?'likely effect: '+a.join(', '):'little direct effect expected';
+  }
+  /* each morning: decide whether tonight's daily event is economic news (same odds as CONFIG.events) and maybe tip it off (CONFIG.events.forecast) */
+  function planNews(){
+    var E=CONFIG.events,tot=0;['story','item','news','basic','decision','none'].forEach(function(k){tot+=Math.max(0,E[k]||0)});
+    var n=tot>0&&Math.random()<Math.max(0,E.news||0)/tot?draw('deckN',NEWS):null;
+    S.newsPlan={day:S.day,n:n,tip:!!n&&Math.random()<(E.forecast||0)};
   }
   /* Bank screen: which running news story is moving the savings rate and the investment returns */
   function econNote(){
@@ -2687,7 +2765,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       var w=[];if(t.r)w.push('savings rate '+(t.r>0?'up':'down'));if(t.mkt)w.push('markets '+(t.mkt>0?'rising':'falling'));
       return '<b>'+t.n+'</b> ('+w.join(', ')+', '+t.left+' day'+(t.left>1?'s':'')+' left)'}),
       mood=S.mkt>0.5?'buoyant':S.mkt<-0.5?'weak':'steady';
-    return '<small class="bk-d">📰 '+(a.length?'In the news: '+a.join('; ')+'. ':'No big story is moving rates right now'+(Math.abs(S.rate-M.rateBase)>0.05?', so interest is drifting back towards '+M.rateBase.toFixed(1)+'%. ':'. '))+
+    var tip=S.newsPlan&&S.newsPlan.tip&&S.newsPlan.day===S.day?'📡 <b>Tip-off for tonight:</b> “'+S.newsPlan.n[0]+'” ('+newsHint(S.newsPlan.n)+'). ':'';
+    return '<small class="bk-d">'+tip+'📰 '+(a.length?'In the news: '+a.join('; ')+'. ':'No big story is moving rates right now'+(Math.abs(S.rate-M.rateBase)>0.05?', so interest is drifting back towards '+M.rateBase.toFixed(1)+'%. ':'. '))+
       'Market mood: '+mood+'. Savings, fixed deposit, ETF, hedge fund and crypto all follow the economy. Loan rates are fixed and never change.</small>'}
   /* a running story's effect on this day: it builds, peaks mid-story and fades, with a random daily swing */
   function trendGain(t){
@@ -2954,7 +3033,10 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   }
   /* one daily event from the weighted list; null means no event today */
   function dailyPick(){
-    var E=CONFIG.events,opts=[['story',E.story],['item',E.item],['news',E.news],['basic',E.basic],['decision',E.decision],['none',E.none]];
+    /* the morning already decided whether tonight is news (planNews); a save from before that has no plan and rolls as before */
+    var plan=S.newsPlan&&S.newsPlan.day===S.day?S.newsPlan:null;S.newsPlan=null;
+    if(plan&&plan.n)return newsEvent(plan.n);
+    var E=CONFIG.events,opts=[['story',E.story],['item',E.item],['news',plan?0:E.news],['basic',E.basic],['decision',E.decision],['none',E.none]];
     while(true){
       var tot=0;opts.forEach(function(o){tot+=Math.max(0,o[1])});
       if(tot<=0)return null;
@@ -3226,13 +3308,13 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       };
       var rows=card('Savings account','No risk · no minimum','Safe and simple. Earns '+S.rate.toFixed(1)+'% interest each day (the rate moves with the economy). Withdraw any time.','Balance: <b>'+money(S.bank)+'</b>','amt',BK_STEP,'savings','dep','wd','',S.bank>0)+
         INVK.map(function(k){
-        var P=INV[k],p=S.inv[k],has=p.v>0.5,e=expRet(k);
-        var d=P.d+(k==='fd'?' Rate now: +'+e.toFixed(1)+'%/day (follows the savings rate).':' Expected today: '+(e>=0?'+':'−')+Math.abs(e).toFixed(1)+'% ± '+VOL[k]+'%. Withdraw any time.');
+        var P=INV[k],p=S.inv[k],has=p.v>0.5,o=invOdds(k),e=o.e;
+        var d=P.d+(k==='fd'?' Rate now: +'+e.toFixed(1)+'%/day (follows the savings rate).':' Expected today: '+pctS(e)+' a day. A usual day is between '+pctS(o.lo)+' and '+pctS(o.hi)+', and about '+Math.round(o.loss*100)+'% of days lose money. Withdraw any time.');
         var c0=has?Math.round(p.c):0,v0=has?Math.round(p.v):0,pl=v0-c0;
         var v='Cost: <b>'+money(c0)+'</b>; Current: <b class="'+(pl>0?'up':pl<0?'dn':'')+'">'+money(v0)+'</b>'+(has&&k==='fd'&&S.day<p.lock?'<br><small>Matures on day '+p.lock+' (early withdrawal penalty)</small>':'');
         return card(P.n,P.risk+' risk · min '+money(P.min),d,v,'amt_'+k,P.min,P.n,'invest','divest',k,has);
       }).join('');
-      return '<div class="bk-wide">'+loanCard()+'</div><h3 class="bk-title">Savings and investments</h3>'+econNote()+'<div class="bk-grid">'+rows+'</div>'},
+      return '<div class="bk-wide">'+loanCard()+'</div><h3 class="bk-title">Savings and investments</h3>'+econNote()+invTable()+'<div class="bk-grid">'+rows+'</div>'},
     market:function(){
       var fr=owns('fridge');
       return '<p>🥫 <b>Basic groceries</b> need cooking at home. 🥗 <b>Premium groceries</b> are ready to eat, no cooking needed. Both go off. '+(fr?'<span class="life cold">❄️ You own a working fridge: groceries keep for the day you buy them plus '+FD.freshDaysFridge+' more day'+(FD.freshDaysFridge===1?'':'s')+'.</span>':'<span class="life warm">🌡️ No working fridge: groceries only keep for the day you buy them plus '+FD.freshDaysNoFridge+' more day'+(FD.freshDaysNoFridge===1?'':'s')+'. A refrigerator (Electronics Store) stretches that to '+FD.freshDaysFridge+' more day'+(FD.freshDaysFridge===1?'':'s')+'.</span>')+'</p>'+
@@ -3562,7 +3644,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     placeCenter();
     renderGoals();
     var gp=$('goalpop');
-    if(S.goalPop&&!S.over&&!S.pending&&!S.cert&&!S.morning){$('gpList').innerHTML=goals().map(function(x){return '<li>✅ '+x[1]+'</li>'}).join('');$('gpMsg').textContent='You have the basics down. Next target: '+TIERS[Math.max(0,S.tier+1)].n+' at '+money(nextGoal())+' net worth'+(maxDays()===Infinity?'.':', within '+maxDays()+' days.')+'';gp.classList.add('show')}else gp.classList.remove('show');
+    if(S.goalPop&&!S.over&&!S.pending&&!S.cert&&!S.morning){$('gpList').innerHTML=goals().map(function(x){return '<li>✅ '+x[1]+'</li>'}).join('');var gpT=Math.min(TIERS.length-1,Math.max(0,S.tier+1));$('gpMsg').textContent='You have the basics down. Next target: '+TIERS[gpT].n+' at '+money(nextGoal())+' net worth'+(nextDueTxt()?nextDueTxt()+' for a +'+TIERS[gpT].b.toLocaleString()+' score bonus'+(maxDays()===Infinity?'.':' (it still counts as a rank until day '+maxDays()+').'):maxDays()===Infinity?'.':', within '+maxDays()+' days.');gp.classList.add('show')}else gp.classList.remove('show');
     var cp=$('certpop');
     if(S.cert&&!S.over){var C=S.cert,TT=TRACKS[C.t];$('cpT').textContent=TT.n+' '+TT.lv[C.l-1];$('cpMods').textContent='Modules: '+C.mods.join(' · ');$('cpDay').textContent='Awarded on day '+C.d;
       var opens=[],close=[];Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk){if((rk.q||[]).some(function(q){return q[0]===C.t&&q[1]===C.l})){if(meets(rk))opens.push(rk.r);else close.push(rk.r)}})});
@@ -3582,6 +3664,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var sm2=S.summary,sc=$('sumcard');sc.hidden=!sm2;
     if(sm2){var sg=function(v,suf){return '<b class="'+(v>0?'up':v<0?'dn':'')+'">'+(v>0?'+':v<0?'−':'±')+(suf==='$'?money(Math.abs(Math.round(v))):Math.abs(Math.round(v))+(suf||''))+'</b>'};
       sc.innerHTML='<span class="st">📊 Day '+sm2.day+' recap</span><span>Earned <b class="up">'+money(Math.round(sm2.earn))+'</b></span><span>Spent <b class="dn">'+money(Math.round(sm2.spend))+'</b></span><span>Net worth '+sg(sm2.dnw,'$')+'</span><span>⚡ '+sg(sm2.de,'%')+'</span><span>😊 '+sg(sm2.dh)+'</span><span>💚 '+sg(sm2.dl||0)+'</span><span>🧠 '+sg(sm2.dk)+'</span>'+
+        (sm2.best?'<span class="bestday">🏆 Best day yet</span>':'')+
+        ((sm2.wins||[]).length?'<div class="wins" title="'+sm2.wins.join(' | ').replace(/"/g,'&quot;')+'">Wins: '+sm2.wins.map(function(x){return x.replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c]})}).join(' · ')+'</div>':'')+
         (sm2.hits.length?'<div class="hits" title="'+sm2.hits.join(' | ').replace(/"/g,'&quot;')+'">What hurt: '+sm2.hits.map(function(x){return x.replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c]})}).join(' · ')+'</div>':'');}
     var al=stressList(),wa=$('warn');
     wa.hidden=!al.length;
@@ -3595,7 +3679,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(anyInv()){var c0=invSum('c'),pl=iv-c0,wk=S.wk||{abs:0,pct:0};
       il.hidden=false;il.innerHTML='📈 Investments: <b>'+money(iv)+'</b> · today <b class="'+(wk.abs>=0?'up':'dn')+'">'+sm(wk.abs)+' ('+(wk.pct>=0?'+':'−')+Math.abs(wk.pct).toFixed(1)+'%)</b> · overall <b class="'+(pl>=0?'up':'dn')+'">'+sm(pl)+' ('+(pl>=0?'+':'−')+Math.abs(c0?pl/c0*100:0).toFixed(1)+'%)</b>';}
     else il.hidden=true;
-    $('nw').textContent=money(nw);$('goalAmt').textContent=(S.tier>=0?TIERS[S.tier].ic+' '+TIERS[S.tier].n+' · ':'')+(S.tier<TIERS.length-1?'next: '+TIERS[S.tier+1].n+' '+money(nextGoal()):'top rank');
+    $('nw').textContent=money(nw);$('goalAmt').textContent=(S.tier>=0?TIERS[S.tier].ic+' '+TIERS[S.tier].n+' · ':'')+(S.tier<TIERS.length-1?'next: '+TIERS[S.tier+1].n+' '+money(nextGoal())+nextDueTxt():'top rank');
     $('sgCash').style.width=Math.max(0,S.cash)/tot*100+'%';$('sgBank').style.width=S.bank/tot*100+'%';$('sgAsset').style.width=as/tot*100+'%';$('sgInv').style.width=invTotal()/tot*100+'%';
 
     document.querySelectorAll('.tile').forEach(function(t){
@@ -3941,6 +4025,9 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       var up=TIERS.slice(1),last=TIERS[TIERS.length-1];
       var parts=up.map(function(r){return '<b>'+r.ic+' '+r.n+'</b> at '+money(r.v)});
       $('cfgRanks').innerHTML=(parts.length>1?parts.slice(0,-1).join(', ')+' and '+parts[parts.length-1]:parts[0])+' ('+last.n+' ends the game)';
+      var tg=TIERS.map(function(r,i){return r.d?'<b>'+r.ic+' '+r.n+'</b> by day '+Math.min(r.d,CONFIG.time.gameDays||r.d)+' (+'+r.b.toLocaleString()+')':''}).filter(Boolean);
+      $('cfgOnTime').parentNode.hidden=!tg.length;
+      $('cfgOnTime').innerHTML='<b>Target days:</b> reach a rank by the end of its day for bonus score points: '+(tg.length>1?tg.slice(0,-1).join(', ')+' and '+tg[tg.length-1]:tg[0]||'')+'. A rank reached later still counts, without the bonus.';
       paintBurnRules();
       var hd=CONFIG.food.hungryDaysToHospital;$('cfgHungry').textContent=numWord(hd)+' day'+(hd===1?'':'s');
       $('cfgHunger').textContent=Math.abs(CONFIG.food.hungryEnergy)+'% energy and '+Math.abs(CONFIG.food.hungryHappiness)+' happiness';
