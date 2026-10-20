@@ -589,3 +589,31 @@ New `CONFIG` keys: `sleep.nightEnergy`, `sleep.nightHappiness`. None removed.
 - When a decision's twist touches the same thing as its outcome, the event card and the Daily log now show one chip with the total instead of two (for example "+3% energy, +5% energy" becomes "+8% energy", and "−3 happiness, +3 happiness" becomes "±0 happiness"). Cash and bank amounts are merged the same way. New helper `mergeFx()`, used by `decide()`. Story rounds keep their separate chips (paying in, then the payout).
 - The game-over card no longer says "Congratulations! New top score!" for a 0-point game, and a 0-point game is not saved as the top score. On a first game that scores 0, no top-score line is shown.
 - Checked in Chromium with the test hook: in 150 forced decision nights every chip total matched the real cash, energy and happiness change, and no item appeared twice; a 0-point loan default on a first game showed no top-score line and saved nothing, and with a saved best of 1,500 it showed "Top score so far: 1,500".
+
+## 39. Rank target days, news tip-offs, investment odds and better feedback
+
+### Rank target days
+- Each rank has a target day and a score bonus in `CONFIG.ranks` (`byDay`, `bonus`): 🙂 Comfortable by day 8 (+500), 💼 Wealthy by day 12 (+1,000), 👑 Tycoon by day 15 (+2,000). Reaching a rank by the end of its day adds the bonus as a new **On-time ranks** row in the score. A rank reached later still counts as the rank (and Comfortable still wins the game), without the bonus.
+- The day each rank is reached is saved in `S.rankDay`. Gains made overnight (interest, investments) count for the day that just ended.
+- The net-worth line shows the target ("next: Wealthy $5,000 by day 12"). A warning appears in the last 3 days before a target with the amount still needed. The morning after a missed target says the bonus is gone and names the next target. The rank-up window and log say whether each rank was on time.
+- The Rules screen has a new **Target days** line built from `CONFIG.ranks` (`cfgOnTime`), and the score tooltip mentions the bonuses.
+
+### News tip-offs
+- Each morning the game decides whether that night's daily event is economic news, with the same odds as before (`CONFIG.events.news` against the other weights), and draws the headline. When it is news, it is tipped off with chance `CONFIG.events.forecast` (0.7): a morning note and a line on the Bank screen give the headline and its likely effect (prices, pay, savings rates, closures, cash handouts, markets up or down). That night the tipped headline is the news event, so the player has the day to move savings and investments.
+- Saved in `S.newsPlan`. A save from before this change has no plan for the current day and rolls that night's event the old way.
+- Measured over 4,000 mornings: news on 9.3% of nights (weight 0.1 of 1.0), tipped off on 69% of those.
+
+### Investment odds on the Bank screen
+- A **How they compare today** table above the investment cards lists, for savings and each investment: the expected change a day, the usual range (2 days in 3: expected ± volatility, within the daily caps) and how often it loses money. It uses the same numbers as the overnight investment step (`expRet`, `VOL`, `CAP`).
+- Each investment card now says the same in words ("A usual day is between −1.9% and +4.1%, and about 36% of days lose money") instead of "± 3%".
+
+### Feedback
+- **First week checklist:** the getting-started box lists every step with a tick, adds "Pay your rent", and says to finish by day 5, when the bankruptcy count starts (`CONFIG.bankrupt.fromDay`). After day 5 it says you are behind.
+- **Earlier bankruptcy warning with a way out:** with net worth under the bankruptcy line, a warning shows from `CONFIG.bankrupt.warnDaysBefore` (2) days before the count starts (day 3). It gives the amount needed, whether tonight counts, and a way out: about how many shifts at your current pay, or to get a job if you have none, and to hold off on spending. It is amber before the count starts and red once each night counts.
+- **Day recap wins:** the morning day recap now lists the day's wins (qualifications earned, new job or promotion, ranks reached and whether on time) and marks a **🏆 Best day yet** when net worth grew more than on any earlier day.
+
+New `CONFIG` keys: `events.forecast`, `bankrupt.warnDaysBefore`, `ranks[].byDay`, `ranks[].bonus`. None removed. New save fields: `rankDay`, `bestDay`, `newsPlan` (older saves get them from `blank()`).
+
+- Checked in the built-in browser with the test hook (injected into the page in memory, no copy on disk): no script errors; the bankruptcy warning appears on day 3 (amber) and day 5 (red) but not day 2, and gives "about 3 shifts at $72" for a Crew Member; Comfortable reached on day 6 recorded as on time with +500, Wealthy reached overnight on day 7 credited to day 7 with +1,000; a forced tip-off was shown in the morning and its headline was that night's event; a missed day-8 target produced the morning note; the recap showed the wins and Best day yet; the comparison table fits a 480px-wide pane without scrolling.
+- `tools/qa` simulations, 60 careful-bot seeds (1–20 and 21–60) plus the 10 random games, run against this build and against the unchanged previous build (same seeds). Both: no script errors, broken invariants, stuck days or log/effect mismatches; all 10 random games end Hospitalised in both. Careful bot: previous build 56 Comfortable, 3 Time's up, 1 Bankrupt (seed 23); this build 52 Comfortable, 3 Time's up, 5 Bankrupt (seeds 1, 3, 6, 42, 44, all on day 8 or 9). The morning news plan draws extra random numbers, so every seeded game plays out differently, and the bot does not read any of the new text. The bankrupt seeds differ between builds, which points to chance rather than a rule change, but 5 against 1 is not conclusive: a larger run would settle it.
+- `docs/Daily Grind Config Guide.docx` updated: the `ranks` and `bankrupt` descriptions, a new `events` row, and rows for `ranks.byDay`, `ranks.bonus`, `events.forecast` and `bankrupt.warnDaysBefore`.

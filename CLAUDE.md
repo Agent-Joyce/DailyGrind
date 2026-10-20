@@ -6,6 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 The working copy is **`D:\AI\App_DailyGrind`** (GitHub: `Agent-Joyce/DailyGrind`). The old copy at `C:\Users\Joyce\Documents\AI work\Daily Grind` is retired and out of date: do not read from, edit or test against it.
 
+**Never use the C: drive for this project. Everything goes on D:.** Do not read, write, copy or test anything on C:, including the session scratchpad if it is on C:. Use these instead:
+- Project files: `D:\AI\App_DailyGrind`.
+- Throwaway files (hooked test copies, scripts, reports): `D:\AI\dg_scratch` (outside the repo; create it if missing, delete what you made when done).
+
+The C: drive is also short of space. If a terminal command fails with `ENOSPC` on a `C:\...\Temp\claude\...` path, the tool's own temporary folder is failing, not your command: tell the user that C: needs space freed. Do not work around it by writing to C:.
+
 ## What this is
 
 Daily Grind is a browser life-sim game that lives in **one file: `index.html`** (~4,400 lines: CSS, markup, then a single `<script>` wrapped in one IIFE). There is no build step, package manager, linter or test suite in the repo. `CHANGELOG.md` is the running record of every gameplay change (no README). `docs/QA_Report.html` is a snapshot QA report of an older build and `docs/Daily Grind Config Guide.docx` is a guide to the `CONFIG` values (keep it in step when `CONFIG` changes).
@@ -13,7 +19,7 @@ Daily Grind is a browser life-sim game that lives in **one file: `index.html`** 
 ## Running and checking changes
 
 - Run it: open `D:\AI\App_DailyGrind\index.html` directly in a browser (`file:///D:/AI/App_DailyGrind/index.html`, works in the desktop app's built-in browser pane). Python and Node are not installed on this machine, so there is no local web server. Game state autosaves to `localStorage` (`dailyGrind.save.v1`), so clear it when testing a fresh start.
-- There are no repo tests. Past verification (in a cloud sandbox) used Playwright against a throwaway copy of `index.html` with a test hook injected just before the line `  if(!load())fresh();`. Playwright is not installed on this machine; locally, inject the same hook into a copy in the session scratchpad (never inside `D:\AI\App_DailyGrind`) and open it in the built-in browser pane. The hook assigns `window.__G` to expose the closure's internals (`S`, `CONFIG`, `fresh`, `enter`, `render`, `worth`, `expRet`, ...). Everything is private to the IIFE, so nothing can be driven from outside without such a hook. Keep that marker line unique and intact. Do not commit the copy.
+- There are no repo tests. Past verification (in a cloud sandbox) used Playwright against a throwaway copy of `index.html` with a test hook injected just before the line `  if(!load())fresh();`. Playwright is not installed on this machine; locally, inject the same hook into a copy in `D:\AI\dg_scratch` (never inside `D:\AI\App_DailyGrind`, never on C:) and open it in the built-in browser pane. If no copy can be written, open `index.html` itself in the browser pane, take the page source from its `data:` URL, add the hook and rewrite the page in memory with `document.open()`/`document.write()` (`localStorage` is disabled on `data:` URLs, so drive the game through the hook). The hook assigns `window.__G` to expose the closure's internals (`S`, `CONFIG`, `fresh`, `enter`, `render`, `worth`, `expRet`, ...). Everything is private to the IIFE, so nothing can be driven from outside without such a hook. Keep that marker line unique and intact. Do not commit the copy.
 - Seed `Math.random` in the page before running anything that must be repeatable. Events, illness, shocks and market noise all use it.
 - Drive the UI with real clicks on `#shop [data-act]` buttons, `#hudEnd` (end day or "Sleep outside") and `#event [data-act]` (event choices) rather than calling functions, so button wiring is exercised too.
 
