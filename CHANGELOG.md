@@ -579,3 +579,7 @@ Tested on a throwaway copy with a test hook, driven by real clicks (tiles, build
 - Observations, not changed: in an earlier version of the careful bot, a 4-day workplace closure inside the day-5-to-7 bankruptcy window was enough to bankrupt a player who did not switch jobs. Knowledge falls to 0 by day 15 for a player who owns no device and stops studying (−1 a night).
 
 New `CONFIG` keys: `sleep.nightEnergy`, `sleep.nightHappiness`. None removed.
+
+### Re-running the simulations
+
+- `tools/qa/run-sims.ps1` rebuilds the test copy (with the `window.__G` hook) outside the repo and opens it in your browser; `tools/qa/sim.js` then plays the 20 careful and 10 random seeded games with real clicks and shows a report table (plus a JSON download). Run it from the repo folder with `powershell -ExecutionPolicy Bypass -File tools\qa\run-sims.ps1`; options `-Survive`, `-Random`, `-SurviveSeed`, `-RandomSeed`, `-OutDir`. It needs no Node or Python.
