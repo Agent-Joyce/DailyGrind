@@ -583,3 +583,9 @@ New `CONFIG` keys: `sleep.nightEnergy`, `sleep.nightHappiness`. None removed.
 ### Re-running the simulations
 
 - `tools/qa/run-sims.ps1` rebuilds the test copy (with the `window.__G` hook) outside the repo and opens it in your browser; `tools/qa/sim.js` then plays the 20 careful and 10 random seeded games with real clicks and shows a report table (plus a JSON download). Run it from the repo folder with `powershell -ExecutionPolicy Bypass -File tools\qa\run-sims.ps1`; options `-Survive`, `-Random`, `-SurviveSeed`, `-RandomSeed`, `-OutDir`. It needs no Node or Python.
+
+## 38. Event chips merged, no "top score" for 0 points
+
+- When a decision's twist touches the same thing as its outcome, the event card and the Daily log now show one chip with the total instead of two (for example "+3% energy, +5% energy" becomes "+8% energy", and "−3 happiness, +3 happiness" becomes "±0 happiness"). Cash and bank amounts are merged the same way. New helper `mergeFx()`, used by `decide()`. Story rounds keep their separate chips (paying in, then the payout).
+- The game-over card no longer says "Congratulations! New top score!" for a 0-point game, and a 0-point game is not saved as the top score. On a first game that scores 0, no top-score line is shown.
+- Checked in Chromium with the test hook: in 150 forced decision nights every chip total matched the real cash, energy and happiness change, and no item appeared twice; a 0-point loan default on a first game showed no top-score line and saved nothing, and with a saved best of 1,500 it showed "Top score so far: 1,500".
