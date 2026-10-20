@@ -2,14 +2,14 @@
    Needs the test hook (window.__G) that run-sims.ps1 injects before the line "  if(!load())fresh();".
 
    Two players, both driven by real clicks on the page (tiles, #shop buttons, #hudEnd, event buttons, pop-ups):
-     survive : eats every day (cooks basic groceries two days at a time), buys the outfit the job needs as soon as
+     survive : eats every day (cooks meal prep two meals at a time), buys the outfit the job needs as soon as
                clothes run out (withdrawing savings if needed), studies towards the best-paid job reachable in the
                days left, avoids study and work burnout, switches jobs when the workplace closes, declines risky offers.
      random  : random buildings, buttons, preview answers and event choices.
    Each run is seeded (game and player use separate seeded generators), so a seed always replays the same game
    as long as index.html has not changed.
 
-   After every click it checks: no script error, vitals 0-100, no NaN, bank and clothes not negative, kitchen within
+   After every click it checks: no script error, vitals 0-100, no NaN, bank and clothes not negative, fridge within
    capacity, at most one job, and that the log line's numbers (energy, happiness, health, knowledge) match the real
    change. Settings come from window.__QA (written by run-sims.ps1). Results: an on-page report, the browser console,
    and a "Download JSON" button. */
@@ -31,8 +31,10 @@
     ['energy','happy','health','know'].forEach(function(k){if(S[k]<0||S[k]>100)note('INVARIANT',k+' out of 0-100 ('+S[k]+') after '+where)});
     if(S.ap<0||S.ap>1440)note('INVARIANT','time left out of range ('+S.ap+') after '+where);
     if(S.bank<0)note('INVARIANT','bank negative after '+where);
-    if(S.pantry.length>G.CONFIG.food.kitchenSpace)note('INVARIANT','kitchen over capacity');
-    if(S.cooked.length>G.CONFIG.food.cookedSpace)note('INVARIANT','cooked meals over capacity');
+    var cap=G.CONFIG.food.fridgeSpace,inF=S.food.filter(function(p){return p.f}).length;
+    if(inF>cap)note('INVARIANT','fridge over capacity ('+inF+'/'+cap+')');
+    if(S.food.some(function(p){return p.sp&&p.f}))note('INVARIANT','spoiled food in the fridge');
+    if(S.chips>G.CONFIG.food.chips.maxStored)note('INVARIANT','more chips than allowed at home');
     ['casual','smart','suit'].forEach(function(k){if(S.clothes[k]<0)note('INVARIANT','clothes negative')});
     if(!isFinite(G.worth()))note('INVARIANT','net worth not finite');
     Object.keys(S.inv).forEach(function(k){if(!isFinite(S.inv[k].v)||S.inv[k].v<0)note('INVARIANT','investment '+k+' has a bad value '+S.inv[k].v)});
@@ -154,18 +156,18 @@
     if(await go('mall'))await click(btn('cbuy',want),'cbuy:'+want);
   }
   function fresh(list,type){return list.filter(function(p){return !p.sp&&(!type||p.t===type)})}
-  /* eat every day: cooked meal, else premium groceries, else buy and cook basic groceries (two days at a time), else fast food */
+  /* eat every day: cooked meal (warm, else reheated or cold), else a ready-to-eat meal, else buy and cook meal prep (two at a time), else fast food */
   async function ensureFed(){
     S=G.S;if(S.fed)return;
     var FD=G.CONFIG.food;
-    if(fresh(S.cooked).length&&await go(S.home))await click(btn('eatc',''),'eatc');if(G.S.fed)return;
-    if(fresh(G.S.pantry,'prem').length&&await go(G.S.home))await click(btn('eatp',''),'eatp');if(G.S.fed)return;
-    if(!fresh(G.S.pantry,'basic').length&&G.S.cash>=G.G(FD.basic.cost)&&await go('market')){
+    if(fresh(S.food,'cook').length&&await go(S.home)){var eb=btn('eatc','')||btn('eatc','heat')||btn('eatc','cold');if(eb)await click(eb,'eatc:'+eb.dataset.arg)}if(G.S.fed)return;
+    if(fresh(G.S.food,'prem').length&&await go(G.S.home))await click(btn('eatp',''),'eatp');if(G.S.fed)return;
+    if(!fresh(G.S.food,'basic').length&&G.S.cash>=G.G(FD.basic.cost)&&await go('market')){
       var bb=btn('bundle','basic');
       if(bb&&G.S.cash>=G.G(FD.basic.cost)*3+60)await click(bb,'bundle:basic');else await click(btn('groc','basic'),'groc:basic');
     }
-    if(fresh(G.S.pantry,'basic').length&&await go(G.S.home)){
-      var n=Math.min(fresh(G.S.pantry,'basic').length,2);  /* without a fridge a cooked meal lasts today and tomorrow */
+    if(fresh(G.S.food,'basic').length&&await go(G.S.home)){
+      var n=Math.min(fresh(G.S.food,'basic').length,2);  /* without a fridge a cooked meal keeps today and the next two days */
       var cb=btn('cook',String(n))||btn('cook','1');if(cb)await click(cb,'cook:'+cb.dataset.arg);
       await click(btn('eatc',''),'eatc');
     }

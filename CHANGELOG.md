@@ -623,3 +623,55 @@ New `CONFIG` keys: `events.forecast`, `bankrupt.warnDaysBefore`, `ranks[].byDay`
 - Checked in the built-in browser with the test hook (injected into the page in memory, no copy on disk): no script errors; the bankruptcy warning appears on day 3 (amber) and day 5 (red) but not day 2, and gives "about 3 shifts at $72" for a Crew Member; Comfortable reached on day 6 recorded as on time with +500, Wealthy reached overnight on day 7 credited to day 7 with +1,000; a forced tip-off was shown in the morning and its headline was that night's event; a missed day-8 target produced the morning note; the recap showed the wins and Best day yet; the comparison table fits a 480px-wide pane without scrolling.
 - `tools/qa` simulations, 60 careful-bot seeds (1–20 and 21–60) plus the 10 random games, run against this build and against the unchanged previous build (same seeds). Both: no script errors, broken invariants, stuck days or log/effect mismatches; all 10 random games end Hospitalised in both. Careful bot: previous build 56 Comfortable, 3 Time's up, 1 Bankrupt (seed 23); this build 52 Comfortable, 3 Time's up, 5 Bankrupt (seeds 1, 3, 6, 42, 44, all on day 8 or 9). The morning news plan draws extra random numbers, so every seeded game plays out differently, and the bot does not read any of the new text. The bankrupt seeds differ between builds, which points to chance rather than a rule change, but 5 against 1 is not conclusive: a larger run would settle it.
 - `docs/Daily Grind Config Guide.docx` updated: the `ranks` and `bankrupt` descriptions, a new `events` row, and rows for `ranks.byDay`, `ranks.bonus`, `events.forecast` and `bankrupt.warnDaysBefore`.
+
+## 41. Meals, the fridge and chips
+
+### Names, icons and the Supermarket
+- **Basic groceries** are now **Meal prep** (🥕, must be cooked) and **Premium fresh groceries** are now **Ready-to-eat meals** (🍱, no cooking). Cooked meals keep 🍲. The new names are used everywhere in the game, including the Frugal trait and the shopkeeper's lines. The `CONFIG.food.basic` / `CONFIG.food.premium` keys keep their names.
+- The Supermarket lists its food cheapest first (chips, meal prep, ready-to-eat meal, then the two 3-day bundles). The lottery ticket has its own **Lottery** section underneath, since it is not food.
+- Shorter descriptions: meal prep and its bundle say **Cook at home**, ready-to-eat meals and their bundle say **Eat at home**, followed by the buy time and what eating one does.
+
+### How long food keeps
+- Food keeps **3 days outside the fridge** and **6 days in a working fridge**, counting the day you buy it (`keepDaysRoom`, `keepDaysFridge`). A cooked meal starts again from the day it is cooked. Bundles keep the same as single meals (the longer-lasting "sealed packs" are gone).
+- Each food item tracks the keep-days it has used: a night in the fridge uses 1, a night outside uses 6 ÷ 3 = 2. Moving a meal in or out of the fridge is fair either way.
+- Food that runs out, in or out of the fridge, becomes 🤢 spoiled and stays in the kitchen outside the fridge (before, a fridge threw expired food away). Eating spoiled food still costs health and may cause food poisoning; it can be thrown out at home.
+- The **Power cut** event now spoils the food in the fridge (before, it threw away all groceries).
+
+### The fridge
+- A fridge holds **5 meals** (`fridgeSpace`): meal prep, ready-to-eat meals and cooked meals. Chips need no fridge. With 5 meals or fewer, they all go in automatically. With more, the ones closest to going off go in and the rest stay on the kitchen counter, where they keep 3 days.
+- At home, with more food than fridge space, each food card has a **❄️ Put in** / **Take out** button. Your picks stay in until eaten or spoiled; a broken fridge holds nothing until it is repaired.
+- There is no longer any limit on kitchen space (`kitchenSpace` and `cookedSpace` are removed).
+
+### Cooking, reheating and the microwave
+- Cooking takes 3h for the first meal and 30 min for each extra one, with or without a microwave (`cookFirstMicrowave` and `cookExtraMicrowave` are removed).
+- A cooked meal that spends a night in the fridge is **cold**. With a working microwave you can **Reheat & eat** it (30 min more, `reheatMinutes`) with the usual happiness. Without one, or to save time, you **Eat cold**: the usual meal with **3 less happiness** (`coldHappiness`). The Microwave's shop description now says this.
+- When eating or cooking, the meal with the fewest days left is used first.
+
+### Chips
+- Buying a bag of chips no longer changes your vitals. It goes home with you (up to **5 bags a day**, **10 kept at home**) and never goes off. **Eat a bag of chips** at your Apartment or Bungalow takes **15 min** and gives the usual +8 happiness, −3% energy, −2 health and counts as junk food. Chips are a snack, not a meal.
+
+### Home screen
+- **Your things** is split into shelves: 🔌 Belongings, 🧊 Fridge (spaces used, days left on each meal), 🌡️ Kitchen counter, 🤢 Spoiled, 🥔 Snacks and 🎟️ Lottery tickets. Each food card shows its icon, name, what it needs (cook first / ready to eat / cold), and days left.
+- **Kitchen & meals** shows whether you have eaten today and your home meals (x / 3), then only the actions you can take: eat a cooked meal, reheat or eat cold, eat a ready-to-eat meal, cook meal prep (Cook 1, Cook 2, …), eat chips, eat spoiled food, throw out spoiled food.
+- On a phone, food cards sit three to a row.
+
+New `CONFIG.food` keys: `keepDaysRoom`, `keepDaysFridge`, `fridgeSpace`, `reheatMinutes`, `coldHappiness`, `chips.eatMinutes`, `chips.maxPerDay`, `chips.maxStored`. Removed: `kitchenSpace`, `cookedSpace`, `cookFirstMicrowave`, `cookExtraMicrowave`, `freshDaysFridge`, `freshDaysNoFridge`, `bundleDaysFridge`, `bundleDaysNoFridge`. Save fields: `food`, `chips`, `chipsDay` replace `pantry` and `cooked`. An older save's groceries and cooked meals are moved into `food` when it loads (spoiled stays spoiled; fresh food counts the days since it was bought as fridge days).
+
+`tools/qa/sim.js` uses the new food list: the careful bot eats a warm, reheated or cold cooked meal, then a ready-to-eat meal, then buys and cooks meal prep. The kitchen-capacity checks are replaced by "fridge holds at most 5", "no spoiled food in the fridge" and "chips at home within the limit".
+
+- Checked in the built-in browser with the test hook on a throwaway copy (`D:\AI\dg_scratch`, deleted afterwards), no script errors: the Supermarket order is chips $6, meal prep $30, ready-to-eat $55, bundles $77 and $140, with the lottery last; the 6th bag of chips in a day is refused and buying leaves vitals unchanged; eating a bag takes 15 min and changes them; with 7 meals and a fridge, 5 go in and the other 2 show 3 days left; Put in / Take out swap meals as expected; one night ages fridge food by 1 day and counter food by 2, and cooked meals from the fridge turn cold; Eat cold gives +0 happiness instead of +3, Reheat & eat takes 1h and gives +3; a broken fridge empties onto the counter; fridge food that runs out (and a Power cut) leaves spoiled food on the counter; a save made by the previous build, holding groceries, a spoiled grocery and cooked meals, loads with all of them moved into the new food list. Phone width (375px): no sideways scrolling.
+- `tools/qa` simulations on this build (report: `docs/QA_Sim_2026-10-20_meals-fridge.md`, raw data in the `.json` beside it), 20 careful-bot seeds (1–20) and 10 random games: no script errors, broken invariants, stuck days or log/effect mismatches. Careful bot: 17 Comfortable, 2 Time's up, 1 Bankrupt (seed 3, day 8). All 10 random games end Hospitalised, as before.
+- `docs/Daily Grind Config Guide.docx` updated: the `food` description, "Make meal prep cheaper", the Frugal trait, and new rows for `food.keepDaysRoom`, `food.keepDaysFridge`, `food.fridgeSpace` and `food.chips.maxPerDay`.
+
+## 42. Shorter screen text
+
+Wording only; no rules or `CONFIG` values changed. Every number still comes from `CONFIG`.
+- **Supermarket intro:** "Meal prep needs to be cooked at home. Food stays fresh for 3 days (without fridge) and 6 days (in fridge), today inclusive." plus a label "Fridge stores maximum 5 meals" (blue with a working fridge, orange without). Meal prep and its 3-day bundle now say **Cook/Eat at home**.
+- **Home, Cook meal prep:** "Each cooked meal keeps fresh for 3 days (or 6 in the fridge) from today. Cooking more at once saves time per meal."
+- **School intro:** "Each pathway is a ladder of qualifications (Certificate → Degree → … → Masters). You pay tuition once when you enrol in a qualification. Earn the qualification by completing all its modules. You can study several pathways at once."
+- **Employment Office intro:** "Base pay - your actual wage depends on your knowledge and well-being. Apply here then go to the workplace to work your shifts. Openings come and go. You can only hold one job at a time. Good luck!" (Your current job is still named after it.)
+- **Bank loan line:** "…you would owe $X if you repay on the due date. Simple interest N% a day but will compound 8% a day if overdue. Game ends if not repaid within 5 days after the due date."
+- **Bank, How they compare today:** columns renamed **Expected return**, **Usual daily range** and **Probability of Loss**, and the note under the table explains them under the new names.
+- **Clothes Mall intro:** "Casual Clothes last 5 days while Smart Casual and Business Suit last 6 days. Return to buy again. Bargaining takes 30m - be careful, you may end up paying more!" (If Smart Casual and the Business Suit are given different lifetimes in `CONFIG.clothes`, it names each one's days.)
+- **Refrigerators:** "Holds 5 meals for 6 days instead of 3" (Electronics Store) and "…, but breaks down more often" (Thrift Store).
+- Checked in the built-in browser on a hooked throwaway copy: every text above shows as written on its screen, with no script errors.
