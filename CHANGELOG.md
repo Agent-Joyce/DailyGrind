@@ -589,3 +589,9 @@ New `CONFIG` keys: `sleep.nightEnergy`, `sleep.nightHappiness`. None removed.
 - When a decision's twist touches the same thing as its outcome, the event card and the Daily log now show one chip with the total instead of two (for example "+3% energy, +5% energy" becomes "+8% energy", and "−3 happiness, +3 happiness" becomes "±0 happiness"). Cash and bank amounts are merged the same way. New helper `mergeFx()`, used by `decide()`. Story rounds keep their separate chips (paying in, then the payout).
 - The game-over card no longer says "Congratulations! New top score!" for a 0-point game, and a 0-point game is not saved as the top score. On a first game that scores 0, no top-score line is shown.
 - Checked in Chromium with the test hook: in 150 forced decision nights every chip total matched the real cash, energy and happiness change, and no item appeared twice; a 0-point loan default on a first game showed no top-score line and saved nothing, and with a saved best of 1,500 it showed "Top score so far: 1,500".
+
+## 39. 41 new personal yes/no decisions
+
+- Added 41 new personal yes/no decisions to `CHOICES` (the daily events section for personal, economic news and yes/no decisions in `index.html`). Each one uses the existing `[question, [weight, yes text, yes effects, no text, no effects], [1, pass text, pass effects]]` shape and only the existing effect tokens (`c`, `h`, `e`, `l`, `n`).
+- Lighter, more everyday choices: pets and pests, flatmates, family dinners, gym memberships, bubble tea queues, hawker-centre lunches, MRT durian sellers, HDB lift waits, busking, dentists and laundry.
+- No code, rules text or `CONFIG` values changed. `CHOICES` now has 141 entries (the 100 existing ones plus these 41).
