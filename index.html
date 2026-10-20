@@ -183,8 +183,11 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (hover:hover){.btn[data-k]{position:relative}.btn[data-k]::after{content:attr(data-k);position:absolute;top:-8px;right:-8px;min-width:16px;height:16px;padding:0 3px;border-radius:8px;background:var(--ink);color:var(--surface);font-size:.62rem;line-height:16px;text-align:center;box-shadow:none}}
 .btn.work{background:#e0a526;color:#16222e}.btn.work::before{content:'🛠️ '}
-.thing.groc{width:96px}.thing.groc em{font-style:normal;font-size:.6rem;font-weight:800;margin-top:2px;padding:1px 4px;border-radius:6px}
+.thing.groc{width:104px}.thing.groc em{font-style:normal;font-size:.6rem;font-weight:800;margin-top:2px;padding:1px 4px;border-radius:6px}
 .thing.groc.cold em,.life.cold{background:#dbeefe;color:#1d5f99}.thing.groc.warm em,.life.warm{background:#fde8d4;color:#9a4b12}
+.shelf{margin:8px 0 2px}.shelf h5{margin:0 0 3px;font-size:.8rem;font-weight:800}.shelf h5 small{font-weight:600;color:var(--muted);margin-left:4px}
+.thing.groc.pick{border-color:#1d5f99}.thing small b{font-weight:800}
+.thing .mini{margin-top:4px;font:inherit;font-size:.62rem;font-weight:800;padding:2px 6px;border:2px solid var(--ink);border-radius:7px;background:var(--bg);color:var(--ink);cursor:pointer}
 .life{display:inline-block;margin-top:4px;padding:2px 8px;border-radius:8px;font-size:.8rem;font-weight:700}
 .tleft{display:flex;align-items:center;gap:10px}.donut{width:46px;height:46px;flex:none}.donut circle{transition:stroke-dasharray .4s ease,stroke .4s}
 .worksec{margin:4px 0 6px;padding:2px 10px;border-radius:12px;background:color-mix(in srgb,#e0a526 14%,var(--surface));border:2px solid color-mix(in srgb,#e0a526 55%,var(--line))}.worksec.none{padding:6px 10px;background:var(--surface);border-style:dashed}
@@ -288,7 +291,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   .loghead{flex-wrap:wrap;gap:6px}.loghead span{flex-wrap:wrap}
   .center h1{font-size:1.15rem}
   .parts{grid-template-columns:repeat(2,1fr)}
-  .thing{width:30%}.thing.groc{width:46%}
+  .thing{width:30%}.thing.groc{width:31%}
   h1{font-size:1.2rem}
   .sub{font-size:.75rem}
   .stat{padding:4px 6px;border-width:2px}
@@ -959,34 +962,36 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       dinner: {name:'a sit-down dinner',        units:6, cost:40, energy:16, happiness:10, healthy:1},
       tasting:{name:'the chef’s tasting menu',  units:7, cost:90, energy:26, happiness:22, healthy:2},
       junkHealth:-1,        // health lost each time you eat a junk meal
-      /* Groceries from the Supermarket. health = health gained when you eat it at home. */
-      basic:  {name:'Basic groceries',          cost:30, energy:22, happiness:3, health:1},  // must be cooked
-      premium:{name:'Premium fresh groceries',  cost:55, energy:30, happiness:9, health:2},  // ready to eat
-      buyUnits:2,            // time to buy groceries or a bundle
+      /* Meals from the Supermarket. health = health gained when you eat it at home. */
+      basic:  {name:'Meal prep',                cost:30, energy:22, happiness:3, health:1},  // must be cooked
+      premium:{name:'Ready-to-eat meal',        cost:55, energy:30, happiness:9, health:2},  // ready to eat
+      buyUnits:2,            // time to buy a meal or a bundle
       bundleSize:3,          // portions in a bundle
       bundleDiscount:0.15,  // bundle saving (0.15 = 15% off)
-      kitchenSpace:6,        // grocery items your kitchen can hold
-      cookedSpace:6,        // cooked meals you can keep
       homeMealsPerDay:3,    // most meals you can eat at home in one day
       eatMinutes:30,        // time to eat a meal at home
-      /* Cooking time in minutes: the first day's meal, then each extra day cooked at the same time. */
+      /* Cooking time in minutes: the first meal, then each extra meal cooked at the same time. */
       cookFirst:180, cookExtra:30,
-      cookFirstMicrowave:105, cookExtraMicrowave:15,
-      /* How long food stays fresh: extra days after the day you buy or cook it. */
-      freshDaysFridge:4,    // groceries and cooked meals, with a working fridge
-      freshDaysNoFridge:1,  // ...without one
-      bundleDaysFridge:4,    // sealed bundle packs, with a fridge
-      bundleDaysNoFridge:2,  // ...without one
-      /* Food that goes off WITHOUT a fridge stays in your kitchen marked spoiled. You can still cook it
-        (it makes spoiled meals) and eat it, but it hurts your health. (With a fridge, expired food is thrown out.) */
+      /* How long food keeps, counting the day you buy or cook it. Each night in the fridge uses one day;
+        each night outside uses keepDaysFridge / keepDaysRoom days, so moving food in or out keeps the rule fair. */
+      keepDaysRoom:3,        // outside the fridge
+      keepDaysFridge:6,      // in a working fridge
+      fridgeSpace:5,        // meals a fridge holds (meal prep, ready-to-eat and cooked meals; chips need no fridge)
+      /* Cooked meals that spent a night in the fridge are cold. A working microwave reheats one (reheatMinutes);
+        without one you can eat it cold (coldHappiness is added to the usual happiness gain). */
+      reheatMinutes:30,
+      coldHappiness:-3,
+      /* Food that goes off (in or out of the fridge) stays in your kitchen marked spoiled, outside the fridge.
+        You can still cook it (it makes spoiled meals) and eat it, but it hurts your health. */
       spoiledHealth:-8,      // health lost each time you eat spoiled food
       spoiledHappiness:-3,  // happiness change from eating spoiled food (instead of the usual gain)
       spoiledPoisonChance:0.25, // chance that spoiled food also gives you food poisoning
       poisonCost:45,        // clinic bill for food poisoning (before insurance and price changes)
       poisonEnergy:-25,
       poisonHealth:-8,
-      /* A bag of chips: a junk snack, not a meal. */
-      chips:{cost:6, units:1, happiness:8, energy:-3, health:-2},
+      /* A bag of chips: a junk snack, not a meal. Bought at the Supermarket, eaten at home (vitals change when you eat it).
+        Never goes off and needs no fridge. maxPerDay = bags you can buy a day, maxStored = bags you can keep at home. */
+      chips:{cost:6, units:1, happiness:8, energy:-3, health:-2, eatMinutes:15, maxPerDay:5, maxStored:10},
       /* Skipping meals */
       hungryEnergy:-20,      // energy lost at night if you did not eat
       hungryHappiness:-15,  // happiness lost at night if you did not eat
@@ -1119,7 +1124,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
               'milestone:','you reached ']
       },
       /* 4. Action preview: pressing one of these buttons first shows what it will cost, and asks you to confirm.
-            actions = button names. More you can add: 'nap','cook','treat','eatc','eatp','checkup','ward','treat_ill','buy','groc','bundle','lotto' */
+            actions = button names. More you can add: 'nap','cook','treat','eatc','eatp','eatchips','checkup','ward','treat_ill','buy','groc','bundle','lotto' */
       preview:{on:true, actions:['work','class','study','gym']},
       /* 5. End-of-run recap: the three highest-scoring moments are shown. points = how big a deal it is.
             words = phrases to look for in the Daily log (lowercase). */
@@ -1151,7 +1156,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
         minus:'Burning the candle: 1 extra health lost every night.',
         set:[{k:'sleep.rateX', x:1.25}, {k:'sleep.awayShare', v:0.75}, {k:'health.nightly.always', v:-2}]},
         {id:'frugal', icon:'🪙', name:'Frugal',
-        plus:'Groceries cost 30% less, and bundles save 30% instead of 15%.',
+        plus:'Meal prep and ready-to-eat meals cost 30% less, and bundles save 30% instead of 15%.',
         minus:'Cheap tastes: home meals cheer you up less.',
         set:[{k:'food.basic.cost', x:0.7}, {k:'food.premium.cost', x:0.7}, {k:'food.bundleDiscount', v:0.3},
               {k:'food.basic.happiness', v:1}, {k:'food.premium.happiness', v:6}]},
@@ -1311,17 +1316,17 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   var ITEMS={
     clothes:{n:'Work gloves',ic:'🧤',p:25,shop:'thrift',d:'Adds $15 to every shift you work'},
     tv:{n:'Second-hand TV',ic:'📺',p:150,shop:'thrift',d:restTxt('tv')+'. Breaks down more often',old:.12},
-    fridgeold:{n:'Used refrigerator',ic:'🧊',p:140,shop:'thrift',d:'Groceries last '+CONFIG.food.freshDaysFridge+' days instead of '+CONFIG.food.freshDaysNoFridge+', but it breaks down more often',old:.12},
+    fridgeold:{n:'Used refrigerator',ic:'🧊',p:140,shop:'thrift',d:'Holds '+CONFIG.food.fridgeSpace+' meals for '+CONFIG.food.keepDaysFridge+' days instead of '+CONFIG.food.keepDaysRoom+', but breaks down more often',old:.12},
     phoneold:{n:'Used mobile phone',ic:'📱',p:340,shop:'thrift',d:dayTxt('phoneold')+'. Lets you trade ETFs and study online. Breaks down more often',old:.12},
     tabletold:{n:'Old tablet',ic:'📲',p:430,shop:'thrift',d:dayTxt('tabletold')+'. Lets you trade ETFs and study online. Breaks down more often',old:.15},
     computerold:{n:'Old computer',ic:'🖥️',p:520,shop:'thrift',d:dayTxt('computerold')+'. Lets you trade ETFs and study online, plus freelance coding and hedge-fund access. Breaks down more often',old:.18},
-    fridge:{n:'Refrigerator',ic:'🧊',p:660,shop:'elec',d:'Groceries last '+CONFIG.food.freshDaysFridge+' days instead of '+CONFIG.food.freshDaysNoFridge+''},
+    fridge:{n:'Refrigerator',ic:'🧊',p:660,shop:'elec',d:'Holds '+CONFIG.food.fridgeSpace+' meals for '+CONFIG.food.keepDaysFridge+' days instead of '+CONFIG.food.keepDaysRoom},
     tvnew:{n:'Smart TV',ic:'🖥️',p:450,shop:'elec',d:restTxt('tvnew')},
     console:{n:'Game console',ic:'🎮',p:150,shop:'elec',d:restTxt('console')},
     computer:{n:'Computer',ic:'💻',p:710,shop:'elec',d:dayTxt('computer')+'. Lets you trade ETFs and study online, plus freelance coding and hedge-fund access'},
     tablet:{n:'Tablet',ic:'📲',p:640,shop:'elec',d:dayTxt('tablet')+'. Lets you trade ETFs and study online'},
     phone:{n:'Mobile phone',ic:'📱',p:460,shop:'elec',d:dayTxt('phone')+'. Lets you trade ETFs and study online'},
-    microwave:{n:'Microwave',ic:'♨️',p:320,shop:'elec',d:'Cooking at home takes 1h 45m instead of 3h'},
+    microwave:{n:'Microwave',ic:'♨️',p:320,shop:'elec',d:'Reheats a cold cooked meal from the fridge in '+CONFIG.food.reheatMinutes+' min (without one you eat it cold, '+sg(CONFIG.food.coldHappiness)+' happiness)'},
     coffee:{n:'Coffee machine',ic:'☕',p:290,shop:'elec',d:'+'+CONFIG.gadgets.coffeeEnergy+'% energy each morning, and it counts as a comfort item (+10% faster rest and sleep)'}
   };
   /* item descriptions built from CONFIG.gadgets */
@@ -1556,15 +1561,34 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function shutLeft(b){return (S.shut&&S.shut[b])||0}
   function shutSum(){var n=0;Object.keys(S.shut||{}).forEach(function(b){n+=S.shut[b]||0});return n}
   function rollOpenings(){S.closed={};Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk,i){if(Math.random()<0.25)S.closed[c+'_'+i]=1})})}
-  /* meals out and groceries, built from CONFIG.food */
+  /* meals out and Supermarket meals, built from CONFIG.food */
   var FD=CONFIG.food,TREATS={},GROC={};
   [['snack','burger'],['meal','combo'],['dine','dinner'],['feast','tasting']].forEach(function(p){var c=FD[p[1]];
     TREATS[p[0]]={n:c.name,ap:c.units,min:c.minutes||0,cost:c.cost,en:c.energy,hap:c.happiness,junk:c.junk?1:0,good:c.healthy||0,hp:c.health}});
   function treatMin(t){return t.min||M(t.ap)}
   [['basic','basic'],['prem','premium']].forEach(function(p){var c=FD[p[1]];GROC[p[0]]={n:c.name,cost:c.cost,en:c.energy,hap:c.happiness,hp:c.health}});
   function eatTxt(g){return '+'+g.en+'% energy, '+sg(g.hap)+' happiness, '+sg(g.hp)+' health'}
-  function freshDays(){return owns('fridge')?FD.freshDaysFridge:FD.freshDaysNoFridge}
-  function bundleDays(){return owns('fridge')?FD.bundleDaysFridge:FD.bundleDaysNoFridge}
+  /* Home food lives in S.food: {t:'basic'|'prem'|'cook', u:keep-days used, f:in the fridge, pk:you chose it for the fridge,
+    ex:you took it out, cold:cooked meal chilled overnight, sp:spoiled}. A fridge night uses 1 day of keepDaysFridge;
+    a night outside uses keepDaysFridge/keepDaysRoom. Chips are just a count (S.chips). */
+  var FOODN={basic:function(){return GROC.basic.n},prem:function(){return GROC.prem.n},cook:function(){return 'Cooked meal'}},FOODIC={basic:'🥕',prem:'🍱',cook:'🍲'};
+  function roomRate(){return FD.keepDaysFridge/FD.keepDaysRoom}
+  function foodLeft(p,inF){if(p.sp)return 0;var r=(inF==null?p.f:inF)?1:roomRate();return Math.max(0,Math.ceil((FD.keepDaysFridge-p.u)/r-1e-9))}
+  function fridgeCap(){return owns('fridge')?FD.fridgeSpace:0}
+  function inFridge(){return (S.food||[]).filter(function(p){return p.f}).length}
+  /* fill the fridge: with room for everything, everything fresh goes in; otherwise your picks first,
+    then the meals closest to going off, and the ones you took out last */
+  function fridgeSync(){
+    var F=S.food||[],cap=fridgeCap(),ok=F.filter(function(p){return !p.sp});
+    F.forEach(function(p){if(p.sp){p.f=0;p.pk=0;p.ex=0}});
+    if(ok.length<=cap){ok.forEach(function(p){p.f=1;p.pk=0;p.ex=0});return}
+    var n=0;ok.forEach(function(p){p.f=0});
+    ok.forEach(function(p){if(!p.pk)return;if(n<cap){p.f=1;n++}else p.pk=0});
+    ok.filter(function(p){return !p.f}).sort(function(a,b){return ((a.ex?1:0)-(b.ex?1:0))||(b.u-a.u)}).forEach(function(p){if(n<cap){p.f=1;n++}});
+  }
+  /* the fresh item of a type to use next: the one with the fewest days left (food outside the fridge first) */
+  function nextFood(t,test){var r=-1;(S.food||[]).forEach(function(p,i){if(p.t===t&&!p.sp&&(!test||test(p))&&(r<0||foodLeft(p)<foodLeft(S.food[r])))r=i});return r}
+  function keepTxt(){return owns('fridge')?'❄️ in the fridge it keeps '+FD.keepDaysFridge+' days ('+FD.keepDaysRoom+' outside)':'🌡️ with no fridge it keeps '+FD.keepDaysRoom+' days'}
   /* clothes, built from CONFIG.clothes: n = name, p = base price, w = days it lasts */
   var WEAR={};['casual','smart','suit'].forEach(function(k){var c=CONFIG.clothes[k];WEAR[k]={n:c.name,p:c.price,w:Math.max(1,Math.round(c.days))}});
   var DRESS={casual:WEAR.casual.n+' or better',smart:WEAR.smart.n+' or a '+WEAR.suit.n,suit:'a '+WEAR.suit.n},DSHORT={casual:'Casual',smart:'Smart casual',suit:'Suit'};
@@ -1592,7 +1616,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     done();
   }
 
-  function blank(){return {rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,workStreak:0,sagaLast:'',slept:0,homeMeals:0,shut:{},cooked:[],health:CONFIG.health.start,gym:[],good:[],studyMin:0,studyStreak:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:4,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickRest:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,pantry:[],broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
+  function blank(){return {rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,workStreak:0,sagaLast:'',slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,studyStreak:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:4,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickRest:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
     S=blank();T0();PREV=null;applyPayVar();S.certVar={};Object.keys(TRACKS).forEach(function(t){S.certVar[t]=1+(Math.random()*2-1)*CONFIG.education.certVariance});
     rollOpenings();planNews();loc='apt';view=null;last=null;
@@ -1625,6 +1649,10 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       if(!d.S.enr){d.S.enr={};Object.keys(TRACKS).forEach(function(t){var n=(d.S.edu||{})[t]||0,ls=(d.S.les||{})[t]||0;if(n<TRACKS[t].c[TRACKS[t].c.length-1]&&(ls>0||(n>0&&TRACKS[t].c.indexOf(n)<0)))d.S.enr[t]=TRACKS[t].c.filter(function(e){return n>=e}).length})}
       if(!(d.S.ver>=2)&&d.S.career){var cr=d.S.career;if(cr.jobs!=null){cr.factory=cr.jobs;delete cr.jobs}['resto','bank','elec'].forEach(function(c){if(cr[c]!=null)cr[c]++});d.S.ver=2}
       if(d.S.ver===2&&d.S.career){var cr2=d.S.career;Object.keys(cr2).forEach(function(c){if(!CAREERS[c])delete cr2[c]});d.S.ver=3}
+      /* kitchen moved from pantry + cooked lists to one food list with fridge spaces; old food counts as fridge days used so far */
+      if(!d.S.food&&(d.S.pantry||d.S.cooked)){var KF=CONFIG.food.keepDaysFridge,mv=function(t,p){return p.sp?{t:t,u:KF,sp:1}:{t:t,u:Math.min(KF-1,Math.max(0,d.S.day-(p.w||d.S.day)))}};
+        d.S.food=(d.S.pantry||[]).map(function(p){return mv(p.t==='prem'?'prem':'basic',p)}).concat((d.S.cooked||[]).map(function(c){return mv('cook',c)}))}
+      delete d.S.pantry;delete d.S.cooked;
       Object.keys(b).forEach(function(k){if(d.S[k]===undefined)d.S[k]=b[k]});
       /* Diploma merged into Degree; Doctorate and Specialist removed. Convert finished qualifications to the new pathways; part-done ones are reset. */
       if(d.S.ver===3&&d.S.edu){
@@ -1955,22 +1983,37 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(!spendMin(0,H.rent))return;
     S.rentPaid=due;S.flags.rent=1;log('You paid '+money(H.rent)+' rent early (covers the end of day '+due+').','good');done();
   }
-  /* grocery bundle: several sealed portions at a discount (CONFIG.food) */
+  /* meal bundle: several portions at a discount (CONFIG.food); they keep like single meals */
   function bundleCost(g){return G(Math.round(g.cost*FD.bundleSize*(1-FD.bundleDiscount)))}
+  function fridgeNote(){var F=S.food.filter(function(p){return !p.sp}).length,cap=fridgeCap();
+    return !cap?' 🌡️ No working fridge: each meal keeps '+FD.keepDaysRoom+' days, counting today.':F>cap?' ❄️ Your fridge is full ('+cap+'/'+cap+'): '+(F-cap)+' meal'+(F-cap>1?'s stay':' stays')+' outside and keep'+(F-cap>1?'':'s')+' '+FD.keepDaysRoom+' days. Choose what goes in the fridge at home.':' ❄️ In the fridge ('+inFridge()+'/'+cap+'): keeps '+FD.keepDaysFridge+' days, counting today.'}
   function buyBundle(k){
     var g=GROC[k],cost=bundleCost(g);
-    if(S.pantry.length>FD.kitchenSpace-FD.bundleSize)return refuse('Not enough kitchen space for a '+FD.bundleSize+'-day bundle (you have '+(FD.kitchenSpace-S.pantry.length)+' free).');
     if(!spend(FD.buyUnits,cost))return;
-    for(var i=0;i<FD.bundleSize;i++)S.pantry.push({t:k,w:S.day,b:1});
-    log('You bought a '+FD.bundleSize+'-day bundle of '+g.n.toLowerCase()+' for '+money(cost)+'. Sealed long-life packs: they keep until the end of day '+(S.day+bundleDays())+(owns('fridge')?' (❄️ fridge)':' (🌡️ no fridge needed)')+'.');
+    for(var i=0;i<FD.bundleSize;i++)S.food.push({t:k,u:0});
+    fridgeSync();
+    log('You bought a '+FD.bundleSize+'-day bundle of '+(k==='prem'?'ready-to-eat meals':'meal prep')+' for '+money(cost)+'.'+fridgeNote()+(k==='basic'?' Cook it at home.':''));
     done();
   }
   /* junk food: cheering but unhealthy. 3+ servings in 5 days raises illness risk */
   function junkCount(){return (S.junk||[]).filter(function(d){return S.day-d<5}).length}
   function eatJunk(){if(!S.junk)S.junk=[];S.junk.push(S.day);S.junk=S.junk.filter(function(d){return S.day-d<5})}
+  /* chips: bought at the Supermarket (CONFIG.food.chips limits), eaten at home; vitals change only when eaten */
   function chips(){
     var CH=FD.chips;
+    if((S.chipsDay||0)>=CH.maxPerDay)return refuse('The Supermarket sells '+numWord(CH.maxPerDay)+' bags of chips a day per customer. Come back tomorrow.');
+    if((S.chips||0)>=CH.maxStored)return refuse('You already have '+CH.maxStored+' bags of chips at home. Eat some first.');
     if(!spend(CH.units,G(CH.cost)))return;
+    S.chips=(S.chips||0)+1;S.chipsDay=(S.chipsDay||0)+1;
+    log('You bought a bag of chips for '+money(G(CH.cost))+'. Eat it at home ('+S.chips+' at home; '+(CH.maxPerDay-S.chipsDay)+' more you can buy today).');
+    done();
+  }
+  function eatChips(){
+    var CH=FD.chips;
+    if(loc!==S.home)return refuse('Your chips are at home.');
+    if(!S.chips)return refuse('You have no chips at home. Buy some at the Supermarket.');
+    if(!spendMin(CH.eatMinutes,0))return;
+    S.chips--;
     var v0=vitSnap();S.happy=clamp(S.happy+CH.happiness);S.energy=clamp(S.energy+CH.energy);S.health=clamp(S.health+CH.health);eatJunk();
     log('You munched a bag of chips'+vitPar(v0)+'. Not great for your health.'+(junkCount()>=CONFIG.illness.junkMeals?' Too much junk food lately: you are more likely to fall ill.':''),junkCount()>=CONFIG.illness.junkMeals?'warn':'');
     done();
@@ -1994,27 +2037,40 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   }
   function buyGroc(k){
     var g=GROC[k],cost=G(g.cost);
-    if(S.pantry.length>=FD.kitchenSpace)return refuse('Your kitchen is full. Cook something first.');
     if(!spend(FD.buyUnits,cost))return;
-    S.pantry.push({t:k,w:S.day});
-    log('You bought '+g.n.toLowerCase()+' for '+money(cost)+'. They keep until the end of day '+(S.day+freshDays())+(owns('fridge')?' (❄️ fridge)':' (🌡️ no fridge)')+'. Cook them at home.');
+    S.food.push({t:k,u:0});
+    fridgeSync();
+    log('You bought '+(k==='prem'?'a ready-to-eat meal':'meal prep')+' for '+money(cost)+'.'+fridgeNote()+(k==='basic'?' Cook it at home.':''));
     done();
   }
-  /* basic groceries must be cooked (choose how many days to cook for); premium groceries are ready to eat.
-    Cooked food and premium groceries last longer in a fridge. */
-  function cookMin(n){return owns('microwave')?FD.cookFirstMicrowave+(n-1)*FD.cookExtraMicrowave:FD.cookFirst+(n-1)*FD.cookExtra}
-  function cookLife(c){return {fr:owns('fridge'),sp:!!c.sp,last:c.w+freshDays(),left:c.sp?0:Math.max(0,c.w+freshDays()-S.day+1)}}
+  /* meal prep must be cooked (choose how many meals to cook); ready-to-eat meals need no cooking.
+    Food keeps longer in a fridge (CONFIG.food.keepDays*). */
+  function cookMin(n){return FD.cookFirst+(n-1)*FD.cookExtra}
   /* spoiled food (gone off without a fridge) can still be eaten, but it hurts your health and may poison you */
   function eatSpoiled(what,g){
     if(Math.random()<FD.spoiledPoisonChance)return poison(what.replace(/^an? /,''));
     var v0=vitSnap();S.energy=clamp(S.energy+g.en);S.happy=clamp(S.happy+FD.spoiledHappiness);S.health=clamp(S.health+FD.spoiledHealth);S.fed=true;S.flags.ate=1;
     log('You ate '+what+' that had gone off. It filled you up, but it was a bad idea'+vitPar(v0)+'.','warn');
   }
-  function spoiledCount(){return S.pantry.filter(function(p){return p.sp}).length+S.cooked.filter(function(c){return c.sp}).length}
+  function spoiledCount(){return S.food.filter(function(p){return p.sp}).length}
   function binSpoiled(){
     var n=spoiledCount();if(!n)return refuse('Nothing in your kitchen has gone off.');
-    S.pantry=S.pantry.filter(function(p){return !p.sp});S.cooked=S.cooked.filter(function(c){return !c.sp});
+    S.food=S.food.filter(function(p){return !p.sp});
     log('You threw out '+n+' spoiled food item'+(n>1?'s':'')+'.');done();
+  }
+  /* choose what goes in the fridge (only when there is more food than space) */
+  function fridgeToggle(i){
+    var p=S.food[+i],cap=fridgeCap();
+    if(!p||p.sp)return refuse('Spoiled food cannot go in the fridge.');
+    if(!cap)return refuse('You have no working fridge.');
+    var fresh=S.food.filter(function(q){return !q.sp}).length;
+    if(fresh<=cap)return refuse('Everything already fits in the fridge.');
+    var nm=FOODN[p.t]().toLowerCase();
+    if(p.f){p.pk=0;p.ex=1;fridgeSync();
+      log('You took a '+nm+' out of the fridge. Outside it keeps '+foodLeft(p,0)+' more day'+(foodLeft(p,0)===1?'':'s')+'.')}
+    else{if(S.food.filter(function(q){return q.pk}).length>=cap)return refuse('Your fridge is full of food you chose. Take something out first.');
+      p.pk=1;p.ex=0;fridgeSync();log('You put a '+nm+' in the fridge. It keeps '+foodLeft(p,1)+' more day'+(foodLeft(p,1)===1?'':'s')+'.')}
+    render();
   }
   function poison(what){
     var v0=vitSnap(),c=charge(medCost(FD.poisonCost));S.energy=clamp(S.energy+FD.poisonEnergy);S.health=clamp(S.health+FD.poisonHealth);S.fed=true;S.flags.ate=1;
@@ -2022,44 +2078,47 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   }
   function cook(n){
     n=Math.max(1,Math.floor(+n||1));
-    /* fresh groceries are cooked first; spoiled ones make spoiled meals */
-    var idx=[];S.pantry.forEach(function(p,i){if(p.t==='basic'&&!p.sp)idx.push(i)});S.pantry.forEach(function(p,i){if(p.t==='basic'&&p.sp)idx.push(i)});
-    if(!idx.length)return refuse(S.pantry.length?'Premium groceries need no cooking: just eat them. Buy basic groceries to cook.':'You have no groceries. Buy some at the Supermarket first.');
-    n=Math.min(n,idx.length);
-    if(S.cooked.length+n>FD.cookedSpace)return refuse('You can only keep '+FD.cookedSpace+' cooked meals. Eat some first.');
+    /* fresh meal prep is cooked first (fewest days left first); spoiled prep makes spoiled meals */
+    var preps=S.food.filter(function(p){return p.t==='basic'}).sort(function(a,b){return ((a.sp?1:0)-(b.sp?1:0))||(foodLeft(a)-foodLeft(b))});
+    if(!preps.length)return refuse(S.food.some(function(p){return p.t==='prem'})?'Ready-to-eat meals need no cooking: just eat them. Buy meal prep to cook.':'You have no meal prep. Buy some at the Supermarket first.');
+    n=Math.min(n,preps.length);
     if(!spendMin(cookMin(n),0))return;
-    var take=idx.slice(0,n),bad=0,good=0;
-    take.forEach(function(i){if(S.pantry[i].sp)bad++;else good++});
-    S.pantry=S.pantry.filter(function(_,i){return take.indexOf(i)<0});
-    for(var k=0;k<good;k++)S.cooked.push({w:S.day});
-    for(var k2=0;k2<bad;k2++)S.cooked.push({w:S.day,sp:1});
-    S.flags.cooked=1;
-    if(bad)log('You cooked '+bad+' spoiled grocer'+(bad>1?'ies':'y')+' anyway. '+(bad>1?'They are':'It is')+' still spoiled: eating '+(bad>1?'them':'it')+' will cost you '+Math.abs(FD.spoiledHealth)+' health a meal.','warn');
-    if(good)log('You cooked '+good+' meal'+(good>1?'s':'')+' ('+good+' day'+(good>1?'s':'')+' of basic groceries) in '+hm(cookMin(n))+'. '+(owns('fridge')?'❄️ In your fridge they stay fresh until the end of day '+(S.day+FD.freshDaysFridge)+'.':'🌡️ With no fridge they only stay fresh until the end of day '+(S.day+FD.freshDaysNoFridge)+'.')+' Eat them from the Apartment.','good');
+    var take=preps.slice(0,n),bad=0,good=0;
+    take.forEach(function(p){if(p.sp)bad++;else good++});
+    S.food=S.food.filter(function(p){return take.indexOf(p)<0});
+    /* a cooked meal's keep-days start again on the day it is cooked */
+    for(var k=0;k<good;k++)S.food.push({t:'cook',u:0});
+    for(var k2=0;k2<bad;k2++)S.food.push({t:'cook',u:FD.keepDaysFridge,sp:1});
+    fridgeSync();S.flags.cooked=1;
+    if(bad)log('You cooked '+bad+' portion'+(bad>1?'s':'')+' of spoiled meal prep anyway. '+(bad>1?'They are':'It is')+' still spoiled: eating '+(bad>1?'them':'it')+' will cost you '+Math.abs(FD.spoiledHealth)+' health a meal.','warn');
+    if(good)log('You cooked '+good+' meal'+(good>1?'s':'')+' in '+hm(cookMin(n))+'. Eat '+(good>1?'them':'it')+' now, or keep '+(good>1?'them':'it')+' at home.'+fridgeNote()+(owns('fridge')?' Meals from the fridge are cold the next day: '+(owns('microwave')?'your microwave reheats one in '+hm(FD.reheatMinutes)+'.':'without a microwave you eat them cold ('+sg(FD.coldHappiness)+' happiness).'):''),'good');
     done();
   }
   function homeFull(){return S.homeMeals>=FD.homeMealsPerDay}
-  /* sp = true eats spoiled food; otherwise the oldest fresh item */
+  /* arg: '' = a warm cooked meal, 'heat' = reheat a cold one in the microwave, 'cold' = eat a cold one cold, 'sp' = a spoiled one */
+  function spoiledIdx(t){var r=-1;S.food.forEach(function(p,i){if(r<0&&p.t===t&&p.sp)r=i});return r}
   function eatCooked(arg){
-    var sp=arg==='sp',i=-1;S.cooked.forEach(function(c,j){if(i<0&&!!c.sp===sp)i=j});
-    if(i<0)return refuse(sp?'You have no spoiled meals.':S.cooked.length?'Your only cooked meals have gone off. Eat them anyway, or throw them out.':'You have no cooked meals. Cook some basic groceries first.');
+    var sp=arg==='sp',cold=arg==='heat'||arg==='cold';
+    var i=sp?spoiledIdx('cook'):nextFood('cook',function(p){return !!p.cold===cold});
+    if(i<0)return refuse(sp?'You have no spoiled meals.':cold?'You have no cold cooked meals.':S.food.some(function(p){return p.t==='cook'&&!p.sp})?'Your cooked meals are cold from the fridge. Reheat one or eat it cold.':S.food.some(function(p){return p.t==='cook'})?'Your only cooked meals have gone off. Eat them anyway, or throw them out.':'You have no cooked meals. Cook some meal prep first.');
+    if(arg==='heat'&&!owns('microwave'))return refuse('You need a working microwave to reheat food. Eat it cold, or buy one at the Electronics Store.');
     if(homeFull())return refuse('You are full: '+numWord(FD.homeMealsPerDay)+' home meal'+(FD.homeMealsPerDay===1?'':'s')+' a day is plenty.');
-    if(!spendMin(FD.eatMinutes,0))return;
-    var c=S.cooked.splice(i,1)[0],g=GROC.basic;S.homeMeals++;
+    if(!spendMin(FD.eatMinutes+(arg==='heat'?FD.reheatMinutes:0),0))return;
+    var c=S.food.splice(i,1)[0],g=GROC.basic;S.homeMeals++;fridgeSync();
     if(c.sp)return (eatSpoiled('a cooked meal',g),done());
-    var v0=vitSnap();S.energy=clamp(S.energy+g.en);S.happy=clamp(S.happy+g.hap);S.fed=true;S.flags.ate=1;eatGood(g.hp);
-    log('You ate a home-cooked meal'+vitPar(v0)+'.','good');
+    var v0=vitSnap();S.energy=clamp(S.energy+g.en);S.happy=clamp(S.happy+g.hap+(arg==='cold'?FD.coldHappiness:0));S.fed=true;S.flags.ate=1;eatGood(g.hp);
+    log(arg==='heat'?'You reheated a meal from the fridge in the microwave and ate it'+vitPar(v0)+'.':arg==='cold'?'You ate a cold meal straight from the fridge. Filling, but not much fun'+vitPar(v0)+'.':'You ate a home-cooked meal'+vitPar(v0)+'.','good');
     done();
   }
   function eatPrem(arg){
-    var sp=arg==='sp',i=-1;S.pantry.forEach(function(p,j){if(i<0&&p.t==='prem'&&!!p.sp===sp)i=j});
-    if(i<0)return refuse(sp?'You have no spoiled premium groceries.':'You have no fresh premium groceries. Buy some at the Supermarket.');
+    var sp=arg==='sp',i=sp?spoiledIdx('prem'):nextFood('prem');
+    if(i<0)return refuse(sp?'You have no spoiled ready-to-eat meals.':'You have no fresh ready-to-eat meals. Buy some at the Supermarket.');
     if(homeFull())return refuse('You are full: '+numWord(FD.homeMealsPerDay)+' home meal'+(FD.homeMealsPerDay===1?'':'s')+' a day is plenty.');
     if(!spendMin(FD.eatMinutes,0))return;
-    var p=S.pantry.splice(i,1)[0],g=GROC.prem;S.homeMeals++;
-    if(p.sp)return (eatSpoiled('premium groceries',g),done());
+    var p=S.food.splice(i,1)[0],g=GROC.prem;S.homeMeals++;fridgeSync();
+    if(p.sp)return (eatSpoiled('a ready-to-eat meal',g),done());
     var v0=vitSnap();S.energy=clamp(S.energy+g.en);S.happy=clamp(S.happy+g.hap);S.fed=true;S.flags.ate=1;eatGood(g.hp);
-    log('You ate premium groceries straight from the kitchen, no cooking needed'+vitPar(v0)+'.','good');
+    log('You ate a ready-to-eat meal at home, no cooking needed'+vitPar(v0)+'.','good');
     done();
   }
   /* knowledge per self-study session: the best device you own (CONFIG.selfStudy.gain) */
@@ -2124,9 +2183,9 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function invTable(){
     var row=function(n,o,note){return '<tr><td>'+n+'</td><td class="'+(o.e>0?'up':o.e<0?'dn':'')+'">'+pctS(o.e)+'</td><td>'+(o.lo===o.hi?pctS(o.lo):pctS(o.lo)+' to '+pctS(o.hi))+'</td><td>'+(note||Math.round(o.loss*100)+'%')+'</td></tr>'};
     var sv={e:S.rate,lo:S.rate,hi:S.rate,loss:0};
-    return '<div class="bk-cmp-w"><table class="bk-cmp"><caption>How they compare today</caption><tr><th>Product</th><th>Expected</th><th>Usual day</th><th>Losing days</th></tr>'+
+    return '<div class="bk-cmp-w"><table class="bk-cmp"><caption>How they compare today</caption><tr><th>Product</th><th>Expected return</th><th>Usual daily range</th><th>Probability of Loss</th></tr>'+
       row('Savings',sv,'none')+INVK.map(function(k){return row(INV[k].n,invOdds(k),k==='fd'?'none':'')}).join('')+
-      '</table><small class="bk-d">Expected = average change a day. Usual day = the range for 2 days in 3. Losing days = how often it falls. The fixed deposit is locked for 4 days. These follow market mood and interest rates, so they change every day. On a bad news night the swing can be bigger than the usual range.</small></div>'}
+      '</table><small class="bk-d">Expected return = average change a day. Usual daily range = where a day’s change lands 2 days in 3. Probability of Loss = the chance it falls on any one day. The fixed deposit is locked for 4 days. These follow market mood and interest rates, so they change every day. On a bad news night the swing can be bigger than the usual range.</small></div>'}
   function nrm(){var u=1-Math.random(),v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
   function sm(x){return (x<0?'−':'+')+money(Math.abs(Math.round(x)))}
   function tickInv(){
@@ -2502,10 +2561,9 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(S.expelled>0)push('bad','🚫 Expelled from School. You can re-enrol in '+S.expelled+' day'+(S.expelled>1?'s':'')+'.');
     if(S.day>=maxDays()-(maxDays()>10?6:1))push('warn','⏳ Only '+(maxDays()-S.day+1)+' day'+(maxDays()-S.day?'s':'')+' left to reach '+money(nextGoal())+'.');
     /* 3.8: warn about food that will not be fresh tomorrow */
-    var spoilTonight=0,hasFridge=owns('fridge');
-    (S.pantry||[]).forEach(function(p){if(!p.sp&&grocLife(p).left===1)spoilTonight++});
-    (S.cooked||[]).forEach(function(c){if(!c.sp&&cookLife(c).left===1)spoilTonight++});
-    if(spoilTonight)push(hasFridge?'warn':'bad','🍲 '+spoilTonight+' food item'+(spoilTonight>1?'s':'')+' in your kitchen lose freshness tonight. '+(hasFridge?'Your fridge will throw out anything uneaten.':'With no fridge they will spoil: cook or eat them, or they will cost health.'));
+    var spoilTonight=0;
+    (S.food||[]).forEach(function(p){if(!p.sp&&foodLeft(p)===1)spoilTonight++});
+    if(spoilTonight)push('bad','🍲 '+spoilTonight+' meal'+(spoilTonight>1?'s':'')+' at home go'+(spoilTonight>1?'':'es')+' off tonight. Cook or eat '+(spoilTonight>1?'them':'it')+' today, or '+(spoilTonight>1?'they':'it')+' will spoil and cost health.');
     a.sort(function(x,y){return (y.l==='bad')-(x.l==='bad')});
     return a;
   }
@@ -2538,15 +2596,15 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var wasFed=S.fed;S.hungry=S.fed?0:S.hungry+1;
     if(!S.fed){S.energy=clamp(S.energy+FD.hungryEnergy);S.happy=clamp(S.happy+FD.hungryHappiness);eWhy.push(sg(FD.hungryEnergy)+'% hungry');hWhy.push(sg(FD.hungryHappiness)+' hungry');log('You did not eat all day and went hungry ('+sg(FD.hungryEnergy)+'% energy, '+sg(FD.hungryHappiness)+' happiness).','bad')}
     log('Overnight energy '+sg(S.energy-e0n)+'% ('+eWhy.join(', ')+'), happiness '+sg(S.happy-h0n)+' ('+hWhy.join(', ')+').',S.energy<e0n||S.happy<h0n?'warn':'good');
-    S.fed=false;S.homeMeals=0;
-    /* expired food: thrown out if you have a fridge; without one it stays in the kitchen, marked spoiled */
-    var fr0=owns('fridge'),pb=S.pantry.length,nsp=0;
-    S.pantry=S.pantry.filter(function(p){if(p.sp||S.day<=grocLife(p).last)return true;if(!fr0){p.sp=1;nsp++;return true}return false});
-    if(S.pantry.length<pb)log((pb-S.pantry.length)+' grocery item'+(pb-S.pantry.length>1?'s':'')+' expired in the fridge and went in the bin.','warn');
-    var cb=S.cooked.length;S.cooked=S.cooked.filter(function(c){if(c.sp||S.day<=cookLife(c).last)return true;if(!fr0){c.sp=1;nsp++;return true}return false});
-    if(S.cooked.length<cb)log((cb-S.cooked.length)+' cooked meal'+(cb-S.cooked.length>1?'s':'')+' expired in the fridge and went in the bin.','warn');
-    if(nsp){log(nsp+' food item'+(nsp>1?'s':'')+' went off overnight with no fridge. '+(nsp>1?'They stay':'It stays')+' in your kitchen marked 🤢 spoiled: you can still cook or eat '+(nsp>1?'them':'it')+', but it costs '+Math.abs(FD.spoiledHealth)+' health a meal (and may give you food poisoning). A fridge keeps food '+FD.freshDaysFridge+' days.','warn');
-      S.notes.push({l:'warn',t:'🤢 '+nsp+' food item'+(nsp>1?'s':'')+' in your kitchen went off overnight (no fridge). Eating spoiled food costs '+Math.abs(FD.spoiledHealth)+' health a meal. You can throw it out at home.'})}
+    S.fed=false;S.homeMeals=0;S.chipsDay=0;
+    /* food ages overnight: a fridge night uses 1 keep-day, a night outside uses keepDaysFridge/keepDaysRoom.
+      Food that runs out is spoiled and leaves the fridge (it stays in the kitchen). Cooked meals in the fridge turn cold. */
+    fridgeSync();var nsp=0,nspF=0;
+    S.food.forEach(function(p){if(p.sp)return;p.u+=p.f?1:roomRate();if(p.f&&p.t==='cook')p.cold=1;
+      if(p.u>=FD.keepDaysFridge-1e-9){if(p.f)nspF++;p.sp=1;nsp++}});
+    fridgeSync();
+    if(nsp){log(nsp+' meal'+(nsp>1?'s':'')+' went off overnight'+(nspF?' ('+nspF+' from the fridge)':'')+'. '+(nsp>1?'They stay':'It stays')+' in your kitchen marked 🤢 spoiled: you can still cook or eat '+(nsp>1?'them':'it')+', but it costs '+Math.abs(FD.spoiledHealth)+' health a meal (and may give you food poisoning). Food keeps '+FD.keepDaysRoom+' days outside, '+FD.keepDaysFridge+' in a fridge.','warn');
+      S.notes.push({l:'warn',t:'🤢 '+nsp+' meal'+(nsp>1?'s':'')+' at home went off overnight. Eating spoiled food costs '+Math.abs(FD.spoiledHealth)+' health a meal. You can throw it out at home.'})}
     Object.keys(S.pawned).forEach(function(k){if(S.day-S.pawned[k].w>3){delete S.pawned[k];log('Your pawn ticket for the '+ITEMS[k].n.toLowerCase()+' expired. Sal keeps it.','warn')}});
     var SN=CONFIG.selfStudy;
     S.know=clamp(S.know+SN.nightlyLoss+gb.know+(anyInv()?SN.nightlyInvesting:0));
@@ -2705,7 +2763,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     {ok:function(){return owns('tablet')},mk:function(){return gigEv('📲','Digital art sale','You sell a few drawings made on your tablet.',35,100,0)}},
     {ok:function(){return owns('fridge')},mk:function(){return repairEv(ikey('fridge'),'Fridge breakdown','Your refrigerator starts making an awful noise and stops cooling.',60,150)}},
     {ok:function(){return owns('fridge')&&S.items.fridgeold},mk:function(){return repairEv('fridgeold','Old fridge gives up','Your used refrigerator dies again.',50,120)}},
-    {ok:function(){return owns('fridge')&&S.pantry.length>0},mk:function(){var n=S.pantry.length;S.pantry=[];return {icon:'⚡',tag:'Your belongings',title:'Power cut',text:'The power is out all night and your groceries spoil.',done:true,tone:'bad',fx:['Lost '+n+' grocery item'+(n>1?'s':'')]}}},
+    {ok:function(){return owns('fridge')&&inFridge()>0},mk:function(){var n=0;S.food.forEach(function(p){if(p.f){p.sp=1;n++}});fridgeSync();return {icon:'⚡',tag:'Your belongings',title:'Power cut',text:'The power is out all night and the food in your fridge spoils.',done:true,tone:'bad',fx:[n+' meal'+(n>1?'s':'')+' spoiled']}}},
     {ok:function(){return owns('tv')},mk:function(){return repairEv(ikey('tv'),'TV on the blink','Your TV flickers and goes dark.',30,80)}},
     {ok:function(){return owns('console')},mk:function(){return {icon:'🎮',tag:'Your belongings',title:'Console tournament',text:'Friends invite you to a $20 console tournament with a $90 prize.',choice:true,done:false,fx:[],tone:'',y:[0.5,'You win the tournament!','c+70 h+8','You are knocked out early.','c-20 h-3'],n:[1,'You stay in and rest.','e+5']}}},
     {ok:function(){return owns('coffee')},mk:function(){return gigEv('☕','Coffee-fuelled all-nighter','Your coffee machine powers a productive night and a small win.',20,60,0)}}
@@ -3191,39 +3249,54 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     });
     return h+'</div><p style="margin:6px 0 0"><button class="linkbtn" data-act="alljobs" style="margin:0">'+(allJobs?'Show fewer':'Show all')+'</button></p>';
   }
-  /* groceries: last usable day depends on whether a working fridge is at home */
-  function grocLife(p){var fr=owns('fridge'),last=p.w+(p.b?bundleDays():freshDays());return {fr:fr,sp:!!p.sp,last:last,left:p.sp?0:Math.max(0,last-S.day+1)}}
-  function lifeTxt(L){return L.sp?'🤢 Spoiled · hurts health':(L.fr?'❄️ Fridge':'🌡️ No fridge')+' · '+L.left+' day'+(L.left!==1?'s':'')+' left'}
-  function grocChip(p){var L=grocLife(p),g=GROC[p.t];
-    return '<div class="thing groc '+(L.sp?'brk':L.fr?'cold':'warm')+'"><span>'+(L.sp?'🤢':p.t==='prem'?'🥗':'🥫')+'</span><small>'+g.n+(p.t==='prem'?' · ready to eat':' · needs cooking')+'</small><em>'+lifeTxt(L)+'</em></div>'}
-  function cookChip(c){var L=cookLife(c);return '<div class="thing groc '+(L.sp?'brk':L.fr?'cold':'warm')+'"><span>'+(L.sp?'🤢':'🍲')+'</span><small>Cooked meal · ready to eat</small><em>'+lifeTxt(L)+'</em></div>'}
+  /* home food cards: icon, name, days left and where it is kept; with more food than fridge space, a button moves it in or out */
+  function leftTxt(p){var n=foodLeft(p);return n<=1?'last day':n+' days left'}
+  function foodCard(p,i,pickable){
+    var nm=FOODN[p.t](),st=p.sp?'brk':p.f?'cold':'warm',note=p.sp?'🤢 Spoiled':(p.f?'❄️ ':'🌡️ ')+leftTxt(p);
+    var sub=p.sp?'hurts health':p.t==='basic'?'cook first':p.t==='cook'&&p.cold?'🥶 cold · '+(owns('microwave')?'reheat':'eat cold'):'ready to eat';
+    var b=pickable&&!p.sp?'<button class="mini" data-act="frig" data-arg="'+i+'">'+(p.f?'Take out':'❄️ Put in')+'</button>':'';
+    return '<div class="thing groc '+st+(p.pk&&p.f?' pick':'')+'"><span>'+(p.sp?'🤢':FOODIC[p.t])+'</span><small><b>'+nm+'</b><br>'+sub+'</small><em>'+note+'</em>'+b+'</div>'}
+  function shelf(title,note,body){return '<div class="shelf"><h5>'+title+(note?' <small>'+note+'</small>':'')+'</h5>'+body+'</div>'}
   function room(){
-    var ks=Object.keys(S.items).filter(function(k){return S.items[k]});
-    if(!ks.length&&!S.pantry.length&&!S.cooked.length&&!(S.tickets||[]).length)return '<div class="room empty">Your place is empty. Buy things at the Electronics Store or Thrift Store, and groceries at the Supermarket.</div>';
-    return '<div class="room">'+ks.map(function(k){return '<div class="thing'+(S.broken[k]?' brk':'')+'"><span>'+ITEMS[k].ic+'</span><small>'+ITEMS[k].n+(S.broken[k]?' · broken':'')+'</small></div>'}).join('')+S.pantry.map(grocChip).join('')+S.cooked.map(cookChip).join('')+(S.tickets||[]).map(function(t){return '<div class="thing"><span>🎟️</span><small>Lottery ticket · draw day '+t.draw+'</small></div>'}).join('')+'</div>';
+    var ks=Object.keys(S.items).filter(function(k){return S.items[k]}),F=S.food||[],cap=fridgeCap();
+    var fresh=F.filter(function(p){return !p.sp}).length,pickable=cap>0&&fresh>cap;
+    var cards=function(test){var h='';F.forEach(function(p,i){if(test(p))h+=foodCard(p,i,pickable)});return h};
+    var inF=cards(function(p){return p.f}),out=cards(function(p){return !p.f&&!p.sp}),bad=cards(function(p){return p.sp});
+    var t=shelf('🔌 Belongings',ks.length?'':'none yet',ks.length?'<div class="room">'+ks.map(function(k){return '<div class="thing'+(S.broken[k]?' brk':'')+'"><span>'+ITEMS[k].ic+'</span><small>'+ITEMS[k].n+(S.broken[k]?' · broken':'')+'</small></div>'}).join('')+'</div>':'<p class="room empty">Buy things at the Electronics Store or Thrift Store.</p>');
+    t+=shelf('🧊 Fridge',cap?inFridge()+' / '+cap+' spaces · keeps food '+FD.keepDaysFridge+' days':(S.items.fridge||S.items.fridgeold)?'broken: repair it at the Electronics Store':'no fridge · a refrigerator keeps '+FD.fridgeSpace+' meals for '+FD.keepDaysFridge+' days',
+      inF?'<div class="room">'+inF+'</div>'+(pickable?'<p class="room empty">More food than space: the meals closest to going off go in first. Use the buttons to choose.</p>':''):cap?'<p class="room empty">Empty.</p>':'');
+    if(out||!cap)t+=shelf('🌡️ Kitchen counter','not refrigerated · keeps food '+FD.keepDaysRoom+' days',out?'<div class="room">'+out+'</div>':'<p class="room empty">Empty. Buy meals at the Supermarket.</p>');
+    if(bad)t+=shelf('🤢 Spoiled','eating it costs '+Math.abs(FD.spoiledHealth)+' health',' <div class="room">'+bad+'</div>');
+    if(S.chips)t+=shelf('🥔 Snacks',S.chips+' / '+FD.chips.maxStored+' bags · never goes off','<div class="room"><div class="thing"><span>🥔</span><small><b>Bag of chips</b> × '+S.chips+'</small></div></div>');
+    if((S.tickets||[]).length)t+=shelf('🎟️ Lottery tickets','','<div class="room">'+S.tickets.map(function(x){return '<div class="thing"><span>🎟️</span><small>Draw day '+x.draw+'</small></div>'}).join('')+'</div>');
+    return t;
   }
   function house(h){
     var H=HOUSE[h], cur=S.home===h;
     var t='<p>'+(h==='apt'?'Cheap and cramped.':'Quiet street, big garden, soft bed.')+' Rent '+money(H.rent)+' '+everyDays(RENT_EVERY)+'. Rest here recovers '+H.rate+'% energy an hour (more with comfort items)'+(H.hap?' and +'+H.hap+' happiness':'')+'.'+(h==='bung'&&!cur?' The agent only lets to people with a steady job.':'')+'</p>';
     if(!cur)return t+btn('home',h,H.fee?'Move in ('+money(H.fee)+' up front)':'Move in');
-    var fcnt=function(a,t0){return a.filter(function(p){return !p.sp&&(!t0||p.t===t0)}).length},spoil=function(a,t0){return a.filter(function(p){return p.sp&&(!t0||p.t===t0)}).length};
-    var nb=fcnt(S.pantry,'basic'),np=fcnt(S.pantry,'prem'),nc=fcnt(S.cooked),nbs=spoil(S.pantry,'basic'),nps=spoil(S.pantry,'prem'),ncs=spoil(S.cooked),nsp=nbs+nps+ncs,fr=owns('fridge');
+    var F=S.food,cnt=function(t,test){return F.filter(function(p){return p.t===t&&(!test||test(p))}).length};
+    var nb=cnt('basic',function(p){return !p.sp}),np=cnt('prem',function(p){return !p.sp}),nw=cnt('cook',function(p){return !p.sp&&!p.cold}),ncold=cnt('cook',function(p){return !p.sp&&p.cold});
+    var nbs=cnt('basic',function(p){return p.sp}),nps=cnt('prem',function(p){return p.sp}),ncs=cnt('cook',function(p){return p.sp}),nsp=nbs+nps+ncs,full=homeFull(),mw=owns('microwave');
     var gain=studyGain(),SS=CONFIG.selfStudy,sec=function(s){return '<div class="gh" style="margin-top:12px">'+s+'</div>'};
     t+=sec('Your things')+room();
     /* --- sick: recovery status --- */
     if(S.ill){var ti=ILL[S.ill.k];
       t+=sec('🤒 Getting better')+'<p class="bad" style="margin:6px 0"><small><b>You have '+ti.n+' and can’t work.</b> Recover naturally by resting here: tonight’s recovery chance is about <b>'+Math.round(recoverChance(true)*100)+'%</b> if you sleep at home (each rest adds '+pctTxt(HP.restRecover)+', up to '+pctTxt(HP.restRecoverMax)+' a day). Or get treated at the Hospital.</small></p>'}
-    /* --- kitchen and meals --- */
+    /* --- kitchen and meals: only the actions you can take with the food you have --- */
     t+=sec('🍳 Kitchen & meals');
-    t+='<p style="margin:6px 0"><small>Kitchen: '+nb+' basic grocer'+(nb===1?'y':'ies')+' (need cooking), '+np+' premium (ready to eat), '+nc+' cooked meal'+(nc===1?'':'s')+(nsp?', <b class="bad">'+nsp+' spoiled</b>':'')+'. '+(fr?'❄️ Your fridge keeps cooked food and premium groceries fresh for '+FD.freshDaysFridge+' day'+(FD.freshDaysFridge===1?'':'s')+'.':'🌡️ With no fridge, cooked food and premium groceries only last '+FD.freshDaysNoFridge+' day'+(FD.freshDaysNoFridge===1?'':'s')+', then spoil. A refrigerator (Electronics Store) stretches that to '+FD.freshDaysFridge+' day'+(FD.freshDaysFridge===1?'':'s')+'.')+'</small></p>';
-    var maxc=Math.min(nb+nbs,FD.cookedSpace-S.cooked.length),cb='';
-    for(var n=1;n<=maxc;n++)cb+=btn('cook',String(n),'Cook '+n+' day'+(n>1?'s':'')+' · '+hm(cookMin(n)),n>1?1:0);
-    t+=opt('Cook basic groceries','Choose how many days of basic groceries to cook for: each day becomes one ready meal. Cooking more at once saves time per meal. Fresh groceries are cooked first'+(nbs?'; the '+nbs+' spoiled one'+(nbs>1?'s':'')+' would make spoiled meals':'')+'. Premium groceries need no cooking.',maxc?'<span class="btnrow">'+cb+'</span>':btn('cook','1','Cook',0,1));
-    t+=opt('Eat a cooked meal · '+nc+' ready',hm(FD.eatMinutes)+' · +'+GROC.basic.en+'% energy, +'+GROC.basic.hap+' happiness, +'+GROC.basic.hp+' health · counts as today’s meal'+(homeFull()?' · you are full for today':''),btn('eatc','','Eat',0,!nc||homeFull()));
-    t+=opt('Eat premium groceries · '+np+' in the kitchen','No cooking needed. '+hm(FD.eatMinutes)+' · +'+GROC.prem.en+'% energy, +'+GROC.prem.hap+' happiness, +'+GROC.prem.hp+' health · counts as today’s meal',btn('eatp','','Eat',0,!np||homeFull()));
-    if(ncs+nps){var spb='';if(ncs)spb+=btn('eatc','sp','Eat spoiled meal',1,homeFull());if(nps)spb+=btn('eatp','sp','Eat spoiled premium',1,homeFull());
+    t+='<p style="margin:6px 0"><small>'+(S.fed?'✅ You have eaten today.':'🍽 No meal yet today.')+' Home meals today: <b>'+S.homeMeals+' / '+FD.homeMealsPerDay+'</b>'+(full?' (full)':'')+'.'+(nb+np+nw+ncold+nsp+(S.chips||0)?'':' No food at home: buy meal prep or ready-to-eat meals at the Supermarket.')+'</small></p>';
+    var mealTxt=function(g,hap){return hm(FD.eatMinutes)+' · +'+g.en+'% energy, '+sg(hap)+' happiness, +'+g.hp+' health · counts as today’s meal'};
+    if(nw)t+=opt('🍲 Eat a cooked meal · '+nw+' ready',mealTxt(GROC.basic,GROC.basic.hap),btn('eatc','','Eat',0,full));
+    if(ncold)t+=opt('🥶 Cold cooked meal from the fridge · '+ncold,(mw?'Reheat in your microwave: '+hm(FD.eatMinutes+FD.reheatMinutes)+' with full happiness. Or eat':'No microwave to reheat it, so you eat')+' it cold: '+mealTxt(GROC.basic,GROC.basic.hap+FD.coldHappiness),
+      '<span class="btnrow">'+(mw?btn('eatc','heat','Reheat & eat · '+hm(FD.eatMinutes+FD.reheatMinutes),0,full):'')+btn('eatc','cold','Eat cold · '+hm(FD.eatMinutes),mw?1:0,full)+'</span>');
+    if(np)t+=opt('🍱 Eat a ready-to-eat meal · '+np,'No cooking needed. '+mealTxt(GROC.prem,GROC.prem.hap),btn('eatp','','Eat',0,full));
+    if(nb+nbs){var cb='';for(var n=1;n<=nb+nbs;n++)cb+=btn('cook',String(n),'Cook '+n+' · '+hm(cookMin(n)),n>1?1:0);
+      t+=opt('🥕 Cook meal prep · '+nb+' to cook'+(nbs?' + '+nbs+' spoiled':''),'Each cooked meal keeps fresh for '+FD.keepDaysRoom+' days (or '+FD.keepDaysFridge+' in the fridge) from today. Cooking more at once saves time per meal.','<span class="btnrow">'+cb+'</span>')}
+    if(S.chips)t+=opt('🥔 Eat a bag of chips · '+S.chips+' at home',hm(FD.chips.eatMinutes)+' · '+sg(FD.chips.happiness)+' happiness, '+sg(FD.chips.energy)+'% energy, '+sg(FD.chips.health)+' health. A snack, not a meal. Junk food: '+CONFIG.illness.junkMeals+'+ in 5 days raises your illness risk.',btn('eatchips','','Eat'));
+    if(ncs+nps){var spb='';if(ncs)spb+=btn('eatc','sp','Eat spoiled cooked meal',1,full);if(nps)spb+=btn('eatp','sp','Eat spoiled ready-to-eat',1,full);
       t+=opt('<span class="bad">🤢 Eat spoiled food · '+(ncs+nps)+' left</span>',hm(FD.eatMinutes)+' · counts as today’s meal and gives the usual energy, but '+sg(FD.spoiledHealth)+' health, '+sg(FD.spoiledHappiness)+' happiness and a '+pctTxt(FD.spoiledPoisonChance)+' chance of food poisoning',spb?'<span class="btnrow">'+spb+'</span>':'')}
-    if(nsp)t+=opt('Throw out spoiled food · '+nsp+' item'+(nsp>1?'s':''),'Frees up kitchen space. Takes no time.',btn('binsp','','Throw out',1));
+    if(nsp)t+=opt('🗑️ Throw out spoiled food · '+nsp+' item'+(nsp>1?'s':''),'Takes no time.',btn('binsp','','Throw out',1));
     /* --- rest and sleep --- */
     var ci=comfortItems(),rr0=restRate();
     t+=sec('😴 Rest & sleep');
@@ -3249,7 +3322,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     jobs:function(){
       var mine=Object.keys(S.career).map(function(c){return CAREERS[c].ranks[S.career[c]].r+' at the '+NAME[CAREERS[c].b||c]});
       return (Object.keys(S.shut).length?'<p class="bad"><b>Closed right now:</b> '+Object.keys(S.shut).map(function(b){return NAME[b]+' ('+S.shut[b]+'d)'}).join(', ')+'. No interviews or shifts there until they reopen.</p>':'')+
-      '<p style="margin:4px 0"><small>Base pay. Your actual pay varies with knowledge and condition.<br>Apply here, then go to the workplace to work your shifts. Every interview takes 1h, pass or fail. Openings come and go, and better-paid ranks need qualifications.'+'<br>You can only hold <b>one job at a time</b>: a successful interview replaces your current job. Better-paid roles ask for qualifications in more than one field.'+(mine.length?' <b class="mineTxt">Your job:</b> <span style="color:var(--mine);font-weight:800">'+mine.join('; ')+'</span>.':'')+'</small></p>'+board()},
+      '<p style="margin:4px 0"><small>Base pay - your actual wage depends on your knowledge and well-being. Apply here then go to the workplace to work your shifts. Openings come and go. You can only hold <b>one job at a time</b>. Good luck!'+(mine.length?' <b class="mineTxt">Your job:</b> <span style="color:var(--mine);font-weight:800">'+mine.join('; ')+'</span>.':'')+'</small></p>'+board()},
     factory:function(){
       return '<p>The factory floor hums day and night. '+(shutLeft('factory')>0?'<b class="bad">The factory is closed for '+shutLeft('factory')+' more day'+(shutLeft('factory')>1?'s':'')+'.</b>':'Engineers earn far more than line workers.')+'</p>'},
     school:function(){
@@ -3263,7 +3336,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
           '<div class="mods">'+Lm.map(function(m,i){var g=st+i,ln=lesCount(t,g),pc=g<n?100:g===n?Math.round(k/ln*100):0;
             return '<span class="mod '+(g<n?'done':g===n?'next':'')+'" style="--p:'+pc+'%" title="'+(g<n?'Done':g===n?k+' of '+ln+' lessons attended':'Not started')+'">'+(g<n?'✅ ':'')+m+(g===n?' <small>'+k+'/'+ln+'</small>':'')+'</span>'}).join('')+'</div></div>';
       }).join('');
-      return (S.studyMin>0?'<p class="'+(S.studyMin>CONFIG.burnout.studyMinutes?'bad':'')+'"><small>📚 Studied today: <b>'+hm(S.studyMin)+'</b>. Over '+studyLimitTxt()+' a day for '+dayN(CONFIG.burnout.daysInARow)+' running causes burnout (streak: '+S.studyStreak+' of '+dayN(CONFIG.burnout.daysInARow)+').'+(S.burn>0?' <b>You are burnt out.</b>':'')+'</small></p>':'')+now+'<p><small>Each pathway is a ladder of qualifications (Certificate → Degree → … → Masters). You pay tuition once when you enrol in a qualification; lessons are then free. Earn the qualification by completing all its modules, and each module by attending all its lessons (1–4 hours each). You can study several pathways at once.</small></p>'+
+      return (S.studyMin>0?'<p class="'+(S.studyMin>CONFIG.burnout.studyMinutes?'bad':'')+'"><small>📚 Studied today: <b>'+hm(S.studyMin)+'</b>. Over '+studyLimitTxt()+' a day for '+dayN(CONFIG.burnout.daysInARow)+' running causes burnout (streak: '+S.studyStreak+' of '+dayN(CONFIG.burnout.daysInARow)+').'+(S.burn>0?' <b>You are burnt out.</b>':'')+'</small></p>':'')+now+'<p><small>Each pathway is a ladder of qualifications (Certificate → Degree → … → Masters). You pay tuition once when you enrol in a qualification. Earn the qualification by completing all its modules. You can study several pathways at once.</small></p>'+
       '<div class="jb2">'+Object.keys(TRACKS).sort(function(x,y){var f=function(t){return S.edu[t]>0&&!inProgress(t)&&S.edu[t]<totMods(t)?0:1};return f(x)-f(y)}).map(function(t){
         var T=TRACKS[t],n=S.edu[t],lv=lvl(t),tot=totMods(t);
         var title='<b>'+T.n+'</b>'+(lv?' · 🎓 '+T.lv[lv-1]:'');
@@ -3294,7 +3367,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
           return '<div class="bk-card wide"><div class="bk-h"><b>Loan</b><span>Borrow now, repay from cash</span></div>'+
             '<small class="bk-d">'+limTxt+' One loan at a time. What you owe counts against your net worth.</small>'+
             '<div class="bk-ten">'+tens+'</div>'+
-            '<div class="bk-v">Borrow '+money(amt)+' for '+dayN(t.days)+': you would owe <b>'+money(loanTotalIfPaidAt(amt,t))+'</b> if you repay on the due date (simple interest '+rateTxt(t.rate)+' a day, only for the days you keep it). Repay early and you pay less. After the due date it grows '+rateTxt(L.overdueRate)+' a day'+(L.overdueCompounds?', compounding':'')+', and '+dayN(L.graceDays)+' after the due date you default and the game ends.</div>'+
+            '<div class="bk-v">Borrow '+money(amt)+' for '+dayN(t.days)+': you would owe <b>'+money(loanTotalIfPaidAt(amt,t))+'</b> if you repay on the due date. Simple interest '+rateTxt(t.rate)+' a day but will '+(L.overdueCompounds?'compound':'grow')+' '+rateTxt(L.overdueRate)+' a day if overdue. Game ends if not repaid within '+dayN(L.graceDays)+' after the due date.</div>'+
             '<div class="bk-amt">'+btn('step','amt_loan|-1|'+L.step+'|'+lim,'−',1,amt<=L.step)+'<input id="amt_loan" type="text" readonly value="'+amt+'" aria-label="Amount to borrow in dollars">'+btn('step','amt_loan|1|'+L.step+'|'+lim,'+',1,amt>=lim)+'</div>'+
             '<div class="bk-b">'+btn('borrow','','Borrow',0,lim<L.step)+'</div></div>';
         }
@@ -3316,12 +3389,18 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       }).join('');
       return '<div class="bk-wide">'+loanCard()+'</div><h3 class="bk-title">Savings and investments</h3>'+econNote()+invTable()+'<div class="bk-grid">'+rows+'</div>'},
     market:function(){
-      var fr=owns('fridge');
-      return '<p>🥫 <b>Basic groceries</b> need cooking at home. 🥗 <b>Premium groceries</b> are ready to eat, no cooking needed. Both go off. '+(fr?'<span class="life cold">❄️ You own a working fridge: groceries keep for the day you buy them plus '+FD.freshDaysFridge+' more day'+(FD.freshDaysFridge===1?'':'s')+'.</span>':'<span class="life warm">🌡️ No working fridge: groceries only keep for the day you buy them plus '+FD.freshDaysNoFridge+' more day'+(FD.freshDaysNoFridge===1?'':'s')+'. A refrigerator (Electronics Store) stretches that to '+FD.freshDaysFridge+' more day'+(FD.freshDaysFridge===1?'':'s')+'.</span>')+'</p>'+
-        '<p style="margin:4px 0"><b>Your kitchen ('+S.pantry.length+'/'+FD.kitchenSpace+'):</b></p>'+(S.pantry.length?'<div class="room">'+S.pantry.map(grocChip).join('')+'</div>':'<p><small>Empty.</small></p>')+
-        Object.keys(GROC).map(function(k){var g=GROC[k];return opt((k==='prem'?'🥗 ':'🥫 ')+g.n+' · '+money(G(g.cost)),hm(M(FD.buyUnits))+' to buy · '+(k==='prem'?'ready to eat, no cooking needed':'must be cooked at home first')+'. When eaten: '+eatTxt(g),btn('groc',k,'Buy 1'))+
-          opt(FD.bundleSize+'-day bundle: '+g.n.toLowerCase()+' · '+money(bundleCost(g)),hm(M(FD.buyUnits))+' to buy · '+FD.bundleSize+' meals ('+(k==='prem'?'no cooking needed':'cook them at home')+'), save '+pctTxt(FD.bundleDiscount)+', sealed packs keep '+(FD.bundleDaysNoFridge+1)+' day'+(FD.bundleDaysNoFridge===0?'':'s')+' even without a fridge. Each meal when eaten: '+eatTxt(g),btn('bundle',k,'Buy bundle',0,S.pantry.length>FD.kitchenSpace-FD.bundleSize))}).join('')+
-        opt('🥔 Bag of chips · '+money(G(FD.chips.cost)),hm(M(FD.chips.units))+' · '+sg(FD.chips.happiness)+' happiness, '+sg(FD.chips.energy)+'% energy, '+sg(FD.chips.health)+' health. Junk food: '+CONFIG.illness.junkMeals+'+ in 5 days raises your illness risk. Not a meal.',btn('chips','','Buy'))+
+      /* food sorted by price, cheapest first; the lottery is not food, so it has its own section */
+      var cap=fridgeCap(),CH=FD.chips,chLeft=Math.min(CH.maxPerDay-(S.chipsDay||0),CH.maxStored-(S.chips||0));
+      var rows=[];
+      Object.keys(GROC).forEach(function(k){var g=GROC[k],ic=FOODIC[k],how=k==='prem'?'Eat at home':'Cook/Eat at home';
+        rows.push({p:G(g.cost),h:opt(ic+' '+g.n+' · '+money(G(g.cost)),how+' · '+hm(M(FD.buyUnits))+' to buy · when eaten: '+eatTxt(g),btn('groc',k,'Buy 1'))});
+        rows.push({p:bundleCost(g),h:opt(ic+' '+FD.bundleSize+'-day bundle: '+g.n.toLowerCase()+' · '+money(bundleCost(g)),how+' · '+hm(M(FD.buyUnits))+' to buy · '+FD.bundleSize+' meals, save '+pctTxt(FD.bundleDiscount)+' · each when eaten: '+eatTxt(g),btn('bundle',k,'Buy bundle'))})});
+      rows.push({p:G(CH.cost),h:opt('🥔 Bag of chips · '+money(G(CH.cost)),'Eat at home · '+hm(M(CH.units))+' to buy · when eaten ('+hm(CH.eatMinutes)+'): '+sg(CH.happiness)+' happiness, '+sg(CH.energy)+'% energy, '+sg(CH.health)+' health. A snack, not a meal; never goes off. Up to '+CH.maxPerDay+' bags a day, '+CH.maxStored+' at home (you have '+(S.chips||0)+').',btn('chips','','Buy',0,chLeft<=0))});
+      rows.sort(function(a,b){return a.p-b.p});
+      return '<p>🥕 <b>'+GROC.basic.n+'</b> needs to be cooked at home. Food stays fresh for <b>'+FD.keepDaysRoom+' days</b> (without fridge) and <b>'+FD.keepDaysFridge+' days</b> (in fridge), today inclusive. '+
+        '<span class="life '+(cap?'cold':'warm')+'">'+(cap?'❄️':'🌡️')+' Fridge stores maximum '+FD.fridgeSpace+' meals</span></p>'+
+        rows.map(function(r){return r.h}).join('')+
+        '<div class="gh" style="margin-top:12px">🎟️ Lottery</div>'+
         opt('🎟️ Lottery ticket · '+money(G(LT.ticketCost)),'Next draw: end of day '+nextDraw()+' (draws '+everyDays(LT.drawEveryDays)+'). Prize'+(LT.prizeMin===LT.prizeMax?' '+money(LT.prizeMin):'s '+money(LT.prizeMin)+'–'+money(LT.prizeMax))+'. You hold '+(S.tickets||[]).length+' ticket'+((S.tickets||[]).length===1?'':'s')+'.',btn('lotto','','Buy ticket'))},
     fast:function(){return '<p><small>Fast food counts as your daily meal, but eating it '+CONFIG.illness.junkMeals+' or more times in 5 days raises your chance of falling ill'+(junkCount()?' (you have had '+junkCount()+' in the last 5 days)':'')+'.</small></p>'+opt('🍔 '+cap(TREATS.snack.n)+' · '+money(G(TREATS.snack.cost)),treatTxt(TREATS.snack),btn('treat','snack','Buy'))+opt('🍟 '+cap(TREATS.meal.n)+' · '+money(G(TREATS.meal.cost)),treatTxt(TREATS.meal),btn('treat','meal','Buy combo'))},
     resto:function(){return opt(cap(TREATS.dine.n)+' · '+money(G(TREATS.dine.cost)),treatTxt(TREATS.dine),btn('treat','dine','Dine in'))+opt(cap(TREATS.feast.n)+' · '+money(G(TREATS.feast.cost)),treatTxt(TREATS.feast),btn('treat','feast','Treat yourself'))},
@@ -3343,7 +3422,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       h+=opt('Life insurance · '+money(G(HP.insuranceCost)),hm(M(HP.insuranceUnits))+' · covers '+pctTxt(HP.insuranceCovers)+' of your hospital bills for the rest of the game. Buy it once.',S.ins>0?'<span class="tag">Covered</span>':btn('insure','','Buy'));
       return h;
     },
-    mall:function(){var CC=CONFIG.clothes;return '<p>'+WEAR.casual.n+' last '+WEAR.casual.w+' day'+(WEAR.casual.w===1?'':'s')+', '+WEAR.smart.n+' '+WEAR.smart.w+' and a '+WEAR.suit.n+' '+WEAR.suit.w+'. Smart Casual is more formal than casual and meets most mid-level dress codes; a suit meets every dress code. Bargaining takes '+hm(M(CC.bargainUnits))+' and moves the price '+CC.bargainMin+(CC.bargainMax!==CC.bargainMin?'–'+CC.bargainMax:'')+'% up or down, once per item each day.</p>'+
+    mall:function(){var CC=CONFIG.clothes,dd=function(n){return n+' day'+(n===1?'':'s')};return '<p>'+WEAR.casual.n+' last '+dd(WEAR.casual.w)+' while '+(WEAR.smart.w===WEAR.suit.w?WEAR.smart.n+' and '+WEAR.suit.n+' last '+dd(WEAR.smart.w):WEAR.smart.n+' last '+dd(WEAR.smart.w)+' and '+WEAR.suit.n+' '+dd(WEAR.suit.w))+'. Return to buy again. Bargaining takes '+hm(M(CC.bargainUnits))+' - be careful, you may end up paying more!</p>'+
       ['casual','smart','suit'].map(function(k){var c=WEAR[k],pr=price(k),have=S.clothes[k];
         return opt(c.n+' · '+money(pr)+(S.offer[k]!=null?' (bargained)':''),hm(M(CONFIG.clothes.buyUnits))+' to buy · lasts '+c.w+' days'+(have?' · yours has '+have+' day'+(have>1?'s':'')+' left, a new one replaces it':''),
           '<span style="display:flex;gap:8px;flex-wrap:wrap">'+btn('cbuy',k,'Buy')+btn('bargain',k,'Bargain',1,!!S.barg[k])+'</span>')}).join('')},
@@ -3571,7 +3650,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     jobs:['Marge at the desk',['Jobs are on the board. Bring your qualifications.','Take a number. Kidding, there is no queue today.','Firms are picky this week. Dress the part.','A certificate opens doors. A degree opens better ones.','Interviews take an hour, whether they love you or not.','Rejection is just practice for the next interview.']],
     school:['Professor Lim',['Five pathways, and the longer ones lead to the best jobs.','The library is open late if you need it.','Turn up to class. I notice who is missing.','Medicine is long, but the hospital pays well.','Knowledge compounds, just like interest.','Pop quiz tomorrow. Maybe.']],
     bank:['Mr. Tan',['Savings, fixed deposits, ETFs, a hedge fund, even crypto. Know what you are buying first.','Interest is your money working while you sleep.','Never invest money you need for rent.','Hedge funds are exciting. Exciting is not always good.','Diversify. That is all the advice you get for free.','The market hates bad news. So do I.']],
-    market:['Aunty Rose',['Fresh stock this morning. Cook it at home, and get a fridge if you want it to last.','Vegetables just came in from the farm.','Cooking at home saves you money, you know.','Buy what you can cook before it spoils, ah.','Premium stuff is fresher. Your call.','Two for one on rice today. Just kidding.']],
+    market:['Aunty Rose',['Fresh stock this morning. Cook it at home, and get a fridge if you want it to last.','Vegetables just came in from the farm.','Cooking at home saves you money, you know.','Buy what you can cook before it spoils, ah.','Ready-to-eat meals save you the cooking. Your call.','Two for one on rice today. Just kidding.']],
     fast:['Dave',['Welcome in! Order up, or ask about a shift.','Burgers are hot and the fries are hotter.','Want to make that a meal?','We never close. Neither do I, apparently.','Snack now, regret later.','Fastest service in town. Mostly.']],
     resto:['Chef Marco',['Table for one? Or are you here to work?','Tonight we have a lovely risotto.','A good meal fixes most bad days.','My kitchen, my rules. Wash your hands.','The tasting menu is worth every cent.','Reservations? For you, never needed.']],
     elec:['Kenji',['Fridges, phones, computers. Everything you buy goes straight to your home.','New phones arrived this morning.','A computer pays for itself if you use it to learn.','Broken something? I fix things too.','The fridge is the most underrated purchase in town.','Extended warranty? No? Good choice.']],
@@ -3608,6 +3687,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   /* vital number colour: red below 10, amber 10 to 29, yellow 30 to 60, green above 60 */
   function vitColor(v){return v<10?'#ef7d72':v<30?'#f0a030':v<=60?'#f0d040':'#5fcf92'}
   function render(){
+    fridgeSync();  /* a fridge that broke or was repaired changes what fits */
     var H=HOUSE[S.home];
     $('day').textContent=Math.min(S.day,maxDays());
     $('ap').textContent=hm(S.ap);
@@ -3639,7 +3719,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var iv=invTotal();$('invv').textContent=money(iv);
     $('know').textContent=Math.floor(S.know);$('knBar').style.width=S.know+'%';
     $('meal').className='meal '+(S.fed?'ok':'no');$('meal').textContent=S.fed?'🍽 Ate today ✓':'🍽 No meal yet today';
-    var nIt=Object.keys(S.items).filter(function(k){return S.items[k]}).length;$('belong').textContent=nIt+' item'+(nIt!==1?'s':'')+(S.cooked.length?' · 🍲'+S.cooked.length+' cooked':'')+(S.pantry.length?' · '+S.pantry.length+' grocer'+(S.pantry.length>1?'ies':'y')+' ('+(owns('fridge')?'❄️':'🌡️')+' '+Math.min.apply(null,S.pantry.map(function(p){return grocLife(p).left}))+'d left)':'');
+    var nIt=Object.keys(S.items).filter(function(k){return S.items[k]}).length,FF=S.food.filter(function(p){return !p.sp}),nSp=S.food.length-FF.length;
+    $('belong').textContent=nIt+' item'+(nIt!==1?'s':'')+(FF.length?' · 🍽 '+FF.length+' meal'+(FF.length>1?'s':'')+' ('+Math.min.apply(null,FF.map(function(p){return foodLeft(p)}))+'d left)':'')+(nSp?' · 🤢'+nSp:'')+(S.chips?' · 🥔'+S.chips:'');
     if((S.tickets||[]).length)$('belong').textContent+=' · 🎟️'+S.tickets.length;
     placeCenter();
     renderGoals();
@@ -3930,10 +4011,11 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var b=e.target.closest('[data-act]'); if(!b)return;
     var a=b.dataset.act,g=b.dataset.arg;
     if(a==='step'){stepAmt(g);return}  /* amount stepper: no scroll, no re-render */
+    if(a==='frig'){fridgeToggle(g);return}  /* fridge pick: stay where you are on the page */
     if(a==='work')work(g);else if(a==='treat')treat(g);else if(a==='class')study(g);else if(a==='enrol')enrol(g);else if(a==='apply')apply(g)
     else if(a==='alljobs'){allJobs=!allJobs;render()}
     else if(a==='buy')buy(g);else if(a==='cbuy')buyWear(g);else if(a==='bargain')bargain(g);else if(a==='sell')sell(g);else if(a==='dep'||a==='wd')moveMoney(a);
-    else if(a==='treat_ill')treatIll();else if(a==='checkup')checkup();else if(a==='ward')ward();else if(a==='insure')insure();else if(a==='paydebt')payDebt();else if(a==='payrent')payRent();else if(a==='nap')nap();else if(a==='arrears')payArrears();else if(a==='groc')buyGroc(g);else if(a==='bundle')buyBundle(g);else if(a==='chips')chips();else if(a==='lotto')buyTicket();else if(a==='cook')cook(g);else if(a==='eatc')eatCooked(g);else if(a==='eatp')eatPrem(g);else if(a==='binsp')binSpoiled();else if(a==='gym')gymSession(g);else if(a==='study')selfStudy();else if(a==='repair')repair(g);else if(a==='redeem')redeem(g);else if(a==='invest')invest(g);else if(a==='divest')divest(g);
+    else if(a==='treat_ill')treatIll();else if(a==='checkup')checkup();else if(a==='ward')ward();else if(a==='insure')insure();else if(a==='paydebt')payDebt();else if(a==='payrent')payRent();else if(a==='nap')nap();else if(a==='arrears')payArrears();else if(a==='groc')buyGroc(g);else if(a==='bundle')buyBundle(g);else if(a==='chips')chips();else if(a==='eatchips')eatChips();else if(a==='lotto')buyTicket();else if(a==='cook')cook(g);else if(a==='eatc')eatCooked(g);else if(a==='eatp')eatPrem(g);else if(a==='binsp')binSpoiled();else if(a==='gym')gymSession(g);else if(a==='study')selfStudy();else if(a==='repair')repair(g);else if(a==='redeem')redeem(g);else if(a==='invest')invest(g);else if(a==='divest')divest(g);
     else if(a==='home')moveHome(g);else if(a==='rest')endWeek(true);
     else if(a==='borrow')borrow();else if(a==='repay')repay(false);else if(a==='repayall')repay(true);else if(a==='ltenure'){loanTenure=+g;render()}
     toTop();
@@ -4077,7 +4159,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     function clockIcon(left){var h=Math.floor(clockMin(left)/60);return h>=5&&h<7?'🌅':h>=7&&h<17?'☀️':h>=17&&h<19?'🌇':'🌙'}
     var KIND={walk:['Walking','#8aa0b3'],work:['Work','#f0bd4a'],study:['Study','#6aa0ff'],gym:['Gym','#ef7d72'],rest:['Rest','#a78bfa'],
               food:['Food','#5fcf92'],health:['Health','#ff9ecb'],errand:['Errands','#3cc0c3'],other:['Other','#6b7885']};
-    var ACT_KIND={work:'work','class':'study',study:'study',gym:'gym',nap:'rest',cook:'food',eatc:'food',eatp:'food',treat:'food',chips:'food',
+    var ACT_KIND={work:'work','class':'study',study:'study',gym:'gym',nap:'rest',cook:'food',eatc:'food',eatp:'food',treat:'food',chips:'food',eatchips:'food',
                   groc:'food',bundle:'food',treat_ill:'health',checkup:'health',ward:'health'};
     var nextKind=null;  /* what the player just pressed; used by the next render */
     document.addEventListener('click',function(e){
@@ -4209,7 +4291,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     try{if(localStorage.getItem('dailyGrind.preview')==='0')pvOn=false}catch(e){}
     /* button name (data-act) -> the function the game runs for it; same pairs as the click handler in the Shop panel */
     var PV_RUN={work:work,'class':study,study:selfStudy,gym:gymSession,nap:nap,cook:cook,treat:treat,eatc:eatCooked,eatp:eatPrem,
-                checkup:checkup,ward:ward,treat_ill:treatIll,buy:buy,groc:buyGroc,bundle:buyBundle,lotto:buyTicket};
+                checkup:checkup,ward:ward,treat_ill:treatIll,buy:buy,groc:buyGroc,bundle:buyBundle,lotto:buyTicket,eatchips:eatChips};
     function pvVitals(){return {ap:S.ap,cash:S.cash,energy:S.energy,happy:S.happy,health:S.health,know:Math.floor(S.know)}}
     function dryRun(a,arg){
       var fn=PV_RUN[a];if(!fn)return null;
