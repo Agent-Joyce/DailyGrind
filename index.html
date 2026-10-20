@@ -1641,10 +1641,10 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     S.over=true;clearSave();$('keep').hidden=true;
     $('overTitle').textContent=title;
     $('overText').textContent=text;
-    var sc=score(),best=bestScore(),first=(function(){try{return localStorage.getItem('dailyGrind.best')===null}catch(e){return true}})(),isTop=first||sc>best;
+    var sc=score(),best=bestScore(),first=(function(){try{return localStorage.getItem('dailyGrind.best')===null}catch(e){return true}})(),isTop=sc>0&&(first||sc>best);  /* a 0-point game is never a top score */
     if(isTop){try{localStorage.setItem('dailyGrind.best',String(sc))}catch(e){}}
     $('overScore').hidden=false;
-    $('overScore').innerHTML=(isTop?'<div class="topscore">🏆 Congratulations! New top score!</div>':'<div class="prevtop">Top score so far: <b>'+best.toLocaleString()+'</b></div>')+
+    $('overScore').innerHTML=(isTop?'<div class="topscore">🏆 Congratulations! New top score!</div>':first?'':'<div class="prevtop">Top score so far: <b>'+best.toLocaleString()+'</b></div>')+
       '<div class="bigscore">⭐ '+sc.toLocaleString()+' points</div><table class="sctab">'+scoreParts().map(function(p){return '<tr><td>'+p[0]+'</td><td>'+(p[1]<0?'−':'')+Math.abs(p[1]).toLocaleString()+'</td></tr>'}).join('')+'</table>';
     if(isTop)snd('win');
     $('over').classList.add('show');
@@ -2595,6 +2595,18 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     });
     return out;
   }
+  /* a twist can touch the same thing as the outcome: show one chip per item with the total
+    ("−3 happiness, +3 happiness" -> "±0 happiness"; "+$20 cash, +$10 cash" -> "+$30 cash") */
+  function mergeFx(list){
+    var out=[],at={},re=/^([+−])(\$?)([\d,]+)(%?) (cash|in the bank|energy|happiness|health|knowledge)$/;
+    list.forEach(function(f){
+      var m=re.exec(f);if(!m){out.push(f);return}
+      var k=m[2]+m[4]+' '+m[5],v=(m[1]==='−'?-1:1)*+m[3].replace(/,/g,'');
+      if(at[k]==null){at[k]=out.length;out.push({k:k,v:v,cash:!!m[2],pct:m[4],n:m[5]})}else out[at[k]].v+=v;
+    });
+    return out.map(function(o){if(typeof o==='string')return o;
+      return (o.v>0?'+':o.v<0?'−':'±')+(o.cash?money(Math.abs(o.v)):Math.abs(o.v))+o.pct+' '+o.n});
+  }
   function needCash(o){
     var m=0;
     [o[2],o[4]].forEach(function(s){if(!s)return;s.split(' ').forEach(function(t){var q=tokRe.exec(t);if(q&&q[1]==='c'&&q[2]==='-')m=Math.max(m,+(q[4]||q[3]))})});
@@ -3002,7 +3014,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var text=good?o[1]:o[3],fx=good?o[2]:o[4];
     if(sure&&Math.random()<0.35){var tw=TWISTS[Math.floor(Math.random()*TWISTS.length)];text+=' '+tw[0];fx=((fx||'')+' '+tw[1]).trim()}
     ev.outcome=(yes?'You said yes. ':'You said no. ')+text;
-    ev.fx=applyFx(fx);ev.tone=sure?'':(good?'good':'bad');ev.done=true;
+    ev.fx=mergeFx(applyFx(fx));ev.tone=sure?'':(good?'good':'bad');ev.done=true;
     log('Decision: '+(yes?'yes. ':'no. ')+text+(ev.fx.length?' ('+ev.fx.join(', ')+')':''),ev.tone==='good'?'good':ev.tone==='bad'?'bad':'');
     render();
   }
