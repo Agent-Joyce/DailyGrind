@@ -544,3 +544,38 @@ Problem: multi-day news and storylines (oil crisis, war, pandemic...) applied th
 ## 36. Score number in blue
 
 - The score number in the top bar is blue (`#6aa9ff`) instead of gold.
+
+## 37. QA pass: layout, log text vs real effects, 30 simulated runs
+
+Tested on a throwaway copy with a test hook, driven by real clicks (tiles, building buttons, the top-bar Sleep button, event buttons and pop-ups), at 375×812, 768×1024, 700×900, 1024×768 and 1400×900. Every building was opened and every enabled button clicked once (about 100–220 screens per game state: a fresh game, a well-off mid-game and a broke, sick late game), and every night-event type was forced and played through.
+
+### Log text and floaters now match what really happened
+
+- Log lines used to print the listed amount even when a vital was already at 0 or 100, for example "+26% energy" from the tasting menu when energy rose only 4. Meals out, home meals, spoiled food, food poisoning, chips, resting, self-study, the gym, the check-up, the recovery ward, treatment and the first investment now print the real change (new helpers `vitSnap()`, `vitTxt()`, `vitPar()`).
+- Health changes now get a floating number like cash, energy, happiness and knowledge. Before, health never floated.
+- A work shift now says what it cost in energy, and a school lesson says its energy cost and knowledge gain (the module-complete line includes the module bonus). Chips now state the health they cost.
+- Overnight energy and happiness: every night took 15% energy and 10 happiness, but no text said so, and going to bed said "Tomorrow you start with +30% energy and +10 happiness" when you actually woke up +15% and +0. The amounts are now `CONFIG.sleep.nightEnergy` (−15) and `CONFIG.sleep.nightHappiness` (−10). The bedtime line, the "Sleep and end the day" row and a new **Every night** line on the rules screen (`cfgNight`) all mention them. A morning log line, "Overnight energy … happiness …", shows the real change and its parts (nightly drop, sleep, bed, gadgets, coffee, hunger).
+- The Classy Bungalow's +10 bed happiness was only given when you used the Sleep button inside the house. "Sleep at Bungalow" in the top bar and the E key lost it. Any bedtime at home now counts.
+- The "In debt" warning said "Bankruptcy at −$200". It now gives the real rule from `CONFIG.bankrupt` (net worth under $500 for three days in a row) and mentions the 5% energy cost of the shame.
+- News "Recession declared; layoffs sweep the factories" said "You are laid off" but closes your workplace for a few days. Renamed to "Recession declared; firms shut their doors" with matching text. "Tech giant opens a regional hub" now says closed workplaces reopen sooner (it shortens closures).
+- Six decisions named a price but never charged it on the good outcome: gym membership ($40), branded sneakers ($40), pest control ($40), second-hand TV ($40), dating app ($20). The expired-snacks box ($15) even paid you $5. They now charge the stated price.
+- Checked: night-event chips (stories, decisions, news, sagas, macro shocks, belongings events) match the real cash, bank and vital changes in 99 random choices. A twist that touches the same vital as the outcome still shows two separate chips (for example "−3 happiness, +3 happiness"); the total is correct.
+
+### Layout
+
+- Fixed a CSS typo (`@media@media`) that switched off the two-column rule for the overview cards.
+- Belongings ("13 items · 🍲2 cooked · 4 groceries …") was cut off with "…" at every width. It now wraps.
+- Phones: with any investment, the top bar overflowed and the Invest and Score cells overlapped. The Invest cell is left out of the phone top bar (it is in the Net worth box), and Net worth and Score get a little more room. The net-worth parts (Cash, Bank, Invest, Assets, Loan, Bills) wrap instead of cutting off "−$1,400".
+- Tablets (641–1023px): the panel was 60% wide, so the Electronics Store's two columns overflowed. It is now 86% wide. The top bar wrapped onto two rows; it is squeezed (smaller icon cells, no "Score" label or Invest P/L line, smaller buttons) and stays on one row at 768px. Below about 720px it still wraps with an Invest cell, without overlap.
+- Wide windows: with an Invest cell and the Leave button showing, the top bar wrapped by a few pixels; the cell gap is now 4px from 1024px up.
+- Employment Office: the "Your job" tag could push past the card edge on a long role name; it may now wrap.
+- The welcome screen's difficulty buttons and the game-over card's New game button are sticky footers: the content scrolls under them on purpose.
+
+### 30 simulated games (seeded, real clicks)
+
+- **20 careful games** (eat every day, cooking basic groceries two days at a time; buy the outfit the job needs as soon as clothes run out, withdrawing savings if needed; aim study at the best-paid job reachable in the days left; avoid study and work burnout; switch jobs when the workplace closes; decline risky offers). All 20 reached the end of day 15 with no bankruptcy, hospital or burnout ending: 17 finished Comfortable ($2,061–$3,045), 3 finished just short ($1,145–$1,922). Typical end jobs: Lab Technician, Technician, Repair Technician, Bookkeeper, Teller, Nursing Aide.
+- **10 random games** (random buildings, buttons, preview answers and event choices): 9 ended Hospitalised (three days without a meal) on day 4 to 7 and 1 ended Bankrupt on day 10, all at the right time and with the right message.
+- In all 30: no script errors, no vital outside 0–100, no negative bank or clothes, no NaN, no more than one job, no stuck day or event card, and (after the fixes above) no action whose log line disagreed with the real change.
+- Observations, not changed: in an earlier version of the careful bot, a 4-day workplace closure inside the day-5-to-7 bankruptcy window was enough to bankrupt a player who did not switch jobs. Knowledge falls to 0 by day 15 for a player who owns no device and stops studying (−1 a night).
+
+New `CONFIG` keys: `sleep.nightEnergy`, `sleep.nightHappiness`. None removed.
