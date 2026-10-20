@@ -566,7 +566,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   <li><span id="cfgOnTime">Reach a rank by its target day for bonus points.</span></li></ul>
   <h3 class="lose">You lose</h3>
   <ul>
-    <li><b>Bankrupt:</b> <span id="cfgBankrupt">net worth under $500 for three days in a row.</span></li>
+    <li><b>Bankrupt:</b> <span id="cfgBankrupt">net worth under $0 for three days in a row.</span></li>
     <li><b>Loan default:</b> <span id="cfgLoanDefault">you owe more than $10,000, or have not repaid your loan in full 5 days after its due date.</span></li>
     <li><b>Exhaustion:</b> energy at 10% or less at the end of two days in a row.</li>
     <li><b>You gave up:</b> happiness at 10 or less for three days in a row.</li>
@@ -579,7 +579,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     <li><b>Tired (energy under 30):</b> shifts pay 15% less. Low energy also raises your chance of falling ill overnight: <span id="cfgIllEn">about 40% a night under 11 energy</span> (before health, diet and gym visits lower it).</li>
     <li><b>Morale (happiness under 40 / 25 / 20):</b> shifts pay 10% / 25% / 40% less, and below 20 your boss may demote or fire you.</li>
     <li><b>Hunger:</b> skipping the daily meal costs <span id="cfgHunger">20% energy and 15 happiness</span>, and cuts productivity.</li>
-    <li><b>Money shame:</b> net worth under $100 costs 3 happiness a day, under $0 costs 8 happiness and 5% energy.</li>
+    <li><b>Money shame:</b> checked when you end the day: net worth under $100 then costs 3 happiness, under $0 costs 8 happiness and 5% energy. Nothing is taken during the day.</li>
     <li><b>Keyboard:</b> 1–9 press the numbered buttons, E ends the day, Esc leaves a building or closes a window, H opens these rules, M toggles sound. Tab moves between buildings.</li>
     <li><b>Health:</b> a slow-moving vital. Healthy meals, the gym and sleeping at home raise it; hunger, illness, junk food, long study days and burnout lower it. Good health, a healthy diet and regular gym visits all cut your chance of falling ill.</li>
     <li><b>Layoffs and closures (two different things):</b> in a bad economy you can be <b>laid off</b> (the job is gone, so apply for a new one) or your workplace can <b>close</b> for 1 to 4 days (the Work button is disabled, but the job stays on your record and the morning message tells you when it is back). You can only hold one job at a time.</li>
@@ -655,20 +655,20 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
         1 = normal, 0 = news has no economic effect, 2 = twice as strong. */
       strength:2,
       /* Fine dials, multiplied on top of the master dial (1 = normal). */
-      priceStrength:0.3,    // how much news moves the price index
+      priceStrength:1,    // how much news moves the price index
       wageStrength:0.6,    // how much news moves shift pay
-      rateStrength:1.5,    // how much news moves bank interest
-      marketStrength:1.4,  // how much news moves investments (market mood)
+      rateStrength:4.5,    // how much news moves bank interest
+      marketStrength:4.4,  // how much news moves investments (market mood)
       layoffStrength:1.5,  // chance of layoffs and workplace closures during a crisis
       illnessStrength:2,  // extra illness during pandemics and outbreaks
       /* A news headline hits partly today; the rest drifts in over the next days. */
-      shareToday:0.35,          // 0.35 = 35% today, 65% spread over the following days
+      shareToday:0.25,          // 0.35 = 35% today, 65% spread over the following days
       bigNewsDays:[4,14],      // how long big stories (war, crisis, boom...) keep drifting
       smallNewsDays:[3,7],      // how long ordinary economic news keeps drifting
-      badNewsMarket:-0.35,      // daily market mood during bad headlines (war, crash...)
-      goodNewsMarket:0.25,      // daily market mood during good headlines (boom, rally...)
+      badNewsMarket:-0.55,      // daily market mood during bad headlines (war, crash...)
+      goodNewsMarket:0.45,      // daily market mood during good headlines (boom, rally...)
       outbreakIllness:1.6,      // illness multiplier during pandemic/lockdown news
-      shockMarketScale:0.6,    // dampens market mood from one-off macro shocks
+      shockMarketScale:1.6,    // dampens market mood from one-off macro shocks
       priceReversion:0.03,     // each day, prices drift this share of the way back towards the difficulty's base price
       /* A running story does not hit at a constant rate. Each day its effect follows a curve: it builds, peaks mid-story, then fades, with a random daily swing on top. */
       curveLow:0.5,            // a story's daily effect on its first and last day (× its listed size)
@@ -680,18 +680,18 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       priceMin:0.5, priceMax:3,    // price index: 0.5 = half price, 3 = triple price
       /* Each new game starts with a random price index in this range (on top of the difficulty's prices). */
       startPriceMin:0.94, startPriceMax:1.06,
-      wageMin:0.7,  wageMax:1.5,    // pay index
-      rateMin:0,    rateMax:5,      // bank interest, % per day
+      wageMin:0.7,  wageMax:1.4,    // pay index
+      rateMin:0,    rateMax:5.5,      // bank interest, % per day
       marketMin:-4, marketMax:4    // market mood (drives ETF, hedge fund, crypto)
     },
     market:{
       /* How investments react to the economy. */
-      rateHit:1.5,      // mood drop per +1 point of interest rate
+      rateHit:2.5,      // mood drop per +1 point of interest rate
       priceHit:8,      // mood drop per +100% prices (8 = a 10% price jump costs 0.8)
       closureHit:1.5,  // mood drop when a workplace closes
       reopenLift:0.5,  // mood lift when a workplace reopens
-      dailyCalm:0.75,  // each day mood keeps 75% of yesterday (lower = settles faster)
-      dailyNoise:0.7,  // random daily swing in mood, plus or minus
+      dailyCalm:0.85,  // each day mood keeps 75% of yesterday (lower = settles faster)
+      dailyNoise:0.8,  // random daily swing in mood, plus or minus
       /* Savings and investments follow the economy. News (central bank moves, crises, booms)
         changes the savings rate, and the savings rate drives the fixed deposit.
         ETF, hedge fund and crypto follow the market mood, and are also pulled down when
@@ -1088,7 +1088,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     },
     bankrupt:{
       /* Bankrupt (game over): net worth under netWorthBelow at the end of daysInARow days running. */
-      netWorthBelow:500,
+      netWorthBelow:0,
       daysInARow:3,
       fromDay:5,                 // the first day that counts (1 = from the very start; a later day gives new players a grace period)
       warnDaysBefore:2           // net worth under the line shows a warning with a way out from this many days before fromDay
@@ -1471,7 +1471,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   /* gym jobs */
   CAREERS.gym={n:'Gym',ranks:[
     {r:'Front Desk',pay:85,t:'',l:0,dress:'casual'},
-    {r:'Gym Instructor',pay:150,t:'sal',l:1,dress:'casual'},
+    {r:'Gym Instructor',pay:120,t:'sal',l:1,dress:'casual'},
     {r:'Operations Assistant',pay:250,t:'sal',l:2,dress:'smart'}]};
   /* per-game pay variation (CONFIG.jobs.payVary): rk.base is the pay set above; rk.pay is this game's pay */
   Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk){rk.base=rk.pay})});
@@ -2553,8 +2553,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(S.medDebt>0)push('bad','🧾 Medical bill arrears: '+money(S.medDebt)+' owed, '+money(medInstal())+' due tomorrow morning (late fee if you can’t pay). Pay more at the Hospital.');
     if(S.hungry>=1&&!S.fed)push('bad','🍽 '+S.hungry+' day'+(S.hungry>1?'s':'')+' without a meal and none yet today: '+FD.hungryDaysToHospital+' in a row puts you in hospital.');
     else if(!S.fed&&S.ap<M(15))push('warn','🍽 No meal yet today. Eat before you end the day.');
-    if(nw<0)push('bad','💸 In debt ('+money(nw)+'): shame costs 8 happiness and 5% energy a day. Net worth under '+money(CONFIG.bankrupt.netWorthBelow)+' for '+numWord(CONFIG.bankrupt.daysInARow)+' days in a row is bankruptcy.');
-    else if(nw<100)push('warn','💸 Nearly broke ('+money(nw)+'): the shame costs 3 happiness a day.');
+    if(nw<0)push('bad','💸 In debt ('+money(nw)+'): if your net worth is still under $0 when you end the day, shame costs 8 happiness and 5% energy.');
+    else if(nw<100)push('warn','💸 Nearly broke ('+money(nw)+'): if your net worth is still under $100 when you end the day, shame costs 3 happiness.');
     var left=nextRentWeek()-S.day;
     if(left<=1&&S.cash<H.rent&&S.rentPaid!==nextRentWeek())push('bad','🏠 Rent of '+money(H.rent)+' is due '+(left===0?'today':'tomorrow')+' and you only have '+money(S.cash)+' in cash.');
     if(S.enrolled&&S.sinceClass>=3)push('bad','🎓 No lesson for '+S.sinceClass+' days: attend one soon or you may be expelled.');
