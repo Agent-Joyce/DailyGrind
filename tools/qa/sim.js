@@ -4,7 +4,8 @@
    Two players, both driven by real clicks on the page (tiles, #shop buttons, #hudEnd, event buttons, pop-ups):
      survive : eats every day (cooks meal prep two meals at a time), buys the outfit the job needs as soon as
                clothes run out (withdrawing savings if needed), studies towards the best-paid job reachable in the
-               days left, avoids study and work burnout, switches jobs when the workplace closes, declines risky offers.
+               days left, keeps work + study under the burnout line on the last day of a streak, switches jobs when
+               the workplace closes, declines risky offers, gets treated when sick, re-applies for a home if it is lost.
      random  : random buildings, buttons, preview answers and event choices.
    Each run is seeded (game and player use separate seeded generators), so a seed always replays the same game
    as long as index.html has not changed.
@@ -91,7 +92,7 @@
   }
   async function endDay(mode){
     var d0=G.S.day;
-    if(G.loc===G.S.home){await go(G.S.home);var r=btn('rest');if(r&&R()<0.5)await click(r,'rest');else await click($('hudEnd'),'hudEnd')}
+    if(G.loc===G.S.home&&!G.S.homeless){await go(G.S.home);var r=btn('rest');if(r&&R()<0.5)await click(r,'rest');else await click($('hudEnd'),'hudEnd')}
     else await click($('hudEnd'),'hudEnd');
     await night(mode);await popups(mode);
     if(!G.S.over&&G.S.day===d0)note('STUCK','day did not advance');
@@ -160,13 +161,13 @@
   async function ensureFed(){
     S=G.S;if(S.fed)return;
     var FD=G.CONFIG.food;
-    if(fresh(S.food,'cook').length&&await go(S.home)){var eb=btn('eatc','')||btn('eatc','heat')||btn('eatc','cold');if(eb)await click(eb,'eatc:'+eb.dataset.arg)}if(G.S.fed)return;
-    if(fresh(G.S.food,'prem').length&&await go(G.S.home))await click(btn('eatp',''),'eatp');if(G.S.fed)return;
-    if(!fresh(G.S.food,'basic').length&&G.S.cash>=G.G(FD.basic.cost)&&await go('market')){
+    if(fresh(S.food,'cook').length&&home()&&await go(S.home)){var eb=btn('eatc','')||btn('eatc','heat')||btn('eatc','cold');if(eb)await click(eb,'eatc:'+eb.dataset.arg)}if(G.S.fed)return;
+    if(fresh(G.S.food,'prem').length&&home()&&await go(G.S.home))await click(btn('eatp',''),'eatp');if(G.S.fed)return;
+    if(home()&&!fresh(G.S.food,'basic').length&&G.S.cash>=G.G(FD.basic.cost)&&await go('market')){
       var bb=btn('bundle','basic');
       if(bb&&G.S.cash>=G.G(FD.basic.cost)*3+60)await click(bb,'bundle:basic');else await click(btn('groc','basic'),'groc:basic');
     }
-    if(fresh(G.S.food,'basic').length&&await go(G.S.home)){
+    if(fresh(G.S.food,'basic').length&&home()&&await go(G.S.home)){
       var n=Math.min(fresh(G.S.food,'basic').length,2);  /* without a fridge a cooked meal keeps today and the next two days */
       var cb=btn('cook',String(n))||btn('cook','1');if(cb)await click(cb,'cook:'+cb.dataset.arg);
       await click(btn('eatc',''),'eatc');
@@ -177,8 +178,16 @@
   async function handleSick(){
     if(!G.S.ill)return;
     if(!G.S.hosp&&await go('hosp'))await click(btn('treat_ill',''),'treat_ill');
-    if(G.S.ill&&await go(G.S.home)){var nb=btn('nap','');if(nb&&G.S.ap>720)await click(nb,'nap')}
   }
+  /* lost the home in a housing bubble: apply again at the Apartment once there is cash for the deposit and rent */
+  async function ensureHome(){
+    if(!G.S.homeless)return;
+    var h='apt',need=G.homeFee(h)+G.HOUSE[h].rent;
+    if(G.S.cash<need)await withdraw(need-G.S.cash+20);
+    if(G.S.cash>=G.homeFee(h)&&await go(h))await click(btn('home',h),'home:'+h);
+    if(G.S.homeless)note('SURVIVAL','still homeless on day '+G.S.day);
+  }
+  function home(){return G.S.homeless?null:G.S.home}
   function walkHome(){return G.dist(G.loc,G.S.home)*G.CONFIG.time.walkMinutes}
   function reserve(){return 300+walkHome()+15}  /* keep about 5h for sleep, plus the walk home */
   async function studyStep(){
@@ -195,18 +204,18 @@
     if(!G.inProgress(t))return;
     for(var k=0;k<3;k++){
       var h=G.lesHours(t,G.S.edu[t])*60;
-      if(G.S.studyMin+h>G.CONFIG.burnout.studyMinutes||G.S.energy<25||G.S.ap-h<reserve())break;
+      if(G.S.workMin+G.S.studyMin+h>loadCap()||G.S.energy<25||G.S.ap-h<reserve())break;
       if(!(await go('school')))return;var c=btn('class',t);if(!c)break;await click(c,'class:'+t);await popups('survive');
       if(!G.inProgress(t))break;
     }
   }
+  /* work + study allowed today: on the last day of a long-day streak, stay at the burnout line */
+  function loadCap(){var CB=G.CONFIG.burnout;return (G.S.loadStreak||0)>=CB.daysInARow-1?CB.loadMinutes:1440}
   async function workStep(){
-    var CB=G.CONFIG.burnout;
     for(var k=0;k<3;k++){
       var j=curJob();if(!j||G.S.ill)return;
-      var ef=G.effort(j.rk.pay),m=G.M(ef.ap);
-      var limit=G.S.workStreak>=CB.workDaysInARow-1?CB.workMinutes-1:G.CONFIG.time.maxWorkMinutes;  /* break a long-day streak before it burns out */
-      if(G.S.workMin+m>limit||G.S.energy-ef.en<25||G.S.ap-m<reserve()||G.shutLeft(j.b)>0||!G.hasDress(j.rk.dress))return;
+      var ef=G.effort(j.rk.pay),m=ef.min;
+      if(G.S.workMin+m>G.CONFIG.time.maxWorkMinutes||G.S.workMin+G.S.studyMin+m>loadCap()||G.S.energy-ef.en<25||G.S.ap-m<reserve()||G.shutLeft(j.b)>0||!G.hasDress(j.rk.dress))return;
       if(!(await go(j.b)))return;var w=btn('work',j.c);if(!w)return;await click(w,'work:'+j.c);
     }
   }
@@ -221,7 +230,7 @@
   }
   /* spare cash goes into savings (safe from muggings); keep enough for rent, food, clothes and fees */
   async function bankStep(){
-    S=G.S;var rent=G.HOUSE[S.home].rent,keep=rent+150+G.price('casual')+(target?feeLeft(target.rk):0);
+    S=G.S;var rent=G.HOUSE[S.home].rent+(S.homeless?G.homeFee('apt'):0),keep=rent+150+G.price('casual')+(target?feeLeft(target.rk):0);
     if(S.cash>keep+100&&await go('bank')){var box=$('amt');if(box){box.value=String(Math.floor(G.S.cash-keep));await click(btn('dep',''),'dep')}}
     else if(S.cash<rent&&S.bank>0&&S.day%G.CONFIG.time.rentEveryDays>=G.CONFIG.time.rentEveryDays-1)await withdraw(Math.min(S.bank,rent+60));
   }
@@ -231,6 +240,7 @@
     if(G.S.hosp&&G.S.hosp.inWard){await endDay('survive');return}
     pickTarget();
     await handleSick();
+    await ensureHome();
     await ensureClothes();
     await ensureFed();
     if(!G.S.items.clothes&&G.S.cash>=G.G(25)+G.HOUSE[G.S.home].rent*0.5&&await go('thrift'))await click(btn('buy','clothes'),'buy:gloves');  /* work gloves: +$15 a shift */
@@ -241,7 +251,7 @@
     await workStep();
     await ensureFed();
     await bankStep();
-    if(G.S.day===d&&!G.S.over){await go(G.S.home);await endDay('survive')}
+    if(G.S.day===d&&!G.S.over){if(home())await go(G.S.home);await endDay('survive')}
   }
 
   /* ---------- one run ---------- */
