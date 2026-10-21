@@ -45,7 +45,7 @@ if ($count -ne 1) { throw "Expected the line '$marker' exactly once in index.htm
 $hook = '  window.__G={get S(){return S},set S(v){S=v},get loc(){return loc},get view(){return view},CONFIG:CONFIG,fresh:fresh,enter:enter,render:function(){render()},' +
         'worth:worth,score:score,CAREERS:CAREERS,TRACKS:TRACKS,HOUSE:HOUSE,lvl:lvl,meets:meets,kreq:kreq,payIdx:payIdx,effort:effort,M:M,G:G,' +
         'hasDress:hasDress,price:price,qualFee:qualFee,lesCount:lesCount,lesHours:lesHours,inProgress:inProgress,expShort:expShort,' +
-        'shutLeft:shutLeft,myJob:myJob,dist:dist};'
+        'shutLeft:shutLeft,myJob:myJob,dist:dist,homeFee:homeFee};'
 $nl = if ($src.Contains("`r`n")) { "`r`n" } else { "`n" }
 $out = $src.Replace($marker, $hook + $nl + $marker)
 

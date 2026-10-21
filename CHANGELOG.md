@@ -683,3 +683,55 @@ Wording only; no rules or `CONFIG` values changed. Every number still comes from
 - `docs/Daily Grind Config Guide.docx`: `bankrupt.netWorthBelow` is now 0 in the settings list and the quick-changes table.
 - Checked in the built-in browser on a hooked throwaway copy: $300 net worth for five nights from day 4 no longer ends the game; with net worth under $0 from day 4, day 4 does not count, days 5, 6 and 7 do, and the game ends Bankrupt at the end of day 7 ("under $0 for three days in a row"); the Nearly broke warning shows the new wording and happiness does not change during the day.
 - `tools/qa` simulations (report: `docs/QA_Sim_2026-10-20_bankrupt-zero.md`, raw data in the `.json` beside it), 20 careful-bot seeds (1–20) and 10 random games, compared with the section 41 build on the same seeds: no script errors, broken invariants, stuck days or log/effect mismatches. Careful bot 18 Comfortable, 2 Time's up, 0 Bankrupt (was 17 / 2 / 1). Only seed 3 changed: it was Bankrupt at the end of day 7 with net worth $229–$411 and now ends Comfortable with $2,325. The other 29 games are identical. No game in this run went below $0.
+
+## 44. Housing bubble, sleep, shorter shifts, burnout and illness
+
+### Housing bubble: you can lose your home
+- When a housing bubble starts (the **Housing bubble bursts** shock or the **Housing bubble pops** headline), there is a **50%** chance you lose your Apartment or Bungalow (`CONFIG.housing.loseChance`). It is rolled once, when the event fires, and the event card and the morning notes say so.
+- With no home: no rent is due (the rent day logs "No rent was due tonight"), every night counts as sleeping outside, and you cannot rest, cook, eat at home, eat chips or self-study there. Your fridge, coffee machine and gadgets are in storage: no fridge space (food keeps 3 days), no gadget or coffee bonus. Your things still count in net worth. Rent arrears and medical bills are still collected.
+- **Apply again** at either home: the Apartment asks for a **$150 deposit** (`aptDeposit`), the Bungalow its usual **$300** move-in fee, both moved by the price index (`G()`), and applying takes **1h** (`applyMinutes`). The Bungalow still needs a job. Rent then carries on on the usual 5-day cycle.
+- The HUD shows **No home** and "Rent: None (no home)". The map drops the Home tag, and the end-day button reads **Sleep outside** everywhere. A 🏚️ warning stays in the overview until you have a home again. "Lost your home" is a toast and an end-of-run moment.
+
+### Sleep gives 1.5× as much
+- A night's sleep at home now gives 1.5 times the energy, happiness and health it did, caps included. Energy: the rest rate × **1.5** (`sleep.energyX`), up to **52%** (`maxEnergy`, was 35). Happiness: **1.5** per full hour (`happinessPerHour`, was 1). Health: **1.5** per hour up to **15** (`health.sleep`, was 1 and 10).
+- Sleeping outside still gives `awayShare` (half) of those, so it goes up 1.5× too. The 2h rest, the Bungalow's bed bonus and the nightly −15% energy / −10 happiness are unchanged.
+
+### Shifts are an hour shorter
+- Every shift band is one hour shorter, for the same pay and energy: under $130 **4h30** (was 5h30), $130–249 **3h45** (4h45), $250–449 **3h15** (4h15), $450+ **2h30** (3h30). Freelance coding at home is **2h30** (was 3h30, `time.freelanceMinutes`).
+- Shift length is now set in minutes (`time.shifts[].minutes`), because the 36-minute units could not give these lengths. Pay per hour still rises with pay (rule checker passes).
+
+### Burnout: more than 10 hours of work and study, 3 days running
+- Burnout now counts **shifts, school lessons and self-study together**. More than **10 hours** in a day (`burnout.loadMinutes` 600), **3 days in a row** (`daysInARow`), burns you out for **3 days** (`lastsDays`). Exactly 10h does not count. The one-off hits (−15 health, −10% energy, −8 happiness), the 20% pay cut, the nightly health loss and the extra illness risk are unchanged.
+- This replaces the two separate rules (study over 5h a day, or work 9h or more a day). The workplace, School and home screens show "Work and study today: Xh" with the streak. The warning the day before burnout and the overview warning use the combined total.
+- The **Bookworm** trait's drawback is now "burnout starts after 9 hours of work and study a day" (`burnout.loadMinutes` 540, was `burnout.studyMinutes` 240).
+
+### Illness
+- **Low energy has to last.** The energy table only applies once you have gone to bed with energy under **30** on **3 of the last 5** nights (`illness.lowEnergyBelow`, `lowNights`, `lowWindow`). Until then you get the "everyone else" chance (about 0.5% a night before health, diet and gym). The overview warns when tonight would count as a low night.
+- **Which illness:** cold **30%**, flu **40%**, dengue **15%**, pneumonia **15%** (`illness.mix`), whatever your energy. Before, flu and cold dominated and the mix depended on energy.
+- **Pandemics:** while a pandemic or lockdown story runs, illness is **30%** more likely (`illness.pandemicX` 1.3). This is applied once, however many such stories are running. Removed `macro.illnessStrength` and `macro.outbreakIllness`, which scaled these stories much harder (about 3.4–3.8×, and they stacked).
+- **Every illness costs 10 health a night** (`health.nightly.sick`, was 6).
+- **Flu:** lasts up to **3 days** (was 4) and costs **2h** (was 7h15) and **5 happiness** (was 10) a day (`hospital.flu.minutes`, `happiness`, `days`).
+- **Cold and flu can be slept off:** each night you sleep at home while sick there is an **80%** chance you recover (`hospital.homeRecover`). If that roll fails, only Hospital treatment will cure it. A cold or flu you never roll on (you slept outside) still clears after its `days`.
+- **Dengue and pneumonia need the Hospital.** They never clear on their own.
+- **Hospital treatment always cures you**, as before (with the 80% chance of a ward day first, unchanged).
+- The 2h rest no longer adds to the recovery chance. Removed `hospital.restRecover`, `restRecoverMax`, `sleepRecover` and each illness's `recover`. The home, Hospital, overview and work-refusal messages say what cures the illness you have.
+
+### Screen text, CONFIG and saves
+- The Rules screen's Tired, Burnout and Illness lines and a new **Housing bubble** line are all written from `CONFIG`.
+- New `CONFIG` keys: `housing` (`loseChance`, `aptDeposit`, `applyMinutes`), `sleep.energyX`, `time.shifts[].minutes` (replaces `units`), `time.freelanceMinutes`, `burnout.loadMinutes`, `illness.lowEnergyBelow`, `lowNights`, `lowWindow`, `pandemicX`, `mix`, `hospital.homeRecover`, `hospital.cold.rest` / `flu.rest`, `hospital.flu.minutes`. Changed: `sleep.maxEnergy` 35 → 52, `sleep.happinessPerHour` 1 → 1.5, `health.sleep` 1/10 → 1.5/15, `health.nightly.sick` −6 → −10, flu `days` 4 → 3 and `happiness` 10 → 5. Removed: `burnout.studyMinutes`, `workMinutes`, `workDaysInARow`, `macro.illnessStrength`, `macro.outbreakIllness`, `hospital.restRecover`, `restRecoverMax`, `sleepRecover`, the illnesses' `recover`, and dengue's and pneumonia's `days`.
+- Save fields: `loadStreak`, `lowE` (low-energy nights) and `homeless` are new. `studyStreak`, `workStreak` and `sickRest` are dropped when an older save loads. An older save loads with a fresh streak and no low-energy history.
+- `docs/Daily Grind Config Guide.docx`: the illness, hospital, burnout, time and sleep rows, a new housing row, new quick-change rows (`sleep.energyX`, `illness.mix`, `hospital.homeRecover`, `housing.loseChance`, shift minutes), `burnout.loadMinutes` in place of `studyMinutes`, the Bookworm drawback, and the line numbers.
+- `tools/qa/sim.js`: the careful bot keeps work and study under 10h on the last day of a streak, no longer naps while sick, re-applies at the Apartment if it loses its home, and does not try to cook while homeless. `run-sims.ps1` also exposes `homeFee` to it.
+
+### Checks
+- Checked in headless Chromium on a hooked throwaway copy (cloud sandbox, outside the repo), 41 checks, no script errors:
+  - **Shifts and sleep:** shift minutes by pay band 270/225/195/150; a Crew Member shift shows 4h 30m and uses 270 minutes. 10h asleep at the Apartment gives +45% energy, +15 happiness and +15 health; outside, +23/+8/+8.
+  - **Burnout:** exactly 10h of work and study does not start a streak; three days of 10h15 burn you out for 3 days; a short day resets the streak; study alone over 10h counts.
+  - **Illness odds:** energy 5 with no low-energy history gives the base chance (0.4%); 2 low nights in 5 still give the base chance, 3 give 32%; a low night 6 days ago no longer counts. One or two pandemic stories give exactly 1.3×. 4,000 forced illnesses split 30/39/15/15.
+  - **Recovery:** sleeping at home cures the flu 80.8% of the time over 2,000 tries, and none recovered later after a failed roll. Flu without a roll clears after 3 days and costs 2h and 5 happiness a day. Dengue is still there after 10 nights at home. The Hospital treats a flu that failed its roll.
+  - **Housing:** a roll of 0.6 keeps the home and 0.4 loses it. With no home, the button reads Sleep outside at the Apartment, the panel shows the notice and **Apply to rent**, there are no rest or sleep buttons, the HUD says No home, and the rent day is skipped. Re-applying by click charges G($150) and 1h. The Bungalow is refused without a job. The "Housing bubble pops" headline can also take the home.
+  - **Rules screen and old saves:** the Rules screen shows the new lines. An older save with study and work streaks loads.
+- Rule checker (`daily-grind-checks`, adjusted for shift minutes and the combined burnout line): passes on the base and on this change. The only warning (Gym Instructor's pick comment says $150, pay is $120) was already there.
+- `tools/qa` simulations (report: [`docs/QA_Sim_2026-10-21_housing-sleep-shifts-illness.md`](docs/QA_Sim_2026-10-21_housing-sleep-shifts-illness.md), raw data in the `.json` beside it), 20 careful-bot seeds (1–20) and 10 random games on base `c9f7963` and on this change: no script errors, broken invariants, stuck days or log/effect mismatches.
+  - Careful bot: **11 Wealthy, 9 Comfortable**, average $5,136 (base: 18 Comfortable, 2 Time's up, average $2,822), mostly because shorter shifts fit more paid work into a day. Random games: all Hospitalised on the same days, as before.
+  - In these 30 games, illness came up once (pneumonia, treated) and burnout and the housing bubble never did. Extra runs with the home removed on day 3 and the flu given on day 6 played through with no errors: the bot re-applied the same day and every game finished Comfortable or Wealthy.

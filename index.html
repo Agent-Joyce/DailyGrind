@@ -576,7 +576,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   <h3>Stress that builds before then</h3>
   <ul>
     <li><b>Every night:</b> <span id="cfgNight">energy −15% and happiness −10</span>, then sleep adds energy, happiness and health back for each hour you had left (more at home).</li>
-    <li><b>Tired (energy under 30):</b> shifts pay 15% less. Low energy also raises your chance of falling ill overnight: <span id="cfgIllEn">about 40% a night under 11 energy</span> (before health, diet and gym visits lower it).</li>
+    <li><b>Tired (energy under 30):</b> shifts pay 15% less. Low energy that lasts also raises your chance of falling ill overnight: <span id="cfgIllEn">about 40% a night under 11 energy</span> (before health, diet and gym visits lower it).</li>
     <li><b>Morale (happiness under 40 / 25 / 20):</b> shifts pay 10% / 25% / 40% less, and below 20 your boss may demote or fire you.</li>
     <li><b>Hunger:</b> skipping the daily meal costs <span id="cfgHunger">20% energy and 15 happiness</span>, and cuts productivity.</li>
     <li><b>Money shame:</b> checked when you end the day: net worth under $100 then costs 3 happiness, under $0 costs 8 happiness and 5% energy. Nothing is taken during the day.</li>
@@ -586,7 +586,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     <li><b>Loans:</b> <span id="cfgLoan">Borrow at the Bank in $50 steps.</span></li>
     <li><b>Work limit:</b> you can work at most <span id="cfgWork">12 hours</span> of shifts in one day.</li>
     <li><b>Burnout:</b> <span id="cfgBurn">studying more than 5 hours a day (school plus self-study), or working 9 hours or more a day, three days in a row costs 15 health and cuts shift pay by 20% for 3 days.</span></li>
-    <li><b>Illness:</b> low energy raises your chance of a cold, flu, dengue or pneumonia. While sick you cannot work: get treated at the Hospital (usually a full day in the ward) or rest at home to recover naturally. The bill is charged the morning after you are released; whatever your cash cannot cover goes on a repayment plan (+<span id="cfgDebt">10%</span> interest, late fees on missed instalments), like rent arrears.</li>
+    <li><b>Illness:</b> <span id="cfgIll">a cold, the flu, dengue or pneumonia.</span> While sick you cannot work. Hospital treatment always cures you (usually after a full day in the ward). The bill is charged the morning after you are released; whatever your cash cannot cover goes on a repayment plan (+<span id="cfgDebt">10%</span> interest, late fees on missed instalments), like rent arrears.</li>
+    <li><b>Housing bubble:</b> <span id="cfgHousing">when a housing bubble bursts you may lose your home.</span></li>
     <li><b>School:</b> while a qualification is in progress, 3 days without a lesson is a warning and 5 to 6 is expulsion. Once you have finished one and not started the next, nothing is skipped.</li>
   </ul>
   <button class="btn" id="rulesClose" style="margin-top:12px">Got it</button>
@@ -639,8 +640,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     Group 4: clothes (price, how long they last, bargaining).
     Group 5: health, illness and the hospital.
     Group 6: food, cooking, the fridge and hunger.
-    Group 7: burnout from too much studying.
-    Group 8: self-study, sleep and rest, the lottery, score and ranks.
+    Group 7: burnout from too many hours of work and study.
+    Group 8: self-study, sleep and rest, housing, the lottery, score and ranks.
     (More groups will be added here, one at a time.) */
   var CONFIG={
     /* Starting values for a new game. */
@@ -660,14 +661,12 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       rateStrength:4.5,    // how much news moves bank interest
       marketStrength:4.4,  // how much news moves investments (market mood)
       layoffStrength:1.5,  // chance of layoffs and workplace closures during a crisis
-      illnessStrength:2,  // extra illness during pandemics and outbreaks
       /* A news headline hits partly today; the rest drifts in over the next days. */
       shareToday:0.25,          // 0.35 = 35% today, 65% spread over the following days
       bigNewsDays:[4,14],      // how long big stories (war, crisis, boom...) keep drifting
       smallNewsDays:[3,7],      // how long ordinary economic news keeps drifting
       badNewsMarket:-0.55,      // daily market mood during bad headlines (war, crash...)
       goodNewsMarket:0.45,      // daily market mood during good headlines (boom, rally...)
-      outbreakIllness:1.6,      // illness multiplier during pandemic/lockdown news
       shockMarketScale:1.6,    // dampens market mood from one-off macro shocks
       priceReversion:0.03,     // each day, prices drift this share of the way back towards the difficulty's base price
       /* A running story does not hit at a constant rate. Each day its effect follows a curve: it builds, peaks mid-story, then fades, with a random daily swing on top. */
@@ -848,15 +847,16 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       minAction:15,
       maxWorkMinutes:720,    // most shift time you can work in one day (720 = 12 hours)
       /* Shift length and tiredness by pay. The first row whose pay the job reaches is used.
-        units = shift length (see the table above), energy = % energy a shift costs.
+        minutes = shift length, energy = % energy a shift costs.
         Better-paid (more senior) roles work SHORTER shifts, so pay per hour always rises with pay:
-          under $130 = 5h30 ($12-23 an hour), $130-249 = 4h45 ($27-52), $250-449 = 4h15 ($59-106), $450+ = 3h30 ($129+). */
+          under $130 = 4h30 ($14-27 an hour), $130-249 = 3h45 ($35-66), $250-449 = 3h15 ($77-138), $450+ = 2h30 ($180+). */
       shifts:[
-        {pay:450, units:6, energy:6},    // 3h30
-        {pay:250, units:7, energy:8},    // 4h15
-        {pay:130, units:8, energy:8},    // 4h45
-        {pay:0,  units:9, energy:10}    // 5h30
-      ]
+        {pay:450, minutes:150, energy:6},    // 2h30
+        {pay:250, minutes:195, energy:8},    // 3h15
+        {pay:130, minutes:225, energy:8},    // 3h45
+        {pay:0,  minutes:270, energy:10}    // 4h30
+      ],
+      freelanceMinutes:150   // freelance coding at home (needs a computer)
     },
     clothes:{
       /* The three outfits sold at the Clothes Mall.
@@ -879,20 +879,27 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       nightly:{
         always:-1,          // everyone loses a little each day
         skippedMeal:-10,      // extra if you did not eat today
-        sick:-6,            // extra while you have an illness
+        sick:-10,           // extra while you have an illness (any illness)
         lowEnergy:-2,        // extra if energy is below lowEnergyBelow
         lowEnergyBelow:20,
         burnout:-3          // extra while burnt out
       },
       /* Health gained from sleep: perHour x the hours you still have left when you go to bed, never more than max.
         Sleeping anywhere but home gives sleep.awayShare of it. */
-      sleep:{ perHour:1, max:10 },
+      sleep:{ perHour:1.5, max:15 },
       poorBelow:30,          // health below this counts as poor health...
       poorPay:0.9,          // ...and shifts pay this much (0.9 = 10% less)
       healthyMealCount:3    // healthy meals in the last 5 days needed for the bigger illness cut (see illness)
     },
     illness:{
-      /* Chance of falling ill each night, by energy. The first row your energy is UNDER is used. */
+      /* Low energy only raises the chance of falling ill once it has lasted: you need lowNights nights
+        (out of the last lowWindow) on which you went to bed with energy under lowEnergyBelow.
+        Until then the 'everyone else' row below is used, whatever your energy. */
+      lowEnergyBelow:30,
+      lowNights:3,
+      lowWindow:5,
+      /* Chance of falling ill each night, by energy (only once the low-energy rule above is met).
+        The first row your energy is UNDER is used. */
       byEnergy:[
         {energyUnder:11,  chance:0.55},  // energy 10 or less
         {energyUnder:20,  chance:0.40},
@@ -919,22 +926,25 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       gymBestX:0.55,        // ...down to this at most
       burnoutX:1.5,        // while burnt out
       checkupX:0.5,        // after a hospital check-up (0.5 = halved)
-      maxChance:0.9        // never higher than this
+      pandemicX:1.3,       // while a pandemic or lockdown story is running (1.3 = 30% more likely)
+      maxChance:0.9,       // never higher than this
+      /* Which illness you catch. Relative weights; they do not need to add to 1. */
+      mix:{cold:0.30, flu:0.40, dengue:0.15, pneu:0.15}
     },
     hospital:{
-      /* Illnesses. While sick you cannot work. Each sick day you choose: get treated at the Hospital,
-        or recover naturally (resting at home raises the nightly chance of recovering).
-        timeUnits = time lost each sick day, happiness = happiness lost each sick day,
-        recover = chance of recovering naturally each night, days = the most it can last untreated,
+      /* Illnesses. While sick you cannot work, and every illness costs CONFIG.health.nightly.sick health a night.
+        Treatment at the Hospital always cures you.
+        rest:true = you can also get over it at home: each night you sleep at home there is a homeRecover chance
+        you recover. If that roll fails, only Hospital treatment cures you. Without rest:true (dengue, pneumonia)
+        you must be treated at the Hospital.
+        timeUnits (or minutes) = time lost each sick day, happiness = happiness lost each sick day,
+        days = with rest:true, the most it lasts if you never fail a rest-at-home roll,
         treatCost = treatment fee in $ (or billMin-billMax for serious illnesses). */
-      cold:  {name:'a cold',      timeUnits:6,  happiness:3,  recover:0.50, days:3, treatCost:40},
-      flu:  {name:'the flu',      timeUnits:12, happiness:10, recover:0.30, days:4, treatCost:90},
-      dengue:{name:'dengue fever', timeUnits:14, happiness:12, recover:0.15, days:6, billMin:250, billMax:450},
-      pneu:  {name:'pneumonia',    timeUnits:16, happiness:15, recover:0.10, days:7, billMin:400, billMax:700},
-      /* Natural recovery: extra nightly chance for resting at home while sick. */
-      restRecover:0.15,      // each rest (nap) at home while sick adds this...
-      restRecoverMax:0.45,  // ...up to this much in one day
-      sleepRecover:0.10,    // ending the day asleep at home adds this
+      cold:  {name:'a cold',      timeUnits:6,  happiness:3,  rest:true, days:3, treatCost:40},
+      flu:  {name:'the flu',      minutes:120,  happiness:5,  rest:true, days:3, treatCost:90},
+      dengue:{name:'dengue fever', timeUnits:14, happiness:12, billMin:250, billMax:450},
+      pneu:  {name:'pneumonia',    timeUnits:16, happiness:15, billMin:400, billMax:700},
+      homeRecover:0.8,      // chance a night's sleep at home cures a cold or the flu
       /* Treatment at the Hospital: admitChance = chance you are warded for the whole of the next day.
         The bill (treatment + ward) is charged on the morning after you are released. */
       admitChance:0.8,
@@ -999,16 +1009,14 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       hungryDaysToHospital:3 // this many days in a row without a meal ends the game
     },
     burnout:{
-      /* Studying (school lessons plus self-study) for MORE than studyMinutes in a day,
+      /* Working, school lessons and self-study added together for MORE than loadMinutes in a day,
         daysInARow days running, causes burnout. */
-      studyMinutes:300,      // 300 = 5 hours
+      loadMinutes:600,       // 600 = 10 hours
       daysInARow:3,
       lastsDays:3,          // how long burnout lasts
       healthHit:-15,        // one-off hits when burnout starts
       energyHit:-10,
       happinessHit:-8,
-      workMinutes:540,      // working this many minutes or MORE in a day (540 = 9 hours)...
-      workDaysInARow:3,      // ...this many days running also causes burnout
       pay:0.8                // shifts pay this much while burnt out (0.8 = 20% less)
       /* While burnt out, health also drops each night (CONFIG.health.nightly.burnout)
         and you fall ill more easily (CONFIG.illness.burnoutX). */
@@ -1049,11 +1057,23 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       rateX:1,              // multiplies how fast resting and sleeping restore energy (1 = normal; the Night Owl trait raises it)
       nightEnergy:-15,      // every night, before sleep is added back: energy change (%)
       nightHappiness:-10,    // ...and happiness change
-      happinessPerHour:1,    // happiness next morning for each full hour slept at home
-      maxEnergy:35,          // most energy a night's sleep at home can give
+      happinessPerHour:1.5,  // happiness next morning for each full hour slept at home
+      energyX:1.5,          // a night's sleep restores energy this many times faster than resting (the 2h rest is not changed)
+      maxEnergy:52,          // most energy a night's sleep at home can give
       awayShare:0.5,        // sleeping away from home gives this share of the energy, health and happiness a night at home gives
       napMinutes:120,        // length of a rest at home
       napHappiness:2        // happiness from a rest at home
+    },
+    housing:{
+      /* Housing bubble (the 'Housing bubble bursts' shock and the 'Housing bubble pops' headline):
+        when one starts, there is a loseChance chance you lose your Apartment or Bungalow.
+        Without a home: no rent is due, every night counts as sleeping outside, and you cannot rest, cook,
+        use the fridge or your gadgets (they stay in storage and still count in net worth). Food at home keeps
+        as if outside the fridge. Apply again at either home: the Apartment asks for aptDeposit, the Bungalow
+        its usual move-in fee (both move with prices), and applying takes applyMinutes. */
+      loseChance:0.5,
+      aptDeposit:150,
+      applyMinutes:60
     },
     lottery:{
       ticketCost:10,
@@ -1120,7 +1140,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       toasts:{
         on:true, seconds:2, max:3, vitalWarnings:true,
         words:['you passed the interview','didn’t pass the interview','not enough relevant working experience','no openings now','you were promoted','laid off from','qualification earned',
-              'lottery win','food poisoning','rushed to hospital','is admitting you','released from the hospital','expelled from school','demotes you','late fee','broke down',
+              'lottery win','lost your home','food poisoning','rushed to hospital','is admitting you','released from the hospital','expelled from school','demotes you','late fee','broke down',
               'milestone:','you reached ']
       },
       /* 4. Action preview: pressing one of these buttons first shows what it will cost, and asks you to confirm.
@@ -1134,7 +1154,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
         {icon:'📉', points:85,  words:['laid off from']},
         {icon:'🚑', points:80,  words:['rushed to hospital','is admitting you']},
         {icon:'🚫', points:75,  words:['expelled from school']},
-        {icon:'🏠', points:70,  words:['missed rent instalment','evicted']},
+        {icon:'🏠', points:70,  words:['missed rent instalment','evicted','lost your home']},
         {icon:'🔻', points:70,  words:['demotes you']},
         {icon:'🎓', points:65,  words:['qualification earned']},
         {icon:'📈', points:62,  words:['you were promoted']},
@@ -1162,9 +1182,9 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
               {k:'food.basic.happiness', v:1}, {k:'food.premium.happiness', v:6}]},
         {id:'book', icon:'📚', name:'Bookworm',
         plus:'Self-study teaches more (computer +8, tablet +6, phone +5) and you stop forgetting things overnight.',
-        minus:'Long sessions wear you out (−6% energy each) and burnout starts after 4 hours of study a day.',
+        minus:'Long sessions wear you out (−6% energy each) and burnout starts after 9 hours of work and study a day.',
         set:[{k:'selfStudy.gain.computer', v:8}, {k:'selfStudy.gain.tablet', v:6}, {k:'selfStudy.gain.phone', v:5},
-              {k:'selfStudy.nightlyLoss', v:0}, {k:'selfStudy.energy', v:-6}, {k:'burnout.studyMinutes', v:240}]},
+              {k:'selfStudy.nightlyLoss', v:0}, {k:'selfStudy.energy', v:-6}, {k:'burnout.loadMinutes', v:540}]},
         {id:'hardy', icon:'🛡️', name:'Hardy',
         plus:'You start with 90 health and fall ill about a fifth less often.',
         minus:'All work and no play: resting at home no longer lifts your mood.',
@@ -1177,18 +1197,24 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     }
   };
   var ORD=['zeroth','first','second','third','fourth','fifth','sixth','seventh','eighth','ninth','tenth'];
-  function studyLimitTxt(){var m=CONFIG.burnout.studyMinutes;return m%60?hm(m):(m/60)+' hour'+(m===60?'':'s')}
+  function loadLimitTxt(){var m=CONFIG.burnout.loadMinutes;return m%60?hm(m):(m/60)+' hour'+(m===60?'':'s')}
   function dayN(n){return n+' day'+(n===1?'':'s')}
   /* the burnout and work-limit lines on the rules screen, from CONFIG */
   function paintBurnRules(){
     var BR=CONFIG.bankrupt,LN=CONFIG.loan;
     if($('cfgIllEn')){var IL=CONFIG.illness,pc=function(c){return Math.round(Math.max(0,c*IL.cutForEveryone-IL.minusForEveryone)*100)+'%'};
-      $('cfgIllEn').textContent='about '+IL.byEnergy.filter(function(r){return r.energyUnder<100}).map(function(r){return pc(r.chance)+' a night under '+r.energyUnder+' energy'}).join(', ')}
+      $('cfgIllEn').textContent='once you have gone to bed with energy under '+IL.lowEnergyBelow+' on '+numWord(IL.lowNights)+' of the last '+numWord(IL.lowWindow)+' nights, about '+IL.byEnergy.filter(function(r){return r.energyUnder<100}).map(function(r){return pc(r.chance)+' a night under '+r.energyUnder+' energy'}).join(', ')+'. Until then it stays low, whatever your energy. During a pandemic or lockdown illness is '+pctTxt(IL.pandemicX-1)+' more likely'}
+    if($('cfgIll')){var IM=CONFIG.illness.mix,tot=0,HPx=CONFIG.hospital;Object.keys(IM).forEach(function(k){tot+=IM[k]});
+      var rest=Object.keys(IM).filter(function(k){return HPx[k]&&HPx[k].rest}),hosp=Object.keys(IM).filter(function(k){return HPx[k]&&!HPx[k].rest}),nm=function(k){return HPx[k].name.replace(/^(a|the) /,'')};
+      $('cfgIll').textContent='you catch '+Object.keys(IM).map(function(k){return nm(k)+' '+pctTxt(IM[k]/tot)}).join(', ')+' of the time. Every illness costs '+Math.abs(CONFIG.health.nightly.sick)+' health a night. '+
+        (rest.length?rest.map(nm).join(' and ')+': each night you sleep at home there is a '+pctTxt(HPx.homeRecover)+' chance you recover; if that fails, only the Hospital can cure you. ':'')+
+        (hosp.length?hosp.map(nm).join(' and ')+' must be treated at the Hospital.':'')}
+    if($('cfgHousing')){var HZ=CONFIG.housing;$('cfgHousing').textContent='when a housing bubble bursts there is a '+pctTxt(HZ.loseChance)+' chance you lose your home. With no home there is no rent, every night counts as sleeping outside, and you cannot rest, cook, or use your fridge and gadgets (your things are kept in storage). Apply again at the Apartment ('+money(S?G(HZ.aptDeposit):HZ.aptDeposit)+' deposit) or the Bungalow (its move-in fee); applying takes '+hm(HZ.applyMinutes)+'.'}
     if($('cfgBankrupt'))$('cfgBankrupt').textContent='net worth under '+money(BR.netWorthBelow)+' at the end of '+numWord(BR.daysInARow)+' days in a row'+(BR.fromDay>1?' (counted from day '+BR.fromDay+')':'')+'.';
     if($('cfgLoanDefault'))$('cfgLoanDefault').textContent=LN.enabled?'you owe more than '+money(LN.defaultIfOwedAbove)+', or have not repaid your loan in full '+dayN(LN.graceDays)+' after its due date.':'not used (loans are switched off).';
     if($('cfgLoan'))$('cfgLoan').textContent=LN.enabled?'borrow at the Bank in '+money(LN.step)+' steps, up to your credit limit ('+money(LN.baseLimit)+' plus '+LN.limitPerAsset+' × your '+loanAssetsTxt()+', never more than '+money(LN.maxLoan)+'). Pick '+LN.tenures.map(function(t){return dayN(t.days)+' at '+rateTxt(t.rate)+' a day'}).join(', ')+' (simple interest, only for the days you keep it). Repay from cash any day after the one you borrowed (not the same day). After the due date the balance grows '+rateTxt(LN.overdueRate)+' a day'+(LN.overdueCompounds?', compounding':'')+'. One loan at a time, and what you owe counts against your net worth.':'loans are switched off.';
     var BU=CONFIG.burnout;
-    $('cfgBurn').textContent='studying more than '+studyLimitTxt()+' a day (school plus self-study), or working '+hm(BU.workMinutes)+' or more a day, '+numWord(BU.daysInARow)+' day'+(BU.daysInARow===1?'':'s')+' in a row costs '+Math.abs(BU.healthHit)+' health and cuts shift pay by '+pctTxt(1-BU.pay)+' for '+dayN(BU.lastsDays)+'.';
+    $('cfgBurn').textContent='more than '+loadLimitTxt()+' a day of work and study together (shifts, school lessons and self-study), '+numWord(BU.daysInARow)+' day'+(BU.daysInARow===1?'':'s')+' in a row, costs '+Math.abs(BU.healthHit)+' health and cuts shift pay by '+pctTxt(1-BU.pay)+' for '+dayN(BU.lastsDays)+'.';
     if($('cfgWork'))$('cfgWork').textContent=hm(CONFIG.time.maxWorkMinutes);
     if($('cfgNight'))$('cfgNight').textContent='energy '+sg(CONFIG.sleep.nightEnergy)+'% and happiness '+sg(CONFIG.sleep.nightHappiness);
   }
@@ -1215,7 +1241,6 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     tr.p=(tr.p||0)*mk('priceStrength');tr.w=(tr.w||0)*mk('wageStrength');
     tr.r=(tr.r||0)*mk('rateStrength');tr.mkt=(tr.mkt||0)*mk('marketStrength');
     tr.lay=Math.min(1,(tr.lay||0)*mk('layoffStrength'));tr.cls=Math.min(1,(tr.cls||0)*mk('layoffStrength'));
-    if(tr.ill&&tr.ill!==1)tr.ill=Math.max(0.1,1+(tr.ill-1)*mk('illnessStrength'));
     return tr;
   }
   /* ================================================= */
@@ -1312,7 +1337,9 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function comfortItems(){var seen={},a=[];Object.keys(COMFORT).forEach(function(k){if(S.items[k]&&!S.broken[k]&&!seen[COMFORT[k]]){seen[COMFORT[k]]=1;a.push(COMFORT[k])}});return a}
   function comfortMult(){return 1+0.1*comfortItems().length}
   function restRate(){return HOUSE[S.home].rate*comfortMult()*(CONFIG.sleep.rateX||1)}  /* energy % per hour of rest */
-  function sleepGain(min){return Math.min(CONFIG.sleep.maxEnergy,Math.round(min/60*restRate()))}
+  function sleepGain(min){return Math.min(CONFIG.sleep.maxEnergy,Math.round(min/60*restRate()*(CONFIG.sleep.energyX||1)))}
+  function sleepHap(min){return Math.round(Math.floor(min/60)*CONFIG.sleep.happinessPerHour)}  /* happiness from a night at home */
+  function sleepHealth(min){var HS=CONFIG.health.sleep;return Math.round(Math.min(HS.max,min/60*HS.perHour))}
   var ITEMS={
     clothes:{n:'Work gloves',ic:'🧤',p:25,shop:'thrift',d:'Adds $15 to every shift you work'},
     tv:{n:'Second-hand TV',ic:'📺',p:150,shop:'thrift',d:restTxt('tv')+'. Breaks down more often',old:.12},
@@ -1338,7 +1365,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function invSum(f){return INVK.reduce(function(a,k){return a+((S.inv[k]||{})[f]||0)},0)}
   function anyInv(){return invSum('v')>0.5}
   function invTotal(){return Math.round(invSum('v'))}
-  var JOBS={free:{n:'Freelance coding',ap:6,pay:80,en:5,computer:1}};
+  var JOBS={free:{n:'Freelance coding',min:CONFIG.time.freelanceMinutes,pay:80,en:5,computer:1}};
   var TRACKS={
     /* L = modules grouped by level. Higher levels have more modules. */
     sal:{n:'Sales',lv:['Certificate','Degree'],L:[['Customer Relations','Product Knowledge'],['Negotiation','Retail Analytics','Merchandising','Sales Leadership']]},
@@ -1365,11 +1392,11 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function qualFee(t,n){var i=levelOf(t,n);if(i===0)return G(Math.round(CONFIG.education.certFee[t]*((S.certVar&&S.certVar[t])||1)));return G(modCost(t,n)*TRACKS[t].L[i].length)}
   function lesDone(t){return (S.les&&S.les[t])||0}
   function inProgress(t){return S.edu[t]<totMods(t)&&S.enr&&S.enr[t]===levelOf(t,S.edu[t])}
-  /* shift length (units) and energy cost, from CONFIG.time.shifts */
+  /* shift length (minutes) and energy cost, from CONFIG.time.shifts */
   function effort(pay){
     var rows=CONFIG.time.shifts.slice().sort(function(a,b){return b.pay-a.pay});
-    for(var i=0;i<rows.length;i++)if(pay>=rows[i].pay)return {ap:rows[i].units,en:rows[i].energy};
-    var r=rows[rows.length-1];return {ap:r.units,en:r.energy};
+    for(var i=0;i<rows.length;i++)if(pay>=rows[i].pay)return {min:rows[i].minutes,en:rows[i].energy};
+    var r=rows[rows.length-1];return {min:r.minutes,en:r.energy};
   }
   // roles per building, lowest rank first. t = track needed, l = level needed (0 = none)
   var CAREERS={
@@ -1574,7 +1601,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   var FOODN={basic:function(){return GROC.basic.n},prem:function(){return GROC.prem.n},cook:function(){return 'Cooked meal'}},FOODIC={basic:'🥕',prem:'🍱',cook:'🍲'};
   function roomRate(){return FD.keepDaysFridge/FD.keepDaysRoom}
   function foodLeft(p,inF){if(p.sp)return 0;var r=(inF==null?p.f:inF)?1:roomRate();return Math.max(0,Math.ceil((FD.keepDaysFridge-p.u)/r-1e-9))}
-  function fridgeCap(){return owns('fridge')?FD.fridgeSpace:0}
+  function fridgeCap(){return owns('fridge')&&!S.homeless?FD.fridgeSpace:0}  /* no home: the fridge is in storage */
   function inFridge(){return (S.food||[]).filter(function(p){return p.f}).length}
   /* fill the fridge: with room for everything, everything fresh goes in; otherwise your picks first,
     then the meals closest to going off, and the ones you took out last */
@@ -1616,7 +1643,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     done();
   }
 
-  function blank(){return {rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,workStreak:0,sagaLast:'',slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,studyStreak:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:4,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickRest:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
+  function blank(){return {rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:4,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
     S=blank();T0();PREV=null;applyPayVar();S.certVar={};Object.keys(TRACKS).forEach(function(t){S.certVar[t]=1+(Math.random()*2-1)*CONFIG.education.certVariance});
     rollOpenings();planNews();loc='apt';view=null;last=null;
@@ -1653,6 +1680,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       if(!d.S.food&&(d.S.pantry||d.S.cooked)){var KF=CONFIG.food.keepDaysFridge,mv=function(t,p){return p.sp?{t:t,u:KF,sp:1}:{t:t,u:Math.min(KF-1,Math.max(0,d.S.day-(p.w||d.S.day)))}};
         d.S.food=(d.S.pantry||[]).map(function(p){return mv(p.t==='prem'?'prem':'basic',p)}).concat((d.S.cooked||[]).map(function(c){return mv('cook',c)}))}
       delete d.S.pantry;delete d.S.cooked;
+      /* burnout now counts work and study together; resting no longer adds to the recovery chance */
+      delete d.S.studyStreak;delete d.S.workStreak;delete d.S.sickRest;
       Object.keys(b).forEach(function(k){if(d.S[k]===undefined)d.S[k]=b[k]});
       /* Diploma merged into Degree; Doctorate and Specialist removed. Convert finished qualifications to the new pathways; part-done ones are reset. */
       if(d.S.ver===3&&d.S.edu){
@@ -1820,16 +1849,16 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       rk=cur(k);
       if(!rk)return refuse('You have no job here yet. Apply at the Employment Office.');
       if(shutLeft(bOf(k))>0)return refuse('The '+NAME[bOf(k)]+' is closed for '+shutLeft(bOf(k))+' more day'+(shutLeft(bOf(k))>1?'s':'')+' (counting today). Your job as '+rk.r+' stays on your record and comes back when it reopens.');
-      var ef=effort(rk.pay);j={n:rk.r,ap:ef.ap,pay:rk.pay,en:ef.en,dress:rk.dress};
+      var ef=effort(rk.pay);j={n:rk.r,min:ef.min,pay:rk.pay,en:ef.en,dress:rk.dress};
     }else j=JOBS[k];
-    if(S.ill)return refuse('You are sick with '+ILL[S.ill.k].n+' and can’t work. Get treated at the Hospital, or rest at home to recover.');
+    if(S.ill)return refuse('You are sick with '+ILL[S.ill.k].n+' and can’t work. '+illCure());
     if(j.dress&&!hasDress(j.dress))return refuse("You don't meet the dress code! This shift needs "+DRESS[j.dress]+'. Visit the Clothes Mall.');
     if(j.computer&&!owns('computer'))return refuse('You need a working computer for freelance work.');
     if(S.energy<20)return refuse('You’re too exhausted to work. Eat or rest first.');
     var capM=CONFIG.time.maxWorkMinutes;
-    if((S.workMin||0)+M(j.ap)>capM)return refuse('You can work at most '+hm(capM)+' a day. You have already worked '+hm(S.workMin||0)+' today and this shift takes '+hm(M(j.ap))+'. Rest and try again tomorrow.');
-    if(!spend(j.ap,0))return;
-    S.workMin=(S.workMin||0)+M(j.ap);
+    if((S.workMin||0)+j.min>capM)return refuse('You can work at most '+hm(capM)+' a day. You have already worked '+hm(S.workMin||0)+' today and this shift takes '+hm(j.min)+'. Rest and try again tomorrow.');
+    if(!spendMin(j.min,0))return;
+    S.workMin=(S.workMin||0)+j.min;
     var pr=prod(), pay=shiftPay(j.pay), low=pr.m<1, v0=vitSnap();
     S.cash+=pay;inc(pay);S.energy=clamp(S.energy-j.en);S.flags.worked=1;
     if(c){if(!S.shiftsAt)S.shiftsAt={};S.shiftsAt[bOf(k)]=(S.shiftsAt[bOf(k)]||0)+1}  /* work experience per workplace */
@@ -1969,13 +1998,12 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(a.bal<=0)S.arrears=null;done();
   }
   function nap(){
-    if(loc!==S.home)return refuse('You can only rest at home.');
+    if(!atHome())return refuse(S.homeless?'You have no home to rest in. Apply at the Apartment or the Bungalow.':'You can only rest at home.');
     var SL=CONFIG.sleep;
     if(!spendMin(SL.napMinutes,0))return;
     var g=Math.round(SL.napMinutes/60*restRate()),v0=vitSnap();S.energy=clamp(S.energy+g);S.happy=clamp(S.happy+SL.napHappiness);
-    if(S.ill)S.sickRest=(S.sickRest||0)+1;
     S.restHrs=(S.restHrs||0)+SL.napMinutes/60;
-    log('You rested for '+hm(SL.napMinutes)+' at home'+vitPar(v0)+'.'+(S.ill?' Resting helps you get over '+ILL[S.ill.k].n+': about '+Math.round(recoverChance(true)*100)+'% chance to recover tonight if you sleep at home.':''),'good');done();
+    log('You rested for '+hm(SL.napMinutes)+' at home'+vitPar(v0)+'.','good');done();
   }
   function payRent(){
     var H=HOUSE[S.home],due=nextRentWeek();
@@ -2010,7 +2038,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   }
   function eatChips(){
     var CH=FD.chips;
-    if(loc!==S.home)return refuse('Your chips are at home.');
+    if(!atHome())return refuse(S.homeless?'Your chips are in storage until you have a home again.':'Your chips are at home.');
     if(!S.chips)return refuse('You have no chips at home. Buy some at the Supermarket.');
     if(!spendMin(CH.eatMinutes,0))return;
     S.chips--;
@@ -2129,7 +2157,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(S.energy<SS.minEnergy)return refuse('You’re too tired to study. Eat or rest first.');
     if(!spend(SS.units,0))return;
     var v0=vitSnap();S.energy=clamp(S.energy+SS.energy);S.health=clamp(S.health+SS.health);S.know=clamp(S.know+gain);S.studyMin+=M(SS.units);
-    log('You spent '+hm(M(SS.units))+' studying online at home'+vitPar(v0)+'.'+(S.studyMin>CONFIG.burnout.studyMinutes?' That is over '+studyLimitTxt()+' of study today.':''),'good');
+    log('You spent '+hm(M(SS.units))+' studying online at home'+vitPar(v0)+'.'+(loadMin()>CONFIG.burnout.loadMinutes?' That makes more than '+loadLimitTxt()+' of work and study today.':''),'good');
     done();
   }
   function repair(k){
@@ -2303,12 +2331,24 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     }
     done();
   }
+  /* housing (CONFIG.housing): after a housing bubble you can lose your home and must apply again */
+  function atHome(){return !S.homeless&&loc===S.home}
+  function homeFee(h){return S.homeless?G(h==='apt'?CONFIG.housing.aptDeposit:HOUSE[h].fee):HOUSE[h].fee}
+  /* a housing bubble starts: a CONFIG.housing.loseChance chance you lose your home. Returns a line for the event card, or '' */
+  function bubbleHit(){
+    if(S.homeless||Math.random()>=CONFIG.housing.loseChance)return '';
+    var h=S.home;S.homeless=1;
+    log('The housing bubble burst and you lost your home: the landlord sold the '+NAME[h]+'. Your things are kept in storage. Apply again at the Apartment or the Bungalow.','bad');
+    S.notes.push({l:'bad',t:'🏚️ You lost your home in the housing bubble. Until you apply again (Apartment '+money(homeFee('apt'))+' deposit, Bungalow '+money(homeFee('bung'))+', '+hm(CONFIG.housing.applyMinutes)+'), no rent is due, you sleep outside, and you cannot rest, cook or use your fridge and gadgets.'});
+    return 'You lost the '+NAME[h];
+  }
   function moveHome(h){
-    var f=HOUSE[h].fee;
+    var f=homeFee(h),re=S.homeless;
     if(h==='bung'&&!Object.keys(S.career).length)return refuse('The estate agent wants proof of steady work. Get a job through the Employment Office first.');
-    if(S.cash<f)return refuse('Moving in costs '+money(f)+'. You have '+money(S.cash)+'.');
-    S.cash-=f;S.home=h;
-    log('You moved into the '+NAME[h]+(f?' and paid '+money(f)+' up front':'')+'. Rent is now '+money(HOUSE[h].rent)+' '+everyDays(RENT_EVERY)+'.');
+    if(S.cash<f)return refuse((re?'Applying costs ':'Moving in costs ')+money(f)+'. You have '+money(S.cash)+'.');
+    if(re){if(!spendMin(CONFIG.housing.applyMinutes,f))return}else S.cash-=f;
+    S.home=h;S.homeless=0;
+    log(re?'Your application was accepted: you have a home again at the '+NAME[h]+(f?' ('+money(f)+' paid)':'')+'. Rent is '+money(HOUSE[h].rent)+' '+everyDays(RENT_EVERY)+'.':'You moved into the '+NAME[h]+(f?' and paid '+money(f)+' up front':'')+'. Rent is now '+money(HOUSE[h].rent)+' '+everyDays(RENT_EVERY)+'.',re?'good':'');
     done();
   }
   function enter(l){
@@ -2326,7 +2366,13 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   /* illnesses, built from CONFIG.hospital */
   var HP=CONFIG.hospital,ILL={};
   ['cold','flu','dengue','pneu'].forEach(function(k){var c=HP[k];
-    ILL[k]={n:c.name,ap:c.timeUnits||0,hap:c.happiness||0,wk:c.days||3,rec:c.recover||0.3,cost:c.treatCost||0,lo:c.billMin||0,hi:c.billMax||0}});
+    ILL[k]={n:c.name,min:c.minutes||M(c.timeUnits||0),hap:c.happiness||0,rest:!!c.rest,wk:c.days||3,cost:c.treatCost||0,lo:c.billMin||0,hi:c.billMax||0}});
+  function illShort(t){return t.n.replace(/^(a|the) /,'')}
+  /* what the player can do about the illness they have now (cold and flu: rest at home unless that already failed; others: Hospital only) */
+  function illCure(){var t=S.ill&&ILL[S.ill.k];if(!t)return '';
+    if(!t.rest)return illShort(t).charAt(0).toUpperCase()+illShort(t).slice(1)+' needs treatment at the Hospital: it will not clear up on its own.';
+    if(S.ill.fail)return 'Resting at home did not work, so only treatment at the Hospital will cure it now.';
+    return 'Sleep at home tonight for a '+pctTxt(HP.homeRecover)+' chance to recover, or get treated at the Hospital.'}
   function isStaff(){return S.career.hosp!=null}
   function medCost(base){return Math.round(G(base)*(isStaff()?HP.staffDiscount:1)*(S.ins>0?1-HP.insuranceCovers:1))}
   /* treatment fee for an illness (a range for serious ones), before insurance and discounts */
@@ -2355,10 +2401,10 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       if(S.medDebt>0)S.notes.push({l:'rem',t:'🧾 Medical bill instalment of '+money(pay)+' paid. '+money(S.medDebt)+' still owed over '+S.medDays+' more day'+(S.medDays>1?'s':'')+' (next: '+money(medInstal())+').'})}
     if(S.medDebt<=0){S.medDebt=0;S.medDays=0}
   }
-  /* nightly chance of recovering naturally; resting at home raises it */
-  function recoverChance(withSleep){
-    if(!S.ill)return 0;var t=ILL[S.ill.k];
-    return Math.min(1,t.rec+Math.min(HP.restRecoverMax,(S.sickRest||0)*HP.restRecover)+(withSleep?HP.sleepRecover:0));
+  /* chance tonight's sleep at home cures you: only for illnesses with rest:true, and only until a roll has failed */
+  function recoverChance(){
+    var t=S.ill&&ILL[S.ill.k];
+    return t&&t.rest&&!S.ill.fail?HP.homeRecover:0;
   }
   /* hospital stay: a ward day, or release (with the bill) on the morning after. Returns true while it applies tonight. */
   function hospTick(){
@@ -2381,20 +2427,29 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function illTick(){
     var inHosp=hospTick();
     if(!inHosp&&S.ill){
-      var t=ILL[S.ill.k],ch=recoverChance(!!S.sickSleep);S.ill.d=(S.ill.d||0)+1;
-      if(Math.random()<ch||S.ill.d>=t.wk){
-        log('You recovered from '+t.n+((S.sickRest||S.sickSleep)?' (resting at home helped)':'')+'. You can work again.','good');
-        S.notes.push({l:'good',t:'💪 You recovered from '+t.n+' overnight. You can work again.'});S.ill=null;
-      }else log('You are still sick with '+t.n+' (you had a '+Math.round(ch*100)+'% chance of recovering last night).','bad');
+      var t=ILL[S.ill.k],ch=S.sickSleep?recoverChance():0;S.ill.d=(S.ill.d||0)+1;
+      if(ch&&Math.random()<ch){
+        log('A night’s sleep at home did the trick: you recovered from '+t.n+'. You can work again.','good');
+        S.notes.push({l:'good',t:'💪 You slept it off at home and recovered from '+t.n+'. You can work again.'});S.ill=null;
+      }else if(ch){
+        S.ill.fail=1;
+        log('You slept at home but are still sick with '+t.n+' (you had a '+pctTxt(ch)+' chance). Only Hospital treatment will cure it now.','bad');
+        S.notes.push({l:'bad',t:'🤒 Resting at home did not shake off '+t.n+'. Only treatment at the Hospital will cure it now.'});
+      }else if(t.rest&&!S.ill.fail&&S.ill.d>=t.wk){
+        log('You got over '+t.n+' after '+dayN(S.ill.d)+'. You can work again.','good');
+        S.notes.push({l:'good',t:'💪 You got over '+t.n+'. You can work again.'});S.ill=null;
+      }else log('You are still sick with '+t.n+'. '+illCure(),'bad');
     }else if(!inHosp){
       var ch2=illChance();
       if(Math.random()<ch2){
-        var k=S.energy<=10?(Math.random()<.6?'pneu':'flu'):S.energy<20?(Math.random()<.25?'dengue':'flu'):S.energy<30?(Math.random()<.5?'flu':'cold'):(Math.random()<.1?'dengue':'cold');
-        S.ill={k:k,d:0};log('You came down with '+ILL[k].n+'. You can’t work while sick: get treated at the Hospital, or rest at home to recover.','bad');
+        var mix=CONFIG.illness.mix,tot=0,k=null;Object.keys(mix).forEach(function(q){if(ILL[q])tot+=mix[q]});
+        var roll=Math.random()*tot;Object.keys(mix).forEach(function(q){if(!ILL[q]||k)return;roll-=mix[q];if(roll<0)k=q});
+        if(!k)k='cold';
+        S.ill={k:k,d:0};log('You came down with '+ILL[k].n+'. You can’t work while sick. '+illCure(),'bad');
       }
     }
-    if(S.ill&&!inHosp){var t2=ILL[S.ill.k];S.ap=Math.max(0,Math.min(S.ap,MAX_AP-M(t2.ap)));S.happy=clamp(S.happy-t2.hap);log('You are sick with '+t2.n+' (−'+hm(M(t2.ap))+', −'+t2.hap+' happiness today, no work).','bad')}
-    S.sickRest=0;S.sickSleep=0;
+    if(S.ill&&!inHosp){var t2=ILL[S.ill.k];S.ap=Math.max(0,Math.min(S.ap,MAX_AP-t2.min));S.happy=clamp(S.happy-t2.hap);log('You are sick with '+t2.n+' (−'+hm(t2.min)+', −'+t2.hap+' happiness today, no work).','bad')}
+    S.sickSleep=0;
     if(S.immune>0)S.immune--;
     /* life insurance (S.ins) lasts the whole game */
     medTick();
@@ -2427,10 +2482,13 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function healthF(){var rows=CONFIG.illness.byHealth.slice().sort(function(a,b){return b.healthAtLeast-a.healthAtLeast});for(var i=0;i<rows.length;i++)if(S.health>=rows[i].healthAtLeast)return rows[i].x;return rows[rows.length-1].x}
   function gymF(){var I=CONFIG.illness;return Math.max(I.gymBestX,1-I.gymPerVisitCut*gymCount())}
   function checkupWord(){var x=CONFIG.illness.checkupX;return x===0.5?'halved':'cut by '+pctTxt(1-x)}
-  /* nightly chance of falling ill: a fixed cut for everyone, then reduced by health, diet and gym visits */
+  /* nights (out of the last CONFIG.illness.lowWindow) you went to bed with low energy */
+  function lowNights(){var I=CONFIG.illness;return (S.lowE||[]).filter(function(d){return S.day-1-d<I.lowWindow}).length}  /* nights up to last night */
+  /* nightly chance of falling ill: low energy only counts once it has lasted (CONFIG.illness.lowNights),
+    then a fixed cut for everyone, then reduced by health, diet and gym visits */
   function illChance(){
     var I=CONFIG.illness,rows=I.byEnergy.slice().sort(function(a,b){return a.energyUnder-b.energyUnder}),base=rows[rows.length-1].chance;
-    for(var i=0;i<rows.length;i++)if(S.energy<rows[i].energyUnder){base=rows[i].chance;break}
+    if(lowNights()>=I.lowNights)for(var i=0;i<rows.length;i++)if(S.energy<rows[i].energyUnder){base=rows[i].chance;break}
     var ch=Math.max(0,base*I.cutForEveryone-I.minusForEveryone);  /* fixed cut for everyone */
     ch*=healthF()*dietF()*gymF()*Df().ill*trendIll()*(S.burn>0?I.burnoutX:1);
     if(S.immune>0)ch*=I.checkupX;
@@ -2446,24 +2504,22 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var h0=S.health;S.health=clamp(S.health+d);S.slept=0;
     log('Overnight health '+sg(S.health-h0)+' ('+why.join(', ')+').',S.health-h0<0?'warn':'good');
   }
-  /* burnout: studying more than CONFIG.burnout.studyMinutes in a day, or working CONFIG.burnout.workMinutes or more, daysInARow days running */
+  /* burnout: work + school lessons + self-study for more than CONFIG.burnout.loadMinutes in a day, daysInARow days running */
+  function loadMin(){return (S.workMin||0)+(S.studyMin||0)}
   function burnTick(){
     var BU=CONFIG.burnout;
-    if(S.studyMin>BU.studyMinutes)S.studyStreak++;else S.studyStreak=0;
-    if((S.workMin||0)>=BU.workMinutes)S.workStreak=(S.workStreak||0)+1;else S.workStreak=0;
+    if(loadMin()>BU.loadMinutes)S.loadStreak=(S.loadStreak||0)+1;else S.loadStreak=0;
     S.studyMin=0;S.workMin=0;
-    var byStudy=S.studyStreak>=BU.daysInARow,byWork=S.workStreak>=BU.workDaysInARow;
     if(S.burn>0){S.burn--;if(!S.burn){S.notes.push({l:'good',t:'😮‍💨 You have recovered from burnout. Pace your work and studying from now on.'});log('You recovered from burnout.','good')}}
-    else if(byStudy||byWork){
-      S.burn=BU.lastsDays;S.studyStreak=0;S.workStreak=0;S.health=clamp(S.health+BU.healthHit);S.energy=clamp(S.energy+BU.energyHit);S.happy=clamp(S.happy+BU.happinessHit);
-      var why=byWork&&byStudy?'worked '+hm(BU.workMinutes)+' or more and studied over '+studyLimitTxt()+' a day':byWork?'worked '+hm(BU.workMinutes)+' or more a day':'studied over '+studyLimitTxt()+' a day';
-      S.notes.push({l:'bad',t:'🔥 BURNOUT! You '+why+' for '+dayN(BU.daysInARow)+' running. Health '+sg(BU.healthHit)+', energy '+sg(BU.energyHit)+'%, happiness '+sg(BU.happinessHit)+'. For '+dayN(BU.lastsDays)+' your health keeps dropping and shifts pay '+pctTxt(1-BU.pay)+' less.'});
-      log('Burnout from '+(byWork&&byStudy?'overwork and too much studying':byWork?'working too long':'too much studying')+': health '+sg(BU.healthHit)+', productivity down for '+dayN(BU.lastsDays)+'.','bad');
-    }else{
-      if(BU.daysInARow>1&&S.studyStreak===BU.daysInARow-1)S.notes.push({l:'warn',t:'📚 '+(S.studyStreak===1?'You studied over '+studyLimitTxt()+' yesterday.':'You have studied over '+studyLimitTxt()+' a day '+numWord(S.studyStreak)+' days in a row.')+' Take it easy today or you will burn out tomorrow.'});
-      if(BU.workDaysInARow>1&&S.workStreak===BU.workDaysInARow-1)S.notes.push({l:'warn',t:'💼 '+(S.workStreak===1?'You worked '+hm(BU.workMinutes)+' or more yesterday.':'You have worked '+hm(BU.workMinutes)+' or more a day '+numWord(S.workStreak)+' days in a row.')+' Work less today or you will burn out tomorrow.'});
-    }
+    else if(S.loadStreak>=BU.daysInARow){
+      S.burn=BU.lastsDays;S.loadStreak=0;S.health=clamp(S.health+BU.healthHit);S.energy=clamp(S.energy+BU.energyHit);S.happy=clamp(S.happy+BU.happinessHit);
+      S.notes.push({l:'bad',t:'🔥 BURNOUT! You worked and studied more than '+loadLimitTxt()+' a day for '+dayN(BU.daysInARow)+' running. Health '+sg(BU.healthHit)+', energy '+sg(BU.energyHit)+'%, happiness '+sg(BU.happinessHit)+'. For '+dayN(BU.lastsDays)+' your health keeps dropping and shifts pay '+pctTxt(1-BU.pay)+' less.'});
+      log('Burnout from long days of work and study: health '+sg(BU.healthHit)+', productivity down for '+dayN(BU.lastsDays)+'.','bad');
+    }else if(BU.daysInARow>1&&S.loadStreak===BU.daysInARow-1)
+      S.notes.push({l:'warn',t:'⏱ '+(S.loadStreak===1?'You worked and studied more than '+loadLimitTxt()+' yesterday.':'You have worked and studied more than '+loadLimitTxt()+' a day '+numWord(S.loadStreak)+' days in a row.')+' Keep today under '+loadLimitTxt()+' or you will burn out tomorrow.'});
   }
+  /* the day's work + study line shown at workplaces, School and home */
+  function loadTxt(){var BU=CONFIG.burnout,m=loadMin();return '⏱ Work and study today: <b>'+hm(m)+'</b>. More than '+loadLimitTxt()+' a day for '+dayN(BU.daysInARow)+' running causes burnout'+(S.loadStreak?' (streak: '+S.loadStreak+' of '+BU.daysInARow+')':'')+'.'}
   function stressTick(){
     var nw=worth();
     if(nw<0){S.happy=clamp(S.happy-8);S.energy=clamp(S.energy-5);log('You are in debt and the creditors keep calling. The shame hits hard (−8 happiness, −5% energy).','bad')}
@@ -2534,8 +2590,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     else if(S.happy<25)push('warn','😟 Low morale ('+S.happy+'): shifts pay 25% less.');
     else if(S.happy<40)push('warn','😕 Morale dipping ('+S.happy+'): shifts pay 10% less.');
     if(S.hosp&&S.hosp.adm&&!S.hosp.inWard)push('warn','🏥 You have been admitted: you will be warded in the Hospital all of tomorrow. Eat today, and keep cash for the '+money(S.hosp.bill)+' bill charged when you are released.');
-    if(S.ill)push('bad','🤒 Sick with '+ILL[S.ill.k].n.replace(/^(a|the) /,'')+': you can’t work, and you lose '+hm(M(ILL[S.ill.k].ap))+' and some happiness a day until you recover. '+(S.hosp?'You are booked into the Hospital ward.':'Get treated at the Hospital ('+pctTxt(HP.admitChance)+' chance of a day in the ward), or rest at home to recover sooner (about '+Math.round(recoverChance(true)*100)+'% chance tonight).'));
-    else if(S.energy<30)push('warn','🏥 Low energy raises your chance of falling ill, which means hospital bills.');
+    if(S.ill)push('bad','🤒 Sick with '+illShort(ILL[S.ill.k])+': you can’t work, and you lose '+hm(ILL[S.ill.k].min)+', some happiness and '+Math.abs(CONFIG.health.nightly.sick)+' health a day until you recover. '+(S.hosp?'You are booked into the Hospital ward.':illCure()+' (Hospital treatment always cures you; '+pctTxt(HP.admitChance)+' chance of a day in the ward first.)'));
+    else if(S.energy<CONFIG.illness.lowEnergyBelow){var ln=lowNights()+1,IL=CONFIG.illness;push('warn','🏥 Low energy: going to bed under '+IL.lowEnergyBelow+'% tonight would make '+ln+' of the last '+IL.lowWindow+' nights'+(ln>=IL.lowNights?', which raises your chance of falling ill.':'. At '+IL.lowNights+' your chance of falling ill goes up.'))}
     /* bankruptcy: warn from a few days before the count starts (CONFIG.bankrupt.warnDaysBefore), with the gap and a way out */
     (function(){var BR=CONFIG.bankrupt;if(!(nw<BR.netWorthBelow&&S.day>=BR.fromDay-(BR.warnDaysBefore||0)))return;
       var gap=BR.netWorthBelow-nw,counts=S.day>=BR.fromDay,pi=payInfo(),sh=pi.n?Math.ceil(gap/Math.max(1,pi.v)):0;
@@ -2547,7 +2603,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       push('warn','⭐ '+TIERS[i].ic+' '+TIERS[i].n+' ('+money(TIERS[i].v)+') by the end of day '+due+' earns +'+TIERS[i].b.toLocaleString()+' score: you need '+money(Math.max(0,TIERS[i].v-nw))+' more'+(due===S.day?' today.':' in '+(due-S.day+1)+' days.'))})();
     if(S.loan){var Lx=S.loan;if(S.day>Lx.due)push('bad','🏦 Loan overdue: you owe '+money(loanOwed())+', growing '+rateTxt(CONFIG.loan.overdueRate)+' a day. Default on day '+(Lx.due+CONFIG.loan.graceDays)+'.');else if(Lx.due-S.day<=1)push('warn','🏦 Loan due '+(Lx.due===S.day?'tonight':'tomorrow')+': you owe '+money(loanOwed())+'.')}
     if(S.burn>0)push('bad','🔥 Burnout ('+S.burn+' day'+(S.burn>1?'s':'')+' left): your health keeps dropping and shifts pay '+pctTxt(1-CONFIG.burnout.pay)+' less. Rest, and cut down on studying.');
-    else if(CONFIG.burnout.daysInARow>1&&S.studyStreak>=CONFIG.burnout.daysInARow-1)push('warn','📚 '+(S.studyStreak===1?'You studied over '+studyLimitTxt()+' yesterday. Another day like that causes burnout.':'You have studied over '+studyLimitTxt()+' a day '+numWord(S.studyStreak)+' days running. A '+(ORD[CONFIG.burnout.daysInARow]||CONFIG.burnout.daysInARow+'th')+' day causes burnout.'));
+    else if(CONFIG.burnout.daysInARow>1&&S.loadStreak>=CONFIG.burnout.daysInARow-1)push('warn','⏱ '+(S.loadStreak===1?'You worked and studied more than '+loadLimitTxt()+' yesterday. Another day like that causes burnout.':'You have worked and studied more than '+loadLimitTxt()+' a day '+numWord(S.loadStreak)+' days running. A '+(ORD[CONFIG.burnout.daysInARow]||CONFIG.burnout.daysInARow+'th')+' day causes burnout.'));
     if(S.health<CONFIG.health.poorBelow)push(S.health<=CONFIG.health.poorBelow/2?'bad':'warn',ic('health')+' Poor health ('+S.health+'/100): you fall ill more easily and shifts pay '+pctTxt(1-CONFIG.health.poorPay)+' less. Eat well, rest or go to the Gym.');
     if(S.arrears)push('bad','🏠 Rent arrears: '+money(S.arrears.bal)+' owed, '+money(instal())+' due tomorrow morning.');
     if(S.medDebt>0)push('bad','🧾 Medical bill arrears: '+money(S.medDebt)+' owed, '+money(medInstal())+' due tomorrow morning (late fee if you can’t pay). Pay more at the Hospital.');
@@ -2556,7 +2612,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(nw<0)push('bad','💸 In debt ('+money(nw)+'): if your net worth is still under $0 when you end the day, shame costs 8 happiness and 5% energy.');
     else if(nw<100)push('warn','💸 Nearly broke ('+money(nw)+'): if your net worth is still under $100 when you end the day, shame costs 3 happiness.');
     var left=nextRentWeek()-S.day;
-    if(left<=1&&S.cash<H.rent&&S.rentPaid!==nextRentWeek())push('bad','🏠 Rent of '+money(H.rent)+' is due '+(left===0?'today':'tomorrow')+' and you only have '+money(S.cash)+' in cash.');
+    if(S.homeless)push('bad','🏚️ No home: you sleep outside every night and cannot rest, cook or use your fridge and gadgets. Apply at the Apartment ('+money(homeFee('apt'))+') or the Bungalow ('+money(homeFee('bung'))+').');
+    else if(left<=1&&S.cash<H.rent&&S.rentPaid!==nextRentWeek())push('bad','🏠 Rent of '+money(H.rent)+' is due '+(left===0?'today':'tomorrow')+' and you only have '+money(S.cash)+' in cash.');
     if(S.enrolled&&S.sinceClass>=3)push('bad','🎓 No lesson for '+S.sinceClass+' days: attend one soon or you may be expelled.');
     if(S.expelled>0)push('bad','🚫 Expelled from School. You can re-enrol in '+S.expelled+' day'+(S.expelled>1?'s':'')+'.');
     if(S.day>=maxDays()-(maxDays()>10?6:1))push('warn','⏳ Only '+(maxDays()-S.day+1)+' day'+(maxDays()-S.day?'s':'')+' left to reach '+money(nextGoal())+'.');
@@ -2570,6 +2627,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   /* nightly happiness/knowledge from devices (per day) and from TV/console (per hour rested at home) */
   function gadgetBonus(){
     var GD=CONFIG.gadgets,hrs=S.restHrs||0,hap=0,know=0;
+    if(S.homeless)return {hap:0,know:0,hrs:0};  /* gadgets are in storage */
     ['phone','tablet','computer'].forEach(function(g){var k=ikey(g),d=k&&GD.daily[k];if(d){hap+=d.happiness||0;know+=d.knowledge||0}});
     ['console','tv'].forEach(function(g){var k=ikey(g),d=k&&GD.perRestHour[k];if(d){hap+=(d.happiness||0)*hrs;know+=(d.knowledge||0)*hrs}});
     return {hap:Math.round(hap),know:know,hrs:hrs};
@@ -2591,7 +2649,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var gb=gadgetBonus();S.restHrs=0;
     if(S.restHap)hWhy.push(sg(S.restHap)+' sleep');if(rested&&h.hap)hWhy.push(sg(h.hap)+' bed');if(gb.hap)hWhy.push(sg(gb.hap)+' gadgets');
     S.happy=clamp(S.happy+SLn.nightHappiness+S.restHap+(rested?h.hap:0)+gb.hap);
-    if(owns('coffee')){S.energy=clamp(S.energy+CONFIG.gadgets.coffeeEnergy);eWhy.push(sg(CONFIG.gadgets.coffeeEnergy)+'% coffee')}
+    if(owns('coffee')&&!S.homeless){S.energy=clamp(S.energy+CONFIG.gadgets.coffeeEnergy);eWhy.push(sg(CONFIG.gadgets.coffeeEnergy)+'% coffee')}
     if(gb.hap||gb.know)log('Your gadgets at home: '+[gb.hap?'+'+gb.hap+' happiness':'',gb.know?'+'+(Math.round(gb.know*10)/10)+' knowledge':''].filter(Boolean).join(', ')+(gb.hrs?' ('+(Math.round(gb.hrs*10)/10)+'h rested at home yesterday)':'')+'.','good');
     var wasFed=S.fed;S.hungry=S.fed?0:S.hungry+1;
     if(!S.fed){S.energy=clamp(S.energy+FD.hungryEnergy);S.happy=clamp(S.happy+FD.hungryHappiness);eWhy.push(sg(FD.hungryEnergy)+'% hungry');hWhy.push(sg(FD.hungryHappiness)+' hungry');log('You did not eat all day and went hungry ('+sg(FD.hungryEnergy)+'% energy, '+sg(FD.hungryHappiness)+' happiness).','bad')}
@@ -2629,7 +2687,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(stressTick())return;
     var i=Math.floor(S.bank*S.rate/100);
     if(i>0){S.bank+=i;inc(i);log('Your bank paid '+money(i)+' in interest.','good')}
-    if((S.day-1)%RENT_EVERY===0&&S.rentPaid===S.day-1){log('Rent for day '+(S.day-1)+' was already paid. Mr. Ong tips his hat.','good');S.flags.rent=1}
+    if(S.homeless){if((S.day-1)%RENT_EVERY===0)log('No rent was due tonight: you have no home.')}
+    else if((S.day-1)%RENT_EVERY===0&&S.rentPaid===S.day-1){log('Rent for day '+(S.day-1)+' was already paid. Mr. Ong tips his hat.','good');S.flags.rent=1}
     else if((S.day-1)%RENT_EVERY===0){
       S.flags.rent=1;
       var paid=Math.max(0,Math.min(S.cash,h.rent)),short=h.rent-paid;
@@ -2660,13 +2719,13 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     S.trends.forEach(function(t){if(t.left>0&&(t.term||t.lay||t.r))mn.push({l:'rem',t:'🌐 '+t.n+' continues'+(t.last?' (latest: '+t.last+')':'')+' · '+t.left+' day'+(t.left>1?'s':'')+' left: '+trendNow(t)+'.'})});
     if(S.inv.fd.v>0.5&&S.inv.fd.lock-S.day===1)mn.push({l:'rem',t:'🏦 Your fixed deposit matures tomorrow morning ('+money(Math.round(S.inv.fd.v))+' so far).'});
     if(junkCount()>=CONFIG.illness.junkMeals)mn.push({l:'warn',t:'🍟 You have had junk food '+junkCount()+' times in 5 days. Your chance of falling ill is higher.'});
-    if(rw2-S.day===1&&S.rentPaid!==rw2)mn.push({l:'rem',t:'🏠 Reminder: rent of '+money(H2.rent)+' is due at the end of tomorrow (day '+rw2+'). Keep it in cash, or pay early at home.'});
-    if(rw2-S.day===0&&S.rentPaid!==rw2)mn.push({l:S.cash<H2.rent?'bad':'rem',t:'🏠 Rent of '+money(H2.rent)+' is due tonight. You have '+money(S.cash)+' in cash.'});
+    if(!S.homeless&&rw2-S.day===1&&S.rentPaid!==rw2)mn.push({l:'rem',t:'🏠 Reminder: rent of '+money(H2.rent)+' is due at the end of tomorrow (day '+rw2+'). Keep it in cash, or pay early at home.'});
+    if(!S.homeless&&rw2-S.day===0&&S.rentPaid!==rw2)mn.push({l:S.cash<H2.rent?'bad':'rem',t:'🏠 Rent of '+money(H2.rent)+' is due tonight. You have '+money(S.cash)+' in cash.'});
     [['casual',WEAR.casual.n],['smart',WEAR.smart.n],['suit',WEAR.suit.n]].forEach(function(c){if(S.clothes[c[0]]>0&&S.clothes[c[0]]<=CONFIG.clothes.wearPerDay)mn.push({l:'rem',t:'👕 Reminder: your '+c[1]+' wear out tonight. Buy new ones at the Clothes Mall to keep meeting dress codes.'})});
     stressList().forEach(function(a){if(!/Rent of/.test(a.t))mn.push(a)});
     S.morning=mn.length?mn:null;
     loc=S.hosp&&S.hosp.inWard?'hosp':S.home;view=null;
-    log(S.hosp&&S.hosp.inWard?'A new day starts in the hospital ward.':'A new day starts. You have 24 hours.');
+    log(S.hosp&&S.hosp.inWard?'A new day starts in the hospital ward.':S.homeless?'A new day starts. You woke up outside, with no home to go back to. You have 24 hours.':'A new day starts. You have 24 hours.');
     nightRank=true;try{done()}finally{nightRank=false}
   }
 
@@ -2787,13 +2846,14 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       var nowV=Math.round(v*C.shareToday*10)/10;if(nowV)now.push(m[1]+(nowV<0?'-':'+')+Math.abs(nowV));
       tr[m[1]]=v*(1-C.shareToday)/days;
     });
-    if(/pandemic|lockdown/i.test(n[0]))tr.ill=C.outbreakIllness;
+    if(/pandemic|lockdown/i.test(n[0]))tr.ill=CONFIG.illness.pandemicX;
     var md=newsMood(n[0]);if(md<0)tr.mkt=C.badNewsMarket;else if(md>0)tr.mkt=C.goodNewsMarket;
     scaleTrend(tr);delete tr.lay;delete tr.cls;
     var fx=applyFx(now.join(' '),true);
     var lasting=tr.p||tr.w||tr.r||tr.mkt||tr.ill!==1;
     if(lasting){S.trends.push(tr);fx.push('Over the next '+days+' days: '+trendNow(tr))}
-    return {icon:big?'🌐':'📰',tag:big?'Major world event':'Economic news',title:n[0],text:n[1],fx:fx.length?fx:['No direct effect on you today'],done:true,tone:''};
+    var lost=/housing bubble/i.test(n[0])?bubbleHit():'';if(lost)fx.push(lost);
+    return {icon:big?'🌐':'📰',tag:big?'Major world event':'Economic news',title:n[0],text:n[1],fx:fx.length?fx:['No direct effect on you today'],done:true,tone:lost?'bad':''};
   }
   /* a headline's effect on market mood: -1 bad, 1 good, 0 none */
   function newsMood(title){return /war|crisis|recession|crash|collapse|lockdown|pandemic/i.test(title)?-1:/boom|soft landing|record|rally/i.test(title)?1:0}
@@ -2976,10 +3036,12 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var m=MACRO[Math.floor(Math.random()*MACRO.length)],days=CONFIG.events.macroDays[0]+Math.floor(Math.random()*(CONFIG.events.macroDays[1]-CONFIG.events.macroDays[0]+1)),e=m[5];
     var tr=scaleTrend({n:m[0],left:days,tot:days,p:e.p||0,w:e.w||0,r:e.r||0,mkt:(e.mkt||0)*CONFIG.macro.shockMarketScale,ill:e.ill||1,lay:e.lay||0,cls:e.cls||0,term:m[2],macro:1});
     S.trends.push(tr);
-    return {icon:'🌐',tag:'Major world event · '+days+' days',title:m[0],text:m[1]+' <br><small>📘 <strong>'+m[2].split(':')[0]+':</strong>'+m[2].slice(m[2].indexOf(':')+1)+'</small>',done:true,tone:(e.mkt||0)<0||(e.p||0)>1||e.lay?'bad':'good',
-      fx:['Lasts '+days+' days','Effects: '+trendNow(tr)]};
+    var lost=/housing bubble/i.test(m[0])?bubbleHit():'';
+    return {icon:'🌐',tag:'Major world event · '+days+' days',title:m[0],text:m[1]+' <br><small>📘 <strong>'+m[2].split(':')[0]+':</strong>'+m[2].slice(m[2].indexOf(':')+1)+'</small>',done:true,tone:(e.mkt||0)<0||(e.p||0)>1||e.lay||lost?'bad':'good',
+      fx:['Lasts '+days+' days','Effects: '+trendNow(tr)].concat(lost?[lost]:[])};
   }
-  function trendIll(){var m=1;S.trends.forEach(function(t){m*=t.ill||1});return m}
+  /* a pandemic or lockdown story makes illness CONFIG.illness.pandemicX as likely (once, however many are running) */
+  function trendIll(){return S.trends.some(function(t){return t.left>0&&(t.ill||1)>1})?CONFIG.illness.pandemicX:1}
   /* ---------- multi-round stories ----------
     Each step has options; each option rolls one weighted outcome [weight, text, fx, nextStep?].
     The same choice can turn out differently. 'sk' boosts the first (best) outcome by a stat. */
@@ -3125,13 +3187,15 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   }
   function endWeek(rested){
     if(S.over||S.pending)return;
-    var home=rested||loc===S.home;
-    var SL=CONFIG.sleep;
-    var share=home?1:SL.awayShare,HS=CONFIG.health.sleep;
+    var home=rested||atHome();
+    var SL=CONFIG.sleep,IL=CONFIG.illness;
+    var share=home?1:SL.awayShare;
+    if(S.energy<IL.lowEnergyBelow)S.lowE=(S.lowE||[]).concat(S.day);  /* low-energy nights feed the illness rule */
+    S.lowE=(S.lowE||[]).filter(function(d){return S.day-d<IL.lowWindow});
     S.restBonus=Math.round(sleepGain(S.ap)*share);
-    S.restHap=Math.round(Math.floor(S.ap/60)*SL.happinessPerHour*share);S.slept=Math.round(Math.min(HS.max,S.ap/60*HS.perHour)*share);S.sickSleep=home&&S.ill?1:0;if(home)S.restHrs=(S.restHrs||0)+S.ap/60;
+    S.restHap=Math.round(sleepHap(S.ap)*share);S.slept=Math.round(sleepHealth(S.ap)*share);S.sickSleep=home&&S.ill?1:0;if(home)S.restHrs=(S.restHrs||0)+S.ap/60;
     var bed=home&&HOUSE[S.home].hap?', +'+HOUSE[S.home].hap+' happiness for the bed':'',drop=' Every night also costs '+sg(SL.nightEnergy)+'% energy and '+sg(SL.nightHappiness)+' happiness, so you wake up '+sg(S.restBonus+SL.nightEnergy)+'% energy and '+sg(S.restHap+(home?HOUSE[S.home].hap:0)+SL.nightHappiness)+' happiness before meals and other overnight effects.';
-    log((home?'You went to bed at home with '+hm(S.ap)+' left. Sleep gives +'+S.restBonus+'% energy and +'+S.restHap+' happiness ('+CONFIG.sleep.happinessPerHour+' for every full hour of rest'+bed+'), and +'+S.slept+' health tonight.':'You ended the day away from home and dozed off where you were. Sleep gives only +'+S.restBonus+'% energy, +'+S.restHap+' happiness and +'+S.slept+' health (sleeping at home would give +'+sleepGain(S.ap)+'%, +'+Math.floor(S.ap/60)*SL.happinessPerHour+' and +'+Math.round(Math.min(HS.max,S.ap/60*HS.perHour))+').')+drop);
+    log((home?'You went to bed at home with '+hm(S.ap)+' left. Sleep gives +'+S.restBonus+'% energy and +'+S.restHap+' happiness ('+SL.happinessPerHour+' for every full hour of rest'+bed+'), and +'+S.slept+' health tonight.':(S.homeless?'You have no home, so you slept rough.':'You ended the day away from home and dozed off where you were.')+' Sleep gives only +'+S.restBonus+'% energy, +'+S.restHap+' happiness and +'+S.slept+' health (a night in a home of your own would give +'+sleepGain(S.ap)+'%, +'+sleepHap(S.ap)+' and +'+sleepHealth(S.ap)+').')+drop);
     if(!S.fed&&S.slept>0)log('You have not eaten today, so the '+sg(CONFIG.health.nightly.skippedMeal)+' health penalty will eat into the +'+S.slept+' you get from sleep. Eat something first to recover health.','warn');
     snd('day');
     var cards=pickNight();if(!cards.length)cards=[quietCard()];
@@ -3198,16 +3262,16 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(!held.length)return '';
     return '<div class="worksec">'+workLoadTxt()+held.map(jobRow).join('')+'</div>';
   }
-  function workLoadTxt(){var BU=CONFIG.burnout;return '<p class="bad0" style="margin:0 0 4px"><small>⏱ Worked today: <b>'+hm(S.workMin||0)+'</b> of '+hm(CONFIG.time.maxWorkMinutes)+' allowed. Working '+hm(BU.workMinutes)+' or more a day for '+dayN(BU.workDaysInARow)+' running causes burnout'+(S.workStreak?' (streak: '+S.workStreak+' of '+BU.workDaysInARow+')':'')+'.</small></p>'}
+  function workLoadTxt(){return '<p class="bad0" style="margin:0 0 4px"><small>💼 Worked today: <b>'+hm(S.workMin||0)+'</b> of '+hm(CONFIG.time.maxWorkMinutes)+' allowed. '+loadTxt()+'</small></p>'}
   function jobRow(k){
     if(CAREERS[k]){
       var rk=cur(k);
       if(!rk)return '<p><small>You don’t work here yet. Apply at the Employment Office.</small></p>';
-      var ef=effort(rk.pay), en=ef.en, ap=ef.ap;
-      var pm=prod().m,sh=shutLeft(bOf(k));return opt(rk.r+' shift · '+money(shiftPay(rk.pay))+(pm<1?' <span class="bad">(includes ×'+Math.round(pm*100)+'% penalty)</span>':''),(sh?'<b class="bad">🔒 Closed for '+sh+' more day'+(sh>1?'s':'')+'. Your job is safe and returns when it reopens.</b> · ':'')+hm(M(ap))+', −'+en+'% energy'+(rk.dress?' · Dress code: '+DSHORT[rk.dress]+(rk.dress==='suit'?'':' or better'):''),btn('work',k,sh?'Closed':'Work a shift',0,!!sh));
+      var ef=effort(rk.pay), en=ef.en, mins=ef.min;
+      var pm=prod().m,sh=shutLeft(bOf(k));return opt(rk.r+' shift · '+money(shiftPay(rk.pay))+(pm<1?' <span class="bad">(includes ×'+Math.round(pm*100)+'% penalty)</span>':''),(sh?'<b class="bad">🔒 Closed for '+sh+' more day'+(sh>1?'s':'')+'. Your job is safe and returns when it reopens.</b> · ':'')+hm(mins)+', −'+en+'% energy'+(rk.dress?' · Dress code: '+DSHORT[rk.dress]+(rk.dress==='suit'?'':' or better'):''),btn('work',k,sh?'Closed':'Work a shift',0,!!sh));
     }
     var j=JOBS[k], need=(j.computer&&!owns('computer'))?'Needs a working computer':'';
-    return opt(j.n+' shift · '+money(shiftPay(j.pay)),hm(M(j.ap))+', −'+j.en+'% energy'+(need?' · '+need:''),btn('work',k,'Work a shift',0,!!need));
+    return opt(j.n+' shift · '+money(shiftPay(j.pay)),hm(j.min)+', −'+j.en+'% energy'+(need?' · '+need:''),btn('work',k,'Work a shift',0,!!need));
   }
   var ovHidden=false;  /* true after clicking the map outside the overview window */
   /* bank amount boxes: chosen with −/+ in steps of BK_STEP; the choice is kept while the game is open */
@@ -3272,9 +3336,10 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     return t;
   }
   function house(h){
-    var H=HOUSE[h], cur=S.home===h;
-    var t='<p>'+(h==='apt'?'Cheap and cramped.':'Quiet street, big garden, soft bed.')+' Rent '+money(H.rent)+' '+everyDays(RENT_EVERY)+'. Rest here recovers '+H.rate+'% energy an hour (more with comfort items)'+(H.hap?' and +'+H.hap+' happiness':'')+'.'+(h==='bung'&&!cur?' The agent only lets to people with a steady job.':'')+'</p>';
-    if(!cur)return t+btn('home',h,H.fee?'Move in ('+money(H.fee)+' up front)':'Move in');
+    var H=HOUSE[h], cur=S.home===h&&!S.homeless, f=homeFee(h);
+    var t=(S.homeless?'<p class="bad"><b>🏚️ You have no home.</b> You lost the '+NAME[S.home]+' when the housing bubble burst. No rent is due, every night counts as sleeping outside, and your things wait in storage. Apply to rent here to move back in.</p>':'')+
+      '<p>'+(h==='apt'?'Cheap and cramped.':'Quiet street, big garden, soft bed.')+' Rent '+money(H.rent)+' '+everyDays(RENT_EVERY)+'. Rest here recovers '+H.rate+'% energy an hour (more with comfort items)'+(H.hap?' and +'+H.hap+' happiness':'')+'.'+(h==='bung'&&!cur?' The agent only lets to people with a steady job.':'')+'</p>';
+    if(!cur)return t+btn('home',h,S.homeless?'Apply to rent ('+money(f)+(h==='apt'?' deposit':' up front')+' · '+hm(CONFIG.housing.applyMinutes)+')':f?'Move in ('+money(f)+' up front)':'Move in');
     var F=S.food,cnt=function(t,test){return F.filter(function(p){return p.t===t&&(!test||test(p))}).length};
     var nb=cnt('basic',function(p){return !p.sp}),np=cnt('prem',function(p){return !p.sp}),nw=cnt('cook',function(p){return !p.sp&&!p.cold}),ncold=cnt('cook',function(p){return !p.sp&&p.cold});
     var nbs=cnt('basic',function(p){return p.sp}),nps=cnt('prem',function(p){return p.sp}),ncs=cnt('cook',function(p){return p.sp}),nsp=nbs+nps+ncs,full=homeFull(),mw=owns('microwave');
@@ -3282,7 +3347,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     t+=sec('Your things')+room();
     /* --- sick: recovery status --- */
     if(S.ill){var ti=ILL[S.ill.k];
-      t+=sec('🤒 Getting better')+'<p class="bad" style="margin:6px 0"><small><b>You have '+ti.n+' and can’t work.</b> Recover naturally by resting here: tonight’s recovery chance is about <b>'+Math.round(recoverChance(true)*100)+'%</b> if you sleep at home (each rest adds '+pctTxt(HP.restRecover)+', up to '+pctTxt(HP.restRecoverMax)+' a day). Or get treated at the Hospital.</small></p>'}
+      t+=sec('🤒 Getting better')+'<p class="bad" style="margin:6px 0"><small><b>You have '+ti.n+' and can’t work.</b> '+illCure()+'</small></p>'}
     /* --- kitchen and meals: only the actions you can take with the food you have --- */
     t+=sec('🍳 Kitchen & meals');
     t+='<p style="margin:6px 0"><small>'+(S.fed?'✅ You have eaten today.':'🍽 No meal yet today.')+' Home meals today: <b>'+S.homeMeals+' / '+FD.homeMealsPerDay+'</b>'+(full?' (full)':'')+'.'+(nb+np+nw+ncold+nsp+(S.chips||0)?'':' No food at home: buy meal prep or ready-to-eat meals at the Supermarket.')+'</small></p>';
@@ -3302,11 +3367,11 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     t+=sec('😴 Rest & sleep');
     t+='<p style="margin:6px 0"><small>😌 Comfort: '+(ci.length?ci.join(', ')+' (+'+ci.length*10+'% rest)':'none yet. A TV, console, fridge, coffee machine or computer at home makes rest work better')+'. Resting gives about '+rr0.toFixed(1)+'% energy per hour.</small></p>';
     var SL=CONFIG.sleep,nh=SL.napMinutes/60;
-    t+=opt('Rest for '+(SL.napMinutes%60?hm(SL.napMinutes):nh+' hour'+(nh===1?'':'s')),hm(SL.napMinutes)+' · +'+Math.round(nh*rr0)+'% energy now, +'+SL.napHappiness+' happiness'+(SL.napHappiness===nh?' (1 per hour)':'')+(S.ill?' · <b>+'+pctTxt(HP.restRecover)+' chance to recover tonight</b>':''),btn('nap','','Rest '+hm(SL.napMinutes),0,S.ap<SL.napMinutes||(S.energy>=100&&!S.ill)));
-    t+=opt('Sleep and end the day','Sleep the remaining '+hm(S.ap)+': +'+sleepGain(S.ap)+'% energy, +'+Math.min(CONFIG.health.sleep.max,Math.round(S.ap/60*CONFIG.health.sleep.perHour))+' health and +'+Math.floor(S.ap/60)*CONFIG.sleep.happinessPerHour+' happiness ('+CONFIG.sleep.happinessPerHour+' per hour)'+(HOUSE[S.home].hap?', plus +'+HOUSE[S.home].hap+' for the bed':'')+', against the nightly '+sg(SL.nightEnergy)+'% energy and '+sg(SL.nightHappiness)+' happiness (the more hours left, the more you recover).',btn('rest','',sleepLabel()));
+    t+=opt('Rest for '+(SL.napMinutes%60?hm(SL.napMinutes):nh+' hour'+(nh===1?'':'s')),hm(SL.napMinutes)+' · +'+Math.round(nh*rr0)+'% energy now, +'+SL.napHappiness+' happiness'+(SL.napHappiness===nh?' (1 per hour)':''),btn('nap','','Rest '+hm(SL.napMinutes),0,S.ap<SL.napMinutes||S.energy>=100));
+    t+=opt('Sleep and end the day','Sleep the remaining '+hm(S.ap)+': +'+sleepGain(S.ap)+'% energy, +'+sleepHealth(S.ap)+' health and +'+sleepHap(S.ap)+' happiness ('+CONFIG.sleep.happinessPerHour+' per full hour)'+(HOUSE[S.home].hap?', plus +'+HOUSE[S.home].hap+' for the bed':'')+', against the nightly '+sg(SL.nightEnergy)+'% energy and '+sg(SL.nightHappiness)+' happiness (the more hours left, the more you recover).',btn('rest','',sleepLabel()));
     /* --- study and work from home --- */
     t+=sec('📚 Study & work from home');
-    t+=opt('Self-study online'+(S.studyMin>0?' <small style="display:inline">(studied '+hm(S.studyMin)+' today)</small>':''),hm(M(SS.units))+', '+sg(SS.energy)+'% energy, '+sg(SS.health)+' health · '+(gain?'+'+gain+' knowledge':'needs a computer, tablet or phone')+'. Over '+studyLimitTxt()+' of study a day for '+dayN(CONFIG.burnout.daysInARow)+' running causes burnout.',btn('study','','Study',0,!gain));
+    t+=opt('Self-study online'+(S.studyMin>0?' <small style="display:inline">(studied '+hm(S.studyMin)+' today)</small>':''),hm(M(SS.units))+', '+sg(SS.energy)+'% energy, '+sg(SS.health)+' health · '+(gain?'+'+gain+' knowledge':'needs a computer, tablet or phone')+'. More than '+loadLimitTxt()+' of work and study a day for '+dayN(CONFIG.burnout.daysInARow)+' running causes burnout.',btn('study','','Study',0,!gain));
     if(owns('computer'))t+=workLoadTxt()+jobRow('free');
     /* --- rent and bills --- */
     var due=nextRentWeek();
@@ -3336,7 +3401,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
           '<div class="mods">'+Lm.map(function(m,i){var g=st+i,ln=lesCount(t,g),pc=g<n?100:g===n?Math.round(k/ln*100):0;
             return '<span class="mod '+(g<n?'done':g===n?'next':'')+'" style="--p:'+pc+'%" title="'+(g<n?'Done':g===n?k+' of '+ln+' lessons attended':'Not started')+'">'+(g<n?'✅ ':'')+m+(g===n?' <small>'+k+'/'+ln+'</small>':'')+'</span>'}).join('')+'</div></div>';
       }).join('');
-      return (S.studyMin>0?'<p class="'+(S.studyMin>CONFIG.burnout.studyMinutes?'bad':'')+'"><small>📚 Studied today: <b>'+hm(S.studyMin)+'</b>. Over '+studyLimitTxt()+' a day for '+dayN(CONFIG.burnout.daysInARow)+' running causes burnout (streak: '+S.studyStreak+' of '+dayN(CONFIG.burnout.daysInARow)+').'+(S.burn>0?' <b>You are burnt out.</b>':'')+'</small></p>':'')+now+'<p><small>Each pathway is a ladder of qualifications (Certificate → Degree → … → Masters). You pay tuition once when you enrol in a qualification. Earn the qualification by completing all its modules. You can study several pathways at once.</small></p>'+
+      return (loadMin()>0?'<p class="'+(loadMin()>CONFIG.burnout.loadMinutes?'bad':'')+'"><small>📚 Studied today: <b>'+hm(S.studyMin)+'</b>. '+loadTxt()+(S.burn>0?' <b>You are burnt out.</b>':'')+'</small></p>':'')+now+'<p><small>Each pathway is a ladder of qualifications (Certificate → Degree → … → Masters). You pay tuition once when you enrol in a qualification. Earn the qualification by completing all its modules. You can study several pathways at once.</small></p>'+
       '<div class="jb2">'+Object.keys(TRACKS).sort(function(x,y){var f=function(t){return S.edu[t]>0&&!inProgress(t)&&S.edu[t]<totMods(t)?0:1};return f(x)-f(y)}).map(function(t){
         var T=TRACKS[t],n=S.edu[t],lv=lvl(t),tot=totMods(t);
         var title='<b>'+T.n+'</b>'+(lv?' · 🎓 '+T.lv[lv-1]:'');
@@ -3702,12 +3767,12 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     $('happy').textContent=S.happy+'%';
     $('hpBar').style.width=S.happy+'%';
     $('hpBar').style.background=S.happy<25?'var(--red)':'var(--teal)';
-    $('homeName').textContent=NAME[S.home];$('homeName').title=NAME[S.home];
+    $('homeName').textContent=S.homeless?'No home':NAME[S.home];$('homeName').title=$('homeName').textContent;
     var be=bestEdu();
     $('edu').textContent=be?TRACKS[be].n+' '+TRACKS[be].lv[lvl(be)-1]:'High School';$('edu').title=$('edu').textContent;
     $('eduSub').textContent=Object.keys(TRACKS).filter(function(t){return S.edu[t]}).map(function(t){return TRACKS[t].n.split(' ')[0]+' '+S.edu[t]+'/'+totMods(t)+' modules'}).join(' · ')||'No courses yet';
     var rw=nextRentWeek(), left=rw-S.day;
-    $('rent').textContent=S.rentPaid===rw?'Paid ✓ (day '+rw+')':money(H.rent)+(left===0?' due today':' in '+left+' day'+(left>1?'s':''));$('rent').title='Due at the end of day '+rw;
+    $('rent').textContent=S.homeless?'None (no home)':S.rentPaid===rw?'Paid ✓ (day '+rw+')':money(H.rent)+(left===0?' due today':' in '+left+' day'+(left>1?'s':''));$('rent').title=S.homeless?'No rent while you have no home':'Due at the end of day '+rw;
     var pxs=Math.round(S.px*100), ws=Math.round(payIdx()*100);
     $('econ').innerHTML='<span class="'+(pxs>100?'up':pxs<100?'dn':'')+'">Prices '+pxs+'%</span><span>Shift pay '+ws+'%</span><span>Interest '+S.rate.toFixed(1)+'%/day</span>'+(function(){var jb=myJob();return jb&&shutLeft(jb.b)>0?'<span class="up">🔒 '+NAME[jb.b]+' closed: '+shutLeft(jb.b)+'d</span>':''})();
     if(S.trends.length){var t0=S.trends[0],bad=S.trends.some(function(t){return t.p>0||t.w<0||t.mkt<0||t.ill>1}),sh=t0.n.length>28?t0.n.slice(0,26)+'…':t0.n;
@@ -3738,7 +3803,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     $('hEn').style.color=S.energy<30?'#ef7d72':'';$('hHp').style.color=S.happy<30?'#ef7d72':'';$('hCash').style.color=S.cash<0?'#ef7d72':'';
     var hiv=invTotal();$('hInvC').hidden=!anyInv();if(anyInv()){var pl0=hiv-invSum('c');$('hInv').textContent=money(hiv);$('hInvPL').textContent=sm(pl0)+' ('+(pl0>=0?'+':'−')+Math.abs(invSum('c')?pl0/invSum('c')*100:0).toFixed(1)+'%)';$('hInvPL').style.color=pl0>=0?'#7fe0a6':'#ef7d72'}
     $('hScore').textContent=score().toLocaleString();var bs0=bestScore();$('hBest').textContent=bs0?'best '+bs0.toLocaleString():'';
-    $('hudLeave').hidden=!view||!!S.pending;$('hudEnd').disabled=!!S.over||!!S.pending;$('hudEnd').textContent=loc===S.home?sleepLabel()+' ☾':'Sleep outside ☾';
+    $('hudLeave').hidden=!view||!!S.pending;$('hudEnd').disabled=!!S.over||!!S.pending;$('hudEnd').textContent=atHome()?sleepLabel()+' ☾':'Sleep outside ☾';
     var pi=payInfo(),pm0=prod().m;$('pay').textContent=money(pi.v)+(pi.n?'/shift':'');$('payRole').textContent=pi.txt+(pi.n&&pm0<1?' · ×'+Math.round(pm0*100)+'% today':'');
     $('dayMax').textContent=maxDays()===Infinity?'':' / '+maxDays();$('diffTag').textContent=Df().n;
     $('rlWin').textContent=maxDays()===Infinity?' (no time limit on Easy)':', within '+maxDays()+' days';$('rlTime').textContent=maxDays()===Infinity?'Not on Easy: there is no day limit.':'Day '+maxDays()+' passes and you are still under '+money(GOAL)+'.';
@@ -3768,8 +3833,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       t.classList.toggle('here',k===loc);
       t.classList.toggle('open',k===view);
       t.querySelector('.cost').textContent=k===loc?'':hm(dist(loc,k)*WALK);
-      t.setAttribute('aria-label',NAME[k]+(k===loc?', you are here':', '+hm(dist(loc,k)*WALK)+' walk')+(k===S.home?', your home':''));
-      t.querySelector('.tags').innerHTML=(k===S.home?'<span class="tag">Home</span>':'')+(k===loc?'<span class="tag you">You</span>':'');
+      t.setAttribute('aria-label',NAME[k]+(k===loc?', you are here':', '+hm(dist(loc,k)*WALK)+' walk')+(k===S.home&&!S.homeless?', your home':''));
+      t.querySelector('.tags').innerHTML=(k===S.home&&!S.homeless?'<span class="tag">Home</span>':'')+(k===loc?'<span class="tag you">You</span>':'');
     });
 
     var pend=!!S.pending;
@@ -4072,7 +4137,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     var rows=LOCS.slice().sort(function(a,b){return dist(loc,a[0])-dist(loc,b[0])});
     box.innerHTML='<button class="btn alt pclose" type="button" id="placesClose">Close</button><h3>📍 Places</h3>'+
       rows.map(function(l){
-        var k=l[0],d=dist(loc,k)*WALK,here=k===loc,home=k===S.home,sh=shutLeft(k);
+        var k=l[0],d=dist(loc,k)*WALK,here=k===loc,home=k===S.home&&!S.homeless,sh=shutLeft(k);
         return '<div class="prow"><div><b>'+l[1]+' '+l[2]+'</b><small>'+(here?'You are here':hm(d)+' walk')+(home?' · Home':'')+(sh?' · 🔒 closed '+sh+'d':'')+'</small></div>'+
           (here?'<span class="tags" style="position:static;flex-direction:row"><span class="tag you">Here</span></span>':'<button class="btn" type="button" data-go="'+k+'" style="min-height:34px;padding:4px 12px;font-size:.8rem">Go</button>')+'</div>';
       }).join('');
