@@ -735,3 +735,65 @@ Wording only; no rules or `CONFIG` values changed. Every number still comes from
 - `tools/qa` simulations (report: [`docs/QA_Sim_2026-10-21_housing-sleep-shifts-illness.md`](docs/QA_Sim_2026-10-21_housing-sleep-shifts-illness.md), raw data in the `.json` beside it), 20 careful-bot seeds (1–20) and 10 random games on base `c9f7963` and on this change: no script errors, broken invariants, stuck days or log/effect mismatches.
   - Careful bot: **11 Wealthy, 9 Comfortable**, average $5,136 (base: 18 Comfortable, 2 Time's up, average $2,822), mostly because shorter shifts fit more paid work into a day. Random games: all Hospitalised on the same days, as before.
   - In these 30 games, illness came up once (pneumonia, treated) and burnout and the housing bubble never did. Extra runs with the home removed on day 3 and the flu given on day 6 played through with no errors: the bot re-applied the same day and every game finished Comfortable or Wealthy.
+
+## 45. One storyline a game, no repeats, 100 mini stories and 30 storylines
+
+### One storyline a game
+- Every game now has **exactly one** multi-day storyline. It starts on the evening of a random day from **day 2 to day 8** (`CONFIG.events.storyline.fromDay`, `toDay`). After it ends, no new storyline starts for **15 days** (`gapDays`), so with 15-day games there is one per game. Before, a storyline had a 10% chance each night, so a game had none, one or two.
+- **Macro shocks** keep their own nightly chance of **10%** (`events.macroChance`). As before, they never start while a storyline or another shock is running, or within 3 days of one ending (`bigGap`). They also never start so close to the storyline's start day that the two would overlap.
+- Removed `events.bigChance` and `events.sagaShare`.
+- A storyline that starts on day 8 and runs 9 days is cut short when the game ends on day 15, so its last chapter is not shown.
+
+### No repeats
+- **Mini stories, macro shocks and storylines** are now dealt from a shuffled deck, as decisions and news already were. None repeats until all have been seen. Before, they were picked at random with repeats allowed: about half of all games showed the same mini story twice.
+- **No chapter repeats within a storyline.** Each night's chapter is picked from the ones in its phase that have not been shown yet. Before, only yesterday's chapter was avoided, so a week-long storyline could show the same headline twice in a few days.
+- **More chapters.** Each of the 7 original storylines gets 2 more chapters per phase: start 4, escalation 5, peak 5, easing 4. Every storyline now has enough chapters to never repeat, even at its longest, 9 days.
+
+### More content
+- **Mini stories: 9 → 100.** The 91 new ones are everyday situations, each played out in one night with 1 to 3 steps. Examples: a garage sale, a scam call from "the bank", tutoring a neighbour's kid, a cracked phone, a karaoke contest, a sneaker drop, a stray kitten, a cousin who needs money (three options), a sunrise hike, a weekend stock audit.
+- **Storylines: 7 → 30.** The 23 new ones are housing bubble, currency crisis, food crisis, general strike, cyber attack on the banks, green energy boom, tourism boom, haze season, monsoon floods, chip shortage, government stimulus, recession, crypto mania, shipping crisis, automation wave, credit card crunch, heatwave, election season, commodity boom, bird flu outbreak, big sports event, retail shake-up and water shortage.
+  - Each has 15 chapters (start 3, escalation 5, peak 4, easing 3), including two yes/no choices, and its own daily economic effects and explained economics term.
+  - The **Housing bubble** storyline rolls the home-loss chance (`CONFIG.housing.loseChance`, 50%) once, on its first evening, like the existing shock and headline.
+  - The **Bird flu outbreak** storyline makes illness more likely like a pandemic (`illness.pandemicX`). The Rules screen now says "pandemic, outbreak or lockdown".
+- In total there are 471 storyline chapters (was 70).
+- **Every story step has a free choice** (decline, walk away, put it off). A story option is disabled when you cannot afford its worst case, so a step with only paid choices froze the end-of-day card for a player with no cash. The QA sims caught this ("A surprise party", random seed 104), and 15 steps in 14 new stories were fixed.
+  - **Safety net:** if a story card ever has no affordable choice, it now shows a **Leave it** button that ends the story with no effect.
+
+### Decision cards
+- Decision cards no longer all read "❓ You face a choice". The heading and icon now follow what the question is about: 💼 work, 💰 money, 👥 friends and family, 🩺 health, 🛍️ shopping, 🎉 going out, 🏠 everyday life. Each topic has 3 headings that rotate. Questions that fit no topic keep "❓ You face a choice" (16 of the 141).
+- **Twists** (the extra line sometimes added to a safe answer): 6 → 30.
+
+### Saves and the guide
+- New save fields: `sagaNext` (the day the next storyline starts) and `deckS`, `deckM`, `deckG` (the story, shock and storyline decks). A running storyline also remembers its shown chapters (`saga.used`).
+  - An older save that already had a storyline waits 15 days for the next one.
+  - An older save that had none gets a start day from the window, or today if the window has passed.
+- `docs/Daily Grind Config Guide.docx`: the events row, new quick-change rows (storyline window, `gapDays`, `macroChance`), the date and line numbers.
+
+### Checks
+- **Content check** (scratch script): 100 stories and 30 storylines pass.
+  - Every effect token is valid, every story step can be reached and leads to a step that exists, and every option has outcomes.
+  - Every choice chapter has the right shape. Every storyline has 4 phases with enough chapters never to repeat (at least 1/4/3/1).
+  - Every story step has a choice that costs nothing.
+  - Separately, a test story whose choices all cost money, played with −$50 cash, shows **Leave it**, which closes the card.
+  - No duplicate chapter titles within a storyline or across storylines, and no duplicate story titles.
+- **500 simulated 15-day games** (the game's own night-event code in headless Chromium), compared with the section 44 build:
+
+  | | Section 44 build | This change |
+  |---|---|---|
+  | Storylines per game | 0: 166, 1: 274, 2: 60 | 1 in all 500 |
+  | Storyline start day | Any day 1–15 | Days 2–8, about evenly (58–82 games each) |
+  | Repeated storyline chapters | 224 | 0 |
+  | Repeated mini stories | 368 (257 games) | 0 |
+  | Repeated macro shocks | 5 | 0 |
+  | Decision headings | 1 | 22 |
+  | Macro shocks per game | About 1.1 | About 0.23 (387 games none, 112 one, 1 two), because the storyline now fills more of the game |
+
+- **Clicked through in headless Chromium:**
+  - "Your cousin needs money" shows its three options, and picking one shows its outcome.
+  - The boss overtime question gets a 💼 work heading.
+  - On its start day the Housing bubble storyline opens with "Housing bubble · day 1 of 5" and, with the loss chance at 100% for the test, "You lost the Low-End Apartment". No script errors.
+- The section 44 mechanic checks (41) and the rule checker still pass.
+- `tools/qa` simulations (report: [`docs/QA_Sim_2026-10-22_events-variety.md`](docs/QA_Sim_2026-10-22_events-variety.md), raw data in the `.json` beside it): 20 careful-bot seeds (1–20) and 10 random games on `main` `c460c42` and on this branch at `8f854b6`. No script errors, broken invariants, stuck days or log/effect mismatches.
+  - Careful bot: 10 Wealthy, 10 Comfortable, average $5,270 (was 11 Wealthy, 9 Comfortable, average $5,136).
+  - Random games: all Hospitalised, as before.
+  - The first run, before the free-choice fix, froze on "A surprise party" in random seed 104. That is how the bug above was found.
