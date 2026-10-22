@@ -3681,19 +3681,23 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     marathonsponsor:{ic:'🎽',t:'Sponsor a colleague',s:{
       a:{x:'A colleague is running a marathon for a children’s hospital and asks for sponsors.',o:[
         {t:'Pledge $2 per km',o:[[7,'You feel good. Then you remember a marathon is 42 km.','h+4','b'],[3,'He drops out at km 10. You pay $20.','c-20 h+2']]},
-        {t:'Give a flat $20',o:[[10,'He thanks you warmly.','c-20 h+5']]}]},
+        {t:'Give a flat $20',o:[[10,'He thanks you warmly.','c-20 h+5']]},
+        {t:'Cheer him on instead',o:[[7,'You promise to be at the finish line.','h+2'],[3,'He looks a little disappointed.','h-2']]}]},
       b:{x:'He finished all 42 km! He shows you the medal and the bill: $84.',o:[
         {t:'Pay up proudly',o:[[10,'He tells the whole office you are generous.','c-84 h+8']]},
-        {t:'Ask to pay half now, half later',o:[[6,'He agrees. You pay $84 over two weeks.','c-84 h+3'],[4,'He looks disappointed but agrees.','c-84 h-2']]}]}}},
+        {t:'Ask to pay half now, half later',o:[[6,'He agrees. You pay $84 over two weeks.','c-84 h+3'],[4,'He looks disappointed but agrees.','c-84 h-2']]},
+        {t:'Admit you can’t afford it',o:[[6,'He laughs and says to buy him a kopi sometime.','h+2'],[4,'He says not to worry, but it stings.','h-5']]}]}}},
     phonerepair:{ic:'📱',t:'A cracked phone',s:{
       a:{x:'You drop your phone and the screen shatters. The official shop quotes $180.',o:[
         {t:'Pay the official shop ($180)',o:[[10,'Good as new, with a warranty.','c-180 h+3']]},
         {t:'Try the shop in the old mall',o:[[6,'The uncle says $60, done in an hour.','','b'],[4,'He says he needs to order the part.','','c']]}]},
       b:{x:'An hour later the uncle hands back your phone.',o:[
-        {t:'Pay $60 and check it',o:[[7,'Works perfectly. Bargain.','c-60 h+5'],[3,'The touchscreen is a little off near the edges.','c-60 h-3']]}]},
+        {t:'Pay $60 and check it',o:[[7,'Works perfectly. Bargain.','c-60 h+5'],[3,'The touchscreen is a little off near the edges.','c-60 h-3']]},
+        {t:'Leave it for now',o:[[10,'He keeps the phone until you can pay. A week of borrowed phones.','h-4']]}]},
       c:{x:'The uncle can get the part in two days for $50. Or a cheaper copy today for $35.',o:[
         {t:'Wait two days ($50)',o:[[8,'Original part, perfect fix.','c-50 h+3'],[2,'He gives you the wrong colour. You live with it.','c-50 h-2']]},
-        {t:'Copy part today ($35)',o:[[5,'Fine for now.','c-35'],[5,'The colours look washed out. You regret it.','c-35 h-4']]}]}}},
+        {t:'Copy part today ($35)',o:[[5,'Fine for now.','c-35'],[5,'The colours look washed out. You regret it.','c-35 h-4']]},
+        {t:'Live with the crack',o:[[10,'You squint at the screen for a while longer.','h-3']]}]}}},
     nightclass:{ic:'🌙',t:'Night class in accounting',s:{
       a:{x:'The community centre runs a four-week evening bookkeeping class for $45.',o:[
         {t:'Enrol ($45)',sk:'know',o:[[6,'The first lesson is clearer than you expected.','c-45 n+3 e-6','b'],[4,'The teacher drones on. You doze off.','c-45 n+1 e-6','b']]},
@@ -3728,7 +3732,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     exam:{ic:'📝',t:'A friend’s exam notes',s:{
       a:{x:'A friend who just finished a finance diploma offers you her notes for $25.',o:[
         {t:'Buy the notes',sk:'know',o:[[6,'They are beautifully organised.','c-25 n+5'],[4,'Half of them are doodles.','c-25 n+2']]},
-        {t:'Ask her to tutor you instead',o:[[6,'She agrees, for the price of dinner.','c-20 n+4 h+4','b'],[4,'She is too busy.','']]}]},
+        {t:'Ask her to tutor you instead',o:[[6,'She agrees, for the price of dinner.','c-20 n+4 h+4','b'],[4,'She is too busy.','']]},
+        {t:'Thank her and pass',o:[[10,'She says the offer stands.','']]}]},
       b:{x:'The tutoring goes well. She says her company is hiring interns and could refer you.',o:[
         {t:'Ask for the referral',o:[[4,'The firm pays you $120 for a week of weekend data entry.','c+120 n+3 e-14'],[6,'They have nothing right now, but you are on the list.','h+2']]},
         {t:'Just keep studying',o:[[10,'Your understanding grows.','n+3']]}]}}},
@@ -3739,7 +3744,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     picnic:{ic:'🧺',t:'A park picnic',s:{
       a:{x:'Friends are planning a picnic at the reservoir on Sunday. Bring something to share?',o:[
         {t:'Bring homemade food ($15)',o:[[6,'Your dish is the first to disappear.','c-15 h+8 e-4','b'],[4,'It is a bit bland, but everyone is polite.','c-15 h+3 e-4','b']]},
-        {t:'Buy snacks on the way ($10)',o:[[10,'Nobody minds. It is a lovely day.','c-10 h+5','b']]}]},
+        {t:'Buy snacks on the way ($10)',o:[[10,'Nobody minds. It is a lovely day.','c-10 h+5','b']]},
+        {t:'Bring yourself and a smile',o:[[7,'Your friends have plenty to share.','e+5 h+4','b'],[3,'You feel a bit bad turning up empty-handed.','h+1','b']]}]},
       b:{x:'The sky darkens and thunder rolls. Everyone looks at the clouds.',o:[
         {t:'Pack up and run',o:[[7,'You make it to the shelter just in time.','h+3'],[3,'Everyone gets soaked, which somehow makes it more fun.','h+5 e-4']]},
         {t:'Stay and see',o:[[4,'The storm passes by. Sunset over the water.','h+10'],[6,'The downpour ruins the food.','h-5']]}]}}},
@@ -3766,7 +3772,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     secretsanta:{ic:'🎅',t:'Office gift exchange',s:{
       a:{x:'The office is doing a gift exchange with a $20 limit. You drew your boss.',o:[
         {t:'Buy something thoughtful ($20)',sk:'know',o:[[6,'She loves it and mentions it in the team meeting.','c-20 h+6','b'],[4,'She smiles politely. It is fine.','c-20 h+1']]},
-        {t:'Grab a gift card ($20)',o:[[10,'Safe and forgettable.','c-20']]}]},
+        {t:'Grab a gift card ($20)',o:[[10,'Safe and forgettable.','c-20']]},
+        {t:'Write her a thank-you card',o:[[6,'She pins it on her board.','h+4','b'],[4,'She thanks you, a little puzzled.','h+1']]}]},
       b:{x:'Your boss stops by your desk. “You clearly pay attention. Want to lead the next small project?”',o:[
         {t:'Accept',o:[[6,'Extra work, but a small pay bump comes with it.','w+1 e-6 h+4'],[4,'It is stressful, but you learn a lot.','n+4 e-10']]},
         {t:'Say you are at capacity',o:[[10,'She understands and remembers you for later.','h+1']]}]}}},
@@ -3862,7 +3869,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     birthday:{ic:'🎂',t:'A surprise party',s:{
       a:{x:'Your flatmate’s birthday is tomorrow. Everyone else forgot.',o:[
         {t:'Throw a small party ($40)',o:[[7,'She is speechless. Best birthday ever, she says.','c-40 h+10 e-6'],[3,'She wanted a quiet night. Awkward but sweet.','c-40 h+3']]},
-        {t:'Buy a cake ($15)',o:[[10,'Simple and appreciated.','c-15 h+6']]}]}}},
+        {t:'Buy a cake ($15)',o:[[10,'Simple and appreciated.','c-15 h+6']]},
+        {t:'Make her breakfast',o:[[8,'She is touched you remembered.','e-3 h+6'],[2,'You burn the toast. She laughs anyway.','h+3']]}]}}},
     taxi:{ic:'🚕',t:'Late night ride',s:{
       a:{x:'It is past midnight and the last train has gone.',o:[
         {t:'Take a taxi ($25)',o:[[10,'Home safe, and asleep in no time.','c-25 e+3']]},
@@ -3889,7 +3897,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     dinnerbill:{ic:'🧾',t:'Splitting the bill',s:{
       a:{x:'At a group dinner, someone suggests splitting the $240 bill evenly. You only had noodles.',o:[
         {t:'Pay your even share ($40)',o:[[7,'Keeps the peace. Friends notice and treat you next time.','c-40 h+3'],[3,'You stew about it all the way home.','c-40 h-4']]},
-        {t:'Ask to pay for what you ate ($15)',o:[[6,'Everyone agrees. No problem.','c-15 h+2'],[4,'One friend rolls her eyes.','c-15 h-3']]}]}}},
+        {t:'Ask to pay for what you ate ($15)',o:[[6,'Everyone agrees. No problem.','c-15 h+2'],[4,'One friend rolls her eyes.','c-15 h-3']]},
+        {t:'Admit you are short this week',o:[[6,'A friend covers you. You owe her one.','h-1'],[4,'It is embarrassing, but nobody minds much.','h-4']]}]}}},
     reunion:{ic:'🏫',t:'School reunion',s:{
       a:{x:'Your secondary school class is holding a ten-year reunion. Tickets are $45.',o:[
         {t:'Go ($45)',o:[[6,'Old friends, old jokes. A wonderful night.','c-45 h+10 e-6','b'],[4,'Everyone talks about their promotions.','c-45 h-4 e-6','b']]},
@@ -3962,7 +3971,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     ticketfine:{ic:'🚏',t:'A transport fine',s:{
       a:{x:'An inspector says your card did not tap in. The fine is $50.',o:[
         {t:'Pay the fine',o:[[10,'Annoying, but done.','c-50 h-4']]},
-        {t:'Appeal politely',sk:'know',o:[[5,'You show your card history. Fine cancelled.','h+5 e-4'],[5,'The appeal is rejected. $50 plus an hour of forms.','c-50 e-6 h-6']]}]}}},
+        {t:'Appeal politely',sk:'know',o:[[5,'You show your card history. Fine cancelled.','h+5 e-4'],[5,'The appeal is rejected. $50 plus an hour of forms.','c-50 e-6 h-6']]},
+        {t:'Ask to pay it later',o:[[10,'The inspector gives you a slip. It will come out of next month’s budget.','h-3']]}]}}},
     langclass:{ic:'🗣️',t:'Learning a language',s:{
       a:{x:'A free app challenge: practise Mandarin 30 minutes a day for a week.',o:[
         {t:'Take the challenge',sk:'know',o:[[6,'You can order food in Mandarin now.','n+4 h+4','b'],[4,'You quit on day three.','n+1']]},
@@ -4001,7 +4011,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     bakesale:{ic:'🧁',t:'Bake sale',s:{
       a:{x:'Your office is holding a bake sale for charity. Bake something?',o:[
         {t:'Bake cupcakes ($15 ingredients)',o:[[6,'They sell out in ten minutes.','c-15 h+8 e-6'],[4,'They come out flat. They still sell, out of pity.','c-15 h+2 e-6']]},
-        {t:'Buy a few treats ($8)',o:[[10,'Sugar rush for a good cause.','c-8 e+5 h+4']]}]}}},
+        {t:'Buy a few treats ($8)',o:[[10,'Sugar rush for a good cause.','c-8 e+5 h+4']]},
+        {t:'Help run the stall',o:[[10,'You sell other people’s cakes all lunchtime.','e-4 h+4']]}]}}},
     podcast:{ic:'🎧',t:'Starting a podcast',s:{
       a:{x:'A friend wants to start a podcast about budget living and asks you to co-host.',o:[
         {t:'Say yes',sk:'know',o:[[6,'The first episode is rough but fun.','e-8 h+5 n+1','b'],[4,'Your friend talks the whole time.','e-8 h+1','b']]},
@@ -4021,7 +4032,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     newsalary:{ic:'💸',t:'Payday temptation',s:{
       a:{x:'It is payday and your favourite shop has a 30% off sale.',o:[
         {t:'Treat yourself ($60)',o:[[6,'You love what you bought.','c-60 h+8'],[4,'You regret it by evening.','c-60 h-2']]},
-        {t:'Move $60 into savings',o:[[10,'Future you says thanks.','c-60 b+60 h+2']]}]}}},
+        {t:'Move $60 into savings',o:[[10,'Future you says thanks.','c-60 b+60 h+2']]},
+        {t:'Just window-shop',o:[[7,'You look, you smile, you leave.','h+1'],[3,'Leaving empty-handed is hard.','h-2']]}]}}},
     stormdamage:{ic:'🌪️',t:'Storm damage',s:{
       a:{x:'A storm knocked a tree branch through your window.',o:[
         {t:'Call the landlord',o:[[6,'He sends someone the same day and pays for it.','h+3'],[4,'He says it is your problem. $60 for glass.','c-60 h-5']]},
@@ -4073,7 +4085,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     parking:{ic:'🅿️',t:'A parking ticket',s:{
       a:{x:'You borrowed a friend’s car and got a $40 parking ticket.',o:[
         {t:'Pay it and tell her',o:[[10,'She appreciates the honesty.','c-40 h+2']]},
-        {t:'Hope she does not notice',o:[[3,'She never finds out.','h-3'],[7,'The fine doubles and she is upset.','c-80 h-8']]}]}}},
+        {t:'Hope she does not notice',o:[[3,'She never finds out.','h-3'],[7,'The fine doubles and she is upset.','c-80 h-8']]},
+        {t:'Tell her and offer to pay next week',o:[[7,'She says that is fine.','h-1'],[3,'She is annoyed but agrees.','h-4']]}]}}},
     onlinecourse2:{ic:'🧠',t:'A free university course',s:{
       a:{x:'A top university posts a free online course on personal finance.',o:[
         {t:'Do the whole course',sk:'know',o:[[6,'You finish it with a certificate.','n+6 e-10 h+4'],[4,'You manage half. Still useful.','n+3 e-6']]},
@@ -4085,11 +4098,13 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     rentaltool:{ic:'🔧',t:'Fix it yourself',s:{
       a:{x:'Your kitchen tap is dripping. A plumber wants $80.',o:[
         {t:'Call the plumber ($80)',o:[[10,'Fixed in ten minutes.','c-80']]},
-        {t:'Watch a video and fix it',sk:'know',o:[[6,'You fix it for $6 in parts. Victory.','c-6 n+2 h+6'],[4,'Water everywhere. You call the plumber anyway.','c-86 h-6']]}]}}},
+        {t:'Watch a video and fix it',sk:'know',o:[[6,'You fix it for $6 in parts. Victory.','c-6 n+2 h+6'],[4,'Water everywhere. You call the plumber anyway.','c-86 h-6']]},
+        {t:'Put a bowl under it',o:[[10,'Drip, drip, drip. You sleep with earplugs.','h-3 e-2']]}]}}},
     birthdaygift:{ic:'🎁',t:'A pricey gift',s:{
       a:{x:'Your best friend’s birthday is coming. She hinted at a $70 perfume.',o:[
         {t:'Buy the perfume ($70)',o:[[10,'She is thrilled.','c-70 h+8']]},
-        {t:'Make a photo album ($15)',o:[[7,'She cries happy tears.','c-15 h+10'],[3,'She says “oh… thanks”.','c-15 h-2']]}]}}},
+        {t:'Make a photo album ($15)',o:[[7,'She cries happy tears.','c-15 h+10'],[3,'She says “oh… thanks”.','c-15 h-2']]},
+        {t:'Write her a long letter',o:[[7,'She keeps it in her bag for weeks.','h+8'],[3,'She hoped for the perfume.','h-2']]}]}}},
     commuteswap:{ic:'🚌',t:'A new bus route',s:{
       a:{x:'A new express bus could cut your commute by 20 minutes, but costs $1 more each way.',o:[
         {t:'Try the express bus',o:[[7,'Quicker and comfier. Worth it.','c-10 e+6 h+3'],[3,'It is stuck in traffic. No faster.','c-10 h-2']]},
@@ -4113,7 +4128,12 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
   function storyCost(o){var m=0;o.o.forEach(function(x){var c=0;(x[2]||'').split(' ').forEach(function(t){var q=tokRe.exec(t);if(q&&q[1]==='c'&&q[2]==='-')c+=+(q[4]||q[3])});m=Math.max(m,c)});return m}
   function storyPick(i){
     var ev=S.pending&&S.pending.ev;if(!ev||!ev.story||ev.done)return;
-    var st=STORIES[ev.story],step=st.s[ev.step],o=step.o[i];if(!o)return;
+    var st=STORIES[ev.story],step=st.s[ev.step];
+    /* -1: no choice is affordable, so the player leaves it (renderEvent offers this only then) */
+    if(i===-1){if(step.o.some(function(x){return storyCost(x)<=Math.max(0,S.cash)}))return;
+      ev.hist.push('<b>Leave it:</b> You can’t afford any of these, so you let it go.');ev.done=true;ev.outcome='You let it go.';ev.tone='';
+      log('Story ('+st.t+'): you could not afford any of the choices and let it go.','warn');render();return}
+    var o=step.o[i];if(!o)return;
     if(storyCost(o)>Math.max(0,S.cash))return;
     var ws=o.o.map(function(x,j){var w=x[0];if(j===0&&o.sk){var v=o.sk==='know'?S.know:o.sk==='happy'?S.happy:S.energy;w*=0.6+v/80}return w});
     var tot=ws.reduce(function(a,b){return a+b},0),roll=Math.random()*tot,k=0;
@@ -4227,7 +4247,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(ev.story&&ev.hist&&ev.hist.length)h=h.replace('<div class="say">','<div class="hist">'+ev.hist.map(function(x){return '<div>'+x+'</div>'}).join('')+'</div><div class="say">');
     if(ev.story&&!ev.done){
       var stp=STORIES[ev.story].s[ev.step];
-      h+='<div class="evbtns">'+stp.o.map(function(o,i){var c=storyCost(o);return btn('evopt',String(i),o.t,i>0,c>Math.max(0,S.cash))}).join('')+'</div>'+(stp.o.some(function(o){return storyCost(o)>Math.max(0,S.cash)})?'<p class="bad">Some choices need more cash than you have.</p>':'')+'<p><small>Round '+(ev.hist.length+1)+'. The same choice can turn out differently.</small></p>';
+      var none=!stp.o.some(function(o){return storyCost(o)<=Math.max(0,S.cash)});
+      h+='<div class="evbtns">'+stp.o.map(function(o,i){var c=storyCost(o);return btn('evopt',String(i),o.t,i>0,c>Math.max(0,S.cash))}).join('')+(none?btn('evopt','-1','Leave it',1):'')+'</div>'+(stp.o.some(function(o){return storyCost(o)>Math.max(0,S.cash)})?'<p class="bad">Some choices need more cash than you have.</p>':'')+'<p><small>Round '+(ev.hist.length+1)+'. The same choice can turn out differently.</small></p>';
     }else if(!ev.done){
       var need=ev.rep?ev.rep.cost:needCash(ev.y);
       h+='<div class="evbtns">'+btn('evyes','','Yes',0,need>Math.max(0,S.cash))+btn('evno','','No',1)+'</div>'+(need>Math.max(0,S.cash)?'<p class="bad">You’d need '+money(need)+' in cash to say yes.</p>':'');

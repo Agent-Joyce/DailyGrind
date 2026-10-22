@@ -756,6 +756,8 @@ Wording only; no rules or `CONFIG` values changed. Every number still comes from
   - The **Housing bubble** storyline rolls the home-loss chance (`CONFIG.housing.loseChance`, 50%) once, on its first evening, like the existing shock and headline.
   - The **Bird flu outbreak** storyline makes illness more likely like a pandemic (`illness.pandemicX`). The Rules screen now says "pandemic, outbreak or lockdown".
 - In total there are 471 storyline chapters (was 70).
+- **Every story step has a free choice** (decline, walk away, put it off). A story option is disabled when you cannot afford its worst case, so a step with only paid choices froze the end-of-day card for a player with no cash. The QA sims caught this ("A surprise party", random seed 104), and 15 steps in 14 new stories were fixed.
+  - **Safety net:** if a story card ever has no affordable choice, it now shows a **Leave it** button that ends the story with no effect.
 
 ### Decision cards
 - Decision cards no longer all read "❓ You face a choice". The heading and icon now follow what the question is about: 💼 work, 💰 money, 👥 friends and family, 🩺 health, 🛍️ shopping, 🎉 going out, 🏠 everyday life. Each topic has 3 headings that rotate. Questions that fit no topic keep "❓ You face a choice" (16 of the 141).
@@ -771,6 +773,8 @@ Wording only; no rules or `CONFIG` values changed. Every number still comes from
 - **Content check** (scratch script): 100 stories and 30 storylines pass.
   - Every effect token is valid, every story step can be reached and leads to a step that exists, and every option has outcomes.
   - Every choice chapter has the right shape. Every storyline has 4 phases with enough chapters never to repeat (at least 1/4/3/1).
+  - Every story step has a choice that costs nothing.
+  - Separately, a test story whose choices all cost money, played with −$50 cash, shows **Leave it**, which closes the card.
   - No duplicate chapter titles within a storyline or across storylines, and no duplicate story titles.
 - **500 simulated 15-day games** (the game's own night-event code in headless Chromium), compared with the section 44 build:
 
