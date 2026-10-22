@@ -797,3 +797,10 @@ Wording only; no rules or `CONFIG` values changed. Every number still comes from
   - Careful bot: 10 Wealthy, 10 Comfortable, average $5,270 (was 11 Wealthy, 9 Comfortable, average $5,136).
   - Random games: all Hospitalised, as before.
   - The first run, before the free-choice fix, froze on "A surprise party" in random seed 104. That is how the bug above was found.
+
+## 46. Morning pop-up: no repeated warnings, fits a phone screen
+
+- **Repeated warning fixed.** "You have worked and studied more than 10 hours…" showed twice in the morning pop-up. The overnight burnout check added it as a note, and the warnings list added it again. Now it comes only from the warnings list.
+- **Burnout start.** On the day burnout starts, the pop-up also showed "🔥 Burnout (3 days left)" under the "🔥 BURNOUT!" note. That line is now left out on the first day (it still shows on the overview and on later days).
+- **Pop-ups fit the screen.** Every pop-up card is now at most the screen's height and scrolls inside itself. Before, the morning pop-up had no height limit: with a long list on a phone it ran off the top and bottom of the screen, and "Got it" could not be reached. In the morning pop-up, **Got it** stays pinned to the bottom of the card while the list scrolls. On phones (640px or narrower), pop-ups have less padding around them.
+- **Checked in headless Chromium on an iPhone 13-sized screen** (390×664), on a day with 13 morning notes. Before: the warning shows twice, the card runs from 335px above the screen to 335px below it, "Got it" is off-screen and a tap cannot close it. After: the warning shows once, the card fits the screen (10–654px) and scrolls, and a tap on "Got it" closes it. On a burnout-start day only the BURNOUT! note shows. No script errors. The section 44 mechanic checks still pass.
