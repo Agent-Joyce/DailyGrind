@@ -816,3 +816,18 @@ Wording only; no rules or `CONFIG` values changed. Every number still comes from
   - Every careful game already passed $2,000, so no ending flips.
   - The careful bot now ends with 14 Wealthy and 6 Comfortable, average $5,525 (was 10 and 10, average $5,270). It reaches the first rank earlier and plays on from there.
   - The random games never reach $1,000 and are identical.
+
+## 48. Compact layout pilot: Apartment, Bungalow and Bank
+
+Layout and wording only; no rules or `CONFIG` values change. A pilot on three screens before deciding whether to use it everywhere.
+- **Actions are one row:** a name, the numbers as small icon chips (time, energy, happiness, health, knowledge, cash) and the button. Sentences under buttons are gone. For example, "Sleep the remaining 15h: +52% energy, +15 health and +23 happiness (1.5 per full hour), against the nightly −15%…" is now `⏱ 15h ⚡ +52% ❤ +15 🙂 +23`.
+- **Rules move behind ⓘ:** each section heading (Your home, Your things, Kitchen, Rest & sleep, Study & work, Rent & bills, Savings and investments) has an ⓘ that opens its explanation, with the same numbers as before, all from `CONFIG`. Status sits on the right of the heading as chips (Eaten today, Meals 1/3, Comfort 0/5, today's work and study against 10h, Market steady). Each Bank card and the loan have their own "Details" / "How loans work". An open ⓘ stays open after you press a button.
+- **Shorter labels:** for example "Eat a ready-to-eat meal · 1" becomes "Ready-to-eat × 1", "Fridge: no fridge · a refrigerator keeps 5 meals for 6 days" becomes "Fridge: none", and "Rent of $150 is due at the end of day 5…" becomes a "Due end of day 5" chip.
+- **Bank:**
+  - The loan shows its limit and one line, "Borrow $50 → repay $56 by the end of day 7"; the rules are under "How loans work".
+  - Each product card shows what it is worth (or "Not invested"), its expected return a day and how often it loses, as chips.
+  - The comparison table stays; its explanation is under the section's ⓘ.
+  - The news tip-off keeps its own line.
+- **Shopkeeper:** on these three screens the quote is one quiet italic line instead of a boxed panel.
+- On these screens the visible text drops by about half: Apartment 376 → 188 words, Bank 477 → 188, in the same game state.
+- All buttons keep their `data-act` names, so keyboard shortcuts and `tools/qa/sim.js` still work. The section 44 mechanic checks pass (they click rest, sleep, the home application and others).
