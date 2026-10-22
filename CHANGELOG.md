@@ -804,3 +804,15 @@ Wording only; no rules or `CONFIG` values changed. Every number still comes from
 - **Burnout start.** On the day burnout starts, the pop-up also showed "🔥 Burnout (3 days left)" under the "🔥 BURNOUT!" note. That line is now left out on the first day (it still shows on the overview and on later days).
 - **Pop-ups fit the screen.** Every pop-up card is now at most the screen's height and scrolls inside itself. Before, the morning pop-up had no height limit: with a long list on a phone it ran off the top and bottom of the screen, and "Got it" could not be reached. In the morning pop-up, **Got it** stays pinned to the bottom of the card while the list scrolls. On phones (640px or narrower), pop-ups have less padding around them.
 - **Checked in headless Chromium on an iPhone 13-sized screen** (390×664), on a day with 13 morning notes. Before: the warning shows twice, the card runs from 335px above the screen to 335px below it, "Got it" is off-screen and a tap cannot close it. After: the warning shows once, the card fits the screen (10–654px) and scrolls, and a tap on "Got it" closes it. On a burnout-start day only the BURNOUT! note shows. No script errors. The section 44 mechanic checks still pass.
+
+## 47. Comfortable at $1,000
+
+- The first rank, **🙂 Comfortable**, is now reached at **$1,000** net worth (`CONFIG.ranks[0].netWorth` 2000 → 1000). It is still due by the end of **day 8** for its +500 on-time bonus. Wealthy ($5,000 by day 12) and Tycoon ($10,000 by day 15) are unchanged.
+- Reaching Comfortable is also what wins the game, so the win line is now $1,000. The welcome screen, Rules ("Net worth reaches $1,000", "Time's up… still under $1,000"), HUD ("next: Comfortable $1,000 by day 8") and goal pop-up all read the setting. The HTML placeholder text was updated to match.
+- A shopkeeper's "Doing well for yourself, I hear." line used a fixed $2,000. It now follows the first rank.
+- `docs/Daily Grind Config Guide.docx`: the ranks row and the "Make the first goal easier to reach" row now say 1000.
+- Checked in headless Chromium: the welcome screen, Rules and HUD show $1,000, with no script errors.
+- `tools/qa` simulations (report: [`docs/QA_Sim_2026-10-22_comfortable-1000.md`](docs/QA_Sim_2026-10-22_comfortable-1000.md), raw data in the `.json` beside it), 20 careful and 10 random games against `main` `21b8f81`. No script errors, broken invariants or stuck days.
+  - Every careful game already passed $2,000, so no ending flips.
+  - The careful bot now ends with 14 Wealthy and 6 Comfortable, average $5,525 (was 10 and 10, average $5,270). It reaches the first rank earlier and plays on from there.
+  - The random games never reach $1,000 and are identical.

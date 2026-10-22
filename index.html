@@ -515,7 +515,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       </div>
       <div class="grp g-nw">
         <div class="gh">💰 Net worth</div>
-        <div class="nwrow"><b id="nw">$200</b><span><span id="goalAmt">next: Comfortable $2,000</span></span></div>
+        <div class="nwrow"><b id="nw">$200</b><span><span id="goalAmt">next: Comfortable $1,000</span></span></div>
         <div class="seg" id="seg"><i class="s1" id="sgCash"></i><i class="s2" id="sgBank"></i><i class="s4" id="sgInv"></i><i class="s3" id="sgAsset"></i></div>
         <div class="parts">
           <div><span class="dot d1"></span>Cash<b id="cash">$200</b></div>
@@ -544,7 +544,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 
 <div class="over" id="welcome" role="dialog" aria-modal="true" aria-labelledby="wlT"><div class="card rules">
   <h2 id="wlT">Welcome to Daily Grind</h2>
-  <p style="color:var(--ink)">Build a life from scratch. Reach <b><span id="cfgGoal">$2,000</span> net worth</b> without going broke, burning out or skipping meals.</p>
+  <p style="color:var(--ink)">Build a life from scratch. Reach <b><span id="cfgGoal">$1,000</span> net worth</b> without going broke, burning out or skipping meals.</p>
   <ul>
     <li><b>Each day has 24 hours.</b> Walking (<span id="cfgWalk">5 minutes</span> per building), working, studying and shopping all use time. Click <b>Sleep in Apartment</b> (at home) or <b>Sleep outside</b> (anywhere else) when you are done.</li>
     <li><b>Eat once a day</b> and keep an eye on energy and happiness. Low energy makes you ill; low happiness cuts your pay.</li>
@@ -564,7 +564,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 <div class="over" id="rules" role="dialog" aria-modal="true" aria-labelledby="rlT"><div class="card rules">
   <h2 id="rlT">How the game ends</h2>
   <h3 class="win">You win</h3>
-  <ul><li><b>Net worth reaches <span id="cfgGoal2">$2,000</span></b>: cash + bank + investments + the resale value of your things, minus hospital debt, rent arrears and any loan you owe<span id="rlWin">, within 15 days</span>. That makes you <b id="cfgRank1">🙂 Comfortable</b> and you have won.</li>
+  <ul><li><b>Net worth reaches <span id="cfgGoal2">$1,000</span></b>: cash + bank + investments + the resale value of your things, minus hospital debt, rent arrears and any loan you owe<span id="rlWin">, within 15 days</span>. That makes you <b id="cfgRank1">🙂 Comfortable</b> and you have won.</li>
   <li>Keep playing for a higher rank: <span id="cfgRanks"><b>💼 Wealthy</b> at $5,000 and <b>👑 Tycoon</b> at $10,000 (Tycoon ends the game)</span>. When time runs out, your best rank is your final result.</li>
   <li><span id="cfgOnTime">Reach a rank by its target day for bonus points.</span></li></ul>
   <h3 class="lose">You lose</h3>
@@ -574,7 +574,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     <li><b>Exhaustion:</b> energy at 10% or less at the end of two days in a row.</li>
     <li><b>You gave up:</b> happiness at 10 or less for three days in a row.</li>
     <li><b>Hospitalised:</b> <span id="cfgHungry">three days</span> in a row without a meal.</li>
-    <li><b>Time’s up:</b> <span id="rlTime">Day 15 passes and you are still under $2,000.</span></li>
+    <li><b>Time’s up:</b> <span id="rlTime">Day 15 passes and you are still under $1,000.</span></li>
   </ul>
   <h3>Stress that builds before then</h3>
   <ul>
@@ -1133,7 +1133,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
       byDay: target day. Reaching the rank by the end of that day adds 'bonus' points to the score (an "on-time" rank).
       Reaching it later still counts as the rank, without the bonus. byDay:0 = no target. A byDay past the game length is treated as the last day. */
     ranks:[
-      {name:'Comfortable', netWorth:2000,  icon:'🙂', byDay:8,  bonus:500},
+      {name:'Comfortable', netWorth:1000,  icon:'🙂', byDay:8,  bonus:500},
       {name:'Wealthy',    netWorth:5000,  icon:'💼', byDay:12, bonus:1000},
       {name:'Tycoon',      netWorth:10000, icon:'👑', byDay:15, bonus:2000}
     ],
@@ -4757,7 +4757,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
     if(!S.fed&&(k==='fast'||k==='resto'||k==='market'))L.push('You look hungry. Have you eaten today?','Eat something before you fall over.');
     if(hold)L.push('Back for your shift? Good, we are busy.','There you are. Clock in when you are ready.');
     if(S.cash<30)L.push('Money tight? Plenty of us have been there.');
-    if(worth()>=2000)L.push('Doing well for yourself, I hear.');
+    if(worth()>=GOAL)L.push('Doing well for yourself, I hear.');  /* once you reach the first rank */
     if(k==='hosp'&&S.ill)L.push('You look unwell. Let me have a look at you.');
     if(k==='hosp'&&S.medDebt>0)L.push('About that unpaid bill of yours…');
     if(k==='jobs'&&!Object.keys(c).length)L.push('No job yet? Let us fix that today.');
