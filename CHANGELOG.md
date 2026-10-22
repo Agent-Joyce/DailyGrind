@@ -797,3 +797,11 @@ Wording only; no rules or `CONFIG` values changed. Every number still comes from
   - Careful bot: 10 Wealthy, 10 Comfortable, average $5,270 (was 11 Wealthy, 9 Comfortable, average $5,136).
   - Random games: all Hospitalised, as before.
   - The first run, before the free-choice fix, froze on "A surprise party" in random seed 104. That is how the bug above was found.
+
+## 47. Comfortable at $1,000
+
+- The first rank, **🙂 Comfortable**, is now reached at **$1,000** net worth (`CONFIG.ranks[0].netWorth` 2000 → 1000). It is still due by the end of **day 8** for its +500 on-time bonus. Wealthy ($5,000 by day 12) and Tycoon ($10,000 by day 15) are unchanged.
+- Reaching Comfortable is also what wins the game, so the win line is now $1,000. The welcome screen, Rules ("Net worth reaches $1,000", "Time's up… still under $1,000"), HUD ("next: Comfortable $1,000 by day 8") and goal pop-up all read the setting. The HTML placeholder text was updated to match.
+- A shopkeeper's "Doing well for yourself, I hear." line used a fixed $2,000. It now follows the first rank.
+- `docs/Daily Grind Config Guide.docx`: the ranks row and the "Make the first goal easier to reach" row now say 1000.
+- Checked in headless Chromium: the welcome screen, Rules and HUD show $1,000, with no script errors.
