@@ -805,3 +805,7 @@ Wording only; no rules or `CONFIG` values changed. Every number still comes from
 - A shopkeeper's "Doing well for yourself, I hear." line used a fixed $2,000. It now follows the first rank.
 - `docs/Daily Grind Config Guide.docx`: the ranks row and the "Make the first goal easier to reach" row now say 1000.
 - Checked in headless Chromium: the welcome screen, Rules and HUD show $1,000, with no script errors.
+- `tools/qa` simulations (report: [`docs/QA_Sim_2026-10-22_comfortable-1000.md`](docs/QA_Sim_2026-10-22_comfortable-1000.md), raw data in the `.json` beside it), 20 careful and 10 random games against `main` `21b8f81`. No script errors, broken invariants or stuck days.
+  - Every careful game already passed $2,000, so no ending flips.
+  - The careful bot now ends with 14 Wealthy and 6 Comfortable, average $5,525 (was 10 and 10, average $5,270). It reaches the first rank earlier and plays on from there.
+  - The random games never reach $1,000 and are identical.
