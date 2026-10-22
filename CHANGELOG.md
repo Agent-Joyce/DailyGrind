@@ -793,3 +793,7 @@ Wording only; no rules or `CONFIG` values changed. Every number still comes from
   - The boss overtime question gets a 💼 work heading.
   - On its start day the Housing bubble storyline opens with "Housing bubble · day 1 of 5" and, with the loss chance at 100% for the test, "You lost the Low-End Apartment". No script errors.
 - The section 44 mechanic checks (41) and the rule checker still pass.
+- `tools/qa` simulations (report: [`docs/QA_Sim_2026-10-22_events-variety.md`](docs/QA_Sim_2026-10-22_events-variety.md), raw data in the `.json` beside it): 20 careful-bot seeds (1–20) and 10 random games on `main` `c460c42` and on this branch at `8f854b6`. No script errors, broken invariants, stuck days or log/effect mismatches.
+  - Careful bot: 10 Wealthy, 10 Comfortable, average $5,270 (was 11 Wealthy, 9 Comfortable, average $5,136).
+  - Random games: all Hospitalised, as before.
+  - The first run, before the free-choice fix, froze on "A surprise party" in random seed 104. That is how the bug above was found.
