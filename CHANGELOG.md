@@ -879,3 +879,10 @@ Layout and wording only; no rules change.
   - The vitals label reads **Knowledge** where it fits and **Know** on phone-width screens (440px or narrower).
   - The page is shorter: 868 → 773px on desktop, 1,186 → 1,096px on a phone.
 - Checked in headless Chromium on desktop and phones (iPhone 13 and iPhone SE). On a phone the trait line opens with a tap, choosing Night Owl updates it, and the game starts with that trait. "Knowledge" fits on desktop and laptop, and "Know" shows on phones without overlapping. No script errors. The section 44 mechanic checks pass.
+
+## 52. Phones: buttons beside the text
+
+Layout only; no rules change.
+- On phones (640px or narrower), a row's button (Buy, Buy 1, Buy bundle, Join in, Book, Eat, Study, Apply…) now sits on the right of its row, beside the name and chips, as on desktop. Before, it dropped to a full-width bar underneath. Row buttons are a little smaller on phones to leave room for the text.
+- This applies to every building. Rows with two buttons side by side, such as Cook 1 / Cook 2 at home or Buy / Bargain at the Clothes Mall, still stack under the text because they do not fit beside it.
+- Panels are shorter on a phone (iPhone 13): Supermarket 963 → 696px, Apartment 1,537 → 1,272px, Gym 655 → 527px, Hospital 478 → 334px.
