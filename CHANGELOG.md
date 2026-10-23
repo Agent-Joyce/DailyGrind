@@ -816,3 +816,31 @@ Wording only; no rules or `CONFIG` values changed. Every number still comes from
   - Every careful game already passed $2,000, so no ending flips.
   - The careful bot now ends with 14 Wealthy and 6 Comfortable, average $5,525 (was 10 and 10, average $5,270). It reaches the first rank earlier and plays on from there.
   - The random games never reach $1,000 and are identical.
+
+## 48. Compact card layout on every screen
+
+Layout and wording only; no rules or `CONFIG` values change. It was tried first on the Apartment, Bungalow and Bank, then carried to every building.
+- **Actions are one row:** a name, the numbers as small icon chips (time, energy, happiness, health, knowledge, cash) and the button. Sentences under buttons are gone. For example, "Sleep the remaining 15h: +52% energy, +15 health and +23 happiness (1.5 per full hour), against the nightly −15%…" is now `⏱ 15h ⚡ +52% ❤ +15 🙂 +23`.
+- **Rules move behind ⓘ:** each section heading (Your home, Your things, Kitchen, Rest & sleep, Study & work, Rent & bills, Savings and investments) has an ⓘ that opens its explanation, with the same numbers as before, all from `CONFIG`. Status sits on the right of the heading as chips (Eaten today, Meals 1/3, Comfort 0/5, today's work and study against 10h, Market steady). Each Bank card and the loan have their own "Details" / "How loans work". An open ⓘ stays open after you press a button.
+- **Shorter labels:** for example "Eat a ready-to-eat meal · 1" becomes "Ready-to-eat × 1", "Fridge: no fridge · a refrigerator keeps 5 meals for 6 days" becomes "Fridge: none", and "Rent of $150 is due at the end of day 5…" becomes a "Due end of day 5" chip.
+- **Bank:**
+  - The loan shows its limit and one line, "Borrow $50 → repay $56 by the end of day 7"; the rules are under "How loans work".
+  - Each product card shows what it is worth (or "Not invested"), its expected return a day and how often it loses, as chips.
+  - The comparison table stays; its explanation is under the section's ⓘ.
+  - The news tip-off keeps its own line.
+- **Shopkeeper:** on these three screens the quote is one quiet italic line instead of a boxed panel.
+- **Each section is its own card:** a white box with a border and a tinted heading band with an icon (🏠 Your home, 📦 Your things, 🍳 Kitchen, 😴 Rest & sleep, 📚 Study & work, 🧾 Rent & bills; 💳 Loan, 📈 Savings and investments). The section's status chips sit on the band, and its rows sit inside the card. The Bank's investment cards now sit inside the Savings and investments card. The loan rules moved from "How loans work" to the Loan heading's ⓘ, like the other sections. On a phone, the heading chips wrap under the title.
+- On these screens the visible text drops by about half: Apartment 376 → 188 words, Bank 477 → 188, in the same game state.
+- **Every other building uses the same layout:**
+  - **Employment Office:** a 💼 Job board card. Each job lists its requirements as chips, with the ones you already meet in green, plus knowledge, dress code and "5 shifts here" for work experience. Jobs sit in three columns instead of five; the board rules are under ⓘ.
+  - **Workplaces:** a 💼 Your shift card with today's work against 12h and work + study against 10h. The shift row shows time, energy, dress code and any pay penalty as chips, with the reason in one line.
+  - **School:** 📘 Now studying (lesson time and energy as chips) and 🎓 Pathways (next level, modules, lesson length and fee). The school rules are under ⓘ.
+  - **Supermarket:** 🛒 Food (fridge state and buy time on the heading; each item's effects as chips; bundle saving) and 🎟️ Lottery.
+  - **Fast Food and Restaurant:** a menu card with effect chips and Junk / Healthy tags. Fast Food shows your junk count for the last 5 days.
+  - **Electronics Store and Thrift Store:** 🔧 Repairs and 🛍️ For sale / Second-hand. Items are one row each, in one column, with a short description.
+  - **Hospital:** 🏥 Your health (health, illness or Healthy, insurance, check-up on the heading) and 🩺 Treatment, with how treatment and billing work under ⓘ.
+  - **Clothes Mall:** 👔 Clothes (how long each outfit lasts, days left on yours, buy and bargain). **Pawn Shop:** what each thing pays, and your pawn tickets. **Gym:** classes with effect chips and your visits in 5 days. **Factory:** a single heading.
+- **Shopkeeper lines** are one quiet italic line on every screen.
+- **Bank table on phones:** the comparison table now fits a phone screen, with all four columns. Long ranges wrap onto two lines instead of the last column being cut off.
+- Checked in headless Chromium on desktop (1440×900) and phone (iPhone 13): every building opens in the new layout with no old-style rows and no sideways overflow. 98 different buttons across all buildings were pressed once each with no script errors. The section 44 mechanic checks pass.
+- All buttons keep their `data-act` names, so keyboard shortcuts and `tools/qa/sim.js` still work. The section 44 mechanic checks pass (they click rest, sleep, the home application and others).
