@@ -116,6 +116,9 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 .pbox>.bk-cmp-w{margin:6px 0 8px}
 .pbox:has(>details.psec:only-child){padding-bottom:0}.pbox>details.psec:only-child{margin-bottom:0;border-bottom:0}
 .psec-r .chip{background:var(--surface)}.psec-r .chip.ok{background:color-mix(in srgb,var(--teal) 15%,var(--surface))}.psec-r .chip.warn{background:color-mix(in srgb,var(--red) 13%,var(--surface))}
+.jb{columns:240px 3}.jb .arow .chipl{margin-top:2px}.jb .chip{font-size:.68rem;padding:1px 6px}
+.ns-cost{display:flex;gap:4px}
+@media (max-width:640px){.pbox .bk-cmp{font-size:.7rem;table-layout:fixed}.pbox .bk-cmp th,.pbox .bk-cmp td{white-space:normal;padding:3px 3px;word-break:normal}.pbox .bk-cmp th:first-child,.pbox .bk-cmp td:first-child{width:28%}.pbox .bk-cmp-w{overflow-x:visible}}
 .loanb{display:flex;flex-direction:column;gap:8px;padding:6px 0 8px;max-width:560px}
 .pbox .bk-grid{margin:4px 0 10px}.pbox .bk-card{background:color-mix(in srgb,var(--ink) 2%,var(--surface))}
 details.psec{margin:0 -14px 4px;padding:9px 14px;background:color-mix(in srgb,var(--teal) 9%,var(--surface));border-bottom:2px solid var(--line)}
@@ -453,7 +456,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 /* QA layout fixes: the Belongings line wraps instead of being cut off with "…" */
 .three .kv b#belong{white-space:normal;overflow:visible;text-overflow:clip}
 /* Employment Office: the "Your job" tag may wrap so a long role name never pushes it past the card edge */
-.jb .opt .tag{white-space:normal;text-align:center}
+.jb .opt .tag{white-space:nowrap;text-align:center}
 /* wide windows: a little less space between top-bar cells, so the Invest cell and both buttons fit on one row */
 @media (min-width:1024px){.hud .hstats{gap:4px}}
 /* narrow windows (tablets): the panel gets more of the width, and the top bar is squeezed so it stays on one row */
@@ -1614,7 +1617,8 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
   function cur(c){var r=S.career[c];return r==null?null:CAREERS[c].ranks[r]}
   function kreq(rk){return rk.kn||0}
   function qTxt(q){return q[0]==='any'?'Any '+GENLV[q[1]-1]:TRACKS[q[0]].n+' '+TRACKS[q[0]].lv[q[1]-1]}
-  function meets(rk){return (rk.q||[]).every(function(q){return lvl(q[0])>=q[1]})}
+  function meetsQ(q){return lvl(q[0])>=q[1]}
+  function meets(rk){return (rk.q||[]).every(meetsQ)}
   function needTxt(rk,c){var parts=[];parts.push(rk.q&&rk.q.length?rk.q.map(qTxt).join(' + '):'No qualification');if(kreq(rk))parts.push('Knowledge '+kreq(rk));return parts.join(' · ')}
   /* work experience (CONFIG.jobs.experience): better-paid jobs need shifts already worked at the same workplace */
   function shiftPayNow(rk){return Math.round(rk.pay*payIdx())}
@@ -1938,6 +1942,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
   function treatHp(t){return t.junk?(t.hp!=null?t.hp:FD.junkHealth):0}
   function treatShown(t){return treatHp(t)+(t.good||0)}  /* health the meal really adds: junk penalty or healthy-meal bonus */
   function treatTxt(t){return hm(treatMin(t))+', +'+t.en+'% energy, +'+t.hap+' happiness'+(treatShown(t)?', '+sg(treatShown(t))+' health':'')}
+  function treatCh(t){return chip('time',hm(treatMin(t)))+chip('energy','+'+t.en+'%')+chip('happy','+'+t.hap)+(treatShown(t)?chip('health',sg(treatShown(t))):'')+(t.junk?chip('','Junk','warn'):'')+(t.good?chip('','Healthy','ok'):'')}
   function treat(k){
     var t=TREATS[k];
     var cost=G(t.cost);
@@ -4301,8 +4306,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
     var h='';
     Object.keys(ITEMS).filter(function(k){return ITEMS[k].shop===name}).sort(function(a,b){return ITEMS[a].p-ITEMS[b].p}).forEach(function(k){
       var it=ITEMS[k];
-      h+=opt(it.ic+' '+it.n+' · '+money(G(it.p)),it.d+' · '+hm(M(2))+' to buy',
-        S.items[k]?btn('x','', S.broken[k]?'Broken':'Owned',1,1):btn('buy',k,'Buy'));
+      h+=arow(it.ic+' '+it.n+' · '+money(G(it.p)),'',S.items[k]?btn('x','', S.broken[k]?'Broken':'Owned',1,1):btn('buy',k,'Buy'),it.d);
     });
     return h;
   }
@@ -4312,18 +4316,20 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
     if(!cs.length)return '';
     var held=cs.filter(function(c){return cur(c)});
     if(!held.length)return '';
-    return '<div class="worksec">'+workLoadTxt()+held.map(jobRow).join('')+'</div>';
+    var mx=CONFIG.time.maxWorkMinutes,BU=CONFIG.burnout,lm=loadMin();
+    return boxed(psec('work','💼 Your shift',chip('time','Worked '+hm(S.workMin||0)+' / '+hm(mx),(S.workMin||0)>=mx?'warn':'')+chip('','Work + study '+hm(lm)+' / '+loadLimitTxt().replace(' hours','h'),lm>BU.loadMinutes?'warn':''),
+      'You can work at most '+hm(mx)+' of shifts a day. More than '+loadLimitTxt()+' of work and study together a day for '+dayN(BU.daysInARow)+' running causes burnout'+(S.loadStreak?' (streak: '+S.loadStreak+' of '+BU.daysInARow+')':'')+'. Pay depends on your knowledge, and drops when you are tired, hungry, ill, unhappy, burnt out or in poor health.')+held.map(jobRow).join(''));
   }
-  function workLoadTxt(){return '<p class="bad0" style="margin:0 0 4px"><small>💼 Worked today: <b>'+hm(S.workMin||0)+'</b> of '+hm(CONFIG.time.maxWorkMinutes)+' allowed. '+loadTxt()+'</small></p>'}
   function jobRow(k){
     if(CAREERS[k]){
       var rk=cur(k);
       if(!rk)return '<p><small>You don’t work here yet. Apply at the Employment Office.</small></p>';
       var ef=effort(rk.pay), en=ef.en, mins=ef.min;
-      var pm=prod().m,sh=shutLeft(bOf(k));return opt(rk.r+' shift · '+money(shiftPay(rk.pay))+(pm<1?' <span class="bad">(includes ×'+Math.round(pm*100)+'% penalty)</span>':''),(sh?'<b class="bad">🔒 Closed for '+sh+' more day'+(sh>1?'s':'')+'. Your job is safe and returns when it reopens.</b> · ':'')+hm(mins)+', −'+en+'% energy'+(rk.dress?' · Dress code: '+DSHORT[rk.dress]+(rk.dress==='suit'?'':' or better'):''),btn('work',k,sh?'Closed':'Work a shift',0,!!sh));
+      var pm=prod().m,pr=prod(),sh=shutLeft(bOf(k));return arow(rk.r+' shift · '+money(shiftPay(rk.pay)),chip('time',hm(mins))+chip('energy','−'+en+'%')+(rk.dress?chip('',DSHORT[rk.dress]+(rk.dress==='suit'?'':' or better'),hasDress(rk.dress)?'':'warn'):'')+(pm<1?chip('','Pay ×'+Math.round(pm*100)+'%','warn'):'')+(sh?chip('','Closed '+sh+'d','warn'):''),btn('work',k,sh?'Closed':'Work a shift',0,!!sh),
+        sh?'Your job is safe and returns when the workplace reopens.':pm<1?'Pay is lower because of '+pr.rs.join(', ')+'.':'');
     }
     var j=JOBS[k], need=(j.computer&&!owns('computer'))?'Needs a working computer':'';
-    return opt(j.n+' shift · '+money(shiftPay(j.pay)),hm(j.min)+', −'+j.en+'% energy'+(need?' · '+need:''),btn('work',k,'Work a shift',0,!!need));
+    return arow(j.n+' shift · '+money(shiftPay(j.pay)),chip('time',hm(j.min))+chip('energy','−'+j.en+'%'),btn('work',k,'Work a shift',0,!!need),need);
   }
   var ovHidden=false;  /* true after clicking the map outside the overview window */
   /* bank amount boxes: chosen with −/+ in steps of BK_STEP; the choice is kept while the game is open */
@@ -4359,8 +4365,9 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
       h+='<div class="bcard"><h4 class="jh"><span>'+ICON[b]+' '+NAME[b]+'</span>'+(sh?'<em>🔒 closed '+sh+'d</em>':'')+'</h4>'+rows.map(function(o){
         var rk=o.rk;
         var expBad=!o.mine&&!o.have&&expShort(o.c,rk);
-        return opt('<span class="rn">'+rk.r+'</span> · '+money(Math.round(rk.pay*payIdx()))+'/shift',needTxt(rk,o.mine||o.have?null:o.c)+(rk.dress?' · '+DSHORT[rk.dress]:'')+(o.ok||o.mine?'':' · 🔒'),
-          o.mine?'<span class="tag">Your job</span>':o.have?'<span class="tag">Past rank</span>':btn('apply',o.c+'_'+o.i,'Apply',!o.ok,!o.ok||sh>0),o.mine?'mine':(expBad?'nextstep':''));
+        var need=(rk.q&&rk.q.length?rk.q.map(function(q){return chip('',qTxt(q),o.mine||o.have||meetsQ(q)?'ok':'')}).join(''):chip('','No qualification','ok'))+(kreq(rk)?chip('know',kreq(rk),Math.floor(S.know)>=kreq(rk)?'ok':''):'')+(rk.dress?chip('',DSHORT[rk.dress]):'')+(expBad?chip('',CONFIG.jobs.experience.shifts+' shifts here','warn'):'');
+        return arow('<span class="rn">'+rk.r+'</span> · '+money(Math.round(rk.pay*payIdx())),need,
+          o.mine?'<span class="tag">Your job</span>':o.have?'<span class="tag">Past rank</span>':btn('apply',o.c+'_'+o.i,o.ok?'Apply':'🔒',!o.ok,!o.ok||sh>0),'',o.mine?'mine':(expBad?'nextstep':''));
       }).join('')+'</div>';
     });
     return h+'</div><p style="margin:6px 0 0"><button class="linkbtn" data-act="alljobs" style="margin:0">'+(allJobs?'Show fewer':'Show all')+'</button></p>';
@@ -4400,8 +4407,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
     var H=HOUSE[h], cur=S.home===h&&!S.homeless, f=homeFee(h), SL=CONFIG.sleep, rr0=restRate();
     var about=(h==='apt'?'Cheap and cramped.':'Quiet street, big garden, soft bed.')+' Rent is '+money(H.rent)+' '+everyDays(RENT_EVERY)+'. Resting here restores '+H.rate+'% energy an hour, 10% more for each comfort item at home (TV, console, fridge, coffee machine, computer)'+(H.hap?'. The bed adds +'+H.hap+' happiness each night you sleep here':'')+'.'+(h==='bung'?' The agent only lets to people with a steady job.':'');
     var head=psec('about',(cur?'🏠 Your home':'🏠 To rent'),chip('cash',money(H.rent)+' / '+RENT_EVERY+' days')+chip('energy',H.rate+'%/h rest'),about);
-    if(!cur)return (S.homeless?'<p class="bad arow-n">🏚️ <b>No home.</b> You lost the '+NAME[S.home]+' in the housing bubble. Apply here to move back in.</p>':'')+head+
-      boxed(head+arow(S.homeless?'Apply to rent':'Move in',(f?chip('cash',money(f)+(h==='apt'&&S.homeless?' deposit':'')):chip('','No move-in fee'))+(S.homeless?chip('time',hm(CONFIG.housing.applyMinutes)):''),btn('home',h,S.homeless?'Apply':'Move in')));
+    if(!cur)return boxed((S.homeless?'<p class="bad arow-n">🏚️ <b>No home.</b> You lost the '+NAME[S.home]+' in the housing bubble. Apply here to move back in.</p>':'')+head+arow(S.homeless?'Apply to rent':'Move in',(f?chip('cash',money(f)+(h==='apt'&&S.homeless?' deposit':'')):chip('','No move-in fee'))+(S.homeless?chip('time',hm(CONFIG.housing.applyMinutes)):''),btn('home',h,S.homeless?'Apply':'Move in')));
     var F=S.food,cnt=function(t,test){return F.filter(function(p){return p.t===t&&(!test||test(p))}).length};
     var nb=cnt('basic',function(p){return !p.sp}),np=cnt('prem',function(p){return !p.sp}),nw=cnt('cook',function(p){return !p.sp&&!p.cold}),ncold=cnt('cook',function(p){return !p.sp&&p.cold});
     var nbs=cnt('basic',function(p){return p.sp}),nps=cnt('prem',function(p){return p.sp}),ncs=cnt('cook',function(p){return p.sp}),nsp=nbs+nps+ncs,full=homeFull(),mw=owns('microwave');
@@ -4449,33 +4455,36 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 
   var panels={
     jobs:function(){
-      var mine=Object.keys(S.career).map(function(c){return CAREERS[c].ranks[S.career[c]].r+' at the '+NAME[CAREERS[c].b||c]});
-      return (Object.keys(S.shut).length?'<p class="bad"><b>Closed right now:</b> '+Object.keys(S.shut).map(function(b){return NAME[b]+' ('+S.shut[b]+'d)'}).join(', ')+'. No interviews or shifts there until they reopen.</p>':'')+
-      '<p style="margin:4px 0"><small>Base pay - your actual wage depends on your knowledge and well-being. Apply here then go to the workplace to work your shifts. Openings come and go. You can only hold <b>one job at a time</b>. Good luck!'+(mine.length?' <b class="mineTxt">Your job:</b> <span style="color:var(--mine);font-weight:800">'+mine.join('; ')+'</span>.':'')+'</small></p>'+board()},
+      var mine=Object.keys(S.career).map(function(c){return CAREERS[c].ranks[S.career[c]].r}),E=CONFIG.jobs.experience,shut=Object.keys(S.shut);
+      return boxed((shut.length?'<p class="bad arow-n">🔒 <b>Closed:</b> '+shut.map(function(b){return NAME[b]+' ('+S.shut[b]+'d)'}).join(', ')+'. No interviews or shifts there until they reopen.</p>':'')+
+        psec('board','💼 Job board',mine.length?chip('','Your job: '+mine.join(', '),'ok'):chip('','No job yet','warn'),
+          'Pay shown is base pay: your actual wage also depends on your knowledge and well-being. Apply here, then work your shifts at the workplace. Openings come and go, and you can only hold one job at a time.'+(E&&E.shifts?' Jobs paying more than '+money(E.payAbove)+' a shift also need '+E.shifts+' shifts already worked at the same workplace.':'')+' 🔒 means you do not meet the requirements yet.')+
+        board())},
     factory:function(){
-      return '<p>The factory floor hums day and night. '+(shutLeft('factory')>0?'<b class="bad">The factory is closed for '+shutLeft('factory')+' more day'+(shutLeft('factory')>1?'s':'')+'.</b>':'Engineers earn far more than line workers.')+'</p>'},
+      return boxed(psec('factory','🏭 Factory floor',shutLeft('factory')>0?chip('','Closed '+shutLeft('factory')+'d','warn'):'','The factory floor hums day and night. Engineers earn far more than line workers. Apply for jobs at the Employment Office.'))},
     school:function(){
-      var started=Object.keys(TRACKS).filter(inProgress);
+      var started=Object.keys(TRACKS).filter(inProgress),BU=CONFIG.burnout,lm=loadMin();
       if(S.lastTrack&&started.indexOf(S.lastTrack)>0){started.splice(started.indexOf(S.lastTrack),1);started.unshift(S.lastTrack)}
       var now=started.map(function(t){
         var T=TRACKS[t],n=S.edu[t],q=posInLevel(t,n),Lm=T.L[q.i],st=q.i?T.c[q.i-1]:0,k=lesDone(t),nl=lesCount(t,n);
-        return '<div class="nowstudy"><div class="ns-top"><div class="ns-h">📘 Now studying: <b>'+T.n+' '+T.lv[q.i]+'</b></div>'+btn('class',t,'Study')+'<small class="ns-cost">'+ic('time')+' '+hm(lesHours(t,n)*60)+' · '+ic('energy')+' −'+2*lesHours(t,n)+'% energy</small>'+'</div>'+
-          '<div class="ns-l">Modules: <b>'+(n-st+1)+' of '+q.of+'</b></div>'+
-          /* each module pill is a progress bar: full when done, filled by lessons attended for the current one */
+        return '<div class="nowstudy"><div class="ns-top"><div class="ns-h">📘 <b>'+T.n+' '+T.lv[q.i]+'</b></div>'+btn('class',t,'Study')+'<span class="ns-cost">'+chip('time',hm(lesHours(t,n)*60))+chip('energy','−'+2*lesHours(t,n)+'%')+'</span></div>'+
+          '<div class="ns-l">Module <b>'+(n-st+1)+' of '+q.of+'</b></div>'+
           '<div class="mods">'+Lm.map(function(m,i){var g=st+i,ln=lesCount(t,g),pc=g<n?100:g===n?Math.round(k/ln*100):0;
             return '<span class="mod '+(g<n?'done':g===n?'next':'')+'" style="--p:'+pc+'%" title="'+(g<n?'Done':g===n?k+' of '+ln+' lessons attended':'Not started')+'">'+(g<n?'✅ ':'')+m+(g===n?' <small>'+k+'/'+ln+'</small>':'')+'</span>'}).join('')+'</div></div>';
       }).join('');
-      return (loadMin()>0?'<p class="'+(loadMin()>CONFIG.burnout.loadMinutes?'bad':'')+'"><small>📚 Studied today: <b>'+hm(S.studyMin)+'</b>. '+loadTxt()+(S.burn>0?' <b>You are burnt out.</b>':'')+'</small></p>':'')+now+'<p><small>Each pathway is a ladder of qualifications (Certificate → Degree → … → Masters). You pay tuition once when you enrol in a qualification. Earn the qualification by completing all its modules. You can study several pathways at once.</small></p>'+
-      '<div class="jb2">'+Object.keys(TRACKS).sort(function(x,y){var f=function(t){return S.edu[t]>0&&!inProgress(t)&&S.edu[t]<totMods(t)?0:1};return f(x)-f(y)}).map(function(t){
+      var tracks=Object.keys(TRACKS).sort(function(x,y){var f=function(t){return S.edu[t]>0&&!inProgress(t)&&S.edu[t]<totMods(t)?0:1};return f(x)-f(y)}).map(function(t){
         var T=TRACKS[t],n=S.edu[t],lv=lvl(t),tot=totMods(t);
-        var title='<b>'+T.n+'</b>'+(lv?' · 🎓 '+T.lv[lv-1]:'');
-        var path=T.lv.map(function(L,i){return '<i class="'+(i<lv?'got':'')+'" title="'+L+': '+T.L[i].length+' modules">'+L.slice(0,3)+'</i>'}).join('');
-        if(n>=tot)return opt(title+'<div class="lvpath">'+path+'</div>','Fully qualified.','<span class="tag">Done</span>');
+        var title=T.n+(lv?' · 🎓 '+T.lv[lv-1]:''),path='<div class="lvpath">'+T.lv.map(function(L,i){return '<i class="'+(i<lv?'got':'')+'" title="'+L+': '+T.L[i].length+' modules">'+L.slice(0,3)+'</i>'}).join('')+'</div>';
+        if(n>=tot)return arow(title+path,chip('','Fully qualified','ok'),'<span class="tag">Done</span>');
         var q=posInLevel(t,n);
-        if(inProgress(t))return opt(title+'<div class="lvpath">'+path+'</div>','In progress: '+T.lv[q.i]+' (see above).','<span class="tag">Studying</span>');
+        if(inProgress(t))return arow(title+path,chip('','Studying '+T.lv[q.i],'ok'),'<span class="tag">Studying</span>');
         var fee=qualFee(t,n),cont=n>0;
-        return opt(title+(cont?' <span class="tag">Next step</span>':'')+'<div class="lvpath">'+path+'</div>',(cont?'You earned the '+T.lv[q.i-1]+'. ':'')+'Qualification: <b>'+T.lv[q.i]+'</b><br>'+q.of+' module'+(q.of===1?'':'s')+' ('+lesCount(t,n)+' × '+hm(lesHours(t,n)*60)+' lesson'+(lesCount(t,n)===1?'':'s')+')'+(S.cash<fee?' · <b class="bad">you need '+money(fee-S.cash)+' more</b>':''),btn('enrol',t,'Enrol · '+money(fee),0,S.cash<fee),cont?'nextstep':'');
-      }).join('')+'</div>'},
+        return arow(title+path,chip('','Next: '+T.lv[q.i],cont?'ok':'')+chip('',q.of+' module'+(q.of===1?'':'s'))+chip('time',lesCount(t,n)+' × '+hm(lesHours(t,n)*60))+(S.cash<fee?chip('cash','Need '+money(fee-S.cash)+' more','warn'):''),btn('enrol',t,'Enrol · '+money(fee),0,S.cash<fee),'',cont?'nextstep':'');
+      }).join('');
+      return boxed((now?psec('now','📘 Now studying',chip('time',hm(lm)+' / '+loadLimitTxt().replace(' hours','h'),lm>BU.loadMinutes?'warn':'')+(S.burn>0?chip('','Burnt out','warn'):''),
+          'Each lesson takes the time shown and costs energy. Attend a lesson at least every few days: '+'3 days without one is a warning, and 5 to 6 days gets you expelled. More than '+loadLimitTxt()+' of work and study a day for '+dayN(BU.daysInARow)+' running causes burnout'+(S.loadStreak?' (streak: '+S.loadStreak+' of '+BU.daysInARow+')':'')+'.')+now:'')+
+        psec('tracks','🎓 Pathways',S.expelled>0?chip('','Expelled '+S.expelled+'d','warn'):'','Each pathway is a ladder of qualifications (Certificate → Degree → … → Masters). You pay tuition once when you enrol in a qualification, and earn it by completing all its modules. You can study several pathways at once.')+
+        '<div class="jb2">'+tracks+'</div>')},
     bank:function(){
       /* one equal-sized card per product: title, risk, value, key numbers as chips, amount box, Deposit/Withdraw; the explanation sits behind ⓘ */
       /* amounts move in steps of BK_STEP, never below the product's minimum (see stepAmt) */
@@ -4521,58 +4530,68 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
         (tip?'<p class="arow-n">📡 <b>Tip-off for tonight:</b> “'+S.newsPlan.n[0]+'” ('+newsHint(S.newsPlan.n)+')</p>':'')+
         invTable()+'<div class="bk-grid">'+rows+'</div>')},
     market:function(){
-      /* food sorted by price, cheapest first; the lottery is not food, so it has its own section */
-      var cap=fridgeCap(),CH=FD.chips,chLeft=Math.min(CH.maxPerDay-(S.chipsDay||0),CH.maxStored-(S.chips||0));
-      var rows=[];
-      Object.keys(GROC).forEach(function(k){var g=GROC[k],ic=FOODIC[k],how=k==='prem'?'Eat at home':'Cook/Eat at home';
-        rows.push({p:G(g.cost),h:opt(ic+' '+g.n+' · '+money(G(g.cost)),how+' · '+hm(M(FD.buyUnits))+' to buy · when eaten: '+eatTxt(g),btn('groc',k,'Buy 1'))});
-        rows.push({p:bundleCost(g),h:opt(ic+' '+FD.bundleSize+'-day bundle: '+g.n.toLowerCase()+' · '+money(bundleCost(g)),how+' · '+hm(M(FD.buyUnits))+' to buy · '+FD.bundleSize+' meals, save '+pctTxt(FD.bundleDiscount)+' · each when eaten: '+eatTxt(g),btn('bundle',k,'Buy bundle'))})});
-      rows.push({p:G(CH.cost),h:opt('🥔 Bag of chips · '+money(G(CH.cost)),'Eat at home · '+hm(M(CH.units))+' to buy · when eaten ('+hm(CH.eatMinutes)+'): '+sg(CH.happiness)+' happiness, '+sg(CH.energy)+'% energy, '+sg(CH.health)+' health. A snack, not a meal; never goes off. Up to '+CH.maxPerDay+' bags a day, '+CH.maxStored+' at home (you have '+(S.chips||0)+').',btn('chips','','Buy',0,chLeft<=0))});
+      /* food sorted by price, cheapest first; the lottery is not food, so it has its own card */
+      var cap=fridgeCap(),CH=FD.chips,chLeft=Math.min(CH.maxPerDay-(S.chipsDay||0),CH.maxStored-(S.chips||0)),rows=[];
+      var eatCh=function(g){return chip('energy','+'+g.en+'%')+chip('happy',sg(g.hap))+chip('health',sg(g.hp))};
+      Object.keys(GROC).forEach(function(k){var g=GROC[k],ic=FOODIC[k],how=k==='prem'?'Ready to eat':'Cook at home';
+        rows.push({p:G(g.cost),h:arow(ic+' '+g.n+' · '+money(G(g.cost)),chip('',how)+eatCh(g),btn('groc',k,'Buy 1'))});
+        rows.push({p:bundleCost(g),h:arow(ic+' '+FD.bundleSize+'× '+g.n.toLowerCase()+' · '+money(bundleCost(g)),chip('',how)+chip('','Save '+pctTxt(FD.bundleDiscount),'ok')+eatCh(g),btn('bundle',k,'Buy bundle'))})});
+      rows.push({p:G(CH.cost),h:arow('🥔 Bag of chips · '+money(G(CH.cost)),chip('happy',sg(CH.happiness))+chip('energy',sg(CH.energy)+'%')+chip('health',sg(CH.health))+chip('','Junk','warn')+chip('','At home '+(S.chips||0)+'/'+CH.maxStored),btn('chips','','Buy',0,chLeft<=0))});
       rows.sort(function(a,b){return a.p-b.p});
-      return '<p>🥕 <b>'+GROC.basic.n+'</b> needs to be cooked at home. Food stays fresh for <b>'+FD.keepDaysRoom+' days</b> (without fridge) and <b>'+FD.keepDaysFridge+' days</b> (in fridge), today inclusive. '+
-        '<span class="life '+(cap?'cold':'warm')+'">'+(cap?'❄️':'🌡️')+' Fridge stores maximum '+FD.fridgeSpace+' meals</span></p>'+
+      var held=(S.tickets||[]).length;
+      return boxed(psec('food','🛒 Food',chip('',(cap?'❄️ Fridge ':'🌡️ No fridge · ')+(cap?FD.fridgeSpace+' meals':FD.keepDaysRoom+' days'),cap?'ok':'warn')+chip('time',hm(M(FD.buyUnits))+' to buy'),
+          GROC.basic.n+' must be cooked at home; '+GROC.prem.n.toLowerCase()+'s are ready to eat. Food keeps '+FD.keepDaysRoom+' days outside a fridge and '+FD.keepDaysFridge+' days in one ('+FD.fridgeSpace+' meals fit), counting today. A bundle is '+FD.bundleSize+' meals at '+pctTxt(FD.bundleDiscount)+' off. Chips are a junk snack, not a meal, and never go off: up to '+CH.maxPerDay+' bags a day and '+CH.maxStored+' at home. The numbers show what eating it does.')+
         rows.map(function(r){return r.h}).join('')+
-        '<div class="gh" style="margin-top:12px">🎟️ Lottery</div>'+
-        opt('🎟️ Lottery ticket · '+money(G(LT.ticketCost)),'Next draw: end of day '+nextDraw()+' (draws '+everyDays(LT.drawEveryDays)+'). Prize'+(LT.prizeMin===LT.prizeMax?' '+money(LT.prizeMin):'s '+money(LT.prizeMin)+'–'+money(LT.prizeMax))+'. You hold '+(S.tickets||[]).length+' ticket'+((S.tickets||[]).length===1?'':'s')+'.',btn('lotto','','Buy ticket'))},
-    fast:function(){return '<p><small>Fast food counts as your daily meal, but eating it '+CONFIG.illness.junkMeals+' or more times in 5 days raises your chance of falling ill'+(junkCount()?' (you have had '+junkCount()+' in the last 5 days)':'')+'.</small></p>'+opt('🍔 '+cap(TREATS.snack.n)+' · '+money(G(TREATS.snack.cost)),treatTxt(TREATS.snack),btn('treat','snack','Buy'))+opt('🍟 '+cap(TREATS.meal.n)+' · '+money(G(TREATS.meal.cost)),treatTxt(TREATS.meal),btn('treat','meal','Buy combo'))},
-    resto:function(){return opt(cap(TREATS.dine.n)+' · '+money(G(TREATS.dine.cost)),treatTxt(TREATS.dine),btn('treat','dine','Dine in'))+opt(cap(TREATS.feast.n)+' · '+money(G(TREATS.feast.cost)),treatTxt(TREATS.feast),btn('treat','feast','Treat yourself'))},
+        psec('lotto','🎟️ Lottery',chip('','Draw day '+nextDraw())+(held?chip('','You hold '+held,'ok'):''),'Draws are '+everyDays(LT.drawEveryDays)+'. Prize'+(LT.prizeMin===LT.prizeMax?' '+money(LT.prizeMin):'s '+money(LT.prizeMin)+'–'+money(LT.prizeMax))+'. Results come the morning after the draw.')+
+        arow('🎟️ Lottery ticket · '+money(G(LT.ticketCost)),chip('cash',LT.prizeMin===LT.prizeMax?money(LT.prizeMin):money(LT.prizeMin)+'–'+money(LT.prizeMax)),btn('lotto','','Buy ticket')))},
+    fast:function(){var j=junkCount(),I=CONFIG.illness;
+      return boxed(psec('menu','🍔 Menu',chip('','Junk '+j+'/'+I.junkMeals+' in 5 days',j>=I.junkMeals?'warn':''),'Fast food counts as your daily meal, but eating junk food '+I.junkMeals+' or more times in 5 days raises your chance of falling ill.')+
+        arow('🍔 '+cap(TREATS.snack.n)+' · '+money(G(TREATS.snack.cost)),treatCh(TREATS.snack),btn('treat','snack','Buy'))+
+        arow('🍟 '+cap(TREATS.meal.n)+' · '+money(G(TREATS.meal.cost)),treatCh(TREATS.meal),btn('treat','meal','Buy combo')))},
+    resto:function(){
+      return boxed(psec('menu','🍽️ Menu','','A meal here counts as your daily meal. Healthy meals add health and, three in five days, lower your chance of falling ill.')+
+        arow(cap(TREATS.dine.n)+' · '+money(G(TREATS.dine.cost)),treatCh(TREATS.dine),btn('treat','dine','Dine in'))+
+        arow(cap(TREATS.feast.n)+' · '+money(G(TREATS.feast.cost)),treatCh(TREATS.feast),btn('treat','feast','Treat yourself')))},
     elec:function(){
-      var rep=Object.keys(S.broken).filter(function(k){return S.broken[k]&&S.items[k]}).map(function(k){return opt('Repair your '+ITEMS[k].n.toLowerCase()+' · '+money(G(Math.round(ITEMS[k].p*0.3))),hm(M(2))+'. It is out of action until fixed.',btn('repair',k,'Repair'))}).join('');
-      return '<p>Everything here shows up in your home once you buy it.</p>'+rep+'<div class="jb2">'+shop('elec')+'</div>'},
+      var rep=Object.keys(S.broken).filter(function(k){return S.broken[k]&&S.items[k]}).map(function(k){return arow('🔧 Repair '+ITEMS[k].n.toLowerCase()+' · '+money(G(Math.round(ITEMS[k].p*0.3))),chip('time',hm(M(2))),btn('repair',k,'Repair'),'Out of action until fixed.')}).join('');
+      return boxed((rep?psec('repair','🔧 Repairs',chip('','Broken '+Object.keys(S.broken).filter(function(k){return S.broken[k]&&S.items[k]}).length,'warn'),'')+rep:'')+
+        psec('shop','🛍️ For sale',chip('time',hm(M(2))+' to buy'),'Everything here shows up in your home once you buy it. Devices add knowledge and happiness every night; a TV or console adds happiness for each hour you rest at home.')+shop('elec'))},
     hosp:function(){
-      var t=S.ill?ILL[S.ill.k]:null,st=[];
-      st.push(S.hosp&&S.hosp.inWard?'<b class="bad">You are warded here today.</b> You will be released tomorrow morning and billed '+money(S.hosp.bill)+'.':S.hosp&&S.hosp.adm?'<b class="bad">You have been admitted for tomorrow.</b> Bill on release: '+money(S.hosp.bill)+'.':S.hosp?'Your treatment bill of '+money(S.hosp.bill)+' will be charged tomorrow morning.':t?'<b class="bad">You have '+t.n+' and can’t work.</b>':'You are healthy.');
-      st.push(S.ins>0?'Life insurance: covered for the rest of the game (pays '+pctTxt(HP.insuranceCovers)+').':'No life insurance.');
-      if(S.immune>0)st.push('Illness risk '+checkupWord()+' for '+S.immune+' day'+(S.immune>1?'s':'')+'.');
-      if(!S.ill)st.push('Health '+S.health+'/100. Chance of falling ill tonight: about '+(illChance()*100).toFixed(1)+'% (lower with good health, healthy meals and gym visits).');
-      if(isStaff())st.push('Staff discount: '+pctTxt(1-HP.staffDiscount)+' off.');
-      var h='<p>'+st.join(' ')+'</p>';
-      if(S.medDebt>0)h+='<p class="bad"><b>Medical bill arrears: '+money(S.medDebt)+'</b> (repaid automatically each morning, '+money(medInstal())+' next, with a late fee if you miss one; lowers your net worth).</p>'+opt('Pay your bills',hm(M(1))+' · pays as much as you can from cash',btn('paydebt','','Pay now',0,S.cash<=0));
-      if(t&&!S.hosp)h+=opt('Get treated for '+t.n.replace(/^(a|the) /,'')+' · '+illFeeTxt(t)+(HP.admitChance>0?' + ward':''),hm(M(HP.treatUnits))+' · nothing to pay now. '+pctTxt(HP.admitChance)+' chance you are warded all of tomorrow (+'+money(medCost(HP.wardDayCost))+' a day, released the morning after); otherwise you are cured and sent home today. The bill is deducted from your cash the morning after release; any shortfall goes on a repayment plan with '+pctTxt(HP.billInterest)+' interest.',btn('treat_ill','','Treat'));
-      h+=opt('Health check-up · '+money(medCost(HP.checkupCost)),hm(M(HP.checkupUnits))+' · '+(CONFIG.illness.checkupX===0.5?'halves your chance of falling ill':'cuts your chance of falling ill by '+pctTxt(1-CONFIG.illness.checkupX))+' for '+HP.checkupDays+' day'+(HP.checkupDays===1?'':'s'),btn('checkup','','Book'));
-      h+=opt('Recovery ward · '+money(medCost(HP.wardCost)),hm(M(HP.wardUnits))+' · +'+HP.wardHealth+' health, +'+HP.wardEnergy+'% energy, +'+HP.wardHappiness+' happiness',btn('ward','','Rest up'));
-      h+=opt('Life insurance · '+money(G(HP.insuranceCost)),hm(M(HP.insuranceUnits))+' · covers '+pctTxt(HP.insuranceCovers)+' of your hospital bills for the rest of the game. Buy it once.',S.ins>0?'<span class="tag">Covered</span>':btn('insure','','Buy'));
-      return h;
+      var t=S.ill?ILL[S.ill.k]:null,st='';
+      if(S.hosp&&S.hosp.inWard)st='<p class="bad arow-n"><b>You are warded here today.</b> Released tomorrow morning and billed '+money(S.hosp.bill)+'.</p>';
+      else if(S.hosp&&S.hosp.adm)st='<p class="bad arow-n"><b>Admitted for tomorrow.</b> Bill on release: '+money(S.hosp.bill)+'.</p>';
+      else if(S.hosp)st='<p class="arow-n">Your treatment bill of '+money(S.hosp.bill)+' is charged tomorrow morning.</p>';
+      var hc=chip('health',S.health+'/100',S.health<CONFIG.health.poorBelow?'warn':'')+(t?chip('',cap(illShort(t)),'warn'):chip('','Healthy','ok'))+(S.ins>0?chip('','Insured','ok'):'')+(S.immune>0?chip('','Check-up '+S.immune+'d','ok'):'');
+      var h=psec('health','🏥 Your health',hc,(t?'You have '+t.n+' and cannot work. '+illCure()+' ':'Chance of falling ill tonight: about '+(illChance()*100).toFixed(1)+'% (lower with good health, healthy meals and gym visits). ')+
+        (S.ins>0?'Life insurance pays '+pctTxt(HP.insuranceCovers)+' of your bills for the rest of the game. ':'')+(S.immune>0?'Illness risk '+checkupWord()+' for '+S.immune+' more day'+(S.immune>1?'s':'')+'. ':'')+(isStaff()?'Staff discount: '+pctTxt(1-HP.staffDiscount)+' off. ':''))+st;
+      if(S.medDebt>0)h+=arow('<span class="bad">Medical bills · '+money(S.medDebt)+'</span>',chip('cash',money(medInstal())+' tomorrow','warn')+chip('time',hm(M(1))),btn('paydebt','','Pay now',0,S.cash<=0),'Repaid automatically each morning, with a late fee if you miss one.');
+      h+=psec('care','🩺 Treatment','','Treatment always cures you. '+pctTxt(HP.admitChance)+' of the time you are warded for the whole of the next day first (+'+money(medCost(HP.wardDayCost))+' a day). The bill is charged the morning after you are released; whatever your cash cannot cover goes on a repayment plan with '+pctTxt(HP.billInterest)+' interest.');
+      if(t&&!S.hosp)h+=arow('Treat '+illShort(t)+' · '+illFeeTxt(t)+(HP.admitChance>0?' + ward':''),chip('time',hm(M(HP.treatUnits)))+chip('',pctTxt(HP.admitChance)+' ward day')+chip('','Pay later','ok'),btn('treat_ill','','Treat'));
+      h+=arow('Health check-up · '+money(medCost(HP.checkupCost)),chip('time',hm(M(HP.checkupUnits)))+chip('',(CONFIG.illness.checkupX===0.5?'Illness ½':'Illness −'+pctTxt(1-CONFIG.illness.checkupX))+' · '+HP.checkupDays+'d','ok'),btn('checkup','','Book'));
+      h+=arow('Recovery ward · '+money(medCost(HP.wardCost)),chip('time',hm(M(HP.wardUnits)))+chip('health','+'+HP.wardHealth)+chip('energy','+'+HP.wardEnergy+'%')+chip('happy','+'+HP.wardHappiness),btn('ward','','Rest up'));
+      h+=arow('Life insurance · '+money(G(HP.insuranceCost)),chip('time',hm(M(HP.insuranceUnits)))+chip('','Covers '+pctTxt(HP.insuranceCovers)+' of bills'),S.ins>0?'<span class="tag">Covered</span>':btn('insure','','Buy'));
+      return boxed(h);
     },
-    mall:function(){var CC=CONFIG.clothes,dd=function(n){return n+' day'+(n===1?'':'s')};return '<p>'+WEAR.casual.n+' last '+dd(WEAR.casual.w)+' while '+(WEAR.smart.w===WEAR.suit.w?WEAR.smart.n+' and '+WEAR.suit.n+' last '+dd(WEAR.smart.w):WEAR.smart.n+' last '+dd(WEAR.smart.w)+' and '+WEAR.suit.n+' '+dd(WEAR.suit.w))+'. Return to buy again. Bargaining takes '+hm(M(CC.bargainUnits))+' - be careful, you may end up paying more!</p>'+
-      ['casual','smart','suit'].map(function(k){var c=WEAR[k],pr=price(k),have=S.clothes[k];
-        return opt(c.n+' · '+money(pr)+(S.offer[k]!=null?' (bargained)':''),hm(M(CONFIG.clothes.buyUnits))+' to buy · lasts '+c.w+' days'+(have?' · yours has '+have+' day'+(have>1?'s':'')+' left, a new one replaces it':''),
-          '<span style="display:flex;gap:8px;flex-wrap:wrap">'+btn('cbuy',k,'Buy')+btn('bargain',k,'Bargain',1,!!S.barg[k])+'</span>')}).join('')},
-    thrift:function(){return '<p>Second-hand bargains.</p>'+shop('thrift')},
+    mall:function(){var CC=CONFIG.clothes;
+      return boxed(psec('clothes','👔 Clothes',chip('time',hm(M(CC.buyUnits))+' to buy'),'Each outfit lasts a set number of days, then wears out; a new one replaces what you have. Jobs have a dress code. Bargaining takes '+hm(M(CC.bargainUnits))+' and moves the price by '+CC.bargainMin+(CC.bargainMax!==CC.bargainMin?'–'+CC.bargainMax:'')+'% either way: '+pctTxt(CC.bargainWinChance)+' of the time it goes down.')+
+        ['casual','smart','suit'].map(function(k){var c=WEAR[k],pr=price(k),have=S.clothes[k];
+          return arow(c.n+' · '+money(pr)+(S.offer[k]!=null?' <small>(bargained)</small>':''),chip('','Lasts '+c.w+' days')+(have?chip('','Yours: '+have+'d left',have<=1?'warn':'ok'):''),
+            '<span class="btnrow">'+btn('cbuy',k,'Buy')+btn('bargain',k,'Bargain',1,!!S.barg[k])+'</span>')}).join(''))},
+    thrift:function(){return boxed(psec('shop','🛍️ Second-hand',chip('time',hm(M(2))+' to buy'),'Cheaper than new. Second-hand devices break down more often; repair them at the Electronics Store.')+shop('thrift'))},
     pawn:function(){
       var h='',n=0,t='';
       Object.keys(ITEMS).forEach(function(k){
         if(!S.items[k])return;n++;
-        h+=opt(ITEMS[k].ic+' '+ITEMS[k].n+(S.broken[k]?' (broken)':''),'Pays '+money(Math.floor(G(ITEMS[k].p)/(S.broken[k]?4:2)))+(S.broken[k]?' (a quarter, it is broken)':' (half of what you paid)')+'. You can redeem it for 15% more within 3 days.',btn('sell',k,'Pawn it'));
+        h+=arow(ITEMS[k].ic+' '+ITEMS[k].n+(S.broken[k]?' (broken)':''),chip('cash','Pays '+money(Math.floor(G(ITEMS[k].p)/(S.broken[k]?4:2)))),btn('sell',k,'Pawn it'));
       });
       Object.keys(S.pawned).forEach(function(k){var p=S.pawned[k];
-        t+=opt('🎫 '+ITEMS[k].n,'Redeem for '+money(Math.round(p.g*1.15))+' · expires after day '+(p.w+3),btn('redeem',k,'Redeem'));});
-      return '<p>We pay half price, no questions asked.</p>'+(n?h:'<p>You have nothing to pawn yet.</p>')+(t?'<p><b>Your pawn tickets</b></p>'+t:'')
+        t+=arow('🎫 '+ITEMS[k].n,chip('cash','Redeem '+money(Math.round(p.g*1.15)))+chip('','Until day '+(p.w+3),S.day>=p.w+3?'warn':''),btn('redeem',k,'Redeem'))});
+      return boxed(psec('pawn','💍 Pawn your things',n?'':chip('','Nothing to pawn'),'Sal pays half of what you paid (a quarter if it is broken), no questions asked. You can buy it back for 15% more within 3 days; after that Sal keeps it.')+h+(t?psec('tickets','🎫 Your pawn tickets','','')+t:''))
     },
     gym:function(){
       var staff=isGymStaff(),n=gymCount();
-      return '<p>Classes take time and a little energy, but they build your <b>health</b> and lift your mood. Every session in the last 5 days lowers your chance of falling ill (you have had <b>'+n+'</b>).'+(staff?' <b>Staff discount: 50% off.</b>':'')+'</p>'+
-        GYM.map(function(g){var c=gymCost(g);return opt(g.ic+' '+g.n+' - '+g.d+' · '+money(c),hm(g.min)+' · −'+g.en+'% energy · +'+g.hp+' health, +'+g.hap+' happiness',btn('gym',g.k,'Join in',0,S.cash<c))}).join('')},
+      return boxed(psec('classes','🏋️ Classes',chip('','Visits '+n+' in 5 days',n?'ok':'')+(staff?chip('','Staff 50% off','ok'):''),'Classes take time and a little energy, but they build your health and lift your mood. Every session in the last 5 days lowers your chance of falling ill.')+
+        GYM.map(function(g){var c=gymCost(g);return arow(g.ic+' '+g.n+' · '+money(c),chip('time',hm(g.min))+chip('energy','−'+g.en+'%')+chip('health','+'+g.hp)+chip('happy','+'+g.hap),btn('gym',g.k,'Join in',0,S.cash<c),g.d)}).join(''))},
     apt:function(){return house('apt')},
     bung:function(){return house('bung')}
   };
@@ -4922,7 +4941,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
       $('shopTitle').textContent=ICON[view]+' '+NAME[view];
       if(!sayLine||sayLine.k!==view)sayLine={k:view,t:greetLine(view)};
       $('say').innerHTML='<b>'+GREET[view][0]+'</b>“'+sayLine.t+'”';
-      $('say').classList.toggle('slim',['apt','bung','bank'].indexOf(view)>=0);  /* pilot of the compact layout */
+      $('say').classList.add('slim');
       var r=$('result');
       r.textContent=last?last.msg:'';
       r.className='result'+(last&&last.cls?' '+last.cls:'');
