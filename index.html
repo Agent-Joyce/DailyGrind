@@ -118,6 +118,8 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 .psec-r .chip{background:var(--surface)}.psec-r .chip.ok{background:color-mix(in srgb,var(--teal) 15%,var(--surface))}.psec-r .chip.warn{background:color-mix(in srgb,var(--red) 13%,var(--surface))}
 .jb{columns:240px 3}.jb .arow .chipl{margin-top:2px}.jb .chip{font-size:.68rem;padding:1px 6px}
 .ns-cost{display:flex;gap:4px}
+.ns-row{padding:7px 0}@media (max-width:640px){.opt.ns-row{flex-direction:row;align-items:center}.opt.ns-row>div{flex:1;min-width:0}.opt.ns-row>.btn{flex:0 0 auto}}.ns-row .arow-t b{font-weight:800}.ns-row .arow-n{margin:5px 0 0}
+.nsbar{display:block;height:5px;border-radius:99px;background:var(--line);overflow:hidden;max-width:320px}.nsbar i{display:block;height:100%;background:#2f8f5b;border-radius:99px}
 @media (max-width:640px){.pbox .bk-cmp{font-size:.7rem;table-layout:fixed}.pbox .bk-cmp th,.pbox .bk-cmp td{white-space:normal;padding:3px 3px;word-break:normal}.pbox .bk-cmp th:first-child,.pbox .bk-cmp td:first-child{width:28%}.pbox .bk-cmp-w{overflow-x:visible}}
 .loanb{display:flex;flex-direction:column;gap:8px;padding:6px 0 8px;max-width:560px}
 .pbox .bk-grid{margin:4px 0 10px}.pbox .bk-card{background:color-mix(in srgb,var(--ink) 2%,var(--surface))}
@@ -4465,12 +4467,12 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
     school:function(){
       var started=Object.keys(TRACKS).filter(inProgress),BU=CONFIG.burnout,lm=loadMin();
       if(S.lastTrack&&started.indexOf(S.lastTrack)>0){started.splice(started.indexOf(S.lastTrack),1);started.unshift(S.lastTrack)}
+      /* one row per course: name, progress chips, a thin bar for the level, and the Study button */
       var now=started.map(function(t){
-        var T=TRACKS[t],n=S.edu[t],q=posInLevel(t,n),Lm=T.L[q.i],st=q.i?T.c[q.i-1]:0,k=lesDone(t),nl=lesCount(t,n);
-        return '<div class="nowstudy"><div class="ns-top"><div class="ns-h">📘 <b>'+T.n+' '+T.lv[q.i]+'</b></div>'+btn('class',t,'Study')+'<span class="ns-cost">'+chip('time',hm(lesHours(t,n)*60))+chip('energy','−'+2*lesHours(t,n)+'%')+'</span></div>'+
-          '<div class="ns-l">Module <b>'+(n-st+1)+' of '+q.of+'</b></div>'+
-          '<div class="mods">'+Lm.map(function(m,i){var g=st+i,ln=lesCount(t,g),pc=g<n?100:g===n?Math.round(k/ln*100):0;
-            return '<span class="mod '+(g<n?'done':g===n?'next':'')+'" style="--p:'+pc+'%" title="'+(g<n?'Done':g===n?k+' of '+ln+' lessons attended':'Not started')+'">'+(g<n?'✅ ':'')+m+(g===n?' <small>'+k+'/'+ln+'</small>':'')+'</span>'}).join('')+'</div></div>';
+        var T=TRACKS[t],n=S.edu[t],q=posInLevel(t,n),Lm=T.L[q.i],st=q.i?T.c[q.i-1]:0,k=lesDone(t),nl=lesCount(t,n),pc=Math.round(((n-st)+k/nl)/q.of*100);
+        var mods=Lm.map(function(m,i){var g=st+i;return (g<n?'✓ ':g===n?'▸ ':'')+m}).join(' · ');
+        return arow('<b>📘 '+T.n+' '+T.lv[q.i]+'</b>',chip('','Module '+(n-st+1)+'/'+q.of+' · '+Lm[n-st]+' '+k+'/'+nl,'ok')+chip('time',hm(lesHours(t,n)*60))+chip('energy','−'+2*lesHours(t,n)+'%'),btn('class',t,'Study'),
+          '<span class="nsbar" title="'+mods+'"><i style="width:'+pc+'%"></i></span>','ns-row');
       }).join('');
       var tracks=Object.keys(TRACKS).sort(function(x,y){var f=function(t){return S.edu[t]>0&&!inProgress(t)&&S.edu[t]<totMods(t)?0:1};return f(x)-f(y)}).map(function(t){
         var T=TRACKS[t],n=S.edu[t],lv=lvl(t),tot=totMods(t);
@@ -5475,7 +5477,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
       return '<div class="pv-row"><span class="pv-i">'+icon+'</span><span class="pv-l">'+label+'</span><span class="pv-d '+(delta>0?'up':'dn')+'">'+(delta>0?'+':'−')+fmt(Math.abs(delta))+'</span><span class="pv-a">'+after+'</span></div>';
     }
     function pvTitle(b){
-      var ns=b.closest('.nowstudy'),nb=ns&&ns.querySelector('.ns-h b');
+      var ns=b.closest('.nowstudy,.ns-row'),nb=ns&&ns.querySelector('.ns-h b,.arow-t b');
       if(nb)return 'Go to class: '+nb.textContent.trim();  /* the Study button at School */
       var o=b.closest('.opt'),t=o&&o.firstElementChild?o.firstElementChild.cloneNode(true):null;
       if(t){[].forEach.call(t.querySelectorAll('small'),function(x){x.parentNode.removeChild(x)});var s=t.textContent.replace(/\s+/g,' ').trim();if(s)return s}
