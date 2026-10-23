@@ -495,9 +495,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
 .tcell.pay>.l,.tcell.pay>#pay,.tcell.pay>#payRole{display:inline;margin-right:8px}.tcell.pay>#pay{font-size:1.15rem}
 .g-vit.inpay{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:22px;row-gap:0}.g-vit.inpay>.gh,.g-vit.inpay>.meal{grid-column:1/-1}
 .g-vit.inpay .mrow{margin:3px 0}
-.goals .gl{columns:2;column-gap:18px;margin:4px 0}.goals .gl li{break-inside:avoid}
 .g-home .hgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:22px}.g-home .kv{margin:1px 0}.wchips{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.wchips .chip{font-size:.68rem;padding:0 6px}
-@media (max-width:640px){.g-vit.inpay .mrow{grid-template-columns:minmax(0,1fr) auto;row-gap:3px}.g-vit.inpay .mrow>span{grid-column:1;grid-row:1}.g-vit.inpay .mrow>b{grid-column:2;grid-row:1}.g-vit.inpay .mrow .bar{grid-column:1/-1;grid-row:2;width:auto}details.tbox .traits{grid-template-columns:1fr}.g-home .hgrid{grid-template-columns:1fr}.goals .gl{columns:1}.wtiles b{font-size:.84rem}}
+@media (max-width:640px){.g-vit.inpay .mrow{grid-template-columns:minmax(0,1fr) auto;row-gap:3px}.g-vit.inpay .mrow>span{grid-column:1;grid-row:1}.g-vit.inpay .mrow>b{grid-column:2;grid-row:1}.g-vit.inpay .mrow .bar{grid-column:1/-1;grid-row:2;width:auto}details.tbox .traits{grid-template-columns:1fr}.g-home .hgrid{grid-template-columns:1fr}.wtiles b{font-size:.84rem}}
 </style>
 </head>
 <body>
@@ -2628,12 +2627,12 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   }
   function goals(){
     return [
-      ['ate','🍔 Eat a meal','Fast Food, Restaurant, or cook at home'],
-      ['job','💼 Get a job','At the Employment Office: many entry jobs need no degree'],
-      ['study','📚 Attend a lesson','At School: qualifications unlock better jobs'],
-      ['worked','🛠️ Work a shift','At your workplace, not the Employment Office'],
-      ['buy','🛍️ Buy an item','Electronics Store, Thrift Store or Clothes Mall'],
-      ['rent','🏠 Pay your rent','Early at home, or it comes out of your cash at the end of day '+RENT_EVERY]
+      ['ate','🍔 Eat a meal (Fast Food, Restaurant, or cook at home)'],
+      ['job','💼 Get a job at the Employment Office (many entry jobs need no degree)'],
+      ['study','📚 Attend a lesson at School (qualifications unlock better jobs)'],
+      ['worked','🛠️ Work a shift at your workplace (not the Employment Office)'],
+      ['buy','🛍️ Buy an item (Electronics Store, Thrift Store or Clothes Mall)'],
+      ['rent','🏠 Pay your rent (early at home, or it comes out of your cash at the end of day '+RENT_EVERY+')']
     ];
   }
   function renderGoals(){
@@ -2645,7 +2644,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var by=CONFIG.bankrupt.fromDay;
     el.innerHTML='<div class="gh">🎯 First week <span>'+(g.length-left)+'/'+g.length+'</span><button class="linkbtn" id="hideGoals">Hide</button></div>'+
       '<div class="pips">'+g.map(function(x){return '<i class="'+(S.flags[x[0]]?'on':'')+'"></i>'}).join('')+'</div>'+
-      '<ul class="gl">'+g.map(function(x){var ok=S.flags[x[0]];return '<li class="goal'+(ok?' done':'')+'" title="'+x[2]+'">'+(ok?'✓ ':'○ ')+x[1]+'</li>'}).join('')+'</ul>'+
+      '<ul class="gl">'+g.map(function(x){var ok=S.flags[x[0]];return '<li class="goal'+(ok?' done':'')+'">'+(ok?'✓ ':'○ ')+x[1]+'</li>'}).join('')+'</ul>'+
       '<div class="goal gdue">'+(S.day>by?'Day '+S.day+': you are behind. Finish these to get your money moving.':'Aim to finish by day '+by+', when the bankruptcy check starts.')+'</div>';
   }
   /* best-paid job you currently hold (pay per shift before productivity) */
