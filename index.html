@@ -497,6 +497,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
 .g-vit.inpay .mrow{margin:3px 0}
 .g-home .hgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:22px}.g-home .kv{margin:1px 0}.wchips{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.wchips .chip{font-size:.68rem;padding:0 6px}
 @media (max-width:640px){.g-vit.inpay .mrow{grid-template-columns:minmax(0,1fr) auto;row-gap:3px}.g-vit.inpay .mrow>span{grid-column:1;grid-row:1}.g-vit.inpay .mrow>b{grid-column:2;grid-row:1}.g-vit.inpay .mrow .bar{grid-column:1/-1;grid-row:2;width:auto}details.tbox .traits{grid-template-columns:1fr}.g-home .hgrid{grid-template-columns:1fr}.wtiles b{font-size:.84rem}}
+.lshort{display:none}@media (max-width:440px){.lfull{display:none}.lshort{display:inline}}  /* the full word where it fits */
 </style>
 </head>
 <body>
@@ -547,7 +548,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
             <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-energy"/></svg>Energy</span><div class="bar"><i id="enBar"></i></div><b id="energy">100%</b></div>
             <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-happy"/></svg>Happy</span><div class="bar"><i id="hpBar"></i></div><b id="happy">70%</b></div>
             <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-health"/></svg>Health</span><div class="bar"><i id="hlBar"></i></div><b id="health">80%</b></div>
-            <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-know"/></svg>Know</span><div class="bar kb"><i id="knBar"></i></div><b id="know">10</b></div>
+            <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-know"/></svg><span class="lfull">Knowledge</span><span class="lshort">Know</span></span><div class="bar kb"><i id="knBar"></i></div><b id="know">10</b></div>
             <div class="meal" id="meal"></div>
           </div>
         </div>
