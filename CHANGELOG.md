@@ -844,3 +844,11 @@ Layout and wording only; no rules or `CONFIG` values change. It was tried first 
 - **Bank table on phones:** the comparison table now fits a phone screen, with all four columns. Long ranges wrap onto two lines instead of the last column being cut off.
 - Checked in headless Chromium on desktop (1440×900) and phone (iPhone 13): every building opens in the new layout with no old-style rows and no sideways overflow. 98 different buttons across all buildings were pressed once each with no script errors. The section 44 mechanic checks pass.
 - All buttons keep their `data-act` names, so keyboard shortcuts and `tools/qa/sim.js` still work. The section 44 mechanic checks pass (they click rest, sleep, the home application and others).
+
+## 49. School: a shorter "Now studying" card
+
+Layout only; no rules change.
+- Each course in progress is now **one row**: its name, one chip for where you are ("Module 1/2 · Food Hygiene 1/2"), lesson time and energy, a thin progress bar for the level and the Study button on the right. The row of module pills is gone. Hover the bar to see the modules (✓ done, ▸ current).
+- On phones the Study button stays beside the course instead of dropping to a full-width bar underneath.
+- The card is about a third shorter with two courses in progress: 302 → 198px on desktop, 395 → 269px on a phone (iPhone 13).
+- Checked in headless Chromium: Study opens the action preview, which still reads "Go to class: Food & Beverage Certificate", and confirming it attends the lesson. No script errors. The section 44 mechanic checks pass.
