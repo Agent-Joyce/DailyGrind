@@ -852,3 +852,14 @@ Layout only; no rules change.
 - On phones the Study button stays beside the course instead of dropping to a full-width bar underneath.
 - The card is about a third shorter with two courses in progress: 302 → 198px on desktop, 395 → 269px on a phone (iPhone 13).
 - Checked in headless Chromium: Study opens the action preview, which still reads "Go to class: Food & Beverage Certificate", and confirming it attends the lesson. No script errors. The section 44 mechanic checks pass.
+
+## 50. A more compact Employment Office job board
+
+Layout and wording only; no rules change.
+- **"Work exp needed":** jobs that still need work experience (`CONFIG.jobs.experience`, 5 shifts at that workplace) show a red **Work exp needed** chip instead of "5 shifts here". Hovering over it says how many shifts are needed and how many you have.
+- **Name and pay on one line:** the role's name and its pay (in teal), followed by its requirement chips, so most jobs fit on one line.
+- **Shorter qualification chips:** "F&B", "Cust. Service", "Eng.", "Tech", "Cert" and "Hons", for example "Cust. Service Cert" or "F&B Degree". The full name shows on hover.
+- **Removed chips:** "No qualification" is gone, since a job with no requirement chips is open to anyone. The Casual dress chip is gone too; only Smart casual and Suit show, and the board's ⓘ explains that the rest need ordinary clothes.
+- **Tighter rows and phones:** chips, buttons and rows are smaller. On phones the Apply button stays beside the job.
+- The board is shorter: 990 → 820px on desktop, 2,709 → 1,957px on a phone (iPhone 13), in the same game state.
+- Checked in headless Chromium: Apply still hires (Kitchen Hand), and "Show all" still expands the board from 38 to all 71 jobs. No script errors.
