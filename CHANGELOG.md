@@ -829,5 +829,6 @@ Layout and wording only; no rules or `CONFIG` values change. A pilot on three sc
   - The comparison table stays; its explanation is under the section's ⓘ.
   - The news tip-off keeps its own line.
 - **Shopkeeper:** on these three screens the quote is one quiet italic line instead of a boxed panel.
+- **Each section is its own card:** a white box with a border and a tinted heading band with an icon (🏠 Your home, 📦 Your things, 🍳 Kitchen, 😴 Rest & sleep, 📚 Study & work, 🧾 Rent & bills; 💳 Loan, 📈 Savings and investments). The section's status chips sit on the band, and its rows sit inside the card. The Bank's investment cards now sit inside the Savings and investments card. The loan rules moved from "How loans work" to the Loan heading's ⓘ, like the other sections. On a phone, the heading chips wrap under the title.
 - On these screens the visible text drops by about half: Apartment 376 → 188 words, Bank 477 → 188, in the same game state.
 - All buttons keep their `data-act` names, so keyboard shortcuts and `tools/qa/sim.js` still work. The section 44 mechanic checks pass (they click rest, sleep, the home application and others).

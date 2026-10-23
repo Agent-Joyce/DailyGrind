@@ -90,7 +90,7 @@ p{margin:0 0 10px}
 .bk-wide{margin:6px 0 10px}.bk-card.wide{max-width:560px}.bk-ten{display:flex;gap:6px;flex-wrap:wrap}.bk-ten .btn{min-height:34px;padding:4px 10px;margin:0;font-size:.8rem}
 .bk-v .up{color:var(--green,#1f8a4c)}.bk-v .dn{color:var(--red)}
 .bk-amt{display:grid;grid-template-columns:40px 1fr 40px;gap:6px}.bk-amt .btn{min-height:36px;padding:0;margin:0;font-size:1.1rem;line-height:1}
-.bk-card input{width:100%;box-sizing:border-box;min-height:36px;padding:2px 8px;text-align:center;font-weight:800;border:3px solid var(--ink);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit}
+.bk-card input,.loanb input{width:100%;box-sizing:border-box;min-height:36px;padding:2px 8px;text-align:center;font-weight:800;border:3px solid var(--ink);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit}
 .bk-b{display:grid;grid-template-columns:1fr 1fr;gap:8px}.bk-b .btn{width:100%;min-height:40px;padding:6px 8px;margin:0}
 .invbox{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:flex-end}.invbox input{width:88px;min-height:34px;padding:2px 8px;border:3px solid var(--ink);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit}
 input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-radius:8px;background:var(--bg);color:var(--ink)}
@@ -111,8 +111,18 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 .chip.warn{background:color-mix(in srgb,var(--red) 13%,var(--surface));color:var(--red)}
 .arow{align-items:center}.arow-t{font-weight:700}.arow-n{font-size:.8rem;color:var(--muted);margin:4px 0}
 .ib{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--teal);color:#fff;font:italic 800 11px/1 Georgia,serif;flex:0 0 auto}
-details.psec{margin:16px 0 2px;padding-bottom:6px;border-bottom:2px solid var(--line)}
-details.psec>summary{display:flex;align-items:center;gap:8px;list-style:none;cursor:pointer}
+.pbox{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:0 14px 6px;margin:12px 0;box-shadow:0 2px 0 color-mix(in srgb,var(--ink) 8%,transparent);overflow:hidden}
+.pbox>.opt:last-child{border-bottom:0}
+.pbox>.bk-cmp-w{margin:6px 0 8px}
+.pbox:has(>details.psec:only-child){padding-bottom:0}.pbox>details.psec:only-child{margin-bottom:0;border-bottom:0}
+.psec-r .chip{background:var(--surface)}.psec-r .chip.ok{background:color-mix(in srgb,var(--teal) 15%,var(--surface))}.psec-r .chip.warn{background:color-mix(in srgb,var(--red) 13%,var(--surface))}
+.loanb{display:flex;flex-direction:column;gap:8px;padding:6px 0 8px;max-width:560px}
+.pbox .bk-grid{margin:4px 0 10px}.pbox .bk-card{background:color-mix(in srgb,var(--ink) 2%,var(--surface))}
+details.psec{margin:0 -14px 4px;padding:9px 14px;background:color-mix(in srgb,var(--teal) 9%,var(--surface));border-bottom:2px solid var(--line)}
+details.psec[open]{padding-bottom:4px}
+details.psec .gh{color:var(--ink);font-size:.78rem}
+details.psec>summary{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;list-style:none;cursor:pointer}
+details.psec>summary .gh{white-space:nowrap}
 details.psec[data-none]>summary{cursor:default}
 details.psec>summary .gh{margin:0}
 details>summary::-webkit-details-marker{display:none}
@@ -4383,13 +4393,15 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
   function chip(k,v,cls){return '<span class="chip'+(cls?' '+cls:'')+'">'+(k?ic(k):'')+v+'</span>'}
   function more(k,label,body){return '<details class="more" data-sec="'+k+'"><summary><i class="ib">i</i>'+label+'</summary><div class="more-b">'+body+'</div></details>'}
   function arow(title,ch,b,note,cls){return '<div class="opt arow'+(cls?' '+cls:'')+'"><div><div class="arow-t">'+title+'</div>'+(ch?'<div class="chipl">'+ch+'</div>':'')+(note?'<div class="arow-n">'+note+'</div>':'')+'</div>'+(b||'')+'</div>'}
-  function psec(k,title,right,info){return '<details class="psec" data-sec="'+k+'"'+(info?'':' data-none="1"')+'><summary><span class="gh">'+title+'</span>'+(info?'<i class="ib" title="Details">i</i>':'')+(right?'<span class="psec-r">'+right+'</span>':'')+'</summary>'+(info?'<div class="more-b">'+info+'</div>':'')+'</details>'}
+  /* each psec starts a card that runs until the next psec (or <!--end-->); boxed() wraps them */
+  function boxed(t){var p=t.split('<!--sec-->'),h=p[0];for(var i=1;i<p.length;i++){var e=p[i].split('<!--end-->');h+='<section class="pbox">'+e[0]+'</section>'+(e[1]||'')}return h}
+  function psec(k,title,right,info){return '<!--sec--><details class="psec" data-sec="'+k+'"'+(info?'':' data-none="1"')+'><summary><span class="gh">'+title+'</span>'+(info?'<i class="ib" title="Details">i</i>':'')+(right?'<span class="psec-r">'+right+'</span>':'')+'</summary>'+(info?'<div class="more-b">'+info+'</div>':'')+'</details>'}
   function house(h){
     var H=HOUSE[h], cur=S.home===h&&!S.homeless, f=homeFee(h), SL=CONFIG.sleep, rr0=restRate();
     var about=(h==='apt'?'Cheap and cramped.':'Quiet street, big garden, soft bed.')+' Rent is '+money(H.rent)+' '+everyDays(RENT_EVERY)+'. Resting here restores '+H.rate+'% energy an hour, 10% more for each comfort item at home (TV, console, fridge, coffee machine, computer)'+(H.hap?'. The bed adds +'+H.hap+' happiness each night you sleep here':'')+'.'+(h==='bung'?' The agent only lets to people with a steady job.':'');
-    var head=psec('about',cur?'Your home':'To rent',chip('cash',money(H.rent)+' / '+RENT_EVERY+' days')+chip('energy',H.rate+'%/h rest'),about);
+    var head=psec('about',(cur?'🏠 Your home':'🏠 To rent'),chip('cash',money(H.rent)+' / '+RENT_EVERY+' days')+chip('energy',H.rate+'%/h rest'),about);
     if(!cur)return (S.homeless?'<p class="bad arow-n">🏚️ <b>No home.</b> You lost the '+NAME[S.home]+' in the housing bubble. Apply here to move back in.</p>':'')+head+
-      arow(S.homeless?'Apply to rent':'Move in',(f?chip('cash',money(f)+(h==='apt'&&S.homeless?' deposit':'')):chip('','No move-in fee'))+(S.homeless?chip('time',hm(CONFIG.housing.applyMinutes)):''),btn('home',h,S.homeless?'Apply':'Move in'));
+      boxed(head+arow(S.homeless?'Apply to rent':'Move in',(f?chip('cash',money(f)+(h==='apt'&&S.homeless?' deposit':'')):chip('','No move-in fee'))+(S.homeless?chip('time',hm(CONFIG.housing.applyMinutes)):''),btn('home',h,S.homeless?'Apply':'Move in')));
     var F=S.food,cnt=function(t,test){return F.filter(function(p){return p.t===t&&(!test||test(p))}).length};
     var nb=cnt('basic',function(p){return !p.sp}),np=cnt('prem',function(p){return !p.sp}),nw=cnt('cook',function(p){return !p.sp&&!p.cold}),ncold=cnt('cook',function(p){return !p.sp&&p.cold});
     var nbs=cnt('basic',function(p){return p.sp}),nps=cnt('prem',function(p){return p.sp}),ncs=cnt('cook',function(p){return p.sp}),nsp=nbs+nps+ncs,full=homeFull(),mw=owns('microwave');
@@ -4398,11 +4410,11 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
     if(S.ill)t+='<p class="bad arow-n">🤒 <b>'+cap(illShort(ILL[S.ill.k]))+': no work.</b> '+illCure()+'</p>';
     /* --- your things: the shelves only when there is something on them --- */
     var empty=!Object.keys(S.items).some(function(k){return S.items[k]})&&!F.length&&!S.chips&&!(S.tickets||[]).length;
-    t+=psec('things','Your things',empty?chip('','Nothing yet'):'','Buy belongings at the Electronics Store or Thrift Store, and meals at the Supermarket. A fridge holds '+FD.fridgeSpace+' meals and keeps them '+FD.keepDaysFridge+' days; food outside it keeps '+FD.keepDaysRoom+' days, counting the day you buy or cook it. Food that runs out turns spoiled.');
+    t+=psec('things','📦 Your things',empty?chip('','Nothing yet'):'','Buy belongings at the Electronics Store or Thrift Store, and meals at the Supermarket. A fridge holds '+FD.fridgeSpace+' meals and keeps them '+FD.keepDaysFridge+' days; food outside it keeps '+FD.keepDaysRoom+' days, counting the day you buy or cook it. Food that runs out turns spoiled.');
     if(!empty)t+=room();
     /* --- kitchen --- */
     var mealCh=function(g,hap){return chip('time',hm(FD.eatMinutes))+chip('energy','+'+g.en+'%')+chip('happy',sg(hap))+chip('health',sg(g.hp))};
-    t+=psec('kitchen','Kitchen',chip('',S.fed?'✓ Eaten today':'No meal yet',S.fed?'ok':'warn')+chip('','Meals '+S.homeMeals+'/'+FD.homeMealsPerDay),
+    t+=psec('kitchen','🍳 Kitchen',chip('',S.fed?'✓ Eaten today':'No meal yet',S.fed?'ok':'warn')+chip('','Meals '+S.homeMeals+'/'+FD.homeMealsPerDay),
       'A meal at home counts as today’s meal; you can eat up to '+FD.homeMealsPerDay+' a day here. Meal prep must be cooked: the first meal takes '+hm(FD.cookFirst)+', each extra one '+hm(FD.cookExtra)+' more. A cooked meal that spent a night in the fridge is cold: reheat it with a microwave ('+hm(FD.reheatMinutes)+') or eat it cold ('+sg(FD.coldHappiness)+' happiness). Spoiled food costs '+Math.abs(FD.spoiledHealth)+' health and has a '+pctTxt(FD.spoiledPoisonChance)+' chance of food poisoning. Chips are junk food: '+CONFIG.illness.junkMeals+' junk servings in 5 days raise your illness risk.');
     if(!(nb+np+nw+ncold+nsp+(S.chips||0)))t+='<p class="arow-n">No food at home. Buy meals at the Supermarket.</p>';
     if(nw)t+=arow('🍲 Cooked meal × '+nw,mealCh(GROC.basic,GROC.basic.hap),btn('eatc','','Eat',0,full));
@@ -4415,24 +4427,24 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
       t+=arow('<span class="bad">🤢 Spoiled food × '+(ncs+nps)+'</span>',chip('health',sg(FD.spoiledHealth),'warn')+chip('',pctTxt(FD.spoiledPoisonChance)+' poisoning','warn'),'<span class="btnrow">'+spb+'</span>')}
     if(nsp)t+=arow('🗑️ Throw out spoiled × '+nsp,chip('','No time'),btn('binsp','','Throw out',1));
     /* --- rest and sleep --- */
-    t+=psec('rest','Rest & sleep',chip('','Comfort '+ci.length+'/5'),
+    t+=psec('rest','😴 Rest & sleep',chip('','Comfort '+ci.length+'/5'),
       'Resting gives '+rr0.toFixed(1)+'% energy an hour now'+(ci.length?' (comfort: '+ci.join(', ')+')':' (a TV, console, fridge, coffee machine or computer at home adds 10% each)')+'. A night’s sleep restores energy '+(SL.energyX||1)+'× as fast, up to '+SL.maxEnergy+'%, plus '+CONFIG.health.sleep.perHour+' health an hour (up to '+CONFIG.health.sleep.max+') and '+SL.happinessPerHour+' happiness per full hour. Every night also costs '+sg(SL.nightEnergy)+'% energy and '+sg(SL.nightHappiness)+' happiness, so going to bed with more hours left means you wake up fresher. Sleeping anywhere else gives '+pctTxt(SL.awayShare)+' of it.');
     t+=arow('Rest',chip('time',hm(SL.napMinutes))+chip('energy','+'+Math.round(nh*rr0)+'%')+chip('happy',sg(SL.napHappiness)),btn('nap','','Rest '+hm(SL.napMinutes),0,S.ap<SL.napMinutes||S.energy>=100));
     t+=arow('Sleep · end the day',chip('time',hm(S.ap))+chip('energy','+'+sleepGain(S.ap)+'%')+chip('health','+'+sleepHealth(S.ap))+chip('happy','+'+(sleepHap(S.ap)+(H.hap||0))),btn('rest','',sleepLabel()));
     /* --- study and work --- */
     var BU=CONFIG.burnout,lm=loadMin();
-    t+=psec('study','Study & work',chip('time',hm(lm)+' / '+loadLimitTxt().replace(' hours','h'),lm>BU.loadMinutes?'warn':''),
+    t+=psec('study','📚 Study & work',chip('time',hm(lm)+' / '+loadLimitTxt().replace(' hours','h'),lm>BU.loadMinutes?'warn':''),
       'Self-study needs a phone, tablet or computer; the best one counts (knowledge per session: computer '+SS.gain.computer+', tablet '+SS.gain.tablet+', phone '+SS.gain.phone+'). Under '+SS.minEnergy+'% energy you are too tired. Working and studying more than '+loadLimitTxt()+' a day (shifts, lessons and self-study together) for '+dayN(BU.daysInARow)+' running causes burnout'+(S.loadStreak?' (streak: '+S.loadStreak+' of '+BU.daysInARow+')':'')+'. You can work at most '+hm(CONFIG.time.maxWorkMinutes)+' of shifts a day.');
     t+=arow('Self-study',gain?chip('time',hm(M(SS.units)))+chip('energy',sg(SS.energy)+'%')+chip('health',sg(SS.health))+chip('know','+'+gain):'',btn('study','','Study',0,!gain),gain?'':'Needs a phone, tablet or computer.');
     if(owns('computer')){var J=JOBS.free;t+=arow(J.n+' · '+money(shiftPay(J.pay)),chip('time',hm(J.min))+chip('energy','−'+J.en+'%'),btn('work','free','Work a shift'))}
     /* --- rent and bills --- */
-    t+=psec('rent','Rent & bills','',
+    t+=psec('rent','🧾 Rent & bills','',
       'Rent is taken from your cash at the end of day '+due+'. If you are short, the rest goes on a 5-day repayment plan with 10% interest, collected each morning, with a late fee on any missed instalment. Medical bills work the same way.');
     if(S.arrears)t+=arow('<span class="bad">Rent arrears · '+money(S.arrears.bal)+'</span>',chip('cash',money(instal())+' tomorrow','warn'),btn('arrears','','Pay now',0,S.cash<=0));
     t+=S.rentPaid===due?arow('Rent for day '+due,chip('','✓ Paid','ok'),'<span class="tag">Paid</span>'):
       arow('Rent · '+money(H.rent),chip('','Due end of day '+due,due===S.day?'warn':''),btn('payrent','','Pay rent',0,S.cash<H.rent));
     if(S.medDebt>0)t+=arow('<span class="bad">Medical bills · '+money(S.medDebt)+'</span>',chip('cash',money(medInstal())+' tomorrow','warn'),'');
-    return t;
+    return boxed(t);
   }
 
   var panels={
@@ -4481,17 +4493,16 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
           if(!tenureOf(loanTenure)||tenureOf(loanTenure).days!==+loanTenure)loanTenure=L.tenures[0].days;
           var t=tenureOf(loanTenure),amt=Math.min(bankAmt('amt_loan',L.step),Math.max(L.step,lim));
           var tens=L.tenures.map(function(x){return btn('ltenure',String(x.days),dayN(x.days)+' · '+rateTxt(x.rate)+'/day',x.days===t.days?0:1)}).join('');
-          return '<div class="bk-card wide"><div class="bk-h"><b>Loan</b><span>Limit '+money(lim)+'</span></div>'+
+          return psec('loan','💳 Loan',chip('cash','Limit '+money(lim)),rules)+'<div class="loanb">'+
             '<div class="bk-ten">'+tens+'</div>'+
-            '<div class="bk-v">Borrow '+money(amt)+' → repay <b>'+money(loanTotalIfPaidAt(amt,t))+'</b> by the end of day '+(S.day+t.days)+'</div>'+more('i_loan','How loans work',rules)+
+            '<div class="bk-v">Borrow '+money(amt)+' → repay <b>'+money(loanTotalIfPaidAt(amt,t))+'</b> by the end of day '+(S.day+t.days)+'</div>'+
             '<div class="bk-amt">'+btn('step','amt_loan|-1|'+L.step+'|'+lim,'−',1,amt<=L.step)+'<input id="amt_loan" type="text" readonly value="'+amt+'" aria-label="Amount to borrow in dollars">'+btn('step','amt_loan|1|'+L.step+'|'+lim,'+',1,amt>=lim)+'</div>'+
             '<div class="bk-b">'+btn('borrow','','Borrow',0,lim<L.step)+'</div></div>';
         }
         var Ln=S.loan,owed=loanOwed(),over=S.day>Ln.due,left=Ln.due-S.day,minR=Math.min(BK_STEP,owed),ramt=Math.min(Math.max(bankAmt('amt_repay',minR),minR),owed);
         var st=over?chip('','Overdue · '+rateTxt(L.overdueRate)+'/day','warn')+chip('','Pay by day '+(Ln.due+L.graceDays),'warn'):chip('','Due end of day '+Ln.due+(left===0?' (tonight)':''),left<=1?'warn':'')+chip('',rateTxt(Ln.rate)+'/day');
-        return '<div class="bk-card wide"><div class="bk-h"><b>Loan</b><span>'+(over?'Overdue':'Outstanding')+'</span></div>'+
+        return psec('loan','💳 Loan',chip('',over?'Overdue':'Outstanding',over?'warn':''),'Borrowed '+money(Ln.borrowed)+' on day '+Ln.taken+' for '+dayN(Ln.tenure)+': principal '+money(Ln.principal)+' + interest '+money(Ln.interest)+'. '+(Ln.taken===S.day?'You can start repaying tomorrow. ':'')+rules)+'<div class="loanb">'+
           '<div class="bk-v">You owe <b class="'+(over?'dn':'')+'">'+money(owed)+'</b></div><div class="chipl">'+st+'</div>'+
-          more('i_loan','Details','Borrowed '+money(Ln.borrowed)+' on day '+Ln.taken+' for '+dayN(Ln.tenure)+': principal '+money(Ln.principal)+' + interest '+money(Ln.interest)+'. '+(Ln.taken===S.day?'You can start repaying tomorrow. ':'')+rules)+
           '<div class="bk-amt">'+btn('step','amt_repay|-1|'+minR+'|'+owed,'−',1,ramt<=minR)+'<input id="amt_repay" type="text" readonly value="'+ramt+'" aria-label="Amount to repay in dollars">'+btn('step','amt_repay|1|'+minR+'|'+owed,'+',1,ramt>=owed)+'</div>'+
           '<div class="bk-b">'+btn('repay','','Repay',0,S.cash<=0||Ln.taken===S.day)+btn('repayall','','Pay in full · '+money(owed),1,S.cash<owed||Ln.taken===S.day)+'</div></div>';
       };
@@ -4505,10 +4516,10 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
         return card(P.n,P.risk+' risk · min '+money(P.min),ch,info,v,'amt_'+k,P.min,P.n,'invest','divest',k,has);
       }).join('');
       var mood=S.mkt>0.5?'buoyant':S.mkt<-0.5?'weak':'steady',tip=S.newsPlan&&S.newsPlan.tip&&S.newsPlan.day===S.day;
-      return '<div class="bk-wide">'+loanCard()+'</div>'+
-        psec('invest','Savings and investments',chip('','Market '+mood,mood==='weak'?'warn':mood==='buoyant'?'ok':'')+chip('','Savings '+S.rate.toFixed(1)+'%/day'),econNote()+'<br>'+invNote())+
+      return boxed(loanCard()+
+        psec('invest','📈 Savings and investments',chip('','Market '+mood,mood==='weak'?'warn':mood==='buoyant'?'ok':'')+chip('','Savings '+S.rate.toFixed(1)+'%/day'),econNote()+'<br>'+invNote())+
         (tip?'<p class="arow-n">📡 <b>Tip-off for tonight:</b> “'+S.newsPlan.n[0]+'” ('+newsHint(S.newsPlan.n)+')</p>':'')+
-        invTable()+'<div class="bk-grid">'+rows+'</div>'},
+        invTable()+'<div class="bk-grid">'+rows+'</div>')},
     market:function(){
       /* food sorted by price, cheapest first; the lottery is not food, so it has its own section */
       var cap=fridgeCap(),CH=FD.chips,chLeft=Math.min(CH.maxPerDay-(S.chipsDay||0),CH.maxStored-(S.chips||0));
