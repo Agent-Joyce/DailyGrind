@@ -498,6 +498,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
 .g-home .hgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:22px}.g-home .kv{margin:1px 0}.wchips{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.wchips .chip{font-size:.68rem;padding:0 6px}
 @media (max-width:640px){.g-vit.inpay .mrow{grid-template-columns:minmax(0,1fr) auto;row-gap:3px}.g-vit.inpay .mrow>span{grid-column:1;grid-row:1}.g-vit.inpay .mrow>b{grid-column:2;grid-row:1}.g-vit.inpay .mrow .bar{grid-column:1/-1;grid-row:2;width:auto}details.tbox .traits{grid-template-columns:1fr}.g-home .hgrid{grid-template-columns:1fr}.wtiles b{font-size:.84rem}}
 .lshort{display:none}@media (max-width:440px){.lfull{display:none}.lshort{display:inline}}  /* the full word where it fits */
+@media (max-width:640px){.opt.arow{flex-direction:row;align-items:center}.opt.arow>div{flex:1 1 auto;min-width:0}.opt.arow>.btn,.opt.arow>.tag{flex:0 0 auto;max-width:42%}.opt.arow>.btn{min-height:38px;padding:5px 12px;font-size:.92rem}
+  .opt.arow:has(>.btnrow){flex-direction:column;align-items:stretch}}  /* phones: the button stays on the right of its row; rows with two buttons still stack */
 </style>
 </head>
 <body>
