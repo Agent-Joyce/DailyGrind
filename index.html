@@ -474,6 +474,16 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
   .g-nw .parts{flex-wrap:wrap}.g-nw .parts>div{flex:1 1 30%}
 }
 
+.jb{columns:220px 3;column-gap:10px}
+.bcard{padding:2px 9px 4px}.bcard .jh{margin:4px 0 1px}
+.jb .opt.jrow{padding:4px 0;gap:6px;font-size:.78rem;line-height:1.25}
+.jb .jrow>div{display:flex;flex-wrap:wrap;align-items:center;gap:2px 4px;min-width:0}
+.jb .jrow .arow-t{font-weight:700;margin-right:2px}.jb .jrow .jpay{color:var(--teal);font-weight:800}
+.jb .jrow .chipl{display:contents}
+.jb .jrow .chip{font-size:.62rem;padding:0 5px;line-height:1.55}
+.jb .jrow .btn{min-height:24px;padding:1px 9px;font-size:.72rem}
+.jb .jrow .tag{font-size:.62rem;padding:1px 6px}
+@media (max-width:640px){.jb{columns:1}.jb .opt.jrow{flex-direction:row;align-items:center}.jb .jrow>div{flex:1}}
 </style>
 </head>
 <body>
@@ -1621,6 +1631,9 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
   function qTxt(q){return q[0]==='any'?'Any '+GENLV[q[1]-1]:TRACKS[q[0]].n+' '+TRACKS[q[0]].lv[q[1]-1]}
   function meetsQ(q){return lvl(q[0])>=q[1]}
   function meets(rk){return (rk.q||[]).every(meetsQ)}
+  /* a qualification in a few characters for the job board (the full name is the chip's tooltip) */
+  var QSHORT={'Food & Beverage':'F&B','Customer Service':'Cust. Service','Engineering':'Eng.','Technology':'Tech','Certificate':'Cert','Honours':'Hons'};
+  function qShort(q){return qTxt(q).replace(/Food & Beverage|Customer Service|Engineering|Technology|Certificate|Honours/g,function(w){return QSHORT[w]})}
   function needTxt(rk,c){var parts=[];parts.push(rk.q&&rk.q.length?rk.q.map(qTxt).join(' + '):'No qualification');if(kreq(rk))parts.push('Knowledge '+kreq(rk));return parts.join(' · ')}
   /* work experience (CONFIG.jobs.experience): better-paid jobs need shifts already worked at the same workplace */
   function shiftPayNow(rk){return Math.round(rk.pay*payIdx())}
@@ -4367,9 +4380,11 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
       h+='<div class="bcard"><h4 class="jh"><span>'+ICON[b]+' '+NAME[b]+'</span>'+(sh?'<em>🔒 closed '+sh+'d</em>':'')+'</h4>'+rows.map(function(o){
         var rk=o.rk;
         var expBad=!o.mine&&!o.have&&expShort(o.c,rk);
-        var need=(rk.q&&rk.q.length?rk.q.map(function(q){return chip('',qTxt(q),o.mine||o.have||meetsQ(q)?'ok':'')}).join(''):chip('','No qualification','ok'))+(kreq(rk)?chip('know',kreq(rk),Math.floor(S.know)>=kreq(rk)?'ok':''):'')+(rk.dress?chip('',DSHORT[rk.dress]):'')+(expBad?chip('',CONFIG.jobs.experience.shifts+' shifts here','warn'):'');
-        return arow('<span class="rn">'+rk.r+'</span> · '+money(Math.round(rk.pay*payIdx())),need,
-          o.mine?'<span class="tag">Your job</span>':o.have?'<span class="tag">Past rank</span>':btn('apply',o.c+'_'+o.i,o.ok?'Apply':'🔒',!o.ok,!o.ok||sh>0),'',o.mine?'mine':(expBad?'nextstep':''));
+        /* short chips: qualifications (green once you have them), knowledge, dress code, and work experience still needed */
+        var need=(rk.q||[]).map(function(q){return '<span class="chip'+(o.mine||o.have||meetsQ(q)?' ok':'')+'" title="'+qTxt(q)+'">'+qShort(q)+'</span>'}).join('')+(kreq(rk)?chip('know',kreq(rk),Math.floor(S.know)>=kreq(rk)?'ok':''):'')+(rk.dress&&rk.dress!=='casual'?chip('',DSHORT[rk.dress]):'')+
+          (expBad?'<span class="chip warn" title="'+expTxt(o.c)+'">Work exp needed</span>':'');
+        return arow('<span class="rn">'+rk.r+'</span> <b class="jpay">'+money(Math.round(rk.pay*payIdx()))+'</b>',need,
+          o.mine?'<span class="tag">Your job</span>':o.have?'<span class="tag">Past rank</span>':btn('apply',o.c+'_'+o.i,o.ok?'Apply':'🔒',!o.ok,!o.ok||sh>0),'','jrow'+(o.mine?' mine':expBad?' nextstep':''));
       }).join('')+'</div>';
     });
     return h+'</div><p style="margin:6px 0 0"><button class="linkbtn" data-act="alljobs" style="margin:0">'+(allJobs?'Show fewer':'Show all')+'</button></p>';
@@ -4460,7 +4475,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
       var mine=Object.keys(S.career).map(function(c){return CAREERS[c].ranks[S.career[c]].r}),E=CONFIG.jobs.experience,shut=Object.keys(S.shut);
       return boxed((shut.length?'<p class="bad arow-n">🔒 <b>Closed:</b> '+shut.map(function(b){return NAME[b]+' ('+S.shut[b]+'d)'}).join(', ')+'. No interviews or shifts there until they reopen.</p>':'')+
         psec('board','💼 Job board',mine.length?chip('','Your job: '+mine.join(', '),'ok'):chip('','No job yet','warn'),
-          'Pay shown is base pay: your actual wage also depends on your knowledge and well-being. Apply here, then work your shifts at the workplace. Openings come and go, and you can only hold one job at a time.'+(E&&E.shifts?' Jobs paying more than '+money(E.payAbove)+' a shift also need '+E.shifts+' shifts already worked at the same workplace.':'')+' 🔒 means you do not meet the requirements yet.')+
+          'Pay shown is base pay: your actual wage also depends on your knowledge and well-being. Apply here, then work your shifts at the workplace. Openings come and go, and you can only hold one job at a time.'+(E&&E.shifts?' Jobs paying more than '+money(E.payAbove)+' a shift also need work experience: '+E.shifts+' shifts already worked at the same workplace (“Work exp needed”).':'')+' A job without a dress chip needs ordinary clothes (Casual Clothes or better). Green requirements are ones you already meet; 🔒 means you do not meet them all yet. Hover a qualification for its full name.')+
         board())},
     factory:function(){
       return boxed(psec('factory','🏭 Factory floor',shutLeft('factory')>0?chip('','Closed '+shutLeft('factory')+'d','warn'):'','The factory floor hums day and night. Engineers earn far more than line workers. Apply for jobs at the Employment Office.'))},
