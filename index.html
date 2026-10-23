@@ -484,6 +484,20 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 .jb .jrow .btn{min-height:24px;padding:1px 9px;font-size:.72rem}
 .jb .jrow .tag{font-size:.62rem;padding:1px 6px}
 @media (max-width:640px){.jb{columns:1}.jb .opt.jrow{flex-direction:row;align-items:center}.jb .jrow>div{flex:1}}
+.wtiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0 8px}
+.wtiles>div{border:2px solid var(--line);border-radius:12px;padding:8px 10px;background:color-mix(in srgb,var(--teal) 5%,var(--surface))}
+.wtiles b{display:block;font-size:.9rem}.wtiles span{font-size:.78rem;color:var(--muted)}.wtiles b span{font-size:inherit;color:inherit}
+details.wmore{margin:2px 0 10px}details.wmore>summary{display:inline-flex;align-items:center;gap:6px;list-style:none;cursor:pointer;font-size:.8rem;font-weight:700;color:var(--teal)}
+details.tbox{border:2px solid var(--line);border-radius:12px;margin:6px 0 10px;background:var(--surface)}
+details.tbox>summary{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 12px;list-style:none;cursor:pointer;font-size:.9rem}
+details.tbox>summary small{color:var(--muted);font-size:.72rem;white-space:nowrap}details.tbox>summary::after{content:'▸';color:var(--teal);font-weight:800}details.tbox[open]>summary::after{content:'▾'}
+details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}details.tbox .trait{margin:0}
+.tcell.pay>.l,.tcell.pay>#pay,.tcell.pay>#payRole{display:inline;margin-right:8px}.tcell.pay>#pay{font-size:1.15rem}
+.g-vit.inpay{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:22px;row-gap:0}.g-vit.inpay>.gh,.g-vit.inpay>.meal{grid-column:1/-1}
+.g-vit.inpay .mrow{margin:3px 0}
+.g-home .hgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:22px}.g-home .kv{margin:1px 0}.wchips{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.wchips .chip{font-size:.68rem;padding:0 6px}
+@media (max-width:640px){.g-vit.inpay .mrow{grid-template-columns:minmax(0,1fr) auto;row-gap:3px}.g-vit.inpay .mrow>span{grid-column:1;grid-row:1}.g-vit.inpay .mrow>b{grid-column:2;grid-row:1}.g-vit.inpay .mrow .bar{grid-column:1/-1;grid-row:2;width:auto}details.tbox .traits{grid-template-columns:1fr}.g-home .hgrid{grid-template-columns:1fr}.wtiles b{font-size:.84rem}}
+.lshort{display:none}@media (max-width:440px){.lfull{display:none}.lshort{display:inline}}  /* the full word where it fits */
 </style>
 </head>
 <body>
@@ -534,7 +548,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
             <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-energy"/></svg>Energy</span><div class="bar"><i id="enBar"></i></div><b id="energy">100%</b></div>
             <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-happy"/></svg>Happy</span><div class="bar"><i id="hpBar"></i></div><b id="happy">70%</b></div>
             <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-health"/></svg>Health</span><div class="bar"><i id="hlBar"></i></div><b id="health">80%</b></div>
-            <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-know"/></svg>Know</span><div class="bar kb"><i id="knBar"></i></div><b id="know">10</b></div>
+            <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-know"/></svg><span class="lfull">Knowledge</span><span class="lshort">Know</span></span><div class="bar kb"><i id="knBar"></i></div><b id="know">10</b></div>
             <div class="meal" id="meal"></div>
           </div>
         </div>
@@ -543,18 +557,15 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
       <div class="goals" id="goals" hidden></div>
       <div class="alerts" id="warn" hidden></div>
       <div class="sumcard" id="sumcard" hidden></div>
-      <div class="three">
-        <div class="grp g-life">
-          <div class="gh">🏠 Life &amp; learning</div>
+      <div class="grp g-life g-home">
+        <div class="gh">🏠 Home &amp; life</div>
+        <div class="hgrid">
           <div class="kv"><span>Home</span><b id="homeName"></b></div>
-          <div class="kv"><span>Belongings</span><b id="belong">0</b></div>
-          <div class="kv"><span>Education</span><b id="edu">High School</b></div>
-          <div class="sub" id="eduSub">No courses yet</div>
-        </div>
-        <div class="grp g-bill">
-          <div class="gh">🧾 Rent &amp; clothing</div>
           <div class="kv"><span>Rent</span><b id="rent"></b></div>
-          <div id="wardrobe"></div>
+          <div class="kv"><span>Belongings</span><b id="belong">0</b></div>
+          <div class="kv"><span>Clothes</span><span id="wardrobe" class="wchips"></span></div>
+          <div class="kv"><span>Education</span><b id="edu">High School</b></div>
+          <div class="kv sub"><span id="eduSub">No courses yet</span></div>
         </div>
       </div>
       <div class="grp g-nw">
@@ -589,15 +600,15 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 <div class="over" id="welcome" role="dialog" aria-modal="true" aria-labelledby="wlT"><div class="card rules">
   <h2 id="wlT">Welcome to Daily Grind</h2>
   <p style="color:var(--ink)">Build a life from scratch. Reach <b><span id="cfgGoal">$1,000</span> net worth</b> without going broke, burning out or skipping meals.</p>
-  <ul>
-    <li><b>Each day has 24 hours.</b> Walking (<span id="cfgWalk">5 minutes</span> per building), working, studying and shopping all use time. Click <b>Sleep in Apartment</b> (at home) or <b>Sleep outside</b> (anywhere else) when you are done.</li>
-    <li><b>Eat once a day</b> and keep an eye on energy and happiness. Low energy makes you ill; low happiness cuts your pay.</li>
-    <li><b>Rent is due <span id="cfgRent">every 5 days</span>.</b> If your cash is negative when it is due, you are evicted.</li>
-    <li><b>Start simple:</b> you begin with Casual Clothes that last <span id="cfgClothes">5 days</span>. Get a job at the Employment Office, work shifts, then study for better jobs. Replace your clothes at the Clothes Mall before they wear out.</li>
-  </ul>
-  <p style="font-size:.85rem">The <b>Getting started</b> checklist on the main panel will guide your first days. Your game saves automatically.</p>
-  <div id="traitBox"><h3>Choose a starting trait <small class="sub">(optional)</small></h3>
-  <div class="traits" id="traits" role="radiogroup" aria-label="Starting trait"></div></div>
+  <div class="wtiles">
+    <div><b>⏱ 24 hours a day</b><span>Walking takes <span id="cfgWalk">5 minutes</span> per building</span></div>
+    <div><b>🍽 Eat once a day</b><span>Low energy makes you ill</span></div>
+    <div><b>🏠 Rent <span id="cfgRent">every 5 days</span></b><span>Short of cash? It goes on a plan</span></div>
+    <div><b>👕 Clothes last <span id="cfgClothes">5 days</span></b><span>Replace them at the Clothes Mall</span></div>
+  </div>
+  <details class="wmore"><summary><i class="ib">i</i>More about how to play</summary><div class="more-b">Working, studying and shopping all use time. End the day with <b>Sleep in Apartment</b> at home (the most rest) or <b>Sleep outside</b> anywhere else. Keep an eye on energy and happiness: low happiness cuts your pay. Start with a job at the Employment Office, work shifts, then study at School for better jobs. The <b>First week</b> checklist guides your first days, and the game saves automatically.</div></details>
+  <details id="traitBox" class="tbox"><summary><span>🎭 Starting trait: <b id="traitPick">No trait</b></span><small>optional · tap to change</small></summary>
+  <div class="traits" id="traits" role="radiogroup" aria-label="Starting trait"></div></details>
   <div id="diffsWrap"><h3>Choose a difficulty</h3>
   <div class="diffs" id="diffs">
     <button class="btn alt" data-diff="easy"><b>Easy</b><small>$500 to start, 15 days, cheaper prices, fewer illnesses</small></button>
@@ -4880,7 +4891,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
     $('econ').innerHTML='<span class="'+(pxs>100?'up':pxs<100?'dn':'')+'">Prices '+pxs+'%</span><span>Shift pay '+ws+'%</span><span>Interest '+S.rate.toFixed(1)+'%/day</span>'+(function(){var jb=myJob();return jb&&shutLeft(jb.b)>0?'<span class="up">🔒 '+NAME[jb.b]+' closed: '+shutLeft(jb.b)+'d</span>':''})();
     if(S.trends.length){var t0=S.trends[0],bad=S.trends.some(function(t){return t.p>0||t.w<0||t.mkt<0||t.ill>1}),sh=t0.n.length>28?t0.n.slice(0,26)+'…':t0.n;
       $('econ').innerHTML+='<span class="trend '+(bad?'up':'dn')+'" title="'+S.trends.map(function(t){return t.n+' ('+t.left+' days left): '+trendNow(t)}).join(' | ').replace(/"/g,'&quot;')+'">🌐 '+sh+' · '+t0.left+'d'+(S.trends.length>1?' (+'+(S.trends.length-1)+' more)':'')+'</span>'}
-    var wr=function(k,n,max){var w=S.clothes[k];return '<div class="wr"><span>'+n+'</span><div class="bar"><i style="width:'+Math.min(100,w/max*100)+'%;background:'+(w<=1?'var(--red)':'var(--teal)')+'"></i></div><em>'+(w?w+' day'+(w>1?'s':'')+' left':'none')+'</em></div>'};
+    var wr=function(k,n,max){var w=S.clothes[k];return '<span class="chip'+(w?w<=1?' warn':' ok':'')+'" title="'+WEAR[k].n+': '+(w?w+' day'+(w>1?'s':'')+' left':'none')+'">'+n+' '+(w?w+'d':'—')+'</span>'};
     $('wardrobe').innerHTML=wr('casual','Casual',WEAR.casual.w)+wr('smart','Smart',WEAR.smart.w)+wr('suit','Suit',WEAR.suit.w);
     var as=assets(), nw=worth(), tot=Math.max(nextGoal(),nw);
     $('assets').textContent=money(as);
@@ -5679,7 +5690,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
     function syncTrait(){if((S.trait||'')!==appliedTrait)applyTrait(S.trait)}
     /* the picker on the welcome screen */
     var pickedTrait='none';
-    function markPicker(){[].forEach.call(document.querySelectorAll('#traits .trait'),function(l){l.classList.toggle('on',l.querySelector('input').checked)})}
+    function markPicker(){[].forEach.call(document.querySelectorAll('#traits .trait'),function(l){var on=l.querySelector('input').checked;l.classList.toggle('on',on);if(on&&$('traitPick'))$('traitPick').textContent=l.querySelector('.tc-h').textContent.trim()})}
     function buildPicker(){
       var box=$('traits'),wrap=$('traitBox');if(!box)return;
       if(!TLIST.length){wrap.hidden=true;return}

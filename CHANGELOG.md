@@ -863,3 +863,19 @@ Layout and wording only; no rules change.
 - **Tighter rows and phones:** chips, buttons and rows are smaller. On phones the Apply button stays beside the job.
 - The board is shorter: 990 → 820px on desktop, 2,709 → 1,957px on a phone (iPhone 13), in the same game state.
 - Checked in headless Chromium: Apply still hires (Kitchen Hand), and "Show all" still expands the board from 38 to all 71 jobs. No script errors.
+
+## 51. A more compact welcome screen and status page
+
+Layout and wording only; no rules change.
+- **Welcome screen:**
+  - **Starting trait** collapses to one line, "🎭 Starting trait: No trait · optional · tap to change". Tap it to open the trait list (two per row on desktop). The line then shows your pick, for example "🦉 Night Owl".
+  - **The four rule bullets** become four short tiles: 24 hours a day, Eat once a day, Rent every 5 days, Clothes last 5 days. The numbers are still filled in from `CONFIG`. The longer explanation is under **More about how to play**.
+  - The card is about half as tall: 977 → 502px on desktop, 1,477 → 711px on a phone (iPhone 13).
+- **Status page:**
+  - Current pay sits on one line, for example "$116/shift · Shift Supervisor · Fast Food".
+  - The vitals are a 2×2 grid. On phones each bar sits under its label and value.
+  - "Life & learning" and "Rent & clothing" become one **Home & life** card (home, rent, belongings, clothes, education). Clothes are small chips, for example "Casual 5d", "Smart —" or "Suit —"; hover for the full name and days left.
+  - The **First week** checklist keeps its original text.
+  - The vitals label reads **Knowledge** where it fits and **Know** on phone-width screens (440px or narrower).
+  - The page is shorter: 868 → 773px on desktop, 1,186 → 1,096px on a phone.
+- Checked in headless Chromium on desktop and phones (iPhone 13 and iPhone SE). On a phone the trait line opens with a tap, choosing Night Owl updates it, and the game starts with that trait. "Knowledge" fits on desktop and laptop, and "Know" shows on phones without overlapping. No script errors. The section 44 mechanic checks pass.
