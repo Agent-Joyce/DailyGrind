@@ -920,3 +920,54 @@ New ways to lift happiness, so that a long day of work and study does not have t
 Display only; no rules change.
 - The "You passed the interview" and "Didn’t pass the interview" pop-ups now stay on screen one second less than other pop-ups of the same length (for example 3.4 seconds instead of 4.4).
 - New `CONFIG.ui.toasts.shorter` {seconds 1, words [the two interview phrases]}. A pop-up never shows for less than 1 second. The Config Guide has the new key.
+
+## 56. Watch a show, shorter self-study, new gym classes, Factory options without a job
+
+- **Watch a show / Play games** (home): now −1% energy and +7 happiness (was +4 happiness, no energy). `CONFIG.leisure.screen` {energy −1, happiness 7}.
+- **Self-study** takes 2 hours instead of 3, and its costs drop to match: −10% energy, −10 happiness, −2 health a session (was −15%, −15, −3). Knowledge per session is unchanged (computer +6, tablet +5, phone +4). `CONFIG.selfStudy.minutes` (120) replaces `selfStudy.units` (5), which is removed; `selfStudy.health` goes from −3 to −2.
+- **Gym:** five classes, each with its own purpose. Pilates is removed.
+
+  | Class | Time | Cost | Energy | Health | Happiness | Workouts |
+  |---|---|---|---|---|---|---|
+  | Yoga & stretch | 1h | $12 | +4% | +2 | +6 | 1 |
+  | Boxing class (new) | 1h | $20 | −12% | +5 | +10 | 1 |
+  | Strength training | 2h | $23 | −18% | +15 | +3 | 2 |
+  | Spin (HIIT) | 30m | $25 | −15% | +8 | +5 | 1 |
+  | Sauna & massage (new) | 1h30 | $40 | +10% | +1 | +10 | 0 |
+
+  "Workouts" is how many gym visits a class counts as for a lower chance of falling ill. Strength training counts as two; the sauna does not count. Under 15% energy you are too tired for a class that costs energy, but yoga and the sauna are still open. The gym's header now counts workouts instead of visits. The classes moved from a table in the code into the new `CONFIG.gym` (`minEnergy` 15, `classes`).
+- **Factory, for anyone without a job there** (hidden once you hold a Factory job):
+  - **Day labour on the loading dock:** 4 hours, once a day, no dress code. Pays 60% of the lowest Factory wage (Forklift Driver, $110, so about $66 before the pay index, knowledge and morale). Costs 10% energy and 5 happiness. Counts towards the daily work limit and burnout, but not as work experience. Not while sick or while the Factory is closed.
+  - **Safety course:** 3 hours, $30, +3 knowledge, once a game. Counts as 1 shift of Factory work experience.
+  - **Factory tour:** 1 hour, $5, +2 knowledge, +2 happiness, once a game.
+  - New `CONFIG.factory` {`dayLabour` {minutes 240, payShare 0.6, energy −10, perDay 1}, `course` {minutes 180, cost 30, knowledge 3, expShifts 1}, `tour` {minutes 60, cost 5, knowledge 2, happiness 2}}. New save field `S.fac` (day labour today, course and tour done); old saves load with it empty.
+- Rules: a new "Factory without a job" line and the updated Free time line, both filled in from `CONFIG`. The Config Guide has the new and changed keys.
+
+## 57. A bonus with every qualification
+
+- Earning a qualification (the moment the certificate pops up) now adds knowledge and happiness, growing with the level: **+5 each for a Certificate, +10 for a Degree, +15 for Honours, +20 for a Masters.** This comes on top of the knowledge from lessons and modules. The certificate shows the bonus (for example "Bonus: +10 happiness, +10 knowledge"), and so does the "Qualification earned" line in the log. Both show the real change, so a bonus that would take a vital over 100 shows less.
+- New `CONFIG.education.certKnowledge` and `certHappiness`, each {Certificate 5, Degree 10, Honours 15, Masters 20}. The School line in the Rules lists them, filled in from `CONFIG`. The Config Guide has the new keys.
+
+## 58. Shorter classes for Degree, Honours and Masters
+
+- Total class time per qualification: **Degree 24h → 12h, Honours 36h → 8h, Masters 48h → 6h.** Lessons are shorter; the number of lessons per module stays the same, except Masters, which goes from 4 to 3.
+
+  | Level | Lessons per module | Lesson length | Lessons in all | Class time |
+  |---|---|---|---|---|
+  | Certificate | 2 | 1h | 4 | 4h (unchanged) |
+  | Degree | 3 | 1h (was 2h) | 12 | 12h |
+  | Honours | 3 | 40m (was 3h) | 12 | 8h |
+  | Masters | 3 (was 4) | 30m (was 3h) | 12 (was 16) | 6h |
+
+- Lesson costs are per hour, so they drop with the time (rounded per lesson): a 40-minute lesson costs 3% energy and 3 happiness, a 30-minute lesson 2 and 2. From first lesson to certificate (with the bonus from section 57): Degree −60% energy, −50 happiness, +34 knowledge; Honours −36%, −21, +43; Masters −24%, −4, +48 (Finance, Technology) or +52 (Medicine, Engineering). Masters gives 4 less knowledge than before because it has 4 fewer lessons.
+- Customer Service (its own 3 × 3h Certificate) is unchanged. Saves part-way through a Masters module carry on: a module whose 3rd lesson is already done finishes at the next lesson.
+- The lesson tables (`LES_N`, `LES_H`) are next to `TRACKS`, not in `CONFIG`.
+
+## 59. Gentler nights, smaller comfort bonus
+
+- **The fixed nightly change** (before sleep is added back) is now: energy 0% (was −15%), happiness −5 (was −10), health 0 (was −1), knowledge −2 (was −1). `CONFIG.sleep.nightEnergy` 0, `sleep.nightHappiness` −5, `health.nightly.always` 0, `selfStudy.nightlyLoss` −2.
+  - Example, in bed at the Apartment with 8 hours left and fed: energy +36% (was +21%), happiness +7 (was +2), health +12 (was +11), knowledge −2 (was −1).
+- **Comfort items** (TV, console, fridge, coffee machine, computer) now each make resting and sleep restore 5% more energy (was 10%). New `CONFIG.sleep.comfortBonus` (0.05) replaces the 10% written in the code.
+- **Night Owl** keeps its drawback of 1 extra health lost a night: it now sets `health.nightly.always` to −1 (was −2, when everyone lost 1).
+- **Bookworm**'s "stop forgetting overnight" now saves 2 knowledge a night instead of 1.
+- Text: the Rules "Every night" line, the bedtime message and the overnight log lines are built from these values and leave out anything that is 0. The Apartment, Bungalow, rest and coffee machine texts take the comfort bonus from `CONFIG`. The Config Guide has the new keys.
