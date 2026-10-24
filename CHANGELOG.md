@@ -1020,3 +1020,10 @@ Layout only; no rules change.
 
 - Net worth under $100 no longer shows the "💸 Nearly broke" warning or costs 3 happiness overnight on days 1–5. Both start on day 6. Being in debt (net worth under $0) still costs 8 happiness and 5% energy from day 1.
 - The money-shame numbers moved from the code into the new `CONFIG.shame` {nearlyBrokeBelow 100, nearlyBrokeHappiness −3, nearlyBrokeFromDay 6, debtHappiness −8, debtEnergy −5}. The Rules "Money shame" line is filled in from it. The Config Guide has the new keys.
+
+## 67. Faster sleep at home
+
+- A night's sleep at home now restores **6.5% energy for each hour left in the day in the Apartment (was 4.5%) and 9% in the Bungalow (was 6.75%)**, before comfort items and the Night Owl trait. The most one night can give rises from 52% to **75%** (`CONFIG.sleep.maxEnergy`). Examples: 4 hours left gives +26% in the Apartment (was +18%) and +36% in the Bungalow (was +27%); 8 hours left gives +52% in the Apartment (was +36%) and +72% in the Bungalow (was +52%). The cap is reached with about 11½ hours left in the Apartment and 8⅓ in the Bungalow.
+- The 2-hour Rest is unchanged (3% an hour in the Apartment, 4.5% in the Bungalow).
+- `CONFIG.sleep.perHour` {apt 6.5, bung 9} replaces `sleep.energyX` (1.5), which is removed. Sleeping away from home still gives `sleep.awayShare` of it.
+- The home cards now show both rates ("3%/h rest", "6.5%/h sleep"), and the Rest & sleep ⓘ gives the sleep rate (it also had the old "every night costs −15% energy" wording; it now uses the current nightly change). The Config Guide has the new key.

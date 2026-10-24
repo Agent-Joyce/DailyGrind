@@ -1178,8 +1178,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       nightHappiness:-5,    // ...and happiness change
       comfortBonus:0.05,    // each comfort item at home (TV, console, fridge, coffee machine, computer) makes resting and sleep restore this much more energy (0.05 = 5%)
       happinessPerHour:1.5,  // happiness next morning for each full hour slept at home
-      energyX:1.5,          // a night's sleep restores energy this many times faster than resting (the 2h rest is not changed)
-      maxEnergy:52,          // most energy a night's sleep at home can give
+      perHour:{apt:6.5, bung:9},  // energy (%) a night's sleep at home restores for each hour left in the day, by home (comfort items and rateX add to it; the 2h rest uses the home's own rest rate)
+      maxEnergy:75,          // most energy a night's sleep at home can give
       awayShare:0.5,        // sleeping away from home gives this share of the energy, health and happiness a night at home gives
       napMinutes:120,        // length of a rest at home
       napHappiness:2        // happiness from a rest at home
@@ -1492,7 +1492,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   }
   function comfortMult(){return 1+(CONFIG.sleep.comfortBonus||0)*comfortItems().length}
   function restRate(){return HOUSE[S.home].rate*comfortMult()*(CONFIG.sleep.rateX||1)}  /* energy % per hour of rest */
-  function sleepGain(min){return Math.min(CONFIG.sleep.maxEnergy,Math.round(min/60*restRate()*(CONFIG.sleep.energyX||1)))}
+  function sleepRate(){return (CONFIG.sleep.perHour[S.home]||HOUSE[S.home].rate)*comfortMult()*(CONFIG.sleep.rateX||1)}  /* energy % per hour of a night's sleep at home */
+  function sleepGain(min){return Math.min(CONFIG.sleep.maxEnergy,Math.round(min/60*sleepRate()))}
   function sleepHap(min){return Math.round(Math.floor(min/60)*CONFIG.sleep.happinessPerHour)}  /* happiness from a night at home */
   function sleepHealth(min){var HS=CONFIG.health.sleep;return Math.round(Math.min(HS.max,min/60*HS.perHour))}
   var GLOVES_PAY=15;  /* work gloves: $ added to every shift */
@@ -4617,8 +4618,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function psec(k,title,right,info){return '<!--sec--><details class="psec" data-sec="'+k+'"'+(info?'':' data-none="1"')+'><summary><span class="gh">'+title+'</span>'+(info?'<i class="ib" title="Details">i</i>':'')+(right?'<span class="psec-r">'+right+'</span>':'')+'</summary>'+(info?'<div class="more-b">'+info+'</div>':'')+'</details>'}
   function house(h){
     var H=HOUSE[h], cur=S.home===h&&!S.homeless, f=homeFee(h), SL=CONFIG.sleep, rr0=restRate();
-    var about=(h==='apt'?'Cheap and cramped.':'Quiet street, big garden, soft bed.')+' Rent is '+money(H.rent)+' '+everyDays(RENT_EVERY)+'. Resting here restores '+H.rate+'% energy an hour, '+pctTxt(CONFIG.sleep.comfortBonus)+' more for each comfort item at home (TV, console, fridge, coffee machine, computer)'+(H.hap?'. The bed adds +'+H.hap+' happiness each night you sleep here':'')+'.'+(h==='bung'?' The agent only lets to people with a steady job.':'');
-    var head=psec('about',(cur?'🏠 Your home':'🏠 To rent'),chip('cash',money(H.rent)+' / '+RENT_EVERY+' days')+chip('energy',H.rate+'%/h rest'),about);
+    var about=(h==='apt'?'Cheap and cramped.':'Quiet street, big garden, soft bed.')+' Rent is '+money(H.rent)+' '+everyDays(RENT_EVERY)+'. Resting here restores '+H.rate+'% energy an hour and a night’s sleep '+(CONFIG.sleep.perHour[h]||H.rate)+'% for each hour left in the day, '+pctTxt(CONFIG.sleep.comfortBonus)+' more for each comfort item at home (TV, console, fridge, coffee machine, computer)'+(H.hap?'. The bed adds +'+H.hap+' happiness each night you sleep here':'')+'.'+(h==='bung'?' The agent only lets to people with a steady job.':'');
+    var head=psec('about',(cur?'🏠 Your home':'🏠 To rent'),chip('cash',money(H.rent)+' / '+RENT_EVERY+' days')+chip('energy',H.rate+'%/h rest')+chip('energy',(CONFIG.sleep.perHour[h]||H.rate)+'%/h sleep'),about);
     if(!cur)return boxed((S.homeless?'<p class="bad arow-n">🏚️ <b>No home.</b> You lost the '+NAME[S.home]+' in the housing bubble. Apply here to move back in.</p>':'')+head+arow(S.homeless?'Apply to rent':'Move in',(f?chip('cash',money(f)+(h==='apt'&&S.homeless?' deposit':'')):chip('','No move-in fee'))+(S.homeless?chip('time',hm(CONFIG.housing.applyMinutes)):''),btn('home',h,S.homeless?'Apply':'Move in')));
     var F=S.food,cnt=function(t,test){return F.filter(function(p){return p.t===t&&(!test||test(p))}).length};
     var nb=cnt('basic',function(p){return !p.sp}),np=cnt('prem',function(p){return !p.sp}),nw=cnt('cook',function(p){return !p.sp&&!p.cold}),ncold=cnt('cook',function(p){return !p.sp&&p.cold});
@@ -4646,7 +4647,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(nsp)t+=arow('🗑️ Throw out spoiled × '+nsp,chip('','No time'),btn('binsp','','Throw out',1));
     /* --- rest and sleep --- */
     t+=psec('rest','😴 Rest & sleep',chip('','Comfort '+ci.length+'/5'),
-      'Resting gives '+rr0.toFixed(1)+'% energy an hour now'+(ci.length?' (comfort: '+ci.join(', ')+')':' (a TV, console, fridge, coffee machine or computer at home adds '+pctTxt(CONFIG.sleep.comfortBonus)+' each)')+'. A night’s sleep restores energy '+(SL.energyX||1)+'× as fast, up to '+SL.maxEnergy+'%, plus '+CONFIG.health.sleep.perHour+' health an hour (up to '+CONFIG.health.sleep.max+') and '+SL.happinessPerHour+' happiness per full hour. Every night also costs '+sg(SL.nightEnergy)+'% energy and '+sg(SL.nightHappiness)+' happiness, so going to bed with more hours left means you wake up fresher. Sleeping anywhere else gives '+pctTxt(SL.awayShare)+' of it.');
+      'Resting gives '+rr0.toFixed(1)+'% energy an hour now'+(ci.length?' (comfort: '+ci.join(', ')+')':' (a TV, console, fridge, coffee machine or computer at home adds '+pctTxt(CONFIG.sleep.comfortBonus)+' each)')+'. A night’s sleep at home restores '+(Math.round(sleepRate()*10)/10)+'% energy for each hour left in the day, up to '+SL.maxEnergy+'%, plus '+CONFIG.health.sleep.perHour+' health an hour (up to '+CONFIG.health.sleep.max+') and '+SL.happinessPerHour+' happiness per full hour. The nightly change is '+nightTxt()+', so going to bed with more hours left means you wake up fresher. Sleeping anywhere else gives '+pctTxt(SL.awayShare)+' of it.');
     t+=arow('Rest',chip('time',hm(SL.napMinutes))+chip('energy','+'+Math.round(nh*rr0)+'%')+chip('happy',sg(SL.napHappiness)),btn('nap','','Rest '+hm(SL.napMinutes),0,S.ap<SL.napMinutes||S.energy>=100));
     t+=arow('Sleep · end the day',chip('time',hm(S.ap))+chip('energy','+'+sleepGain(S.ap)+'%')+chip('health','+'+sleepHealth(S.ap))+chip('happy','+'+(sleepHap(S.ap)+(H.hap||0))),btn('rest','',sleepLabel()));
     /* --- free time --- */
