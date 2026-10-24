@@ -1027,3 +1027,9 @@ Layout only; no rules change.
 - The 2-hour Rest is unchanged (3% an hour in the Apartment, 4.5% in the Bungalow).
 - `CONFIG.sleep.perHour` {apt 6.5, bung 9} replaces `sleep.energyX` (1.5), which is removed. Sleeping away from home still gives `sleep.awayShare` of it.
 - The home cards now show both rates ("3%/h rest", "6.5%/h sleep"), and the Rest & sleep ⓘ gives the sleep rate (it also had the old "every night costs −15% energy" wording; it now uses the current nightly change). The Config Guide has the new key.
+
+## 68. Evening falls on the town
+
+Display only; no rules change.
+- With less than 10 hours left in the day, the town map darkens to show evening, getting darker as the day runs out (a dark blue layer at 25% with 10 hours left, rising to 50% as time runs out). The panels, top bar and pop-ups stay bright, and the map can still be clicked. It lights up again the next morning, when the clock resets (as the morning card appears).
+- New `CONFIG.ui.evening` {fromMinutes 600, darkest 0.5}; `fromMinutes: 0` turns it off.

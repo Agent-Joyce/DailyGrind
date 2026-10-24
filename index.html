@@ -19,6 +19,7 @@ h2{font-size:1.1rem;margin:0 0 8px;font-weight:800}
 .sub{color:var(--muted);font-size:.85rem}
 
 /* town map */
+.board::after{content:"";position:absolute;inset:0;z-index:999;pointer-events:none;background:#0b1530;opacity:var(--dusk,0);transition:opacity 1.5s ease}
 .board{position:relative;max-width:1100px;margin:0 auto;height:calc(100dvh - 78px);min-height:720px;overflow:hidden;border:4px solid var(--ink);border-radius:20px;
 background:radial-gradient(circle at 18% 22%,rgba(255,255,255,.12),transparent 28%),radial-gradient(circle at 80% 70%,rgba(0,0,0,.08),transparent 30%),repeating-linear-gradient(45deg,rgba(0,0,0,.025) 0 6px,transparent 6px 12px),#86b865}
 .map{position:absolute;inset:0;width:100%;height:100%}
@@ -1271,6 +1272,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       trend:{minChange:1},
       /* Floating numbers (+$, energy, happiness, knowledge) that pop up over the building after an action: seconds on screen. */
       floaterSeconds:3.5,
+      /* Evening: with less than fromMinutes left in the day the town map darkens, from darkest*0.5 at fromMinutes to
+            darkest when the day runs out (0 = off). It lights up again at the morning card, when the clock resets. */
+      evening:{fromMinutes:600, darkest:0.5},
       /* 3. Toasts: short pop-ups that fade by themselves.
             vitalWarnings: pop up whenever a NEW warning appears (tired, low morale, rent due, no meal yet...).
             words: pop up when a Daily log line contains one of these phrases (lowercase). */
@@ -5162,6 +5166,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     $('nw').textContent=money(nw);$('goalAmt').textContent=(S.tier>=0?TIERS[S.tier].ic+' '+TIERS[S.tier].n+' · ':'')+(S.tier<TIERS.length-1?'next: '+TIERS[S.tier+1].n+' '+money(nextGoal())+nextDueTxt():'top rank');
     $('sgCash').style.width=Math.max(0,S.cash)/tot*100+'%';$('sgBank').style.width=S.bank/tot*100+'%';$('sgAsset').style.width=as/tot*100+'%';$('sgInv').style.width=invTotal()/tot*100+'%';
 
+    /* evening: the town darkens as the day runs out (CONFIG.ui.evening); the morning resets S.ap, so it lights up again */
+    var EV=CONFIG.ui.evening||{},evF=EV.fromMinutes||0,dusk=evF&&!S.over&&S.ap<evF?(EV.darkest||0)*(0.5+0.5*(1-S.ap/evF)):0;
+    $('board').style.setProperty('--dusk',dusk.toFixed(3));$('board').classList.toggle('evening',dusk>0);
     document.querySelectorAll('.tile').forEach(function(t){
       var k=t.dataset.loc;
       t.classList.toggle('here',k===loc);
