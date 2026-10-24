@@ -69,7 +69,7 @@ background:radial-gradient(circle at 18% 22%,rgba(255,255,255,.12),transparent 2
 .strip span{font-size:.82rem;font-weight:700;border:2px solid var(--ink);border-radius:8px;padding:1px 8px;background:var(--bg)}
 .say{border:3px solid var(--ink);border-radius:12px;padding:10px 12px;margin:8px 0;background:color-mix(in srgb,var(--gold) 22%,var(--surface))}
 .say b{display:block;font-size:.85rem}
-.result{min-height:1.4em;font-weight:700;margin-bottom:6px}
+.result{min-height:1.4em;font-weight:700;margin-bottom:6px}#result:empty{display:none}
 .jh{margin:10px 0 2px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;opacity:.7}
 .tag{font-size:.75rem;padding:3px 8px;border-radius:99px;background:rgba(0,0,0,.08);white-space:nowrap}
 .opt{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:2px solid var(--line)}
@@ -359,6 +359,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 .mrow .tr.up{color:var(--green)}.mrow .tr.dn{color:var(--red)}
 .g-vit .mrow b{min-width:64px}
 /* 3. toasts */
+.toast .tvit{display:inline-flex;align-items:center;gap:2px;white-space:nowrap;vertical-align:-2px}.toast .tvit .ic{width:14px;height:14px;margin-right:1px}.toast .tvit+.tvit{margin-left:5px}
 #toasts{position:fixed;left:50%;transform:translateX(-50%);top:72px;z-index:6000;display:flex;flex-direction:column;gap:6px;width:min(420px,calc(100vw - 24px));pointer-events:none}
 .toast{pointer-events:auto;padding:9px 12px;border-radius:12px;border:3px solid var(--ink);border-left-width:8px;background:var(--surface);color:var(--ink);font-size:.85rem;font-weight:700;line-height:1.3;cursor:pointer;box-shadow:0 6px 0 -1px rgba(22,34,46,.35),0 10px 24px rgba(0,0,0,.35);animation:toastin .28s ease-out both;display:block;overflow-wrap:anywhere}
 .toast.good{border-color:var(--green)}.toast.bad{border-color:var(--red)}.toast.warn{border-color:var(--gold)}
@@ -495,6 +496,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
 .tcell.pay>.l,.tcell.pay>#pay,.tcell.pay>#payRole{display:inline;margin-right:8px}.tcell.pay>#pay{font-size:1.15rem}
 .g-vit.inpay{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:22px;row-gap:0}.g-vit.inpay>.gh,.g-vit.inpay>.meal{grid-column:1/-1}
 .g-vit.inpay .mrow{margin:3px 0}
+.belb{display:inline-flex;align-items:center;gap:6px;justify-content:flex-end}.belbtn{border:0;cursor:pointer;padding:0}
+.belpop{grid-column:1/-1;margin:4px 0 2px;padding:8px 10px;border:2px solid var(--line);border-radius:10px;background:var(--bg,#f6f3ea);font-size:.8rem;animation:evpop .25s ease-out both}
+.belpop ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 14px}.belpop li{display:flex;gap:6px;align-items:baseline}.belpop .brk{color:var(--red);font-style:normal}@media (max-width:440px){.belpop ul{grid-template-columns:1fr}}.belpop p{margin:6px 0 0;color:var(--muted)}
 .g-home .hgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:22px}.g-home .kv{margin:1px 0}.wchips{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.wchips .chip{font-size:.68rem;padding:0 6px}
 @media (max-width:640px){.g-vit.inpay .mrow{grid-template-columns:minmax(0,1fr) auto;row-gap:3px}.g-vit.inpay .mrow>span{grid-column:1;grid-row:1}.g-vit.inpay .mrow>b{grid-column:2;grid-row:1}.g-vit.inpay .mrow .bar{grid-column:1/-1;grid-row:2;width:auto}details.tbox .traits{grid-template-columns:1fr}.g-home .hgrid{grid-template-columns:1fr}.wtiles b{font-size:.84rem}}
 .lshort{display:none}@media (max-width:440px){.lfull{display:none}.lshort{display:inline}}  /* the full word where it fits */
@@ -564,7 +568,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         <div class="hgrid">
           <div class="kv"><span>Home</span><b id="homeName"></b></div>
           <div class="kv"><span>Rent</span><b id="rent"></b></div>
-          <div class="kv"><span>Belongings</span><b id="belong">0</b></div>
+          <div class="kv"><span>Belongings</span><b class="belb"><span id="belong">0</span><button type="button" class="ib belbtn" id="belongBtn" aria-expanded="false" aria-controls="belongPop" title="Everything you own">i</button></b></div>
+          <div class="belpop" id="belongPop" hidden></div>
           <div class="kv"><span>Clothes</span><span id="wardrobe" class="wchips"></span></div>
           <div class="kv"><span>Education</span><b id="edu">High School</b></div>
           <div class="kv sub"><span id="eduSub">No courses yet</span></div>
@@ -1385,6 +1390,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function Df(){return DIFF[S.diff]||DIFF.normal}
   function maxDays(){return Df().days||Infinity}
   var S, loc, view, last=null;
+  var toastAll=false, forceToast=[];  /* toastAll: during a button click, every log line becomes a toast; forceToast: toasts shown even over a pop-up */
   var $=function(id){return document.getElementById(id)};
   /* ---------- stat icons (small SVGs in the game's outline style) ---------- */
   var ICO={
@@ -1455,6 +1461,18 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   /* comfort items at home make resting more effective (CONFIG.sleep.comfortBonus each) */
   var COMFORT={tv:'TV',tvnew:'Smart TV',console:'Game console',fridge:'Refrigerator',fridgeold:'Refrigerator',microwave:'Microwave',coffee:'Coffee machine',computer:'Computer',computerold:'Computer',tablet:'Tablet',tabletold:'Tablet'};
   function comfortItems(){var seen={},a=[];Object.keys(COMFORT).forEach(function(k){if(S.items[k]&&!S.broken[k]&&!seen[COMFORT[k]]){seen[COMFORT[k]]=1;a.push(COMFORT[k])}});return a}
+  /* the Belongings ⓘ on the status page: everything you own */
+  function belongList(){
+    var ks=Object.keys(S.items).filter(function(k){return S.items[k]&&ITEMS[k]}),F=S.food||[],li=[],c={};
+    ks.forEach(function(k){li.push('<li><span>'+ITEMS[k].ic+'</span><span>'+ITEMS[k].n+(S.broken[k]?' <em class="brk">(broken)</em>':'')+'</span></li>')});
+    F.forEach(function(p){var n=p.sp?'Spoiled food':FOODN[p.t]();c[n]=(c[n]||0)+1});
+    Object.keys(c).forEach(function(n){li.push('<li><span>'+(n==='Spoiled food'?'🤢':n==='Cooked meal'?FOODIC.cook:n===GROC.basic.n?FOODIC.basic:FOODIC.prem)+'</span>'+n+' × '+c[n]+'</li>')});
+    if(S.chips)li.push('<li><span>🥔</span>Chips × '+S.chips+'</li>');
+    if((S.tickets||[]).length)li.push('<li><span>🎟️</span>Lottery ticket × '+S.tickets.length+'</li>');
+    var pw=Object.keys(S.pawned||{}).filter(function(k){return ITEMS[k]});
+    return (li.length?'<ul>'+li.join('')+'</ul>':'<p style="margin:0">Nothing yet. Buy things at the Electronics Store or Thrift Store, and meals at the Supermarket.</p>')+
+      (pw.length?'<p>At the Pawn Shop: '+pw.map(function(k){return ITEMS[k].n}).join(', ')+'.</p>':'')+(S.homeless&&ks.length?'<p>Your things are in storage until you have a home again.</p>':'');
+  }
   function comfortMult(){return 1+(CONFIG.sleep.comfortBonus||0)*comfortItems().length}
   function restRate(){return HOUSE[S.home].rate*comfortMult()*(CONFIG.sleep.rateX||1)}  /* energy % per hour of rest */
   function sleepGain(min){return Math.min(CONFIG.sleep.maxEnergy,Math.round(min/60*restRate()*(CONFIG.sleep.energyX||1)))}
@@ -2064,7 +2082,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     S.les[t]=0;S.edu[t]++;S.know=clamp(S.know+2+q.i);
     log('Module complete: "'+T.m[n]+'" ('+T.n+' '+T.lv[q.i]+', module '+q.k+' of '+q.of+(vitTxt(v0)?'; last lesson and module: '+vitTxt(v0):'')+').','good');
     if(lvl(t)>lv0){var ED=CONFIG.education,lvN=T.lv[lvl(t)-1],v1=vitSnap();S.know=clamp(S.know+((ED.certKnowledge||{})[lvN]||0));S.happy=clamp(S.happy+((ED.certHappiness||{})[lvN]||0));var bon=vitTxt(v1);
-      log('Qualification earned: '+T.n+' '+T.lv[lvl(t)-1]+'!'+(bon?' Bonus: '+bon+'.':'')+(S.edu[t]<tot?' To continue to the '+T.lv[lvl(t)]+', enrol again at School (tuition '+money(qualFee(t,S.edu[t]))+').':' You have finished the whole pathway.'),'good');S.cert={t:t,l:lvl(t),d:S.day,mods:T.L[lvl(t)-1].slice(),bon:bon};addWin('🎓 '+T.n+' '+T.lv[lvl(t)-1]);snd('win')}
+      log('Qualification earned: '+T.n+' '+T.lv[lvl(t)-1]+'!'+(bon?' Bonus: '+bon+'.':'')+(S.edu[t]<tot?' To continue to the '+T.lv[lvl(t)]+', enrol again at School (tuition '+money(qualFee(t,S.edu[t]))+').':' You have finished the whole pathway.'),'good');S.cert={t:t,l:lvl(t),d:S.day,mods:T.L[lvl(t)-1].slice()};if(bon)forceToast.push({txt:'🎓 '+T.lv[lvl(t)-1]+' bonus: '+bon,cls:'good'});addWin('🎓 '+T.n+' '+T.lv[lvl(t)-1]);snd('win')}
     done();
   }
   /* treatment: nothing to pay now. Usually you are warded all of tomorrow; the bill is charged the morning after release. */
@@ -2820,7 +2838,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function rollover(rested){
     ovHidden=false;  /* a new day shows the overview again */
     if(S.over)return;
-    FLASH={e:S.energy,h:S.happy,l:S.health,until:Date.now()+2500};setTimeout(function(){render()},2600);
+    FLASH={e:S.energy,h:S.happy,l:S.health,k:Math.floor(S.know),until:Date.now()+2500};setTimeout(function(){render()},2600);
     S.pending=null;
     var h=HOUSE[S.home];
     S.day++;S.ap=MAX_AP;S.offer={};S.barg={};rollOpenings();
@@ -5045,6 +5063,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var nIt=Object.keys(S.items).filter(function(k){return S.items[k]}).length,FF=S.food.filter(function(p){return !p.sp}),nSp=S.food.length-FF.length;
     $('belong').textContent=nIt+' item'+(nIt!==1?'s':'')+(FF.length?' · 🍽 '+FF.length+' meal'+(FF.length>1?'s':'')+' ('+Math.min.apply(null,FF.map(function(p){return foodLeft(p)}))+'d left)':'')+(nSp?' · 🤢'+nSp:'')+(S.chips?' · 🥔'+S.chips:'');
     if((S.tickets||[]).length)$('belong').textContent+=' · 🎟️'+S.tickets.length;
+    $('belongPop').innerHTML=belongList();
     placeCenter();
     renderGoals();
     var gp=$('goalpop');
@@ -5053,7 +5072,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(S.cert&&!S.over){var C=S.cert,TT=TRACKS[C.t];$('cpT').textContent=TT.n+' '+TT.lv[C.l-1];$('cpMods').textContent='Modules: '+C.mods.join(' · ');$('cpDay').textContent='Awarded on day '+C.d;
       var opens=[],close=[];Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk){if((rk.q||[]).some(function(q){return q[0]===C.t&&q[1]===C.l})){if(meets(rk))opens.push(rk.r);else close.push(rk.r)}})});
       var nxT=S.edu[C.t]<totMods(C.t),nxF=nxT?qualFee(C.t,S.edu[C.t]):0;
-      $('cpMsg').textContent=(C.bon?'Bonus: '+C.bon+'. ':'')+(opens.length?'New jobs open to you: '+opens.join(', ')+'. ':'')+(close.length?'Closer to: '+close.slice(0,4).join(', ')+' (they also need other qualifications). ':'')+(nxT?'Next up: the '+TT.lv[C.l]+' (tuition '+money(nxF)+', paid when you enrol).':'You have completed the whole pathway!');
+      $('cpMsg').textContent=(opens.length?'New jobs open to you: '+opens.join(', ')+'. ':'')+(close.length?'Closer to: '+close.slice(0,4).join(', ')+' (they also need other qualifications). ':'')+(nxT?'Next up: the '+TT.lv[C.l]+' (tuition '+money(nxF)+', paid when you enrol).':'You have completed the whole pathway!');
       var cn=$('cpNext');cn.hidden=!nxT;if(nxT){cn.textContent='Enrol in the '+TT.lv[C.l]+' · '+money(nxF);cn.disabled=S.cash<nxF||S.expelled>0}
       cp.classList.add('show')}else cp.classList.remove('show');
     var mo=$('morning');if(S.morning&&!S.over&&!S.pending&&!S.cert){$('mnT').textContent='☀️ Day '+S.day+(maxDays()!==Infinity?' of '+maxDays():'');$('mnSub').textContent='Before you start, a few things need your attention:';$('mnList').innerHTML=S.morning.map(function(x){return '<li class="'+x.l+'">'+x.t+'</li>'}).join('');mo.classList.add('show')}else mo.classList.remove('show');
@@ -5114,9 +5133,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       if(!sayLine||sayLine.k!==view)sayLine={k:view,t:greetLine(view)};
       $('say').innerHTML='<b>'+GREET[view][0]+'</b>“'+sayLine.t+'”';
       $('say').classList.add('slim');
-      var r=$('result');
-      r.textContent=last?last.msg:'';
-      r.className='result'+(last&&last.cls?' '+last.cls:'');
+      $('result').textContent='';$('result').className='result';  /* news from a button is a toast now (see TOASTS) */
       var keep={},open={};[].forEach.call($('shopBody').querySelectorAll('input[id]'),function(i){keep[i.id]=i.value});
       [].forEach.call($('shopBody').querySelectorAll('details[open][data-sec]'),function(d){open[d.dataset.sec]=1});  /* an ⓘ you opened stays open after an action */
       $('shopBody').innerHTML=workSection(view)+panels[view]();
@@ -5171,7 +5188,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     b.className='tile';b.dataset.loc=k;
     b.style.left=BP[k][0]+'%';b.style.top=BP[k][1]+'%';b.style.setProperty('--w',BP[k][2]);b.style.zIndex=Math.round(BP[k][1]);
     b.innerHTML='<span class="scene">'+art(k)+'<span class="tags"></span><span class="cost"></span></span><b class="lab">'+l[2]+'</b>';
-    b.addEventListener('click',function(){enter(k)});
+    b.addEventListener('click',function(){toastAll=true;try{enter(k)}finally{toastAll=false}});
     $('board').appendChild(b);
   });
   /* ---- town map: buildings placed freely, irregular roads, parks, trees, traffic ---- */
@@ -5335,6 +5352,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(S.over)return;
     var b=e.target.closest('[data-act]'); if(!b)return;
     var a=b.dataset.act,g=b.dataset.arg;
+    toastAll=true;try{shopAct(a,g,b)}finally{toastAll=false}
+  });
+  function shopAct(a,g,b){
     if(a==='step'){stepAmt(g);return}  /* amount stepper: no scroll, no re-render */
     if(a==='frig'){fridgeToggle(g);return}  /* fridge pick: stay where you are on the page */
     if(a==='work')work(g);else if(a==='treat')treat(g);else if(a==='class')study(g);else if(a==='enrol')enrol(g);else if(a==='apply')apply(g)
@@ -5343,9 +5363,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     else if(a==='treat_ill')treatIll();else if(a==='checkup')checkup();else if(a==='ward')ward();else if(a==='insure')insure();else if(a==='paydebt')payDebt();else if(a==='payrent')payRent();else if(a==='nap')nap();else if(a==='fun')leisure(g);else if(a==='fac')factoryDo(g);else if(a==='arrears')payArrears();else if(a==='groc')buyGroc(g);else if(a==='bundle')buyBundle(g);else if(a==='chips')chips();else if(a==='eatchips')eatChips();else if(a==='lotto')buyTicket();else if(a==='cook')cook(g);else if(a==='eatc')eatCooked(g);else if(a==='eatp')eatPrem(g);else if(a==='binsp')binSpoiled();else if(a==='gym')gymSession(g);else if(a==='study')selfStudy();else if(a==='repair')repair(g);else if(a==='redeem')redeem(g);else if(a==='invest')invest(g);else if(a==='divest')divest(g);
     else if(a==='home')moveHome(g);else if(a==='rest')endWeek(true);
     else if(a==='borrow')borrow();else if(a==='repay')repay(false);else if(a==='repayall')repay(true);else if(a==='ltenure'){loanTenure=+g;render()}
-    toTop();
-  });
-  /* after any button in a panel, jump back to the top so the new message there is seen */
+  }
+  /* after a choice on the end-of-day card, jump back to the top so the next card is seen (panel buttons do not scroll: their news is a toast) */
   function toTop(){
     var c=$('center');c.scrollTop=0;
     var h=$('hud'),hb=h&&getComputedStyle(h).position!=='static'?Math.max(0,h.getBoundingClientRect().bottom):0,r=c.getBoundingClientRect();
@@ -5358,6 +5377,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     else if(a==='cont'&&S.pending&&S.pending.ev.done){if(S.pending.q&&S.pending.q.length){S.pending.ev=S.pending.q.shift();render()}else rollover(S.pending.rested)}
     toTop();
   });
+  $('belongBtn').addEventListener('click',function(e){e.stopPropagation();var p=$('belongPop'),open=p.hidden;p.hidden=!open;this.setAttribute('aria-expanded',String(open))});
+  document.addEventListener('click',function(e){var p=$('belongPop');if(!p.hidden&&!e.target.closest('#belongPop')){p.hidden=true;$('belongBtn').setAttribute('aria-expanded','false')}});
   $('again').addEventListener('click',function(){clearSave();fresh()});
   $('keep').addEventListener('click',function(){$('over').classList.remove('show')});
   /* Daily log: Expand shows many more lines (the log can also be dragged taller by its corner) */
@@ -5471,8 +5492,23 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     })();
     function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
     /* first sentence (or two, if the first is very short) of a log line, trimmed to fit a toast or a list row */
+    /* a short version for toasts (the log keeps the full line): the first sentence (plus a short second one when the first is very short),
+      bracketed detail dropped, and the time and vital changes from it put at the end: "You called your family · 30m · +3 happiness" */
     function shortText(msg){
-      return String(msg).trim();  /* the full message: toasts grow to fit and stay up longer for longer text */
+      msg=String(msg).trim();
+      var sen=[],cur='',d=0;
+      for(var i=0;i<msg.length;i++){var c=msg[i];cur+=c;if(c==='(')d++;else if(c===')')d=Math.max(0,d-1);
+        else if(!d&&/[.!?]/.test(c)&&(i===msg.length-1||msg[i+1]===' ')){sen.push(cur.trim());cur=''}}
+      if(cur.trim())sen.push(cur.trim());
+      var t=sen[0]||msg;if(t.length<60&&sen[1]&&t.length+sen[1].length<110)t+=' '+sen[1];
+      var VIT=/[+−-]\d+(?:\.\d+)?%? (?:energy|happiness|health|knowledge)\b/g,TIME=/\b\d+h(?: \d+m)?\b|\b\d+m\b/;
+      var vits=[],tm='';
+      /* bracketed detail that holds vitals (or is just a time) is the real change: it moves to the tail. Other brackets stay
+        (they explain a refusal), and vitals written in the sentence itself ("+9 knowledge a day") stay where they are */
+      t=t.replace(/\s*\(([^()]*)\)/g,function(m,inner){var v=inner.match(VIT)||[];if(v.length||/^\s*(\d+h(?: \d+m)?|\d+m)\s*$/.test(inner)){vits=vits.concat(v);if(!tm){var x=inner.match(TIME);if(x)tm=x[0]}return ''}return m});
+      t=t.replace(/\s*[,;:]\s*([.!?]?)$/,'$1').replace(/\s{2,}/g,' ').replace(/\s+([.,!?])/g,'$1').replace(/[.]$/,'').trim();
+      var tail=[];if(tm)tail.push(tm);if(vits.length)tail.push(vits.join(' '));
+      return t+(tail.length?'\u0001 · '+tail.join(' · '):'');  /* \u0001 marks where the real change starts (see vitIcons) */
     }
 
     /* ---------- 1. CLOCK + DAY BAR ----------
@@ -5539,7 +5575,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     /* top-bar arrows: shown for a few seconds when a new day starts, measured from the moment the night began (sleep and other overnight effects included) */
     function arrow(key,now){
       if(!FLASH||Date.now()>FLASH.until)return '';
-      var base={energy:FLASH.e,happy:FLASH.h,health:FLASH.l}[key];
+      var base={energy:FLASH.e,happy:FLASH.h,health:FLASH.l,know:FLASH.k}[key];if(base==null)return '';
       var d=Math.round(now-base);
       if(Math.abs(d)<TR_MIN)return '';
       return '<span class="tr '+(d>0?'up':'dn')+'" title="Overnight: '+(d>0?'+':'−')+Math.abs(d)+'">'+(d>0?'▲':'▼')+Math.abs(d)+'</span>';
@@ -5574,7 +5610,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     function makeToast(t){
       var box=$('toasts'),el=document.createElement('div');
       if([].some.call(box.children,function(c){return c.dataset.txt===t.txt}))return;  /* already on screen */
-      el.className='toast '+t.cls;el.innerHTML=t.txt;el.dataset.txt=t.txt;
+      el.className='toast '+t.cls+(t.force?' forced':'');el.innerHTML=t.txt;el.dataset.txt=t.txt;
       if(t.quiet)el.setAttribute('aria-hidden','true');  /* log lines are already read out by the live region */
       el.addEventListener('click',function(){dismiss(el)});
       box.appendChild(el);
@@ -5588,7 +5624,14 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     /* log lines: queue a toast when the line contains one of the chosen phrases */
     function logToast(msg,cls){
       var m=String(msg).toLowerCase();
-      if((TS.words||[]).some(function(w){return m.indexOf(w)>=0}))toast(shortText(msg),cls==='bad'?'bad':cls==='good'?'good':'warn',true);
+      if(toastAll||(TS.words||[]).some(function(w){return m.indexOf(w)>=0}))toast(vitIcons(shortText(msg)),cls==='bad'?'bad':cls==='good'?'good':toastAll?'':'warn',true);
+    }
+    /* "+3 happiness", "−10% energy" ... become the vital's icon and the number */
+    function vitIcons(t){
+      var K={energy:'energy',happiness:'happy',health:'health',knowledge:'know'},p=String(t).split('\u0001');
+      var f=function(x,cls){return esc(x).replace(/([+−-]\d+(?:\.\d+)?%?) (energy|happiness|health|knowledge)\b/g,function(m,v,k){return '<span class="'+cls+'">'+ic(K[k])+v.replace('-','−')+'</span>'})};
+      /* icons after the marker are the real change (class fx); before it they only describe something ("+9 knowledge a day") */
+      return f(p[0],'tvit')+(p.length>1?f(p.slice(1).join(''),'tvit fx'):'');
     }
     /* warnings: compare this render's warning list with the last one and queue what is new.
       While a pop-up is open we only update the list, so news that arrived overnight is not repeated as a toast. */
@@ -5605,7 +5648,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       if(lastS!==S){lastS=S;seenWarn=null;toastQ=[];$('toasts').innerHTML=''}  /* a different game: start clean */
       var modal=modalOpen();
       watchWarnings(modal);
-      if(modal){toastQ=[];$('toasts').innerHTML='';return}  /* the pop-up already tells the news */
+      if(modal){toastQ=[];[].slice.call($('toasts').children).forEach(function(el){if(!el.classList.contains('forced'))el.parentNode.removeChild(el)});if(!forceToast.length)return}  /* the pop-up already tells the news, except a toast made for it (forceToast) */
+      if(forceToast.length){toastQ=toastQ.concat(forceToast.map(function(t){return {txt:vitIcons('\u0001'+t.txt),cls:t.cls||'good',key:t.txt,force:1}}));forceToast=[]}
       if(!toastQ.length)return;
       var hud=$('hud');$('toasts').style.top=(hud?Math.round(hud.getBoundingClientRect().bottom)+8:72)+'px';
       var q=toastQ;toastQ=[];q.forEach(makeToast);

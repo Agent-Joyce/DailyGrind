@@ -971,3 +971,18 @@ Display only; no rules change.
 - **Night Owl** keeps its drawback of 1 extra health lost a night: it now sets `health.nightly.always` to −1 (was −2, when everyone lost 1).
 - **Bookworm**'s "stop forgetting overnight" now saves 2 knowledge a night instead of 1.
 - Text: the Rules "Every night" line, the bedtime message and the overnight log lines are built from these values and leave out anything that is 0. The Apartment, Bungalow, rest and coffee machine texts take the comfort bonus from `CONFIG`. The Config Guide has the new keys.
+
+## 60. Toasts for every action, a quieter certificate, and a list of your belongings
+
+Display only; no rules change.
+- **Every button's message is now a toast.** The line that used to appear at the top of a building panel ("You called your family (30m, +3 happiness)") is gone, and the panel no longer scrolls back to the top after a button. Instead, every message an action writes to the log pops up as a toast, including refusals (red), the walk to a building, and actions confirmed in the preview. The end-of-day event card still scrolls to its next card.
+- **Toasts are short; the log keeps the full line.** A toast shows the first sentence (plus a short second one when the first is very short), with bracketed detail dropped and the time and vital changes at the end: "You called your family · 30m · [happiness] +3", "Module complete: "Customer Relations" · [energy] −5% [happiness] −5 [knowledge] +3". Brackets that explain a refusal stay ("Not enough time left today (that takes 1h, you have 30m)"). Only the bracket that reports the real change moves to the end; numbers written in the sentence itself, such as "+9 knowledge and +6 happiness a day" when you buy a computer, stay where they are (as icons), so a purchase no longer looks like an instant gain.
+- **Vitals in toasts are icons:** "+3 happiness" shows as the happiness icon and +3, likewise energy, health and knowledge.
+- **Certificate:** the pop-up no longer lists the bonus. Instead a toast ("🎓 Certificate bonus: [happiness] +5, [knowledge] +5") appears on top of it. Other toasts are cleared while a pop-up is open, as before; the bonus toast is the one exception.
+- **Status page, Home & life:** an ⓘ beside Belongings opens a list of everything you own: belongings (with broken ones marked), meals by kind, chips and lottery tickets, plus anything at the Pawn Shop and a note when your things are in storage. Click anywhere else to close it.
+
+## 61. Knowledge arrow fix, and a UI check
+
+- **Fix:** on the morning after a night, the knowledge figure on the status page showed "▼NaN" for a few seconds (the overnight arrows did not record knowledge). It now shows the real overnight change, like energy, happiness and health.
+- **New QA tool: the UI check** (`tools/qa/uicheck.js`, run with `tools/qa/run-uicheck.ps1` in the browser, or `node tools/qa/run-uicheck.js` where Node and Playwright exist). At desktop (1280×800) and phone (390×844) width it presses every button in every building, plus the status page, the action preview, a certificate and ending the day, and reports script errors, dead buttons, missing toasts, log text / toast icons / row chips that disagree with the real change, layout problems and "NaN"/"undefined" on screen. CLAUDE.md says to run it whenever asked. It was tested on deliberately broken copies of the game (wrong chip, wrong log text, dead button, missing toast, overflowing and clipped layout, NaN on screen, a game that fails to load) and caught each one.
+- First run, on this build: 98 presses at each width, no issues left after the two fixes above (the knowledge arrow, and purchase toasts showing "a day" amounts as instant gains, now part of section 60).
