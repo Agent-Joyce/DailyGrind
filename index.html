@@ -603,7 +603,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   <h2 id="wlT">Welcome to Daily Grind</h2>
   <p style="color:var(--ink)">Build a life from scratch. Reach <b><span id="cfgGoal">$1,000</span> net worth</b> without going broke, burning out or skipping meals.</p>
   <div class="wtiles">
-    <div><b>⏱ 24 hours a day</b><span>Walking: <span id="cfgWalk">5 minutes</span> and <span id="cfgWalkE">2%</span> energy per building</span></div>
+    <div><b>⏱ 24 hours a day</b><span>Walking: <span id="cfgWalk">5 minutes</span> and <span id="cfgWalkE">1%</span> energy per building</span></div>
     <div><b>🍽 Eat once a day</b><span>Low energy makes you ill</span></div>
     <div><b>🏠 Rent <span id="cfgRent">every 5 days</span></b><span>Short of cash? It goes on a plan</span></div>
     <div><b>👕 Clothes last <span id="cfgClothes">5 days</span></b><span>Replace them at the Clothes Mall</span></div>
@@ -904,7 +904,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     time:{
       dayMinutes:1440,    // length of a day in minutes (1440 = 24 hours). Unused time is slept at day end.
       walkMinutes:15,      // minutes to walk past one building on the ring road
-      walkEnergy:-2,       // energy (%) for every walkMinutes of walking
+      walkEnergy:-1,       // energy (%) for every walkMinutes of walking
       rentEveryDays:5,    // rent is due every this many days
       gameDays:15,        // how many days a game lasts (all difficulties)
       /* Most actions (eating, studying, shopping, working...) have a cost in 'units' in their
@@ -1045,8 +1045,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       tasting:{name:'the chef’s tasting menu',  units:7, cost:90, energy:18, happiness:22, healthy:2},
       junkHealth:-1,        // health lost each time you eat a junk meal
       /* Meals from the Supermarket. health = health gained when you eat it at home. */
-      basic:  {name:'Meal prep',                cost:30, energy:15, happiness:3, health:10},  // must be cooked; these are what the cooked meal gives
-      premium:{name:'Ready-to-eat meal',        cost:55, energy:12, happiness:9, health:5},  // ready to eat
+      basic:  {name:'Meal prep',                cost:30, energy:20, happiness:3, health:10},  // must be cooked; these are what the cooked meal gives
+      premium:{name:'Ready-to-eat meal',        cost:55, energy:20, happiness:9, health:5},  // ready to eat
       buyUnits:2,            // time to buy a meal or a bundle
       bundleSize:3,          // portions in a bundle
       bundleDiscount:0.15,  // bundle saving (0.15 = 15% off)
