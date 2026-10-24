@@ -2061,7 +2061,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var i=levelOf(t,n),fee=qualFee(t,n);
     if(!spendMin(15,fee))return;
     if(!S.enr)S.enr={};S.enr[t]=i;S.les[t]=0;S.enrolled=true;S.sinceClass=0;S.lastTrack=t;
-    log('Enrolled in the '+T.n+' '+T.lv[i]+' for '+money(fee)+'. All '+T.L[i].length+' modules and their lessons are now free to attend.','good');
+    log('Enrolled in the '+T.n+' '+T.lv[i]+' for '+money(fee)+'. '+(T.L[i].length===1?'Its module and lessons are':'All '+T.L[i].length+' modules and their lessons are')+' now free to attend.','good');
     done();
   }
   function study(t){

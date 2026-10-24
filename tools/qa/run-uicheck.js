@@ -37,14 +37,14 @@ fs.copyFileSync(path.join(here,'uicheck.js'),path.join(out,'uicheck.js'));
     await pg.waitForFunction(()=>window.__UI_RESULTS,null,{timeout:300000});
     const r=await pg.evaluate(()=>window.__UI_RESULTS);all.push(r);
     if(!r.stats.buildings&&pageErrs.length)r.issues.push({kind:'JS-ERROR',where:'page load',msg:pageErrs[0]});
-    console.log(`\n${r.viewport} ${r.width}x${r.height}: ${r.stats.buildings} buildings, ${r.stats.clicks} presses, ${r.stats.checks} layout checks, ${r.issues.length} issue(s), ${Math.round(r.ms/1000)}s`);
+    console.log(`\n${r.viewport} ${r.width}x${r.height}: ${r.stats.buildings} buildings, ${r.stats.situations||0} situations, ${r.stats.clicks} presses, ${r.stats.checks} layout checks, ${r.issues.length} issue(s), ${Math.round(r.ms/1000)}s`);
     r.issues.forEach(i=>console.log(`  ${i.kind.padEnd(13)} ${i.where}: ${i.msg}`));
     if(r.stats.popups.length)console.log('  (pop-ups, numbers not compared: '+r.stats.popups.join('; ')+')');
     await ctx.close();
   }
   await br.close();
   fs.writeFileSync(path.join(out,'uicheck-results.json'),JSON.stringify(all,null,1));
-  const md=['# Daily Grind UI check','',...all.flatMap(r=>[`## ${r.viewport} (${r.width}×${r.height})`,'',`${r.stats.buildings} buildings, ${r.stats.clicks} presses, ${r.stats.checks} layout checks. ${r.issues.length?r.issues.length+' issue(s):':'No issues.'}`,'',...r.issues.map(i=>`- **${i.kind}** ${i.where}: ${i.msg}`),'',...(r.stats.popups.length?['Presses that opened a pop-up (layout checked, numbers not compared): '+r.stats.popups.join('; '),'']:[])])].join('\n');
+  const md=['# Daily Grind UI check','',...all.flatMap(r=>[`## ${r.viewport} (${r.width}×${r.height})`,'',`${r.stats.buildings} buildings, ${r.stats.situations||0} situations, ${r.stats.clicks} presses, ${r.stats.checks} layout checks. ${r.issues.length?r.issues.length+' issue(s):':'No issues.'}`,'',...r.issues.map(i=>`- **${i.kind}** ${i.where}: ${i.msg}`),'',...(r.stats.popups.length?['Presses that opened a pop-up (layout checked, numbers not compared): '+r.stats.popups.join('; '),'']:[])])].join('\n');
   fs.writeFileSync(path.join(out,'uicheck-report.md'),md);
   console.log('\nScreenshots, results and report in '+out);
   process.exitCode=all.some(r=>r.issues.length)?1:0;

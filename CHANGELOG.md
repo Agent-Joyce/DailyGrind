@@ -986,3 +986,13 @@ Display only; no rules change.
 - **Fix:** on the morning after a night, the knowledge figure on the status page showed "▼NaN" for a few seconds (the overnight arrows did not record knowledge). It now shows the real overnight change, like energy, happiness and health.
 - **New QA tool: the UI check** (`tools/qa/uicheck.js`, run with `tools/qa/run-uicheck.ps1` in the browser, or `node tools/qa/run-uicheck.js` where Node and Playwright exist). At desktop (1280×800) and phone (390×844) width it presses every button in every building, plus the status page, the action preview, a certificate and ending the day, and reports script errors, dead buttons, missing toasts, log text / toast icons / row chips that disagree with the real change, layout problems and "NaN"/"undefined" on screen. CLAUDE.md says to run it whenever asked. It was tested on deliberately broken copies of the game (wrong chip, wrong log text, dead button, missing toast, overflowing and clipped layout, NaN on screen, a game that fails to load) and caught each one.
 - First run, on this build: 98 presses at each width, no issues left after the two fixes above (the knowledge arrow, and purchase toasts showing "a day" amounts as instant gains, now part of section 60).
+
+## 62. UI check: more situations
+
+QA only; no game change.
+- The UI check (`tools/qa/uicheck.js`) now also sets up six situations the main test game does not have, and presses every button they bring up: sick with the flu and owing medical bills (Hospital: treatment, check-up, insurance, pay bills), sick with dengue (Hospital: the ward), sick at home (Apartment), rent arrears (Apartment: pay arrears), a loan taken the day before (Bank: repay, pay in full) and a pawned TV (Pawn Shop: redeem). Each one also reports MISSING if its buttons do not appear.
+- Run on this build: 158 presses at each width (was 98), no issues.
+
+## 63. Enrolment message grammar
+
+- Enrolling in a one-module qualification (Customer Service Certificate) said "All 1 modules and their lessons are now free to attend". It now says "Its module and lessons are now free to attend". Text only.

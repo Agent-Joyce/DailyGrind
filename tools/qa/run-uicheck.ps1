@@ -63,7 +63,7 @@ function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp
 function next(){if(i>=order.length){document.getElementById('st').innerHTML=all.some(function(r){return r.issues.length})?'<span class="bad">Finished: issues found (see below).</span>':'<span class="ok">Finished: no issues at either width.</span>';document.getElementById('dl').disabled=false;return}
   document.getElementById('st').textContent='Running '+(i?'phone':'desktop')+' width…';document.getElementById(order[i][0]).src='game.html?'+Date.now()}
 window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='dg-uicheck')return;var r=d.res;all.push(r);
-  document.getElementById(order[i][1]).innerHTML='<p>'+r.stats.buildings+' buildings, '+r.stats.clicks+' presses, '+r.stats.checks+' layout checks. '+
+  document.getElementById(order[i][1]).innerHTML='<p>'+r.stats.buildings+' buildings, '+(r.stats.situations||0)+' situations, '+r.stats.clicks+' presses, '+r.stats.checks+' layout checks. '+
     (r.issues.length?'<span class="bad">'+r.issues.length+' issue(s)</span>':'<span class="ok">No issues.</span>')+'</p><ul>'+
     r.issues.map(function(x){return '<li><b>'+esc(x.kind)+'</b> '+esc(x.where)+': '+esc(x.msg)+'</li>'}).join('')+'</ul>';
   i++;setTimeout(next,300)});

@@ -18,7 +18,9 @@
           CLIPPED       a button's label does not fit in the button
           OVERLAP       a button covers its row's text, or two buttons overlap
           BAD TEXT      "NaN", "undefined", "null" or "[object" shown to the player
-     5. Flows: ending the day (end-of-day cards, morning card), the action preview, a certificate and its bonus toast,
+     5. Situations the main game does not have (SITUATIONS): sick (cold/flu with medical bills, dengue, sick at home),
+        rent arrears, a loan to repay, a pawned item to redeem. Each checks its buttons are there (MISSING) and presses them.
+     6. Flows: ending the day (end-of-day cards, morning card), the action preview, a certificate and its bonus toast,
         the Belongings list on the status page.
    Results: window.__UI_RESULTS, an on-page report, the browser console, and a message to the parent page
    (so a harness page can collect the desktop and phone runs). Settings: window.__UICHECK = {autorun, seed}. */
@@ -152,11 +154,42 @@
       var said={};lines.forEach(function(l){var p=parseLog(l[0]);Object.keys(p).forEach(function(q){said[q]=(said[q]||0)+p[q]})});
       cmp('TEXT≠EFFECT','walk to '+bld,said,v0,v1);cmp('TOAST≠EFFECT','walk to '+bld,parseToasts(toasts),v0,v1);
     }
-    restore(bld);layout(bld+' panel',$('center'));layout(bld+' (whole page)',document.body);await shot(bld);
+    await pressAll(bld,bld);
+  }
+  /* layout of a panel, then press each of its enabled buttons in turn */
+  async function pressAll(bld,label){
+    restore(bld);layout(label+' panel',$('center'));layout(label+' (whole page)',document.body);await shot(label.replace(/\W+/g,'_'));
     var list=shopButtons().map(key),count={};
     for(var i=0;i<list.length;i++){var k=list[i];count[k]=(count[k]||0);stats.buttons++;
       if(/^(step|ltenure)\|/.test(k)&&count[k]>0){count[k]++;continue}
       await press(bld,k,count[k]);count[k]++}
+    return list;
+  }
+
+  /* ---------- situations the main game does not have: each starts from the main game, adds one situation,
+    checks that its buttons are there, and presses everything in that building ---------- */
+  var SITUATIONS=[
+    {name:'sick with a cold or the flu, with medical bills',bld:'hosp',need:['treat_ill','paydebt','checkup','insure'],
+      mod:function(S){S.ill={k:'flu',d:1};S.medDebt=200}},
+    {name:'sick with dengue (needs the ward)',bld:'hosp',need:['ward'],
+      mod:function(S){S.ill={k:'dengue',d:1}}},
+    {name:'sick at home',bld:'apt',need:['nap'],
+      mod:function(S){S.ill={k:'flu',d:1}}},
+    {name:'rent arrears',bld:'apt',need:['arrears'],
+      mod:function(S){S.arrears={bal:120,days:4,fresh:0}}},
+    {name:'a loan to repay',bld:'bank',need:['repay','repayall'],
+      mod:function(S){S.loan={borrowed:500,principal:500,interest:12,taken:S.day-1,tenure:5,rate:4,due:S.day+4}  /* taken yesterday: the game blocks repaying on the day you borrow */}},
+    {name:'a pawned TV to redeem',bld:'pawn',need:['redeem'],
+      mod:function(S){S.items.tv=0;delete S.broken.tv;S.pawned.tv={w:S.day,g:75}}}
+  ];
+  async function situation(x){
+    var keep=base,S0=JSON.parse(base);x.mod(S0);base=JSON.stringify(S0);
+    try{
+      var label=x.bld+' ('+x.name+')',e0=errs.length;
+      var list=await pressAll(x.bld,label);
+      x.need.forEach(function(a){if(!list.some(function(k){return k.split('|')[0]===a}))note('MISSING',label,'no enabled "'+a+'" button')});
+      errs.slice(e0).forEach(function(e){note('JS-ERROR',label,e)});
+    }finally{base=keep}
   }
 
   /* ---------- flows ---------- */
@@ -212,6 +245,7 @@
       window.__UI_RESULTS=r0;try{if(window.parent!==window)window.parent.postMessage({type:'dg-uicheck',res:r0},'*')}catch(x){}report(r0);return r0}
     var blds=[].map.call(document.querySelectorAll('.tile[data-loc]'),function(t){return t.dataset.loc});
     for(var i=0;i<blds.length;i++){box('UI check at '+innerWidth+'px: '+blds[i]+' ('+(i+1)+' of '+blds.length+')…');try{await building(blds[i])}catch(e){note('JS-ERROR',blds[i],'check crashed: '+(e&&e.message||e))}}
+    for(var j=0;j<SITUATIONS.length;j++){box('UI check at '+innerWidth+'px: '+SITUATIONS[j].name+'…');try{stats.situations=(stats.situations||0)+1;await situation(SITUATIONS[j])}catch(e){note('JS-ERROR',SITUATIONS[j].name,'check crashed: '+(e&&e.message||e))}}
     for(var f of [statusPage,preview,certificate,endOfDay]){try{await f()}catch(e){note('JS-ERROR',f.name,'check crashed: '+(e&&e.message||e))}}
     var res={viewport:VP(),width:innerWidth,height:innerHeight,ms:Date.now()-t0,stats:stats,issues:issues};
     window.__UI_RESULTS=res;console.log('Daily Grind UI check',res);
