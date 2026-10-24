@@ -914,3 +914,9 @@ New ways to lift happiness, so that a long day of work and study does not have t
 - New `CONFIG.leisure` group (Group 8): `screen` {minutes 60, happiness 4}, `call` {minutes 30, happiness 3, perDay 1}, `walk` {minutes 60, happiness 5, health 1}, `jog` {minutes 60, energy −8, happiness 4, health 3, minEnergy 15}. New `CONFIG.food.cafe` {minutes 45, cost 12, energy 3, happiness 6, snack true}; `snack: true` means a Restaurant item does not count as a meal.
 - New save field `S.calls` (calls made today). Old saves load with it empty.
 - Rules: a new "Free time" line, filled in from `CONFIG.leisure` and `CONFIG.food.cafe`, and the Health line now mentions the Park. The day chart has a new "Leisure" colour. The Config Guide has the new keys.
+
+## 55. Interview pop-ups leave a second sooner
+
+Display only; no rules change.
+- The "You passed the interview" and "Didn’t pass the interview" pop-ups now stay on screen one second less than other pop-ups of the same length (for example 3.4 seconds instead of 4.4).
+- New `CONFIG.ui.toasts.shorter` {seconds 1, words [the two interview phrases]}. A pop-up never shows for less than 1 second. The Config Guide has the new key.

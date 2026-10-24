@@ -1227,7 +1227,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         on:true, seconds:2, max:3, vitalWarnings:true,
         words:['you passed the interview','didn’t pass the interview','not enough relevant working experience','no openings now','you were promoted','laid off from','qualification earned',
               'lottery win','lost your home','food poisoning','rushed to hospital','is admitting you','released from the hospital','expelled from school','demotes you','late fee','broke down',
-              'milestone:','you reached ']
+              'milestone:','you reached '],
+        shorter:{seconds:1, words:['you passed the interview','didn’t pass the interview']}  // these toasts leave this many seconds sooner
       },
       /* 4. Action preview: pressing one of these buttons first shows what it will cost, and asks you to confirm.
             actions = button names. More you can add: 'nap','cook','treat','eatc','eatp','eatchips','checkup','ward','treat_ill','buy','groc','bundle','lotto' */
@@ -5503,7 +5504,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       box.appendChild(el);
       while(box.children.length>(TS.max||3))dismiss(box.firstChild,true);
       /* longer messages stay up longer (+1s per 60 characters, up to 15s); hovering pauses the countdown */
-      var ms=Math.min(15000,((TS.seconds||4.5)+el.textContent.length/60)*1000),tm=setTimeout(function(){dismiss(el)},ms);
+      var sh=TS.shorter||{},cut=(sh.words||[]).some(function(w){return t.txt.toLowerCase().indexOf(w)>=0})?(sh.seconds||0):0;
+      var ms=Math.max(1000,Math.min(15000,((TS.seconds||4.5)-cut+el.textContent.length/60)*1000)),tm=setTimeout(function(){dismiss(el)},ms);
       el.addEventListener('mouseenter',function(){clearTimeout(tm)});
       el.addEventListener('mouseleave',function(){tm=setTimeout(function(){dismiss(el)},2500)});
     }
