@@ -899,3 +899,18 @@ Layout only; no rules change.
 - **Business Suit** gives +2 happiness when bought. New `CONFIG.clothes.suit.happiness` (any outfit can have one).
 - Rows show the new costs as chips (work, freelance, self-study, Now studying, meal prep, the suit), the welcome screen says walking costs 1% energy per building, and the ⓘ notes in the Kitchen, Study & work and School sections mention the new costs. The Config Guide has the new keys.
 - **Simulation runs:** first values (walking 2%, cooked meal +15%, ready-to-eat +12%): [docs/QA_Sim_2026-10-24_vital-costs.md](docs/QA_Sim_2026-10-24_vital-costs.md). The careful player went from 14 Wealthy and 6 Comfortable (average $5,525) to 6 Comfortable, 6 Time's up, 6 Hospitalised and 2 Bankrupt (average $484). Softened values (as above): [docs/QA_Sim_2026-10-24_vital-costs-softened.md](docs/QA_Sim_2026-10-24_vital-costs-softened.md). Money recovers (average $1,531, nobody runs out of cash), but 17 of 20 careful games end with You gave up because happiness runs out. No script errors in either run.
+
+## 54. Free time: home activities, the Park, and coffee and cake
+
+New ways to lift happiness, so that a long day of work and study does not have to end in "You gave up".
+- **Home, new "🎈 Free time" card** (Apartment or Bungalow, not while homeless):
+  - **Watch a show** (or **Play games** if you only have a console): 1 hour, free, +4 happiness. Needs a working TV or game console.
+  - **Call your family:** 30 minutes, free, +3 happiness, once a day.
+  - The existing **Rest** (nap) stays as it was.
+- **New building: the Park** 🌳, a free green space between the Low-End Apartment and the Clothes Mall (15 minutes from either; it replaces the small decorative park that was there). Walking times between the other buildings are unchanged.
+  - **Walk in the park:** 1 hour, free, +5 happiness, +1 health.
+  - **Go for a jog:** 1 hour, free, −8% energy, +4 happiness, +3 health. Not under 15% energy.
+- **Restaurant: coffee and cake.** 45 minutes, $12 (moves with prices), +3% energy, +6 happiness. It is a snack, so it does not count as your daily meal.
+- New `CONFIG.leisure` group (Group 8): `screen` {minutes 60, happiness 4}, `call` {minutes 30, happiness 3, perDay 1}, `walk` {minutes 60, happiness 5, health 1}, `jog` {minutes 60, energy −8, happiness 4, health 3, minEnergy 15}. New `CONFIG.food.cafe` {minutes 45, cost 12, energy 3, happiness 6, snack true}; `snack: true` means a Restaurant item does not count as a meal.
+- New save field `S.calls` (calls made today). Old saves load with it empty.
+- Rules: a new "Free time" line, filled in from `CONFIG.leisure` and `CONFIG.food.cafe`, and the Health line now mentions the Park. The day chart has a new "Leisure" colour. The Config Guide has the new keys.
