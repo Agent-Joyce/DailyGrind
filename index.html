@@ -39,9 +39,13 @@ background:radial-gradient(circle at 18% 22%,rgba(255,255,255,.12),transparent 2
 .tile .scene{position:relative;display:block}
 .tile svg{display:block;width:100%;height:auto;overflow:visible;transition:transform .15s}
 .tile:hover svg{transform:translateY(-3px) scale(1.03)}
-.tile.here svg{filter:drop-shadow(0 0 5px #ffd45e) drop-shadow(0 0 2px #ffd45e);animation:herePulse 2s ease-in-out infinite}
-@keyframes herePulse{0%,100%{filter:drop-shadow(0 0 3px #ffd45e) drop-shadow(0 0 1px #ffd45e)}50%{filter:drop-shadow(0 0 10px #ffd45e) drop-shadow(0 0 3px #ffd45e)}}
-.tile.open svg{filter:drop-shadow(0 0 6px var(--teal)) drop-shadow(0 0 2px var(--teal))}
+/* where you are: a solid gold outline that follows the building's shape, plus a pulsing glow.
+  Building open: a teal ring outside the gold outline and a teal name label. (Four 0-blur shadows draw an outline.) */
+.tile.here svg{filter:drop-shadow(2px 0 0 #f2b705) drop-shadow(-2px 0 0 #f2b705) drop-shadow(0 2px 0 #f2b705) drop-shadow(0 -2px 0 #f2b705) drop-shadow(0 0 5px #ffd45e);animation:herePulse 2s ease-in-out infinite}
+@keyframes herePulse{0%,100%{filter:drop-shadow(2px 0 0 #f2b705) drop-shadow(-2px 0 0 #f2b705) drop-shadow(0 2px 0 #f2b705) drop-shadow(0 -2px 0 #f2b705) drop-shadow(0 0 2px #ffd45e)}50%{filter:drop-shadow(2px 0 0 #f2b705) drop-shadow(-2px 0 0 #f2b705) drop-shadow(0 2px 0 #f2b705) drop-shadow(0 -2px 0 #f2b705) drop-shadow(0 0 10px #ffd45e)}}
+.tile.open svg,.tile.here.open svg{animation:none;filter:drop-shadow(2px 0 0 #f2b705) drop-shadow(-2px 0 0 #f2b705) drop-shadow(0 2px 0 #f2b705) drop-shadow(0 -2px 0 #f2b705) drop-shadow(2px 0 0 var(--teal)) drop-shadow(-2px 0 0 var(--teal)) drop-shadow(0 2px 0 var(--teal)) drop-shadow(0 -2px 0 var(--teal)) drop-shadow(0 0 6px var(--teal))}
+.tile.here .lab{box-shadow:0 0 0 2px #f2b705}
+.tile.open .lab{background:var(--teal);box-shadow:0 0 0 2px #fff,0 0 0 4px var(--teal)}
 .tile .lab{position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);width:max-content;max-width:150%;background:rgba(20,32,43,.93);color:#fff;font-size:.78rem;font-weight:800;line-height:1.15;text-align:center;padding:1px 8px;border-radius:8px}
 .tags{position:absolute;top:-4px;left:0;display:flex;flex-direction:column;gap:3px;align-items:flex-start;z-index:2}
 .tags .tag{font-size:.68rem;font-weight:800;border:2px solid #16222e;border-radius:6px;padding:0 5px;background:#fff;color:#16222e}
@@ -185,7 +189,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 .opt.mine{border-left:4px solid var(--mine);padding-left:6px}.opt.mine .rn{color:var(--mine);font-weight:800}.opt.shut .rn{opacity:.6}
 .opt.nextstep{border-left:4px solid var(--teal);padding-left:6px}
 #log{height:44px;margin:3px 0 0;font-size:.8rem}
-.saved{font-size:.7rem;color:var(--muted);margin-left:6px;vertical-align:middle}
+.saved{font-size:.7rem;color:var(--muted);margin-left:6px;vertical-align:middle}.saved .bad{color:var(--red);font-weight:800}
 .goals{margin:5px 0 0;padding:4px 10px 6px;border:2px dashed var(--teal);border-radius:12px;background:color-mix(in srgb,var(--teal) 7%,var(--surface))}
 .goals .gh{display:flex;align-items:center;gap:8px;color:var(--teal);margin-bottom:2px}.goals .gh span{color:var(--muted)}
 .goal{font-size:.78rem;padding:1px 0}.pips{display:flex;gap:4px;margin:2px 0 3px}.pips i{flex:1;height:5px;border-radius:3px;background:var(--line)}.pips i.on{background:var(--teal)}.goal.done{color:var(--muted);text-decoration:line-through}
@@ -235,6 +239,9 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 .hud .tcell b{font-size:1.05rem}#hInvC small{display:block;font-size:.62rem;font-weight:700}.hud .tcell.sc b{color:#6aa9ff}.hud .tcell.sc small{display:block;font-size:.6rem;opacity:.75}
 .hud .donut{width:38px;height:38px}
 .actbar{display:flex;gap:8px}.actbar .btn{min-height:40px;padding:6px 16px}
+#hudOv:not([hidden]){background:var(--teal);color:#fff;border-color:var(--ink);animation:ovNudge 1.6s ease-in-out 2}@keyframes ovNudge{50%{transform:scale(1.08)}}
+.ovtip{margin:0 0 6px;font-size:.75rem;color:var(--muted)}.mute.ovhide{margin-left:4px}
+@media (max-width:640px){.ovtip,#ovHide{display:none}}
 #overScore{margin:8px 0 10px}.bigscore{font-size:1.6rem;font-weight:800;margin:4px 0}.topscore{font-weight:800;color:#1f7a4a;font-size:1.05rem}.prevtop{color:var(--muted);font-size:.9rem}
 .sctab{margin:4px auto 0;font-size:.85rem;border-collapse:collapse}.sctab td{padding:1px 10px;text-align:left}.sctab td+td{text-align:right;font-weight:700}
 .morning{text-align:left;max-width:520px}.morning ul{list-style:none;padding:0;margin:8px 0}.morning li{padding:6px 10px;border-radius:9px;margin:4px 0;font-size:.9rem;font-weight:600;border:2px solid var(--gold);background:color-mix(in srgb,var(--gold) 14%,var(--surface))}.morning li.bad{border-color:var(--red);background:color-mix(in srgb,var(--red) 12%,var(--surface))}.morning li.good{border-color:#2f8f5b;background:color-mix(in srgb,#2f8f5b 14%,var(--surface))}.morning li.rem{border-color:#4b78c2;background:color-mix(in srgb,#4b78c2 12%,var(--surface))}
@@ -376,6 +383,8 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 .pv-d.up{color:var(--green)}.pv-d.dn{color:var(--red)}
 .pv-note{font-size:.82rem;margin:8px 0 0;color:var(--ink)}
 .pv-warn{font-size:.82rem;font-weight:700;margin:8px 0 0;padding:6px 10px;border-radius:9px;border:2px solid var(--gold);background:color-mix(in srgb,var(--gold) 14%,var(--surface))}
+.infol{margin:6px 0 0;padding-left:18px}.infol li{margin:2px 0}
+.pv-out{margin:6px 0 0;text-align:center;font-size:.75rem;color:var(--muted)}
 .pv-skip{display:flex;align-items:flex-start;gap:8px;font-size:.74rem;color:var(--muted);margin-top:10px;cursor:pointer}.pv-skip input{flex:none;margin:1px 0 0}
 .pv-btns{display:flex;gap:10px;margin-top:10px}.pv-btns .btn{flex:1}
 /* 5. end-of-run recap */
@@ -546,7 +555,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   <section class="center" id="center" aria-label="Game panel">
     <div id="sr" class="sr" aria-live="polite" aria-atomic="true"></div>
     <div id="overview">
-      <h1>Daily Grind</h1> <button class="mute" id="muteBtn" aria-pressed="false" title="Sound on/off">🔊</button><button class="mute reset" id="resetBtn" title="Wipe the save and start a fresh game">↺ Reset</button><button class="mute" id="previewBtn" aria-pressed="true" title="Ask before big actions, showing what they will cost">🔎 Preview: on</button><span class="saved" title="Your progress is saved in this browser">💾 Auto-saved · <span id="diffTag">Normal</span></span>
+      <p class="ovtip">Click outside this panel to explore the town. <b>📋 Overview</b> brings it back.</p>
+      <h1>Daily Grind</h1> <button class="mute" id="muteBtn" aria-pressed="false" title="Sound on/off">🔊</button><button class="mute reset" id="resetBtn" title="Wipe the save and start a fresh game">↺ Reset</button><button class="mute ovhide" id="ovHide" title="Hide this panel to see the whole town">Hide ✕</button><button class="mute" id="previewBtn" aria-pressed="true" title="Ask before big actions, showing what they will cost">🔎 Preview: on</button><span class="saved"><span id="saveSt" role="status" title="Your progress is saved in this browser">💾 Saved</span> · <span id="diffTag">Normal</span></span>
       <div class="top">
         <div class="tcell pay"><span class="l">Current pay</span><b id="pay">$0</b><small id="payRole">no job</small>
           <div class="grp g-vit inpay">
@@ -693,7 +703,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   <h2 id="pvT">Do this?</h2><p class="pv-sub" id="pvSub"></p>
   <div id="pvRows"></div><div id="pvWarn"></div><p class="pv-note" id="pvNote"></p>
   <label class="pv-skip"><input type="checkbox" id="pvSkip" checked> Don’t ask me again (turn it back on with the 🔎 button on the Overview)</label>
-  <div class="pv-btns"><button class="btn" id="pvGo">Do it</button><button class="btn alt" id="pvNo">Not now</button></div>
+  <div class="pv-btns"><button class="btn" id="pvGo">Ok</button></div><p class="pv-out">Click or tap outside this box to cancel.</p>
 </div></div>
 <div id="toasts" aria-live="polite"></div>
 
@@ -1390,7 +1400,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function Df(){return DIFF[S.diff]||DIFF.normal}
   function maxDays(){return Df().days||Infinity}
   var S, loc, view, last=null;
-  var toastAll=false, forceToast=[];  /* toastAll: during a button click, every log line becomes a toast; forceToast: toasts shown even over a pop-up */
+  var toastAll=false, forceToast=[], nightRun=false;  /* nightRun: the overnight pipeline is running (a game that ends then ends on the day that just finished) */  /* toastAll: during a button click, every log line becomes a toast; forceToast: toasts shown even over a pop-up */
   var $=function(id){return document.getElementById(id)};
   /* ---------- stat icons (small SVGs in the game's outline style) ---------- */
   var ICO={
@@ -1478,8 +1488,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function sleepGain(min){return Math.min(CONFIG.sleep.maxEnergy,Math.round(min/60*restRate()*(CONFIG.sleep.energyX||1)))}
   function sleepHap(min){return Math.round(Math.floor(min/60)*CONFIG.sleep.happinessPerHour)}  /* happiness from a night at home */
   function sleepHealth(min){var HS=CONFIG.health.sleep;return Math.round(Math.min(HS.max,min/60*HS.perHour))}
+  var GLOVES_PAY=15;  /* work gloves: $ added to every shift */
   var ITEMS={
-    clothes:{n:'Work gloves',ic:'🧤',p:25,shop:'thrift',d:'Adds $15 to every shift you work'},
+    clothes:{n:'Work gloves',ic:'🧤',p:25,shop:'thrift',d:'Adds $'+GLOVES_PAY+' to every shift you work'},
     tv:{n:'Second-hand TV',ic:'📺',p:150,shop:'thrift',d:restTxt('tv')+'. Breaks down more often',old:.12},
     fridgeold:{n:'Used refrigerator',ic:'🧊',p:140,shop:'thrift',d:'Holds '+CONFIG.food.fridgeSpace+' meals for '+CONFIG.food.keepDaysFridge+' days instead of '+CONFIG.food.keepDaysRoom+', but breaks down more often',old:.12},
     phoneold:{n:'Used mobile phone',ic:'📱',p:340,shop:'thrift',d:dayTxt('phoneold')+'. Lets you trade ETFs and study online. Breaks down more often',old:.12},
@@ -1809,7 +1820,23 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     while($('log').children.length>200)$('log').removeChild($('log').lastChild);
   }
   var SAVE_KEY='dailyGrind.save.v1';
-  function save(){try{if(S.over)localStorage.removeItem(SAVE_KEY);else localStorage.setItem(SAVE_KEY,JSON.stringify({S:S,loc:loc,view:view,last:last}))}catch(e){}}
+  /* saving: SAVE_ST says whether the last write worked, so the top bar never claims progress is saved when it is not.
+    'none' = this browser does not let the page store anything (checked once), 'fail' = the last write failed, 'ok' = saved at SAVE_AT */
+  var SAVE_ST=(function(){try{var k=SAVE_KEY+'.test';localStorage.setItem(k,'1');localStorage.removeItem(k);return 'ok'}catch(e){return 'none'}})(),SAVE_AT=null;
+  function save(){
+    if(SAVE_ST==='none')return paintSave();
+    try{if(S.over)localStorage.removeItem(SAVE_KEY);else localStorage.setItem(SAVE_KEY,JSON.stringify({S:S,loc:loc,view:view,last:last}));SAVE_ST='ok';SAVE_AT=new Date()}
+    catch(e){SAVE_ST='fail'}
+    paintSave();
+  }
+  function clock(d){var h=d.getHours(),m=d.getMinutes();return (h%12||12)+':'+(m<10?'0':'')+m+(h<12?' am':' pm')}
+  function paintSave(){
+    var el=$('saveSt');if(!el)return;
+    var t=SAVE_ST==='none'?['⚠️ Save unavailable in this browser','This browser does not let the game store anything (for example a private window or blocked site data), so progress is lost when you close the page.','bad']:
+      SAVE_ST==='fail'?['⚠️ Saving failed — progress may be lost',SAVE_AT?'The last successful save was at '+clock(SAVE_AT)+'. The browser refused the latest one (storage may be full or blocked).':'No save has worked yet. The browser refused to store the game (storage may be full or blocked).','bad']:
+      ['💾 Saved'+(SAVE_AT?' '+clock(SAVE_AT):''),'Your progress is saved in this browser'+(SAVE_AT?' (last saved at '+clock(SAVE_AT)+')':'')+'.',''];
+    el.textContent=t[0];el.title=t[1];el.className=t[2];
+  }
   function clearSave(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}}
   function load(){
     try{
@@ -1856,16 +1883,17 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   }
   function nextRentWeek(){return Math.ceil(S.day/RENT_EVERY)*RENT_EVERY}
   function finish(title,text){
-    if(!/rank/.test(title)&&title.indexOf(TIERS[TIERS.length-1].n)<0)snd('lose');
-    S.over=true;clearSave();$('keep').hidden=true;
+    var lost=!/rank/.test(title)&&title.indexOf(TIERS[TIERS.length-1].n)<0;
+    if(lost)snd('lose');
+    S.over=true;S.endDay=nightRun?S.day-1:S.day;  /* the last day actually played */clearSave();$('keep').hidden=true;
     $('overTitle').textContent=title;
     $('overText').textContent=text;
     var sc=score(),best=bestScore(),first=(function(){try{return localStorage.getItem('dailyGrind.best')===null}catch(e){return true}})(),isTop=sc>0&&(first||sc>best);  /* a 0-point game is never a top score */
     if(isTop){try{localStorage.setItem('dailyGrind.best',String(sc))}catch(e){}}
     $('overScore').hidden=false;
-    $('overScore').innerHTML=(isTop?'<div class="topscore">🏆 Congratulations! New top score!</div>':first?'':'<div class="prevtop">Top score so far: <b>'+best.toLocaleString()+'</b></div>')+
+    $('overScore').innerHTML=(isTop?'<div class="topscore">🏆 New personal-best score!</div>':first?'':'<div class="prevtop">Top score so far: <b>'+best.toLocaleString()+'</b></div>')+
       '<div class="bigscore">⭐ '+sc.toLocaleString()+' points</div><table class="sctab">'+scoreParts().map(function(p){return '<tr><td>'+p[0]+'</td><td>'+(p[1]<0?'−':'')+Math.abs(p[1]).toLocaleString()+'</td></tr>'}).join('')+'</table>';
-    if(isTop)snd('win');
+    if(isTop&&!lost)snd('win');  /* a personal best on a loss is still a loss: no win sound */
     $('over').classList.add('show');
     render();
   }
@@ -1988,7 +2016,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     return {m:m,rs:rs};
   }
   /* what a shift really pays now: base pay x wage/price index x knowledge bonus x any penalty, plus gloves */
-  function shiftPay(base){return Math.round(Math.round(base*payIdx()*(1+S.know/400))*prod().m)+(S.items.clothes?15:0)}
+  function shiftPay(base){return Math.round(Math.round(base*payIdx()*(1+S.know/400))*prod().m)+(S.items.clothes?GLOVES_PAY:0)}
   function work(k){
     var c=CAREERS[k], rk, j;
     if(c){
@@ -2757,7 +2785,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   }
   function goals(){
     return [
-      ['ate','🍔 Eat a meal (Fast Food, Restaurant, or cook at home)'],
+      ['ate','🍔 Eat a meal before the day ends (Fast Food, Restaurant, or Supermarket food eaten at home)'],
       ['job','💼 Get a job at the Employment Office (many entry jobs need no degree)'],
       ['study','📚 Attend a lesson at School (qualifications unlock better jobs)'],
       ['worked','🛠️ Work a shift at your workplace (not the Employment Office)'],
@@ -2835,7 +2863,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     ['console','tv'].forEach(function(g){var k=ikey(g),d=k&&GD.perRestHour[k];if(d){hap+=(d.happiness||0)*hrs;know+=(d.knowledge||0)*hrs}});
     return {hap:Math.round(hap),know:know,hrs:hrs};
   }
-  function rollover(rested){
+  function rollover(rested){nightRun=true;try{return rollover0(rested)}finally{nightRun=false}}
+  function rollover0(rested){
     ovHidden=false;  /* a new day shows the overview again */
     if(S.over)return;
     FLASH={e:S.energy,h:S.happy,l:S.health,k:Math.floor(S.know),until:Date.now()+2500};setTimeout(function(){render()},2600);
@@ -4457,14 +4486,32 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function opt(title,desc,b,cls){
     return '<div class="opt'+(cls?' '+cls:'')+'"><div>'+title+'<small>'+statIcons(desc)+'</small></div>'+b+'</div>';
   }
+  function shopKeys(name){return Object.keys(ITEMS).filter(function(k){return ITEMS[k].shop===name}).sort(function(a,b){return ITEMS[a].p-ITEMS[b].p})}
+  /* what an item does, as icon chips (the full sentence is in the section's ⓘ) */
+  function itemChips(k){
+    var GD=CONFIG.gadgets,d=GD.daily[k],r=GD.perRestHour[k],FDc=CONFIG.food,c='';
+    if(k==='clothes')c+=chip('cash','+'+money(GLOVES_PAY)+' a shift');
+    if(d){if(d.knowledge)c+=chip('know','+'+d.knowledge+' a day');if(d.happiness)c+=chip('happy','+'+d.happiness+' a day')}
+    if(r){if(r.happiness)c+=chip('happy','+'+r.happiness+' an hour of rest');if(r.knowledge)c+=chip('know','+'+r.knowledge+' an hour of rest')}
+    if(/^fridge/.test(k))c+=chip('','🍽 '+FDc.fridgeSpace+' meals · keeps '+FDc.keepDaysFridge+'d');
+    if(k==='coffee')c+=chip('energy','+'+GD.coffeeEnergy+'% each morning');
+    if(k==='microwave')c+=chip('time','Reheat '+hm(FDc.reheatMinutes));
+    if(/^(phone|tablet|computer)/.test(k))c+=chip('','ETFs · study online');
+    if(/^computer/.test(k))c+=chip('','Freelance · hedge fund');
+    if(COMFORT[k]&&!/^(phone|tablet)/.test(k))c+=chip('','Comfort','ok');
+    if(ITEMS[k].old)c+=chip('','Breaks often','warn');
+    return c;
+  }
   function shop(name){
     var h='';
-    Object.keys(ITEMS).filter(function(k){return ITEMS[k].shop===name}).sort(function(a,b){return ITEMS[a].p-ITEMS[b].p}).forEach(function(k){
+    shopKeys(name).forEach(function(k){
       var it=ITEMS[k];
-      h+=arow(it.ic+' '+it.n+' · '+money(G(it.p)),'',S.items[k]?btn('x','', S.broken[k]?'Broken':'Owned',1,1):btn('buy',k,'Buy'),it.d);
+      h+=arow(it.ic+' '+it.n+' · '+money(G(it.p)),itemChips(k),S.items[k]?btn('x','', S.broken[k]?'Broken':'Owned',1,1):btn('buy',k,'Buy'));
     });
     return h;
   }
+  /* the full description of every item in a shop, for its ⓘ */
+  function shopInfo(name){return '<ul class="infol">'+shopKeys(name).map(function(k){return '<li><b>'+ITEMS[k].ic+' '+ITEMS[k].n+':</b> '+ITEMS[k].d+'.</li>'}).join('')+'</ul>'}
   /* work rows for every job based at this building (shown at the top of its panel) */
   function workSection(b){
     var cs=Object.keys(CAREERS).filter(function(c){return (CAREERS[c].b||c)===b});
@@ -4624,10 +4671,11 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
           'Pay shown is base pay: your actual wage also depends on your knowledge and well-being. Apply here, then work your shifts at the workplace. Openings come and go, and you can only hold one job at a time.'+(E&&E.shifts?' Jobs paying more than '+money(E.payAbove)+' a shift also need work experience: '+E.shifts+' shifts already worked at the same workplace (“Work exp needed”).':'')+' A job without a dress chip needs ordinary clothes (Casual Clothes or better). Green requirements are ones you already meet; 🔒 means you do not meet them all yet. Hover a qualification for its full name.')+
         board())},
     factory:function(){
-      var sh=shutLeft('factory')>0,t=psec('factory','🏭 Factory floor',sh?chip('','Closed '+shutLeft('factory')+'d','warn'):'','The factory floor hums day and night. Engineers earn far more than line workers. Apply for jobs at the Employment Office.');
-      if(facJob())return boxed(t);
+      var sh=shutLeft('factory')>0,closed=sh?chip('','Closed '+shutLeft('factory')+'d','warn'):'',about='The factory floor hums day and night. Engineers earn far more than line workers. Apply for jobs at the Employment Office.';
+      if(facJob())return boxed(psec('factory','🏭 Factory floor',closed,about));
+      /* no job here: one card, with the factory's own text at the start of its ⓘ */
       var F=CONFIG.factory,L=F.dayLabour,f=S.fac||{},lt=labourToday()>=L.perDay,en=-L.energy;
-      t+=psec('outside','🧰 No job here? You can still',chip('','Open to everyone'),'Day labour needs no job and no dress code, but pays '+pctTxt(L.payShare)+' of the lowest Factory wage and does not count as work experience. It counts towards your daily work limit and burnout. The safety course counts as '+F.course.expShifts+' shift'+(F.course.expShifts>1?'s':'')+' of Factory work experience. The course and the tour are once a game.');
+      var t=psec('outside','🧰 No job here? You can still',closed||chip('','Open to everyone'),about+' Day labour needs no job and no dress code, but pays '+pctTxt(L.payShare)+' of the lowest Factory wage and does not count as work experience. It counts towards your daily work limit and burnout. The safety course counts as '+F.course.expShifts+' shift'+(F.course.expShifts>1?'s':'')+' of Factory work experience. The course and the tour are once a game.');
       t+=arow('🧰 Day labour on the loading dock · '+money(shiftPay(labourPay())),chip('time',hm(L.minutes))+chip('energy','−'+en+'%')+chip('happy','−'+workHap(en))+(lt?chip('','✓ Done today','ok'):chip('',L.perDay===1?'Once a day':L.perDay+' a day')),btn('fac','labour','Work',0,sh||lt||!!S.ill),S.ill?'You are sick and can’t work.':'');
       t+=arow('🦺 Safety course · '+money(G(F.course.cost)),chip('time',hm(F.course.minutes))+chip('know','+'+F.course.knowledge)+chip('','+'+F.course.expShifts+' work exp','ok')+(f.course?chip('','✓ Done','ok'):''),btn('fac','course','Take course',0,sh||!!f.course));
       t+=arow('🚶 Factory tour · '+money(G(F.tour.cost)),chip('time',hm(F.tour.minutes))+chip('know','+'+F.tour.knowledge)+chip('happy','+'+F.tour.happiness)+(f.tour?chip('','✓ Done','ok'):''),btn('fac','tour','Take tour',0,sh||!!f.tour));
@@ -4726,7 +4774,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     elec:function(){
       var rep=Object.keys(S.broken).filter(function(k){return S.broken[k]&&S.items[k]}).map(function(k){return arow('🔧 Repair '+ITEMS[k].n.toLowerCase()+' · '+money(G(Math.round(ITEMS[k].p*0.3))),chip('time',hm(M(2))),btn('repair',k,'Repair'),'Out of action until fixed.')}).join('');
       return boxed((rep?psec('repair','🔧 Repairs',chip('','Broken '+Object.keys(S.broken).filter(function(k){return S.broken[k]&&S.items[k]}).length,'warn'),'')+rep:'')+
-        psec('shop','🛍️ For sale',chip('time',hm(M(2))+' to buy'),'Everything here shows up in your home once you buy it. Devices add knowledge and happiness every night; a TV or console adds happiness for each hour you rest at home.')+shop('elec'))},
+        psec('shop','🛍️ For sale',chip('time',hm(M(2))+' to buy'),'Everything here shows up in your home once you buy it. Devices add knowledge and happiness every night; a TV or console adds happiness for each hour you rest at home. Comfort items make resting and sleep restore '+pctTxt(CONFIG.sleep.comfortBonus)+' more energy each.'+shopInfo('elec'))+shop('elec'))},
     hosp:function(){
       var t=S.ill?ILL[S.ill.k]:null,st='';
       if(S.hosp&&S.hosp.inWard)st='<p class="bad arow-n"><b>You are warded here today.</b> Released tomorrow morning and billed '+money(S.hosp.bill)+'.</p>';
@@ -4748,7 +4796,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         ['casual','smart','suit'].map(function(k){var c=WEAR[k],pr=price(k),have=S.clothes[k];
           return arow(c.n+' · '+money(pr)+(S.offer[k]!=null?' <small>(bargained)</small>':''),chip('','Lasts '+c.w+' days')+(CC[k].happiness?chip('happy','+'+CC[k].happiness,'ok'):'')+(have?chip('','Yours: '+have+'d left',have<=1?'warn':'ok'):''),
             '<span class="btnrow">'+btn('cbuy',k,'Buy')+btn('bargain',k,'Bargain',1,!!S.barg[k])+'</span>')}).join(''))},
-    thrift:function(){return boxed(psec('shop','🛍️ Second-hand',chip('time',hm(M(2))+' to buy'),'Cheaper than new. Second-hand devices break down more often; repair them at the Electronics Store.')+shop('thrift'))},
+    thrift:function(){return boxed(psec('shop','🛍️ Second-hand',chip('time',hm(M(2))+' to buy'),'Cheaper than new. Second-hand devices break down more often; repair them at the Electronics Store.'+shopInfo('thrift'))+shop('thrift'))},
     pawn:function(){
       var h='',n=0,t='';
       Object.keys(ITEMS).forEach(function(k){
@@ -4761,8 +4809,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     },
     gym:function(){
       var staff=isGymStaff(),n=gymCount();
-      return boxed(psec('classes','🏋️ Classes',chip('','Workouts '+n+' in 5 days',n?'ok':'')+(staff?chip('','Staff 50% off','ok'):''),'Each class does something different: yoga and the sauna give energy back, boxing lifts your mood the most, spin is quickest and strength training builds the most health. Every workout in the last 5 days lowers your chance of falling ill (strength training counts as two; the sauna does not count). Under '+CONFIG.gym.minEnergy+'% energy you are too tired for a class that costs energy.')+
-        GYM.map(function(g){var c=gymCost(g),tired=g.en>0&&S.energy<CONFIG.gym.minEnergy;return arow(g.ic+' '+g.n+' · '+money(c),chip('time',hm(g.min))+chip('energy',sg(-g.en)+'%')+chip('health','+'+g.hp)+chip('happy','+'+g.hap)+(g.w>1?chip('','Counts ×'+g.w,'ok'):g.w?'':chip('','Not a workout')),btn('gym',g.k,'Join in',0,S.cash<c||tired),tired?'Too tired for this class.':g.d)}).join(''))},
+      return boxed(psec('classes','🏋️ Classes',chip('','Workouts '+n+' in 5 days',n?'ok':'')+(staff?chip('','Staff 50% off','ok'):''),'Each class does something different: yoga and the sauna give energy back, boxing lifts your mood the most, spin is quickest and strength training builds the most health. Every workout in the last 5 days lowers your chance of falling ill (strength training counts as two; the sauna does not count). Under '+CONFIG.gym.minEnergy+'% energy you are too tired for a class that costs energy.<ul class="infol">'+GYM.map(function(g){return '<li><b>'+g.ic+' '+g.n+':</b> '+g.d+'</li>'}).join('')+'</ul>')+
+        GYM.map(function(g){var c=gymCost(g),tired=g.en>0&&S.energy<CONFIG.gym.minEnergy;return arow(g.ic+' '+g.n+' · '+money(c),chip('time',hm(g.min))+chip('energy',sg(-g.en)+'%')+chip('health','+'+g.hp)+chip('happy','+'+g.hap)+(g.w>1?chip('','Counts ×'+g.w,'ok'):g.w?'':chip('','Not a workout')),btn('gym',g.k,'Join in',0,S.cash<c||tired),tired?'Too tired for this class.':'')}).join(''))},
     apt:function(){return house('apt')},
     park:function(){
       var LE=CONFIG.leisure,tired=S.energy<LE.jog.minEnergy;
@@ -5411,6 +5459,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     else if(!ovHidden&&window.innerWidth>640){ovHidden=true;render()}
   });
   $('hudOv').addEventListener('click',function(){ovHidden=false;view=null;render()});
+  $('ovHide').addEventListener('click',function(){ovHidden=true;render()});
   function closePlaces(){var p=$('placesList');if(p&&p.parentNode)p.parentNode.removeChild(p)}
   function showPlaces(){
     closePlaces();
@@ -5700,6 +5749,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     function pvTitle(b){
       var ns=b.closest('.nowstudy,.ns-row'),nb=ns&&ns.querySelector('.ns-h b,.arow-t b');
       if(nb)return 'Go to class: '+nb.textContent.trim();  /* the Study button at School */
+      var o=b.closest('.opt'),at=o&&o.querySelector('.arow-t');if(at)return at.textContent.replace(/\s+/g,' ').trim();  /* compact rows: just the name, not the chips and note */
       var o=b.closest('.opt'),t=o&&o.firstElementChild?o.firstElementChild.cloneNode(true):null;
       if(t){[].forEach.call(t.querySelectorAll('small'),function(x){x.parentNode.removeChild(x)});var s=t.textContent.replace(/\s+/g,' ').trim();if(s)return s}
       return b.textContent.replace(/\s+/g,' ').trim();
@@ -5748,7 +5798,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       showPreview(b,a,arg,r);
     },true);
     $('pvGo').addEventListener('click',pvGo);
-    $('pvNo').addEventListener('click',closePreview);
+    /* tapping or clicking outside the card cancels (the only way out on a phone, where there is no Esc key) */
+    $('pvpop').addEventListener('click',function(e){if(e.target===this)closePreview()});
     $('previewBtn').addEventListener('click',function(){setPreview(!pvOn)});
     document.addEventListener('keydown',function(e){
       if(e.key==='Escape'&&$('pvpop').classList.contains('show')){e.stopImmediatePropagation();closePreview()}
@@ -5762,10 +5813,11 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       and a Share button. */
     var MOMENTS=UI.moments||[];
     function trackWorth(){
-      var nw=Math.round(worth());
+      var nw=Math.round(worth()),d=S.over&&S.endDay?S.endDay:S.day;  /* a game that ended overnight records its final net worth on the day that just ended */
       if(!S.hist)S.hist=[];
       var h=S.hist;
-      if(h.length&&h[h.length-1][0]===S.day)h[h.length-1][1]=nw;else h.push([S.day,nw]);
+      if(S.over)while(h.length&&h[h.length-1][0]>d)h.pop();
+      if(h.length&&h[h.length-1][0]===d)h[h.length-1][1]=nw;else h.push([d,nw]);
       if(S.flags&&S.flags.diff&&S.nw0===undefined)S.nw0=nw;  /* net worth at the very start, once the difficulty is chosen */
     }
     function logMoment(msg){
@@ -5820,7 +5872,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     }
     function recapText(title){
       var ms=topMoments();
-      return 'Daily Grind · '+Df().n+(traitTag()?' · '+traitTag():'')+' · '+Math.min(S.day,maxDays())+' day'+(S.day>1?'s':'')+'\n'+title+' · ⭐ '+score().toLocaleString()+' points\n💰 Net worth '+money(worth())+
+      var dd=S.endDay||Math.min(S.day,maxDays());
+      return 'Daily Grind · '+Df().n+(traitTag()?' · '+traitTag():'')+' · '+dd+' day'+(dd>1?'s':'')+'\n'+title+' · ⭐ '+score().toLocaleString()+' points\n💰 Net worth '+money(worth())+
         (ms.length?'\nBiggest moments:\n'+ms.map(function(m){return '• Day '+m.d+': '+m.t}).join('\n'):'');
     }
     function shareCopy(txt){
@@ -5837,7 +5890,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     }
     function showRecap(title){
       var ms=topMoments(),chart=netWorthChart(),txt=recapText(title),box=$('overScore');
-      box.insertAdjacentHTML('beforeend','<div class="recap" id="recap"><div class="rc-head"><span>🎮 Daily Grind</span><small>'+esc(Df().n+(traitTag()?' · '+traitTag():''))+' · day '+Math.min(S.day,maxDays())+'</small></div>'+
+      box.insertAdjacentHTML('beforeend','<div class="recap" id="recap"><div class="rc-head"><span>🎮 Daily Grind</span><small>'+esc(Df().n+(traitTag()?' · '+traitTag():''))+' · day '+(S.endDay||Math.min(S.day,maxDays()))+'</small></div>'+
         '<div class="rc-big">'+esc(title)+'</div><div class="rc-stats"><span>⭐ '+score().toLocaleString()+' points</span><span>💰 '+esc(money(worth()))+'</span></div>'+
         (chart?'<div class="rc-h">Net worth by day</div>'+chart:'')+
         '<div class="rc-h">Biggest moments</div>'+(ms.length?'<ul class="rc-moments">'+ms.map(function(m){return '<li><b>Day '+m.d+'</b><span>'+esc(m.i+' '+m.t)+'</span></li>'}).join('')+'</ul>':'<div class="sub">A quiet run. No big moments this time.</div>')+

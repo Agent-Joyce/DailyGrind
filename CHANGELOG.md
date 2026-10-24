@@ -996,3 +996,22 @@ QA only; no game change.
 ## 63. Enrolment message grammar
 
 - Enrolling in a one-module qualification (Customer Service Certificate) said "All 1 modules and their lessons are now free to attend". It now says "Its module and lessons are now free to attend". Text only.
+
+## 64. Review fixes: recap day, preview, save status, personal best, first goal, overview, map highlights
+
+- **Recap chart:** a game that ends overnight (time's up after day 15, or bankrupt, exhausted and so on) recorded its final net worth on the next day (day 16). It now records it on the last day played, and the recap and share text say that day too. New save field `S.endDay` (set when the game ends).
+- **Action preview:** one button, **Ok**, which carries out the action and closes the preview; "Not now" is gone. The "Don't ask me again" box decides whether the preview shows next time. To cancel, click or tap outside the box (or press Esc). The preview's title now shows just the action's name ("Yoga & stretch · $12?"), not the whole row with its chips and note.
+- **Save status:** the top bar no longer says "Auto-saved" no matter what. It shows **💾 Saved 2:41 pm** (the time of the last save that worked), **⚠️ Saving failed — progress may be lost** in red when the browser refuses a save (hover for the last good save time), or **⚠️ Save unavailable in this browser** when the browser does not let the page store anything at all (checked when the page opens).
+- **Personal best on a loss:** the end card said "Congratulations! New top score!" even after losing, and played the win sound. It now says **🏆 New personal-best score!** under the win or loss heading, and the win sound only plays when you have won.
+- **First-week goal:** "Eat a meal (Fast Food, Restaurant, or cook at home)" is now "Eat a meal before the day ends (Fast Food, Restaurant, or Supermarket food eaten at home)". Snacks (chips, coffee and cake) still do not count.
+- **Overview panel (desktop):** a **Hide ✕** button and a line at the top, "Click outside this panel to explore the town. 📋 Overview brings it back". When hidden, the 📋 Overview button in the top bar is teal and pulses twice so it is easy to find. Phones are unchanged (the panel sits below the map there).
+- **Map highlights:** where you are now has a solid gold outline around the building (plus the glow) and a gold ring on its name. The building whose panel is open also gets a teal ring outside the gold outline and a teal name label.
+
+## 65. Compact Gym, Thrift Store and Electronics Store
+
+Layout only; no rules change.
+- **Gym:** each class is its name, price and chips (time, energy, health, happiness, "Counts ×2" / "Not a workout"); the one-line description under each class has moved into the Classes ⓘ.
+- **Thrift Store and Electronics Store:** each item now shows what it does as icon chips instead of a sentence: knowledge and happiness a day (phone, tablet, computer), happiness and knowledge for each hour of rest (TV, console), fridge space and keep time, the coffee machine's morning energy, the microwave's reheat time, the gloves' extra pay a shift, "ETFs · study online" and "Freelance · hedge fund", a green "Comfort" chip for comfort items and a red "Breaks often" chip for second-hand items. The full descriptions are listed in the section's ⓘ. The Electronics Store ⓘ also says how much each comfort item adds.
+- The work gloves' $15 a shift is now one value (`GLOVES_PAY`) used by both the pay and the text.
+- **Factory:** without a job there, the empty "🏭 Factory floor" card is gone; its text is now at the start of the "No job here? You can still" card's ⓘ, and that card shows "Closed" when the Factory is closed. With a Factory job the "Factory floor" card stays as before.
+- Checked every building: all 16 panels use the compact card layout.
