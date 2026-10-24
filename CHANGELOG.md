@@ -1015,3 +1015,8 @@ Layout only; no rules change.
 - The work gloves' $15 a shift is now one value (`GLOVES_PAY`) used by both the pay and the text.
 - **Factory:** without a job there, the empty "🏭 Factory floor" card is gone; its text is now at the start of the "No job here? You can still" card's ⓘ, and that card shows "Closed" when the Factory is closed. With a Factory job the "Factory floor" card stays as before.
 - Checked every building: all 16 panels use the compact card layout.
+
+## 66. No "nearly broke" nagging in the first five days
+
+- Net worth under $100 no longer shows the "💸 Nearly broke" warning or costs 3 happiness overnight on days 1–5. Both start on day 6. Being in debt (net worth under $0) still costs 8 happiness and 5% energy from day 1.
+- The money-shame numbers moved from the code into the new `CONFIG.shame` {nearlyBrokeBelow 100, nearlyBrokeHappiness −3, nearlyBrokeFromDay 6, debtHappiness −8, debtEnergy −5}. The Rules "Money shame" line is filled in from it. The Config Guide has the new keys.

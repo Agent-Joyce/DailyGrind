@@ -656,7 +656,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     <li><b>Factory without a job:</b> <span id="cfgFac">day labour on the loading dock (4h, once a day, no dress code) pays 60% of the lowest Factory wage and does not count as work experience. A safety course (once a game) counts as 1 shift of Factory work experience; a factory tour (once a game) adds a little knowledge.</span></li>
     <li><b>Free time:</b> <span id="cfgFun">at home, watch a show or play games (1h, −1% energy, +7 happiness, needs a TV or console) or call your family once a day (30m, +3). At the Park, walk (1h, +5 happiness, +1 health) or jog (1h, −8% energy, +4 happiness, +3 health). The Restaurant also serves coffee and cake (45m, +3% energy, +6 happiness), a snack rather than a meal.</span></li>
     <li><b>Hunger:</b> skipping the daily meal costs <span id="cfgHunger">20% energy and 15 happiness</span>, and cuts productivity.</li>
-    <li><b>Money shame:</b> checked when you end the day: net worth under $100 then costs 3 happiness, under $0 costs 8 happiness and 5% energy. Nothing is taken during the day.</li>
+    <li><b>Money shame:</b> <span id="cfgShame">checked when you end the day: net worth under $0 costs 8 happiness and 5% energy; from day 6, net worth under $100 costs 3 happiness. Nothing is taken during the day.</span></li>
     <li><b>Keyboard:</b> 1–9 press the numbered buttons, E ends the day, Esc leaves a building or closes a window, H opens these rules, M toggles sound. Tab moves between buildings.</li>
     <li><b>Health:</b> a slow-moving vital. Healthy meals, the gym, the Park and sleeping at home raise it; hunger, illness, junk food, long study days and burnout lower it. Good health, a healthy diet and regular gym visits all cut your chance of falling ill.</li>
     <li><b>Layoffs and closures (two different things):</b> in a bad economy you can be <b>laid off</b> (the job is gone, so apply for a new one) or your workplace can <b>close</b> for 1 to 4 days (the Work button is disabled, but the job stays on your record and the morning message tells you when it is back). You can only hold one job at a time.</li>
@@ -1242,6 +1242,13 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       daysInARow:3,
       fromDay:5,                 // the first day that counts (1 = from the very start; a later day gives new players a grace period)
       warnDaysBefore:2           // net worth under the line shows a warning with a way out from this many days before fromDay
+    },
+    shame:{
+      /* Money shame, checked when you end the day. In debt (net worth under 0): debtHappiness and debtEnergy, from day 1.
+        Nearly broke (net worth under nearlyBrokeBelow): nearlyBrokeHappiness, only from nearlyBrokeFromDay (no warning or
+        penalty before then, so new players are not nagged while they find their feet). */
+      nearlyBrokeBelow:100, nearlyBrokeHappiness:-3, nearlyBrokeFromDay:6,
+      debtHappiness:-8, debtEnergy:-5
     },
     score:{
       /* Final score = net worth + each vital x its weight + education levels x educationLevel. */
@@ -2753,8 +2760,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function loadTxt(){var BU=CONFIG.burnout,m=loadMin();return '⏱ Work and study today: <b>'+hm(m)+'</b>. More than '+loadLimitTxt()+' a day for '+dayN(BU.daysInARow)+' running causes burnout'+(S.loadStreak?' (streak: '+S.loadStreak+' of '+BU.daysInARow+')':'')+'.'}
   function stressTick(){
     var nw=worth();
-    if(nw<0){S.happy=clamp(S.happy-8);S.energy=clamp(S.energy-5);log('You are in debt and the creditors keep calling. The shame hits hard (−8 happiness, −5% energy).','bad')}
-    else if(nw<100){S.happy=clamp(S.happy-3);log('You are almost broke and feel ashamed around everyone (−3 happiness).','warn')}
+    var SH=CONFIG.shame;
+    if(nw<0){S.happy=clamp(S.happy+SH.debtHappiness);S.energy=clamp(S.energy+SH.debtEnergy);log('You are in debt and the creditors keep calling. The shame hits hard ('+sg(SH.debtHappiness)+' happiness, '+sg(SH.debtEnergy)+'% energy).','bad')}
+    else if(nw<SH.nearlyBrokeBelow&&S.day-1>=SH.nearlyBrokeFromDay){S.happy=clamp(S.happy+SH.nearlyBrokeHappiness);log('You are almost broke and feel ashamed around everyone ('+sg(SH.nearlyBrokeHappiness)+' happiness).','warn')}  /* S.day-1: the day that just ended */
     S.exh=S.energy<=10?S.exh+1:0;
     S.gloom=S.happy<=10?S.gloom+1:0;
     var BR=CONFIG.bankrupt;
@@ -2841,7 +2849,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(S.hungry>=1&&!S.fed)push('bad','🍽 '+S.hungry+' day'+(S.hungry>1?'s':'')+' without a meal and none yet today: '+FD.hungryDaysToHospital+' in a row puts you in hospital.');
     else if(!S.fed&&S.ap<M(15))push('warn','🍽 No meal yet today. Eat before you end the day.');
     if(nw<0)push('bad','💸 In debt ('+money(nw)+'): if your net worth is still under $0 when you end the day, shame costs 8 happiness and 5% energy.');
-    else if(nw<100)push('warn','💸 Nearly broke ('+money(nw)+'): if your net worth is still under $100 when you end the day, shame costs 3 happiness.');
+    else if(nw<CONFIG.shame.nearlyBrokeBelow&&S.day>=CONFIG.shame.nearlyBrokeFromDay)push('warn','💸 Nearly broke ('+money(nw)+'): if your net worth is still under '+money(CONFIG.shame.nearlyBrokeBelow)+' when you end the day, shame costs '+Math.abs(CONFIG.shame.nearlyBrokeHappiness)+' happiness.');
     var left=nextRentWeek()-S.day;
     if(S.homeless)push('bad','🏚️ No home: you sleep outside every night and cannot rest, cook or use your fridge and gadgets. Apply at the Apartment ('+money(homeFee('apt'))+') or the Bungalow ('+money(homeFee('bung'))+').');
     else if(left<=1&&S.cash<H.rent&&S.rentPaid!==nextRentWeek())push('bad','🏠 Rent of '+money(H.rent)+' is due '+(left===0?'today':'tomorrow')+' and you only have '+money(S.cash)+' in cash.');
@@ -5500,6 +5508,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         var aN=function(l){return l==='Honours'?'Honours':l==='Masters'?'a Masters':'a '+l},same=cL.every(function(l){return cK[l]===cH[l]});
         if($('cfgCert')&&same)$('cfgCert').textContent=cL.length?'Earning a qualification adds knowledge and happiness: '+cL.map(function(l,i){return sg(cK[l])+(i?'':' each')+' for '+aN(l)}).join(', ')+'.':'';
         else if($('cfgCert'))$('cfgCert').textContent=cL.length?'Earning a qualification adds '+cL.map(function(l){return (cK[l]===cH[l]?sg(cK[l])+' knowledge and happiness':[cK[l]?sg(cK[l])+' knowledge':'',cH[l]?sg(cH[l])+' happiness':''].filter(Boolean).join(', '))+' for '+(l==='Honours'?'Honours':(l==='Masters'?'a Masters':'a '+l))}).join('; ')+'.':'';
+        var SH=CONFIG.shame;if($('cfgShame'))$('cfgShame').textContent='checked when you end the day: net worth under $0 costs '+Math.abs(SH.debtHappiness)+' happiness and '+Math.abs(SH.debtEnergy)+'% energy'+(SH.nearlyBrokeFromDay>1?'; from day '+SH.nearlyBrokeFromDay+', ':'; ')+'net worth under $'+SH.nearlyBrokeBelow+' costs '+Math.abs(SH.nearlyBrokeHappiness)+' happiness. Nothing is taken during the day.';
         var F=CONFIG.factory;if($('cfgFac'))$('cfgFac').textContent='day labour on the loading dock ('+hm(F.dayLabour.minutes)+', '+(F.dayLabour.perDay===1?'once':F.dayLabour.perDay+' times')+' a day, no dress code) pays '+pctTxt(F.dayLabour.payShare)+' of the lowest Factory wage and does not count as work experience. A safety course (once a game, '+hm(F.course.minutes)+', +'+F.course.knowledge+' knowledge) counts as '+F.course.expShifts+' shift'+(F.course.expShifts>1?'s':'')+' of Factory work experience; a factory tour (once a game, '+hm(F.tour.minutes)+') adds '+F.tour.knowledge+' knowledge and '+F.tour.happiness+' happiness.';
         if($('cfgFun'))$('cfgFun').textContent='at home, watch a show or play games ('+hm(LE.screen.minutes)+', '+fx(LE.screen)+', needs a TV or game console) or call your family '+(LE.call.perDay===1?'once':LE.call.perDay+' times')+' a day ('+hm(LE.call.minutes)+', '+fx(LE.call)+'). At the Park, walk ('+hm(LE.walk.minutes)+', '+fx(LE.walk)+') or jog ('+hm(LE.jog.minutes)+', '+fx(LE.jog)+'). The Restaurant also serves '+cf.name+' ('+hm(cf.minutes)+', '+sg(cf.energy)+'% energy, '+sg(cf.happiness)+' happiness), a snack rather than a meal.'})();
       $('cfgRent').textContent=everyDays(RENT_EVERY);
