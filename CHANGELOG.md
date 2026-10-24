@@ -1033,3 +1033,17 @@ Layout only; no rules change.
 Display only; no rules change.
 - With less than 10 hours left in the day, the town map darkens to show evening, getting darker as the day runs out (a dark blue layer at 25% with 10 hours left, rising to 50% as time runs out). The panels, top bar and pop-ups stay bright, and the map can still be clicked. It lights up again the next morning, when the clock resets (as the morning card appears).
 - New `CONFIG.ui.evening` {fromMinutes 600, darkest 0.5}; `fromMinutes: 0` turns it off.
+
+## 69. Kitchen buttons and fewer toasts at once
+
+Display only; no rules change.
+- **Cook buttons** at home all have the same teal background (Cook 1, Cook 2, Cook 3…); before, only Cook 1 was filled and the others were white.
+- **Eat buttons** say how much they eat: "Eat 1" (cooked, ready-to-eat, chips), "Eat 1 cold", "Reheat & eat 1 · …", "Eat 1 cooked" / "Eat 1 ready meal" for spoiled food.
+- **Toasts:** at most 2 on screen at a time (was 3); a new one pushes out the oldest. `CONFIG.ui.toasts.max` 2.
+
+## 70. Work and study wear down health; home meals heal less
+
+- **Every hour of work or study costs 1 health:** shifts, freelance coding and Factory day labour, School lessons and self-study. It is worked out per action from its length and rounded, a half counting as a whole point: a 4h30 shift −5, 2h30 freelance coding −3, 4h day labour −4, a 1h lesson −1, a 40- or 30-minute Honours or Masters lesson −1, a 2h self-study session −2 (unchanged; it was −2 a session). The rows show it as a health chip.
+- New `CONFIG.time.workHealthPerHour` (−1), `CONFIG.education.lessonHealthPerHour` (−1) and `CONFIG.selfStudy.healthPerHour` (−1), which replaces `selfStudy.health` (−2 a session).
+- **Home meals:** a cooked meal now gives +5 health (was +10), a ready-to-eat meal +1 (was +5). `CONFIG.food.basic.health` 5, `food.premium.health` 1.
+- The Rules Health line, the Study & work and School ⓘ texts and the Config Guide describe the new costs.

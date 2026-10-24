@@ -659,7 +659,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     <li><b>Hunger:</b> skipping the daily meal costs <span id="cfgHunger">20% energy and 15 happiness</span>, and cuts productivity.</li>
     <li><b>Money shame:</b> <span id="cfgShame">checked when you end the day: net worth under $0 costs 8 happiness and 5% energy; from day 6, net worth under $100 costs 3 happiness. Nothing is taken during the day.</span></li>
     <li><b>Keyboard:</b> 1–9 press the numbered buttons, E ends the day, Esc leaves a building or closes a window, H opens these rules, M toggles sound. Tab moves between buildings.</li>
-    <li><b>Health:</b> a slow-moving vital. Healthy meals, the gym, the Park and sleeping at home raise it; hunger, illness, junk food, long study days and burnout lower it. Good health, a healthy diet and regular gym visits all cut your chance of falling ill.</li>
+    <li><b>Health:</b> a slow-moving vital. Healthy meals, the gym, the Park and sleeping at home raise it; hunger, illness, junk food, burnout and <span id="cfgHpWork">work and study (1 health an hour of shifts, lessons and self-study)</span> lower it. Good health, a healthy diet and regular gym visits all cut your chance of falling ill.</li>
     <li><b>Layoffs and closures (two different things):</b> in a bad economy you can be <b>laid off</b> (the job is gone, so apply for a new one) or your workplace can <b>close</b> for 1 to 4 days (the Work button is disabled, but the job stays on your record and the morning message tells you when it is back). You can only hold one job at a time.</li>
     <li><b>Loans:</b> <span id="cfgLoan">Borrow at the Bank in $50 steps.</span></li>
     <li><b>Work limit:</b> you can work at most <span id="cfgWork">12 hours</span> of shifts in one day.</li>
@@ -728,6 +728,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     education:{certFee:{sal:43,fnb:45,fin:79,tech:52,med:55,cus:95,eng:58},certVariance:0.05,
       lessonEnergyPerHour:-5,      // a school lesson costs this much energy (%) for each hour...
       lessonHappinessPerHour:-5,   // ...and this much happiness
+      lessonHealthPerHour:-1,      // ...and this much health (rounded per lesson, a half rounds to a whole point)
       /* bonus when you earn a qualification (shown on the certificate), by level */
       certKnowledge:{Certificate:5, Degree:10, Honours:15, Masters:20},
       certHappiness:{Certificate:5, Degree:10, Honours:15, Masters:20}},
@@ -960,7 +961,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         {pay:0,  minutes:270, energy:10}    // 4h30
       ],
       freelanceMinutes:150,  // freelance coding at home (needs a computer)
-      workHappinessShare:0.5 // a shift (or freelance coding) also costs this share of its energy cost in happiness, rounded up
+      workHappinessShare:0.5, // a shift (or freelance coding) also costs this share of its energy cost in happiness, rounded up
+      workHealthPerHour:-1   // health for each hour of work (shifts, freelance coding, Factory day labour), rounded per shift
     },
     clothes:{
       /* The three outfits sold at the Clothes Mall.
@@ -1091,8 +1093,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       cafe:   {name:'coffee and cake',          minutes:45, cost:12, energy:3, happiness:6, snack:true},  // snack:true = does not count as your meal
       junkHealth:-1,        // health lost each time you eat a junk meal
       /* Meals from the Supermarket. health = health gained when you eat it at home. */
-      basic:  {name:'Meal prep',                cost:30, energy:20, happiness:3, health:10},  // must be cooked; these are what the cooked meal gives
-      premium:{name:'Ready-to-eat meal',        cost:55, energy:20, happiness:9, health:5},  // ready to eat
+      basic:  {name:'Meal prep',                cost:30, energy:20, happiness:3, health:5},  // must be cooked; these are what the cooked meal gives
+      premium:{name:'Ready-to-eat meal',        cost:55, energy:20, happiness:9, health:1},  // ready to eat
       buyUnits:2,            // time to buy a meal or a bundle
       bundleSize:3,          // portions in a bundle
       bundleDiscount:0.15,  // bundle saving (0.15 = 15% off)
@@ -1146,7 +1148,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       minutes:120,          // session length in minutes
       energyPerHour:-5,     // energy (%) for each hour of self-study
       happinessPerHour:-5,  // happiness for each hour of self-study
-      health:-2,            // health per session
+      healthPerHour:-1,     // health for each hour of self-study
       minEnergy:15,          // too tired to study below this
       /* Knowledge also changes by itself each night: */
       nightlyLoss:-2,        // everyone forgets a little
@@ -1279,7 +1281,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
             vitalWarnings: pop up whenever a NEW warning appears (tired, low morale, rent due, no meal yet...).
             words: pop up when a Daily log line contains one of these phrases (lowercase). */
       toasts:{
-        on:true, seconds:2, max:3, vitalWarnings:true,
+        on:true, seconds:2, max:2, vitalWarnings:true,
         words:['you passed the interview','didn’t pass the interview','not enough relevant working experience','no openings now','you were promoted','laid off from','qualification earned',
               'lottery win','lost your home','food poisoning','rushed to hospital','is admitting you','released from the hospital','expelled from school','demotes you','late fee','broke down',
               'milestone:','you reached '],
@@ -2046,7 +2048,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(!spendMin(j.min,0))return;
     S.workMin=(S.workMin||0)+j.min;
     var pr=prod(), pay=shiftPay(j.pay), low=pr.m<1, v0=vitSnap();
-    S.cash+=pay;inc(pay);S.energy=clamp(S.energy-j.en);S.happy=clamp(S.happy-workHap(j.en));S.flags.worked=1;
+    S.cash+=pay;inc(pay);S.energy=clamp(S.energy-j.en);S.happy=clamp(S.happy-workHap(j.en));S.health=clamp(S.health+workHp(j.min));S.flags.worked=1;
     if(c){if(!S.shiftsAt)S.shiftsAt={};S.shiftsAt[bOf(k)]=(S.shiftsAt[bOf(k)]||0)+1}  /* work experience per workplace */
     log('You worked a shift as '+j.n+' and earned '+money(pay)+vitPar(v0)+'.'+(low?' Productivity was '+Math.round(pr.m*100)+'% ('+pr.rs.join(', ')+').':''),'good');
     done();
@@ -2116,7 +2118,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(!S.les)S.les={};
     var v0=vitSnap();
     var lc=lessonCost(h);
-    S.studyMin+=h*60;k++;S.les[t]=k;S.lastTrack=t;S.energy=clamp(S.energy+lc.en);S.happy=clamp(S.happy+lc.hap);S.studied=true;S.flags.study=1;S.sinceClass=0;S.enrolled=true;S.know=clamp(S.know+1);
+    S.studyMin+=h*60;k++;S.les[t]=k;S.lastTrack=t;S.energy=clamp(S.energy+lc.en);S.happy=clamp(S.happy+lc.hap);S.health=clamp(S.health+lc.hp);S.studied=true;S.flags.study=1;S.sinceClass=0;S.enrolled=true;S.know=clamp(S.know+1);
     var q=posInLevel(t,n);
     if(k<nl){log('Lesson '+k+' of '+nl+' done: "'+T.m[n]+'" ('+T.n+' '+T.lv[q.i]+', '+hm(h*60)+(vitTxt(v0)?'; '+vitTxt(v0):'')+').');return done()}
     S.les[t]=0;S.edu[t]++;S.know=clamp(S.know+2+q.i);
@@ -2265,11 +2267,15 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function cookMin(n){return FD.cookFirst+(n-1)*FD.cookExtra}
   /* vital costs that scale with time (CONFIG): cooking, lessons, self-study, walking and work */
   function cookEn(min){return Math.round(min/180*FD.cookEnergy)}
-  function lessonCost(h){var E=CONFIG.education;return {en:Math.round(h*E.lessonEnergyPerHour),hap:Math.round(h*E.lessonHappinessPerHour)}}
+  function lessonCost(h){var E=CONFIG.education;return {en:Math.round(h*E.lessonEnergyPerHour),hap:Math.round(h*E.lessonHappinessPerHour),hp:hourHp(h*60,E.lessonHealthPerHour)}}
   function selfMin(){return CONFIG.selfStudy.minutes}
-  function selfCost(){var SS=CONFIG.selfStudy,h=selfMin()/60;return {en:Math.round(h*SS.energyPerHour),hap:Math.round(h*SS.happinessPerHour)}}
+  function selfCost(){var SS=CONFIG.selfStudy,h=selfMin()/60;return {en:Math.round(h*SS.energyPerHour),hap:Math.round(h*SS.happinessPerHour),hp:hourHp(selfMin(),SS.healthPerHour)}}
   function walkEn(min){return Math.round(min/CONFIG.time.walkMinutes*(CONFIG.time.walkEnergy||0))}
   function workHap(en){return Math.ceil(en*(CONFIG.time.workHappinessShare||0))}
+  /* health that an hour-based activity costs: minutes x rate per hour, rounded with a half going to a whole point */
+  function hourHp(min,rate){var x=min/60*(rate||0);return x<0?-Math.round(-x):Math.round(x)}
+  function workHp(min){return hourHp(min,CONFIG.time.workHealthPerHour)}
+  function hpChip(v){return v?chip('health',sg(v)):''}
   /* spoiled food (gone off without a fridge) can still be eaten, but it hurts your health and may poison you */
   function eatSpoiled(what,g){
     if(Math.random()<FD.spoiledPoisonChance)return poison(what.replace(/^an? /,''));
@@ -2353,7 +2359,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(!gain)return refuse('You need a computer, tablet or phone to learn at home.');
     if(S.energy<SS.minEnergy)return refuse('You’re too tired to study. Eat or rest first.');
     if(!spendMin(selfMin(),0))return;
-    var sc=selfCost(),v0=vitSnap();S.energy=clamp(S.energy+sc.en);S.happy=clamp(S.happy+sc.hap);S.health=clamp(S.health+SS.health);S.know=clamp(S.know+gain);S.studyMin+=selfMin();
+    var sc=selfCost(),v0=vitSnap();S.energy=clamp(S.energy+sc.en);S.happy=clamp(S.happy+sc.hap);S.health=clamp(S.health+sc.hp);S.know=clamp(S.know+gain);S.studyMin+=selfMin();
     log('You spent '+hm(selfMin())+' studying online at home'+vitPar(v0)+'.'+(loadMin()>CONFIG.burnout.loadMinutes?' That makes more than '+loadLimitTxt()+' of work and study today.':''),'good');
     done();
   }
@@ -2706,7 +2712,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       if(!spendMin(L.minutes,0))return;
       S.workMin=(S.workMin||0)+L.minutes;
       var pay=shiftPay(labourPay());v0=vitSnap();
-      S.cash+=pay;inc(pay);S.energy=clamp(S.energy-en);S.happy=clamp(S.happy-workHap(en));S.flags.worked=1;f.ln=labourToday()+1;f.ld=S.day;
+      S.cash+=pay;inc(pay);S.energy=clamp(S.energy-en);S.happy=clamp(S.happy-workHap(en));S.health=clamp(S.health+workHp(L.minutes));S.flags.worked=1;f.ln=labourToday()+1;f.ld=S.day;
       log('You did a day of casual work on the loading dock and earned '+money(pay)+vitPar(v0)+'.','good');
     }else if(k==='course'||k==='tour'){
       var C=F[k];
@@ -4540,11 +4546,11 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       var rk=cur(k);
       if(!rk)return '<p><small>You don’t work here yet. Apply at the Employment Office.</small></p>';
       var ef=effort(rk.pay), en=ef.en, mins=ef.min;
-      var pm=prod().m,pr=prod(),sh=shutLeft(bOf(k));return arow(rk.r+' shift · '+money(shiftPay(rk.pay)),chip('time',hm(mins))+chip('energy','−'+en+'%')+chip('happy','−'+workHap(en))+(rk.dress?chip('',DSHORT[rk.dress]+(rk.dress==='suit'?'':' or better'),hasDress(rk.dress)?'':'warn'):'')+(pm<1?chip('','Pay ×'+Math.round(pm*100)+'%','warn'):'')+(sh?chip('','Closed '+sh+'d','warn'):''),btn('work',k,sh?'Closed':'Work a shift',0,!!sh),
+      var pm=prod().m,pr=prod(),sh=shutLeft(bOf(k));return arow(rk.r+' shift · '+money(shiftPay(rk.pay)),chip('time',hm(mins))+chip('energy','−'+en+'%')+chip('happy','−'+workHap(en))+hpChip(workHp(mins))+(rk.dress?chip('',DSHORT[rk.dress]+(rk.dress==='suit'?'':' or better'),hasDress(rk.dress)?'':'warn'):'')+(pm<1?chip('','Pay ×'+Math.round(pm*100)+'%','warn'):'')+(sh?chip('','Closed '+sh+'d','warn'):''),btn('work',k,sh?'Closed':'Work a shift',0,!!sh),
         sh?'Your job is safe and returns when the workplace reopens.':pm<1?'Pay is lower because of '+pr.rs.join(', ')+'.':'');
     }
     var j=JOBS[k], need=(j.computer&&!owns('computer'))?'Needs a working computer':'';
-    return arow(j.n+' shift · '+money(shiftPay(j.pay)),chip('time',hm(j.min))+chip('energy','−'+j.en+'%')+chip('happy','−'+workHap(j.en)),btn('work',k,'Work a shift',0,!!need),need);
+    return arow(j.n+' shift · '+money(shiftPay(j.pay)),chip('time',hm(j.min))+chip('energy','−'+j.en+'%')+chip('happy','−'+workHap(j.en))+hpChip(workHp(j.min)),btn('work',k,'Work a shift',0,!!need),need);
   }
   var ovHidden=false;  /* true after clicking the map outside the overview window */
   /* bank amount boxes: chosen with −/+ in steps of BK_STEP; the choice is kept while the game is open */
@@ -4640,13 +4646,13 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     t+=psec('kitchen','🍳 Kitchen',chip('',S.fed?'✓ Eaten today':'No meal yet',S.fed?'ok':'warn')+chip('','Meals '+S.homeMeals+'/'+FD.homeMealsPerDay),
       'A meal at home counts as today’s meal; you can eat up to '+FD.homeMealsPerDay+' a day here. Meal prep must be cooked: the first meal takes '+hm(FD.cookFirst)+', each extra one '+hm(FD.cookExtra)+' more, and cooking costs '+Math.abs(FD.cookEnergy)+'% energy for every 3 hours. A cooked meal that spent a night in the fridge is cold: reheat it with a microwave ('+hm(FD.reheatMinutes)+') or eat it cold ('+sg(FD.coldHappiness)+' happiness). Spoiled food costs '+Math.abs(FD.spoiledHealth)+' health and has a '+pctTxt(FD.spoiledPoisonChance)+' chance of food poisoning. Chips are junk food: '+CONFIG.illness.junkMeals+' junk servings in 5 days raise your illness risk.');
     if(!(nb+np+nw+ncold+nsp+(S.chips||0)))t+='<p class="arow-n">No food at home. Buy meals at the Supermarket.</p>';
-    if(nw)t+=arow('🍲 Cooked meal × '+nw,mealCh(GROC.basic,GROC.basic.hap),btn('eatc','','Eat',0,full));
-    if(ncold)t+=arow('🥶 Cold meal × '+ncold,mealCh(GROC.basic,GROC.basic.hap+FD.coldHappiness),'<span class="btnrow">'+(mw?btn('eatc','heat','Reheat · '+hm(FD.eatMinutes+FD.reheatMinutes),0,full):'')+btn('eatc','cold','Eat cold',mw?1:0,full)+'</span>');
-    if(np)t+=arow('🍱 Ready-to-eat × '+np,mealCh(GROC.prem,GROC.prem.hap),btn('eatp','','Eat',0,full));
-    if(nb+nbs){var cb='';for(var n=1;n<=nb+nbs;n++)cb+=btn('cook',String(n),'Cook '+n+' · '+hm(cookMin(n)),n>1?1:0);
+    if(nw)t+=arow('🍲 Cooked meal × '+nw,mealCh(GROC.basic,GROC.basic.hap),btn('eatc','','Eat 1',0,full));
+    if(ncold)t+=arow('🥶 Cold meal × '+ncold,mealCh(GROC.basic,GROC.basic.hap+FD.coldHappiness),'<span class="btnrow">'+(mw?btn('eatc','heat','Reheat & eat 1 · '+hm(FD.eatMinutes+FD.reheatMinutes),0,full):'')+btn('eatc','cold','Eat 1 cold',mw?1:0,full)+'</span>');
+    if(np)t+=arow('🍱 Ready-to-eat × '+np,mealCh(GROC.prem,GROC.prem.hap),btn('eatp','','Eat 1',0,full));
+    if(nb+nbs){var cb='';for(var n=1;n<=nb+nbs;n++)cb+=btn('cook',String(n),'Cook '+n+' · '+hm(cookMin(n)));  /* every Cook button looks the same */
       t+=arow('🥕 Meal prep × '+nb+(nbs?' + '+nbs+' spoiled':''),chip('energy',sg(cookEn(cookMin(1)))+'% per 3h')+chip('','Keeps '+FD.keepDaysRoom+'d · '+FD.keepDaysFridge+'d in fridge'),'<span class="btnrow">'+cb+'</span>')}
-    if(S.chips)t+=arow('🥔 Chips × '+S.chips,chip('time',hm(FD.chips.eatMinutes))+chip('happy',sg(FD.chips.happiness))+chip('energy',sg(FD.chips.energy)+'%')+chip('health',sg(FD.chips.health))+chip('','Junk','warn'),btn('eatchips','','Eat'));
-    if(ncs+nps){var spb='';if(ncs)spb+=btn('eatc','sp','Eat cooked',1,full);if(nps)spb+=btn('eatp','sp','Eat ready meal',1,full);
+    if(S.chips)t+=arow('🥔 Chips × '+S.chips,chip('time',hm(FD.chips.eatMinutes))+chip('happy',sg(FD.chips.happiness))+chip('energy',sg(FD.chips.energy)+'%')+chip('health',sg(FD.chips.health))+chip('','Junk','warn'),btn('eatchips','','Eat 1'));
+    if(ncs+nps){var spb='';if(ncs)spb+=btn('eatc','sp','Eat 1 cooked',1,full);if(nps)spb+=btn('eatp','sp','Eat 1 ready meal',1,full);
       t+=arow('<span class="bad">🤢 Spoiled food × '+(ncs+nps)+'</span>',chip('health',sg(FD.spoiledHealth),'warn')+chip('',pctTxt(FD.spoiledPoisonChance)+' poisoning','warn'),'<span class="btnrow">'+spb+'</span>')}
     if(nsp)t+=arow('🗑️ Throw out spoiled × '+nsp,chip('','No time'),btn('binsp','','Throw out',1));
     /* --- rest and sleep --- */
@@ -4662,10 +4668,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     /* --- study and work --- */
     var BU=CONFIG.burnout,lm=loadMin();
     t+=psec('study','📚 Study & work',chip('time',hm(lm)+' / '+loadLimitTxt().replace(' hours','h'),lm>BU.loadMinutes?'warn':''),
-      'Self-study needs a phone, tablet or computer; the best one counts (knowledge per session: computer '+SS.gain.computer+', tablet '+SS.gain.tablet+', phone '+SS.gain.phone+'). Each hour of self-study costs '+Math.abs(SS.energyPerHour)+'% energy and '+Math.abs(SS.happinessPerHour)+' happiness, plus '+Math.abs(SS.health)+' health a session. Under '+SS.minEnergy+'% energy you are too tired. A shift also costs happiness: '+pctTxt(CONFIG.time.workHappinessShare)+' of its energy cost. Working and studying more than '+loadLimitTxt()+' a day (shifts, lessons and self-study together) for '+dayN(BU.daysInARow)+' running causes burnout'+(S.loadStreak?' (streak: '+S.loadStreak+' of '+BU.daysInARow+')':'')+'. You can work at most '+hm(CONFIG.time.maxWorkMinutes)+' of shifts a day.');
+      'Self-study needs a phone, tablet or computer; the best one counts (knowledge per session: computer '+SS.gain.computer+', tablet '+SS.gain.tablet+', phone '+SS.gain.phone+'). Each hour of self-study costs '+Math.abs(SS.energyPerHour)+'% energy and '+Math.abs(SS.happinessPerHour)+' happiness and '+Math.abs(SS.healthPerHour)+' health. Under '+SS.minEnergy+'% energy you are too tired. A shift also costs happiness ('+pctTxt(CONFIG.time.workHappinessShare)+' of its energy cost) and '+Math.abs(CONFIG.time.workHealthPerHour)+' health for each hour. Working and studying more than '+loadLimitTxt()+' a day (shifts, lessons and self-study together) for '+dayN(BU.daysInARow)+' running causes burnout'+(S.loadStreak?' (streak: '+S.loadStreak+' of '+BU.daysInARow+')':'')+'. You can work at most '+hm(CONFIG.time.maxWorkMinutes)+' of shifts a day.');
     var sc=selfCost();
-    t+=arow('Self-study',gain?chip('time',hm(selfMin()))+chip('energy',sg(sc.en)+'%')+chip('happy',sg(sc.hap))+chip('health',sg(SS.health))+chip('know','+'+gain):'',btn('study','','Study',0,!gain),gain?'':'Needs a phone, tablet or computer.');
-    if(owns('computer')){var J=JOBS.free;t+=arow(J.n+' · '+money(shiftPay(J.pay)),chip('time',hm(J.min))+chip('energy','−'+J.en+'%')+chip('happy','−'+workHap(J.en)),btn('work','free','Work a shift'))}
+    t+=arow('Self-study',gain?chip('time',hm(selfMin()))+chip('energy',sg(sc.en)+'%')+chip('happy',sg(sc.hap))+hpChip(sc.hp)+chip('know','+'+gain):'',btn('study','','Study',0,!gain),gain?'':'Needs a phone, tablet or computer.');
+    if(owns('computer')){var J=JOBS.free;t+=arow(J.n+' · '+money(shiftPay(J.pay)),chip('time',hm(J.min))+chip('energy','−'+J.en+'%')+chip('happy','−'+workHap(J.en))+hpChip(workHp(J.min)),btn('work','free','Work a shift'))}
     /* --- rent and bills --- */
     t+=psec('rent','🧾 Rent & bills','',
       'Rent is taken from your cash at the end of day '+due+'. If you are short, the rest goes on a 5-day repayment plan with 10% interest, collected each morning, with a late fee on any missed instalment. Medical bills work the same way.');
@@ -4689,7 +4695,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       /* no job here: one card, with the factory's own text at the start of its ⓘ */
       var F=CONFIG.factory,L=F.dayLabour,f=S.fac||{},lt=labourToday()>=L.perDay,en=-L.energy;
       var t=psec('outside','🧰 No job here? You can still',closed||chip('','Open to everyone'),about+' Day labour needs no job and no dress code, but pays '+pctTxt(L.payShare)+' of the lowest Factory wage and does not count as work experience. It counts towards your daily work limit and burnout. The safety course counts as '+F.course.expShifts+' shift'+(F.course.expShifts>1?'s':'')+' of Factory work experience. The course and the tour are once a game.');
-      t+=arow('🧰 Day labour on the loading dock · '+money(shiftPay(labourPay())),chip('time',hm(L.minutes))+chip('energy','−'+en+'%')+chip('happy','−'+workHap(en))+(lt?chip('','✓ Done today','ok'):chip('',L.perDay===1?'Once a day':L.perDay+' a day')),btn('fac','labour','Work',0,sh||lt||!!S.ill),S.ill?'You are sick and can’t work.':'');
+      t+=arow('🧰 Day labour on the loading dock · '+money(shiftPay(labourPay())),chip('time',hm(L.minutes))+chip('energy','−'+en+'%')+chip('happy','−'+workHap(en))+hpChip(workHp(L.minutes))+(lt?chip('','✓ Done today','ok'):chip('',L.perDay===1?'Once a day':L.perDay+' a day')),btn('fac','labour','Work',0,sh||lt||!!S.ill),S.ill?'You are sick and can’t work.':'');
       t+=arow('🦺 Safety course · '+money(G(F.course.cost)),chip('time',hm(F.course.minutes))+chip('know','+'+F.course.knowledge)+chip('','+'+F.course.expShifts+' work exp','ok')+(f.course?chip('','✓ Done','ok'):''),btn('fac','course','Take course',0,sh||!!f.course));
       t+=arow('🚶 Factory tour · '+money(G(F.tour.cost)),chip('time',hm(F.tour.minutes))+chip('know','+'+F.tour.knowledge)+chip('happy','+'+F.tour.happiness)+(f.tour?chip('','✓ Done','ok'):''),btn('fac','tour','Take tour',0,sh||!!f.tour));
       return boxed(t)},
@@ -4700,7 +4706,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       var now=started.map(function(t){
         var T=TRACKS[t],n=S.edu[t],q=posInLevel(t,n),Lm=T.L[q.i],st=q.i?T.c[q.i-1]:0,k=lesDone(t),nl=lesCount(t,n),pc=Math.round(((n-st)+k/nl)/q.of*100);
         var mods=Lm.map(function(m,i){var g=st+i;return (g<n?'✓ ':g===n?'▸ ':'')+m}).join(' · ');
-        return arow('<b>📘 '+T.n+' '+T.lv[q.i]+'</b>',chip('','Module '+(n-st+1)+'/'+q.of+' · '+Lm[n-st]+' '+k+'/'+nl,'ok')+chip('time',hm(lesHours(t,n)*60))+chip('energy',sg(lessonCost(lesHours(t,n)).en)+'%')+chip('happy',sg(lessonCost(lesHours(t,n)).hap)),btn('class',t,'Study'),
+        return arow('<b>📘 '+T.n+' '+T.lv[q.i]+'</b>',chip('','Module '+(n-st+1)+'/'+q.of+' · '+Lm[n-st]+' '+k+'/'+nl,'ok')+chip('time',hm(lesHours(t,n)*60))+chip('energy',sg(lessonCost(lesHours(t,n)).en)+'%')+chip('happy',sg(lessonCost(lesHours(t,n)).hap))+hpChip(lessonCost(lesHours(t,n)).hp),btn('class',t,'Study'),
           '<span class="nsbar" title="'+mods+'"><i style="width:'+pc+'%"></i></span>','ns-row');
       }).join('');
       var tracks=Object.keys(TRACKS).sort(function(x,y){var f=function(t){return S.edu[t]>0&&!inProgress(t)&&S.edu[t]<totMods(t)?0:1};return f(x)-f(y)}).map(function(t){
@@ -4713,7 +4719,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         return arow(title+path,chip('','Next: '+T.lv[q.i],cont?'ok':'')+chip('',q.of+' module'+(q.of===1?'':'s'))+chip('time',lesCount(t,n)+' × '+hm(lesHours(t,n)*60))+(S.cash<fee?chip('cash','Need '+money(fee-S.cash)+' more','warn'):''),btn('enrol',t,'Enrol · '+money(fee),0,S.cash<fee),'',cont?'nextstep':'');
       }).join('');
       return boxed((now?psec('now','📘 Now studying',chip('time',hm(lm)+' / '+loadLimitTxt().replace(' hours','h'),lm>BU.loadMinutes?'warn':'')+(S.burn>0?chip('','Burnt out','warn'):''),
-          'Each lesson takes the time shown and costs '+Math.abs(CONFIG.education.lessonEnergyPerHour)+'% energy and '+Math.abs(CONFIG.education.lessonHappinessPerHour)+' happiness an hour. Attend a lesson at least every few days: '+'3 days without one is a warning, and 5 to 6 days gets you expelled. More than '+loadLimitTxt()+' of work and study a day for '+dayN(BU.daysInARow)+' running causes burnout'+(S.loadStreak?' (streak: '+S.loadStreak+' of '+BU.daysInARow+')':'')+'.')+now:'')+
+          'Each lesson takes the time shown and costs '+Math.abs(CONFIG.education.lessonEnergyPerHour)+'% energy, '+Math.abs(CONFIG.education.lessonHappinessPerHour)+' happiness and '+Math.abs(CONFIG.education.lessonHealthPerHour)+' health an hour. Attend a lesson at least every few days: '+'3 days without one is a warning, and 5 to 6 days gets you expelled. More than '+loadLimitTxt()+' of work and study a day for '+dayN(BU.daysInARow)+' running causes burnout'+(S.loadStreak?' (streak: '+S.loadStreak+' of '+BU.daysInARow+')':'')+'.')+now:'')+
         psec('tracks','🎓 Pathways',S.expelled>0?chip('','Expelled '+S.expelled+'d','warn'):'','Each pathway is a ladder of qualifications (Certificate → Degree → … → Masters). You pay tuition once when you enrol in a qualification, and earn it by completing all its modules. You can study several pathways at once.')+
         '<div class="jb2">'+tracks+'</div>')},
     bank:function(){
@@ -5516,6 +5522,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         var aN=function(l){return l==='Honours'?'Honours':l==='Masters'?'a Masters':'a '+l},same=cL.every(function(l){return cK[l]===cH[l]});
         if($('cfgCert')&&same)$('cfgCert').textContent=cL.length?'Earning a qualification adds knowledge and happiness: '+cL.map(function(l,i){return sg(cK[l])+(i?'':' each')+' for '+aN(l)}).join(', ')+'.':'';
         else if($('cfgCert'))$('cfgCert').textContent=cL.length?'Earning a qualification adds '+cL.map(function(l){return (cK[l]===cH[l]?sg(cK[l])+' knowledge and happiness':[cK[l]?sg(cK[l])+' knowledge':'',cH[l]?sg(cH[l])+' happiness':''].filter(Boolean).join(', '))+' for '+(l==='Honours'?'Honours':(l==='Masters'?'a Masters':'a '+l))}).join('; ')+'.':'';
+        if($('cfgHpWork')){var hw=Math.abs(CONFIG.time.workHealthPerHour||0),hl=Math.abs(CONFIG.education.lessonHealthPerHour||0),hs=Math.abs(CONFIG.selfStudy.healthPerHour||0);
+          $('cfgHpWork').textContent=hw===hl&&hl===hs?'work and study ('+hw+' health an hour of shifts, lessons and self-study)':'work and study (an hour costs '+hw+' health at work, '+hl+' in a lesson, '+hs+' in self-study)'}
         var SH=CONFIG.shame;if($('cfgShame'))$('cfgShame').textContent='checked when you end the day: net worth under $0 costs '+Math.abs(SH.debtHappiness)+' happiness and '+Math.abs(SH.debtEnergy)+'% energy'+(SH.nearlyBrokeFromDay>1?'; from day '+SH.nearlyBrokeFromDay+', ':'; ')+'net worth under $'+SH.nearlyBrokeBelow+' costs '+Math.abs(SH.nearlyBrokeHappiness)+' happiness. Nothing is taken during the day.';
         var F=CONFIG.factory;if($('cfgFac'))$('cfgFac').textContent='day labour on the loading dock ('+hm(F.dayLabour.minutes)+', '+(F.dayLabour.perDay===1?'once':F.dayLabour.perDay+' times')+' a day, no dress code) pays '+pctTxt(F.dayLabour.payShare)+' of the lowest Factory wage and does not count as work experience. A safety course (once a game, '+hm(F.course.minutes)+', +'+F.course.knowledge+' knowledge) counts as '+F.course.expShifts+' shift'+(F.course.expShifts>1?'s':'')+' of Factory work experience; a factory tour (once a game, '+hm(F.tour.minutes)+') adds '+F.tour.knowledge+' knowledge and '+F.tour.happiness+' happiness.';
         if($('cfgFun'))$('cfgFun').textContent='at home, watch a show or play games ('+hm(LE.screen.minutes)+', '+fx(LE.screen)+', needs a TV or game console) or call your family '+(LE.call.perDay===1?'once':LE.call.perDay+' times')+' a day ('+hm(LE.call.minutes)+', '+fx(LE.call)+'). At the Park, walk ('+hm(LE.walk.minutes)+', '+fx(LE.walk)+') or jog ('+hm(LE.jog.minutes)+', '+fx(LE.jog)+'). The Restaurant also serves '+cf.name+' ('+hm(cf.minutes)+', '+sg(cf.energy)+'% energy, '+sg(cf.happiness)+' happiness), a snack rather than a meal.'})();
