@@ -50,4 +50,4 @@ Daily Grind is a browser life-sim game that lives in **one file: `index.html`** 
 - Log every gameplay change in `CHANGELOG.md`, in the existing numbered-section style, including new `CONFIG` keys and removed ones.
 - Use a real minus sign (`−`) in player-facing text via the `sg()` helper (`+5` / `−3`); money goes through `money()`.
 - Scaling to difficulty, prices and wages goes through `G()` (price index) and `Df()` (difficulty), so use them for any new cost.
-- Sleeping at home earns `CONFIG.health.sleep` health (per hour left, capped) and full energy and happiness. Sleeping elsewhere earns `CONFIG.sleep.awayShare` of each. Going to bed unfed adds `CONFIG.health.nightly.skippedMeal`. Health has no other event hook besides the `l` token and the gym, hospital and meals.
+- Sleeping at home earns `CONFIG.health.sleep` health (per hour left, capped) and full energy and happiness. Sleeping elsewhere earns `CONFIG.sleep.awayShare` of each. Going to bed unfed adds `CONFIG.health.nightly.skippedMeal`. Health has no other event hook besides the `l` token and the gym, Park, hospital and meals.

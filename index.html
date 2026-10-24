@@ -603,7 +603,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   <h2 id="wlT">Welcome to Daily Grind</h2>
   <p style="color:var(--ink)">Build a life from scratch. Reach <b><span id="cfgGoal">$1,000</span> net worth</b> without going broke, burning out or skipping meals.</p>
   <div class="wtiles">
-    <div><b>⏱ 24 hours a day</b><span>Walking takes <span id="cfgWalk">5 minutes</span> per building</span></div>
+    <div><b>⏱ 24 hours a day</b><span>Walking: <span id="cfgWalk">5 minutes</span> and <span id="cfgWalkE">1%</span> energy per building</span></div>
     <div><b>🍽 Eat once a day</b><span>Low energy makes you ill</span></div>
     <div><b>🏠 Rent <span id="cfgRent">every 5 days</span></b><span>Short of cash? It goes on a plan</span></div>
     <div><b>👕 Clothes last <span id="cfgClothes">5 days</span></b><span>Replace them at the Clothes Mall</span></div>
@@ -638,10 +638,11 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     <li><b>Every night:</b> <span id="cfgNight">energy −15% and happiness −10</span>, then sleep adds energy, happiness and health back for each hour you had left (more at home).</li>
     <li><b>Tired (energy under 30):</b> shifts pay 15% less. Low energy that lasts also raises your chance of falling ill overnight: <span id="cfgIllEn">about 40% a night under 11 energy</span> (before health, diet and gym visits lower it).</li>
     <li><b>Morale (happiness under 40 / 25 / 20):</b> shifts pay 10% / 25% / 40% less, and below 20 your boss may demote or fire you.</li>
+    <li><b>Free time:</b> <span id="cfgFun">at home, watch a show or play games (1h, +4 happiness, needs a TV or console) or call your family once a day (30m, +3). At the Park, walk (1h, +5 happiness, +1 health) or jog (1h, −8% energy, +4 happiness, +3 health). The Restaurant also serves coffee and cake (45m, +3% energy, +6 happiness), a snack rather than a meal.</span></li>
     <li><b>Hunger:</b> skipping the daily meal costs <span id="cfgHunger">20% energy and 15 happiness</span>, and cuts productivity.</li>
     <li><b>Money shame:</b> checked when you end the day: net worth under $100 then costs 3 happiness, under $0 costs 8 happiness and 5% energy. Nothing is taken during the day.</li>
     <li><b>Keyboard:</b> 1–9 press the numbered buttons, E ends the day, Esc leaves a building or closes a window, H opens these rules, M toggles sound. Tab moves between buildings.</li>
-    <li><b>Health:</b> a slow-moving vital. Healthy meals, the gym and sleeping at home raise it; hunger, illness, junk food, long study days and burnout lower it. Good health, a healthy diet and regular gym visits all cut your chance of falling ill.</li>
+    <li><b>Health:</b> a slow-moving vital. Healthy meals, the gym, the Park and sleeping at home raise it; hunger, illness, junk food, long study days and burnout lower it. Good health, a healthy diet and regular gym visits all cut your chance of falling ill.</li>
     <li><b>Layoffs and closures (two different things):</b> in a bad economy you can be <b>laid off</b> (the job is gone, so apply for a new one) or your workplace can <b>close</b> for 1 to 4 days (the Work button is disabled, but the job stays on your record and the morning message tells you when it is back). You can only hold one job at a time.</li>
     <li><b>Loans:</b> <span id="cfgLoan">Borrow at the Bank in $50 steps.</span></li>
     <li><b>Work limit:</b> you can work at most <span id="cfgWork">12 hours</span> of shifts in one day.</li>
@@ -701,13 +702,15 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     Group 5: health, illness and the hospital.
     Group 6: food, cooking, the fridge and hunger.
     Group 7: burnout from too many hours of work and study.
-    Group 8: self-study, sleep and rest, housing, the lottery, score and ranks.
+    Group 8: self-study, sleep and rest, housing, the lottery, leisure (home and Park), score and ranks.
     (More groups will be added here, one at a time.) */
   var CONFIG={
     /* Starting values for a new game. */
     start:{energy:85},
     /* Certificate tuition: the first qualification of each track, before the price index. Each new game moves each track's fee by up to certVariance either way. */
-    education:{certFee:{sal:43,fnb:45,fin:79,tech:52,med:55,cus:95,eng:58},certVariance:0.05},
+    education:{certFee:{sal:43,fnb:45,fin:79,tech:52,med:55,cus:95,eng:58},certVariance:0.05,
+      lessonEnergyPerHour:-5,      // a school lesson costs this much energy (%) for each hour...
+      lessonHappinessPerHour:-5},  // ...and this much happiness
     /* Night events.
       storyline: every game has one multi-day storyline (oil crisis, pandemic, housing bubble...). It starts on the evening of a
         random day from fromDay to toDay. After it ends, no new storyline starts for gapDays days (with 15-day games, one per game).
@@ -902,6 +905,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     time:{
       dayMinutes:1440,    // length of a day in minutes (1440 = 24 hours). Unused time is slept at day end.
       walkMinutes:15,      // minutes to walk past one building on the ring road
+      walkEnergy:-1,       // energy (%) for every walkMinutes of walking
       rentEveryDays:5,    // rent is due every this many days
       gameDays:15,        // how many days a game lasts (all difficulties)
       /* Most actions (eating, studying, shopping, working...) have a cost in 'units' in their
@@ -924,7 +928,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         {pay:130, minutes:225, energy:8},    // 3h45
         {pay:0,  minutes:270, energy:10}    // 4h30
       ],
-      freelanceMinutes:150   // freelance coding at home (needs a computer)
+      freelanceMinutes:150,  // freelance coding at home (needs a computer)
+      workHappinessShare:0.5 // a shift (or freelance coding) also costs this share of its energy cost in happiness, rounded up
     },
     clothes:{
       /* The three outfits sold at the Clothes Mall.
@@ -932,7 +937,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         days  = how many days a new set lasts before it wears out */
       casual:{name:'Casual Clothes', price:100, days:5},
       smart: {name:'Smart Casual',  price:180, days:6},
-      suit:  {name:'Business Suit',  price:300, days:6},
+      suit:  {name:'Business Suit',  price:300, days:6, happiness:2},  // happiness = a lift when you buy it (any outfit can have one)
       startCasualDays:5,  // days left on the Casual Clothes you own at the start (0 = start with none)
       wearPerDay:1,        // days of wear lost each night (2 = clothes wear out twice as fast)
       buyUnits:2,          // time to buy an outfit, in units (see CONFIG.time)
@@ -1038,11 +1043,12 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       burger: {name:'a burger',                minutes:60, cost:8,  energy:6,  happiness:1, junk:true, health:-5},
       combo:  {name:'a burger combo meal',      minutes:90, cost:15, energy:12, happiness:1, junk:true, health:-8},
       dinner: {name:'a sit-down dinner',        units:6, cost:40, energy:16, happiness:10, healthy:1},
-      tasting:{name:'the chef’s tasting menu',  units:7, cost:90, energy:26, happiness:22, healthy:2},
+      tasting:{name:'the chef’s tasting menu',  units:7, cost:90, energy:18, happiness:22, healthy:2},
+      cafe:   {name:'coffee and cake',          minutes:45, cost:12, energy:3, happiness:6, snack:true},  // snack:true = does not count as your meal
       junkHealth:-1,        // health lost each time you eat a junk meal
       /* Meals from the Supermarket. health = health gained when you eat it at home. */
-      basic:  {name:'Meal prep',                cost:30, energy:22, happiness:3, health:1},  // must be cooked
-      premium:{name:'Ready-to-eat meal',        cost:55, energy:30, happiness:9, health:2},  // ready to eat
+      basic:  {name:'Meal prep',                cost:30, energy:20, happiness:3, health:10},  // must be cooked; these are what the cooked meal gives
+      premium:{name:'Ready-to-eat meal',        cost:55, energy:20, happiness:9, health:5},  // ready to eat
       buyUnits:2,            // time to buy a meal or a bundle
       bundleSize:3,          // portions in a bundle
       bundleDiscount:0.15,  // bundle saving (0.15 = 15% off)
@@ -1050,6 +1056,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       eatMinutes:30,        // time to eat a meal at home
       /* Cooking time in minutes: the first meal, then each extra meal cooked at the same time. */
       cookFirst:180, cookExtra:30,
+      cookEnergy:-5,         // energy (%) for every 3 hours of cooking, in proportion (3h30 = −6%)
       /* How long food keeps, counting the day you buy or cook it. Each night in the fridge uses one day;
         each night outside uses keepDaysFridge / keepDaysRoom days, so moving food in or out keeps the rule fair. */
       keepDaysRoom:3,        // outside the fridge
@@ -1093,8 +1100,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       /* Studying online at home. You need one of these devices; the best one you own counts. */
       gain:{computer:6, tablet:5, phone:4},  // knowledge per session (was 4/3/2; +2 each)
       units:5,              // session length (see CONFIG.time; 5 = 3h)
-      energy:-3,
-      health:-3,
+      energyPerHour:-5,     // energy (%) for each hour of self-study
+      happinessPerHour:-5,  // happiness for each hour of self-study
+      health:-3,            // health per session
       minEnergy:15,          // too tired to study below this
       /* Knowledge also changes by itself each night: */
       nightlyLoss:-1,        // everyone forgets a little
@@ -1151,6 +1159,16 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       winChance:0.12,        // chance each ticket wins
       prizeMin:100, prizeMax:1000,
       winHappiness:15
+    },
+    leisure:{
+      /* Free things to do for fun. minutes = time taken; energy in %.
+        screen: watch a show or play games at home; needs a working TV or game console.
+        call: call your family from home, up to perDay times a day.
+        walk and jog: at the Park (any time, home or not). */
+      screen:{minutes:60, happiness:4},
+      call:  {minutes:30, happiness:3, perDay:1},
+      walk:  {minutes:60, happiness:5, health:1},
+      jog:   {minutes:60, energy:-8, happiness:4, health:3, minEnergy:15}  // minEnergy: too tired to jog below this
     },
     loan:{
       /* Loans at the Bank. You can hold ONE loan at a time; what you owe counts against your net worth. */
@@ -1250,9 +1268,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
               {k:'food.basic.happiness', v:1}, {k:'food.premium.happiness', v:6}]},
         {id:'book', icon:'📚', name:'Bookworm',
         plus:'Self-study teaches more (computer +8, tablet +6, phone +5) and you stop forgetting things overnight.',
-        minus:'Long sessions wear you out (−6% energy each) and burnout starts after 9 hours of work and study a day.',
+        minus:'Self-study wears you out more (−8% energy an hour) and burnout starts after 9 hours of work and study a day.',
         set:[{k:'selfStudy.gain.computer', v:8}, {k:'selfStudy.gain.tablet', v:6}, {k:'selfStudy.gain.phone', v:5},
-              {k:'selfStudy.nightlyLoss', v:0}, {k:'selfStudy.energy', v:-6}, {k:'burnout.loadMinutes', v:540}]},
+              {k:'selfStudy.nightlyLoss', v:0}, {k:'selfStudy.energyPerHour', v:-8}, {k:'burnout.loadMinutes', v:540}]},
         {id:'hardy', icon:'🛡️', name:'Hardy',
         plus:'You start with 90 health and fall ill about a fifth less often.',
         minus:'All work and no play: resting at home no longer lifts your mood.',
@@ -1395,7 +1413,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
 
   var LOCS=[['jobs','💼','Employment Office'],['school','🎓','School'],['bank','🏦','Bank'],['market','🛒','Supermarket'],
     ['fast','🍔','Fast Food'],['resto','🍝','Restaurant'],['elec','💻','Electronics Store'],['mall','🛍️','Clothes Mall'],
-    ['apt','🏢','Low-End Apartment'],['hosp','🏥','Hospital'],['factory','🏭','Factory'],['thrift','👕','Thrift Store'],['pawn','💍','Pawn Shop'],['bung','🏡','Classy Bungalow'],['gym','🏋️','Gym']];
+    ['apt','🏢','Low-End Apartment'],['hosp','🏥','Hospital'],['factory','🏭','Factory'],['thrift','👕','Thrift Store'],['pawn','💍','Pawn Shop'],['bung','🏡','Classy Bungalow'],['gym','🏋️','Gym'],['park','🌳','Park']];
   var NAME={},ICON={};
   LOCS.forEach(function(l){ICON[l[0]]=l[1];NAME[l[0]]=l[2]});
 
@@ -1662,8 +1680,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function rollOpenings(){S.closed={};Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk,i){if(Math.random()<0.25)S.closed[c+'_'+i]=1})})}
   /* meals out and Supermarket meals, built from CONFIG.food */
   var FD=CONFIG.food,TREATS={},GROC={};
-  [['snack','burger'],['meal','combo'],['dine','dinner'],['feast','tasting']].forEach(function(p){var c=FD[p[1]];
-    TREATS[p[0]]={n:c.name,ap:c.units,min:c.minutes||0,cost:c.cost,en:c.energy,hap:c.happiness,junk:c.junk?1:0,good:c.healthy||0,hp:c.health}});
+  [['snack','burger'],['meal','combo'],['dine','dinner'],['feast','tasting'],['cafe','cafe']].forEach(function(p){var c=FD[p[1]];
+    TREATS[p[0]]={n:c.name,ap:c.units,min:c.minutes||0,cost:c.cost,en:c.energy,hap:c.happiness,junk:c.junk?1:0,good:c.healthy||0,hp:c.health,snack:c.snack?1:0}});
   function treatMin(t){return t.min||M(t.ap)}
   [['basic','basic'],['prem','premium']].forEach(function(p){var c=FD[p[1]];GROC[p[0]]={n:c.name,cost:c.cost,en:c.energy,hap:c.happiness,hp:c.health}});
   function eatTxt(g){return '+'+g.en+'% energy, '+sg(g.hap)+' happiness, '+sg(g.hp)+' health'}
@@ -1699,8 +1717,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function buyWear(k){
     var c=WEAR[k],pr=price(k);
     if(!spend(CONFIG.clothes.buyUnits,pr))return;
-    S.clothes[k]=c.w;delete S.offer[k];S.flags.clothes=1;S.flags.buy=1;
-    log('You bought '+c.n+' for '+money(pr)+'. They will last '+c.w+' days.');
+    var v0=vitSnap();S.clothes[k]=c.w;delete S.offer[k];S.flags.clothes=1;S.flags.buy=1;S.happy=clamp(S.happy+(CONFIG.clothes[k].happiness||0));
+    log('You bought '+c.n+' for '+money(pr)+vitPar(v0)+'. They will last '+c.w+' days.');
     done();
   }
   function bargain(k){
@@ -1715,7 +1733,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     done();
   }
 
-  function blank(){return {rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:4,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
+  function blank(){return {calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:4,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
     S=blank();T0();PREV=null;applyPayVar();S.certVar={};Object.keys(TRACKS).forEach(function(t){S.certVar[t]=1+(Math.random()*2-1)*CONFIG.education.certVariance});
     S.sagaNext=sagaDay(1);
@@ -1935,7 +1953,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(!spendMin(j.min,0))return;
     S.workMin=(S.workMin||0)+j.min;
     var pr=prod(), pay=shiftPay(j.pay), low=pr.m<1, v0=vitSnap();
-    S.cash+=pay;inc(pay);S.energy=clamp(S.energy-j.en);S.flags.worked=1;
+    S.cash+=pay;inc(pay);S.energy=clamp(S.energy-j.en);S.happy=clamp(S.happy-workHap(j.en));S.flags.worked=1;
     if(c){if(!S.shiftsAt)S.shiftsAt={};S.shiftsAt[bOf(k)]=(S.shiftsAt[bOf(k)]||0)+1}  /* work experience per workplace */
     log('You worked a shift as '+j.n+' and earned '+money(pay)+vitPar(v0)+'.'+(low?' Productivity was '+Math.round(pr.m*100)+'% ('+pr.rs.join(', ')+').':''),'good');
     done();
@@ -1976,7 +1994,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var cost=G(t.cost);
     if(!spendMin(treatMin(t),cost))return;
     var v0=vitSnap();
-    S.energy=clamp(S.energy+t.en);S.happy=clamp(S.happy+t.hap);S.fed=true;S.flags.ate=1;
+    S.energy=clamp(S.energy+t.en);S.happy=clamp(S.happy+t.hap);if(!t.snack){S.fed=true;S.flags.ate=1}
     if(t.junk){eatJunk();S.health=clamp(S.health+treatHp(t))}
     if(t.good)eatGood(t.good);
     log('You paid '+money(cost)+' for '+t.n+vitPar(v0)+'.'+(t.junk&&junkCount()>=CONFIG.illness.junkMeals?' That is '+junkCount()+' fast-food meals in 5 days: your risk of falling ill is up.':''),t.junk&&junkCount()>=CONFIG.illness.junkMeals?'warn':'');
@@ -2004,7 +2022,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(!spendMin(h*60,0))return;
     if(!S.les)S.les={};
     var v0=vitSnap();
-    S.studyMin+=h*60;k++;S.les[t]=k;S.lastTrack=t;S.energy=clamp(S.energy-2*h);S.studied=true;S.flags.study=1;S.sinceClass=0;S.enrolled=true;S.know=clamp(S.know+1);
+    var lc=lessonCost(h);
+    S.studyMin+=h*60;k++;S.les[t]=k;S.lastTrack=t;S.energy=clamp(S.energy+lc.en);S.happy=clamp(S.happy+lc.hap);S.studied=true;S.flags.study=1;S.sinceClass=0;S.enrolled=true;S.know=clamp(S.know+1);
     var q=posInLevel(t,n);
     if(k<nl){log('Lesson '+k+' of '+nl+' done: "'+T.m[n]+'" ('+T.n+' '+T.lv[q.i]+', '+hm(h*60)+(vitTxt(v0)?'; '+vitTxt(v0):'')+').');return done()}
     S.les[t]=0;S.edu[t]++;S.know=clamp(S.know+2+q.i);
@@ -2150,6 +2169,12 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   /* meal prep must be cooked (choose how many meals to cook); ready-to-eat meals need no cooking.
     Food keeps longer in a fridge (CONFIG.food.keepDays*). */
   function cookMin(n){return FD.cookFirst+(n-1)*FD.cookExtra}
+  /* vital costs that scale with time (CONFIG): cooking, lessons, self-study, walking and work */
+  function cookEn(min){return Math.round(min/180*FD.cookEnergy)}
+  function lessonCost(h){var E=CONFIG.education;return {en:Math.round(h*E.lessonEnergyPerHour),hap:Math.round(h*E.lessonHappinessPerHour)}}
+  function selfCost(){var SS=CONFIG.selfStudy,h=M(SS.units)/60;return {en:Math.round(h*SS.energyPerHour),hap:Math.round(h*SS.happinessPerHour)}}
+  function walkEn(min){return Math.round(min/CONFIG.time.walkMinutes*(CONFIG.time.walkEnergy||0))}
+  function workHap(en){return Math.ceil(en*(CONFIG.time.workHappinessShare||0))}
   /* spoiled food (gone off without a fridge) can still be eaten, but it hurts your health and may poison you */
   function eatSpoiled(what,g){
     if(Math.random()<FD.spoiledPoisonChance)return poison(what.replace(/^an? /,''));
@@ -2187,6 +2212,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(!preps.length)return refuse(S.food.some(function(p){return p.t==='prem'})?'Ready-to-eat meals need no cooking: just eat them. Buy meal prep to cook.':'You have no meal prep. Buy some at the Supermarket first.');
     n=Math.min(n,preps.length);
     if(!spendMin(cookMin(n),0))return;
+    var v0=vitSnap();S.energy=clamp(S.energy+cookEn(cookMin(n)));
     var take=preps.slice(0,n),bad=0,good=0;
     take.forEach(function(p){if(p.sp)bad++;else good++});
     S.food=S.food.filter(function(p){return take.indexOf(p)<0});
@@ -2195,7 +2221,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     for(var k2=0;k2<bad;k2++)S.food.push({t:'cook',u:FD.keepDaysFridge,sp:1});
     fridgeSync();S.flags.cooked=1;
     if(bad)log('You cooked '+bad+' portion'+(bad>1?'s':'')+' of spoiled meal prep anyway. '+(bad>1?'They are':'It is')+' still spoiled: eating '+(bad>1?'them':'it')+' will cost you '+Math.abs(FD.spoiledHealth)+' health a meal.','warn');
-    if(good)log('You cooked '+good+' meal'+(good>1?'s':'')+' in '+hm(cookMin(n))+'. Eat '+(good>1?'them':'it')+' now, or keep '+(good>1?'them':'it')+' at home.'+fridgeNote()+(owns('fridge')?' Meals from the fridge are cold the next day: '+(owns('microwave')?'your microwave reheats one in '+hm(FD.reheatMinutes)+'.':'without a microwave you eat them cold ('+sg(FD.coldHappiness)+' happiness).'):''),'good');
+    if(good)log('You cooked '+good+' meal'+(good>1?'s':'')+' in '+hm(cookMin(n))+vitPar(v0)+'. Eat '+(good>1?'them':'it')+' now, or keep '+(good>1?'them':'it')+' at home.'+fridgeNote()+(owns('fridge')?' Meals from the fridge are cold the next day: '+(owns('microwave')?'your microwave reheats one in '+hm(FD.reheatMinutes)+'.':'without a microwave you eat them cold ('+sg(FD.coldHappiness)+' happiness).'):''),'good');
     done();
   }
   function homeFull(){return S.homeMeals>=FD.homeMealsPerDay}
@@ -2232,7 +2258,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(!gain)return refuse('You need a computer, tablet or phone to learn at home.');
     if(S.energy<SS.minEnergy)return refuse('You’re too tired to study. Eat or rest first.');
     if(!spend(SS.units,0))return;
-    var v0=vitSnap();S.energy=clamp(S.energy+SS.energy);S.health=clamp(S.health+SS.health);S.know=clamp(S.know+gain);S.studyMin+=M(SS.units);
+    var sc=selfCost(),v0=vitSnap();S.energy=clamp(S.energy+sc.en);S.happy=clamp(S.happy+sc.hap);S.health=clamp(S.health+SS.health);S.know=clamp(S.know+gain);S.studyMin+=M(SS.units);
     log('You spent '+hm(M(SS.units))+' studying online at home'+vitPar(v0)+'.'+(loadMin()>CONFIG.burnout.loadMinutes?' That makes more than '+loadLimitTxt()+' of work and study today.':''),'good');
     done();
   }
@@ -2433,8 +2459,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(l!==loc){
       var c=dist(loc,l)*WALK;
       if(S.ap<c)return refuse('The '+NAME[l]+' is a '+hm(c)+' walk away. You only have '+hm(S.ap)+' left today.');
-      S.ap-=c;loc=l;
-      log('You walked to the '+NAME[l]+' ('+hm(c)+').');
+      var v0=vitSnap();S.ap-=c;loc=l;S.energy=clamp(S.energy+walkEn(c));
+      log('You walked to the '+NAME[l]+' ('+hm(c)+(vitTxt(v0)?', '+vitTxt(v0):'')+').');
     }
     last=null;view=l;sayLine=null;if(window.innerWidth<=640)setTimeout(function(){var h=$('hud'),y=$('board').getBoundingClientRect().top+window.scrollY-(h?h.offsetHeight:0)-4;window.scrollTo({top:Math.max(0,y),behavior:'smooth'})},30);
     render();
@@ -2549,6 +2575,24 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var v0=vitSnap();
     S.energy=clamp(S.energy-g.en);S.happy=clamp(S.happy+g.hap);S.health=clamp(S.health+g.hp);S.gym.push(S.day);S.gym=S.gym.filter(function(d){return S.day-d<5});S.flags.gym=1;
     log('You did a '+g.n.toLowerCase()+' for '+money(c)+' ('+hm(g.min)+(vitTxt(v0)?', '+vitTxt(v0):'')+').','good');
+    done();
+  }
+  /* ---------- leisure: free things that lift your mood (CONFIG.leisure) ---------- */
+  function screenKey(){return owns('tv')?'tv':owns('console')?'console':null}
+  function callsToday(){return S.calls&&S.calls.d===S.day?S.calls.n:0}
+  function leisure(k){
+    var L=CONFIG.leisure[k];if(!L)return;
+    if(k==='screen'||k==='call'){if(!atHome())return refuse(S.homeless?'You have no home. Your things are in storage.':'You can only do that at home.')}
+    else if(loc!=='park')return refuse('You can only do that at the Park.');
+    if(k==='screen'&&!screenKey())return refuse('You need a working TV or game console.');
+    if(k==='call'&&callsToday()>=L.perDay)return refuse('You have already called your family today.');
+    if(L.minEnergy&&S.energy<L.minEnergy)return refuse('You are too tired to jog. Eat or rest first.');
+    if(!spendMin(L.minutes,0))return;
+    var v0=vitSnap();
+    S.energy=clamp(S.energy+(L.energy||0));S.happy=clamp(S.happy+(L.happiness||0));S.health=clamp(S.health+(L.health||0));
+    if(k==='call')S.calls={d:S.day,n:callsToday()+1};
+    var what={screen:screenKey()==='tv'?'You watched a show':'You played games on your console',call:'You called your family',walk:'You took a walk in the Park',jog:'You went for a jog in the Park'}[k];
+    log(what+' ('+hm(L.minutes)+(vitTxt(v0)?', '+vitTxt(v0):'')+').','good');
     done();
   }
   /* ---------- health: a slow-moving vital that shapes how often you fall ill ---------- */
@@ -4353,11 +4397,11 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       var rk=cur(k);
       if(!rk)return '<p><small>You don’t work here yet. Apply at the Employment Office.</small></p>';
       var ef=effort(rk.pay), en=ef.en, mins=ef.min;
-      var pm=prod().m,pr=prod(),sh=shutLeft(bOf(k));return arow(rk.r+' shift · '+money(shiftPay(rk.pay)),chip('time',hm(mins))+chip('energy','−'+en+'%')+(rk.dress?chip('',DSHORT[rk.dress]+(rk.dress==='suit'?'':' or better'),hasDress(rk.dress)?'':'warn'):'')+(pm<1?chip('','Pay ×'+Math.round(pm*100)+'%','warn'):'')+(sh?chip('','Closed '+sh+'d','warn'):''),btn('work',k,sh?'Closed':'Work a shift',0,!!sh),
+      var pm=prod().m,pr=prod(),sh=shutLeft(bOf(k));return arow(rk.r+' shift · '+money(shiftPay(rk.pay)),chip('time',hm(mins))+chip('energy','−'+en+'%')+chip('happy','−'+workHap(en))+(rk.dress?chip('',DSHORT[rk.dress]+(rk.dress==='suit'?'':' or better'),hasDress(rk.dress)?'':'warn'):'')+(pm<1?chip('','Pay ×'+Math.round(pm*100)+'%','warn'):'')+(sh?chip('','Closed '+sh+'d','warn'):''),btn('work',k,sh?'Closed':'Work a shift',0,!!sh),
         sh?'Your job is safe and returns when the workplace reopens.':pm<1?'Pay is lower because of '+pr.rs.join(', ')+'.':'');
     }
     var j=JOBS[k], need=(j.computer&&!owns('computer'))?'Needs a working computer':'';
-    return arow(j.n+' shift · '+money(shiftPay(j.pay)),chip('time',hm(j.min))+chip('energy','−'+j.en+'%'),btn('work',k,'Work a shift',0,!!need),need);
+    return arow(j.n+' shift · '+money(shiftPay(j.pay)),chip('time',hm(j.min))+chip('energy','−'+j.en+'%')+chip('happy','−'+workHap(j.en)),btn('work',k,'Work a shift',0,!!need),need);
   }
   var ovHidden=false;  /* true after clicking the map outside the overview window */
   /* bank amount boxes: chosen with −/+ in steps of BK_STEP; the choice is kept while the game is open */
@@ -4451,13 +4495,13 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     /* --- kitchen --- */
     var mealCh=function(g,hap){return chip('time',hm(FD.eatMinutes))+chip('energy','+'+g.en+'%')+chip('happy',sg(hap))+chip('health',sg(g.hp))};
     t+=psec('kitchen','🍳 Kitchen',chip('',S.fed?'✓ Eaten today':'No meal yet',S.fed?'ok':'warn')+chip('','Meals '+S.homeMeals+'/'+FD.homeMealsPerDay),
-      'A meal at home counts as today’s meal; you can eat up to '+FD.homeMealsPerDay+' a day here. Meal prep must be cooked: the first meal takes '+hm(FD.cookFirst)+', each extra one '+hm(FD.cookExtra)+' more. A cooked meal that spent a night in the fridge is cold: reheat it with a microwave ('+hm(FD.reheatMinutes)+') or eat it cold ('+sg(FD.coldHappiness)+' happiness). Spoiled food costs '+Math.abs(FD.spoiledHealth)+' health and has a '+pctTxt(FD.spoiledPoisonChance)+' chance of food poisoning. Chips are junk food: '+CONFIG.illness.junkMeals+' junk servings in 5 days raise your illness risk.');
+      'A meal at home counts as today’s meal; you can eat up to '+FD.homeMealsPerDay+' a day here. Meal prep must be cooked: the first meal takes '+hm(FD.cookFirst)+', each extra one '+hm(FD.cookExtra)+' more, and cooking costs '+Math.abs(FD.cookEnergy)+'% energy for every 3 hours. A cooked meal that spent a night in the fridge is cold: reheat it with a microwave ('+hm(FD.reheatMinutes)+') or eat it cold ('+sg(FD.coldHappiness)+' happiness). Spoiled food costs '+Math.abs(FD.spoiledHealth)+' health and has a '+pctTxt(FD.spoiledPoisonChance)+' chance of food poisoning. Chips are junk food: '+CONFIG.illness.junkMeals+' junk servings in 5 days raise your illness risk.');
     if(!(nb+np+nw+ncold+nsp+(S.chips||0)))t+='<p class="arow-n">No food at home. Buy meals at the Supermarket.</p>';
     if(nw)t+=arow('🍲 Cooked meal × '+nw,mealCh(GROC.basic,GROC.basic.hap),btn('eatc','','Eat',0,full));
     if(ncold)t+=arow('🥶 Cold meal × '+ncold,mealCh(GROC.basic,GROC.basic.hap+FD.coldHappiness),'<span class="btnrow">'+(mw?btn('eatc','heat','Reheat · '+hm(FD.eatMinutes+FD.reheatMinutes),0,full):'')+btn('eatc','cold','Eat cold',mw?1:0,full)+'</span>');
     if(np)t+=arow('🍱 Ready-to-eat × '+np,mealCh(GROC.prem,GROC.prem.hap),btn('eatp','','Eat',0,full));
     if(nb+nbs){var cb='';for(var n=1;n<=nb+nbs;n++)cb+=btn('cook',String(n),'Cook '+n+' · '+hm(cookMin(n)),n>1?1:0);
-      t+=arow('🥕 Meal prep × '+nb+(nbs?' + '+nbs+' spoiled':''),chip('','Keeps '+FD.keepDaysRoom+'d · '+FD.keepDaysFridge+'d in fridge'),'<span class="btnrow">'+cb+'</span>')}
+      t+=arow('🥕 Meal prep × '+nb+(nbs?' + '+nbs+' spoiled':''),chip('energy',sg(cookEn(cookMin(1)))+'% per 3h')+chip('','Keeps '+FD.keepDaysRoom+'d · '+FD.keepDaysFridge+'d in fridge'),'<span class="btnrow">'+cb+'</span>')}
     if(S.chips)t+=arow('🥔 Chips × '+S.chips,chip('time',hm(FD.chips.eatMinutes))+chip('happy',sg(FD.chips.happiness))+chip('energy',sg(FD.chips.energy)+'%')+chip('health',sg(FD.chips.health))+chip('','Junk','warn'),btn('eatchips','','Eat'));
     if(ncs+nps){var spb='';if(ncs)spb+=btn('eatc','sp','Eat cooked',1,full);if(nps)spb+=btn('eatp','sp','Eat ready meal',1,full);
       t+=arow('<span class="bad">🤢 Spoiled food × '+(ncs+nps)+'</span>',chip('health',sg(FD.spoiledHealth),'warn')+chip('',pctTxt(FD.spoiledPoisonChance)+' poisoning','warn'),'<span class="btnrow">'+spb+'</span>')}
@@ -4467,12 +4511,18 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       'Resting gives '+rr0.toFixed(1)+'% energy an hour now'+(ci.length?' (comfort: '+ci.join(', ')+')':' (a TV, console, fridge, coffee machine or computer at home adds 10% each)')+'. A night’s sleep restores energy '+(SL.energyX||1)+'× as fast, up to '+SL.maxEnergy+'%, plus '+CONFIG.health.sleep.perHour+' health an hour (up to '+CONFIG.health.sleep.max+') and '+SL.happinessPerHour+' happiness per full hour. Every night also costs '+sg(SL.nightEnergy)+'% energy and '+sg(SL.nightHappiness)+' happiness, so going to bed with more hours left means you wake up fresher. Sleeping anywhere else gives '+pctTxt(SL.awayShare)+' of it.');
     t+=arow('Rest',chip('time',hm(SL.napMinutes))+chip('energy','+'+Math.round(nh*rr0)+'%')+chip('happy',sg(SL.napHappiness)),btn('nap','','Rest '+hm(SL.napMinutes),0,S.ap<SL.napMinutes||S.energy>=100));
     t+=arow('Sleep · end the day',chip('time',hm(S.ap))+chip('energy','+'+sleepGain(S.ap)+'%')+chip('health','+'+sleepHealth(S.ap))+chip('happy','+'+(sleepHap(S.ap)+(H.hap||0))),btn('rest','',sleepLabel()));
+    /* --- free time --- */
+    var LE=CONFIG.leisure,sk=screenKey(),nc=callsToday();
+    t+=psec('fun','🎈 Free time','','Free ways to cheer up at home. Watching a show or playing games needs a working TV or game console. You can call your family '+(LE.call.perDay===1?'once':LE.call.perDay+' times')+' a day. For more, walk or jog at the Park.');
+    t+=arow(sk==='console'?'🎮 Play games':'📺 Watch a show',chip('time',hm(LE.screen.minutes))+chip('happy',sg(LE.screen.happiness)),btn('fun','screen',sk==='console'?'Play':'Watch',0,!sk),sk?'':'Needs a TV or game console.');
+    t+=arow('📞 Call your family',chip('time',hm(LE.call.minutes))+chip('happy',sg(LE.call.happiness))+(nc>=LE.call.perDay?chip('','✓ Called today','ok'):''),btn('fun','call','Call',0,nc>=LE.call.perDay));
     /* --- study and work --- */
     var BU=CONFIG.burnout,lm=loadMin();
     t+=psec('study','📚 Study & work',chip('time',hm(lm)+' / '+loadLimitTxt().replace(' hours','h'),lm>BU.loadMinutes?'warn':''),
-      'Self-study needs a phone, tablet or computer; the best one counts (knowledge per session: computer '+SS.gain.computer+', tablet '+SS.gain.tablet+', phone '+SS.gain.phone+'). Under '+SS.minEnergy+'% energy you are too tired. Working and studying more than '+loadLimitTxt()+' a day (shifts, lessons and self-study together) for '+dayN(BU.daysInARow)+' running causes burnout'+(S.loadStreak?' (streak: '+S.loadStreak+' of '+BU.daysInARow+')':'')+'. You can work at most '+hm(CONFIG.time.maxWorkMinutes)+' of shifts a day.');
-    t+=arow('Self-study',gain?chip('time',hm(M(SS.units)))+chip('energy',sg(SS.energy)+'%')+chip('health',sg(SS.health))+chip('know','+'+gain):'',btn('study','','Study',0,!gain),gain?'':'Needs a phone, tablet or computer.');
-    if(owns('computer')){var J=JOBS.free;t+=arow(J.n+' · '+money(shiftPay(J.pay)),chip('time',hm(J.min))+chip('energy','−'+J.en+'%'),btn('work','free','Work a shift'))}
+      'Self-study needs a phone, tablet or computer; the best one counts (knowledge per session: computer '+SS.gain.computer+', tablet '+SS.gain.tablet+', phone '+SS.gain.phone+'). Each hour of self-study costs '+Math.abs(SS.energyPerHour)+'% energy and '+Math.abs(SS.happinessPerHour)+' happiness, plus '+Math.abs(SS.health)+' health a session. Under '+SS.minEnergy+'% energy you are too tired. A shift also costs happiness: '+pctTxt(CONFIG.time.workHappinessShare)+' of its energy cost. Working and studying more than '+loadLimitTxt()+' a day (shifts, lessons and self-study together) for '+dayN(BU.daysInARow)+' running causes burnout'+(S.loadStreak?' (streak: '+S.loadStreak+' of '+BU.daysInARow+')':'')+'. You can work at most '+hm(CONFIG.time.maxWorkMinutes)+' of shifts a day.');
+    var sc=selfCost();
+    t+=arow('Self-study',gain?chip('time',hm(M(SS.units)))+chip('energy',sg(sc.en)+'%')+chip('happy',sg(sc.hap))+chip('health',sg(SS.health))+chip('know','+'+gain):'',btn('study','','Study',0,!gain),gain?'':'Needs a phone, tablet or computer.');
+    if(owns('computer')){var J=JOBS.free;t+=arow(J.n+' · '+money(shiftPay(J.pay)),chip('time',hm(J.min))+chip('energy','−'+J.en+'%')+chip('happy','−'+workHap(J.en)),btn('work','free','Work a shift'))}
     /* --- rent and bills --- */
     t+=psec('rent','🧾 Rent & bills','',
       'Rent is taken from your cash at the end of day '+due+'. If you are short, the rest goes on a 5-day repayment plan with 10% interest, collected each morning, with a late fee on any missed instalment. Medical bills work the same way.');
@@ -4499,7 +4549,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       var now=started.map(function(t){
         var T=TRACKS[t],n=S.edu[t],q=posInLevel(t,n),Lm=T.L[q.i],st=q.i?T.c[q.i-1]:0,k=lesDone(t),nl=lesCount(t,n),pc=Math.round(((n-st)+k/nl)/q.of*100);
         var mods=Lm.map(function(m,i){var g=st+i;return (g<n?'✓ ':g===n?'▸ ':'')+m}).join(' · ');
-        return arow('<b>📘 '+T.n+' '+T.lv[q.i]+'</b>',chip('','Module '+(n-st+1)+'/'+q.of+' · '+Lm[n-st]+' '+k+'/'+nl,'ok')+chip('time',hm(lesHours(t,n)*60))+chip('energy','−'+2*lesHours(t,n)+'%'),btn('class',t,'Study'),
+        return arow('<b>📘 '+T.n+' '+T.lv[q.i]+'</b>',chip('','Module '+(n-st+1)+'/'+q.of+' · '+Lm[n-st]+' '+k+'/'+nl,'ok')+chip('time',hm(lesHours(t,n)*60))+chip('energy',sg(lessonCost(lesHours(t,n)).en)+'%')+chip('happy',sg(lessonCost(lesHours(t,n)).hap)),btn('class',t,'Study'),
           '<span class="nsbar" title="'+mods+'"><i style="width:'+pc+'%"></i></span>','ns-row');
       }).join('');
       var tracks=Object.keys(TRACKS).sort(function(x,y){var f=function(t){return S.edu[t]>0&&!inProgress(t)&&S.edu[t]<totMods(t)?0:1};return f(x)-f(y)}).map(function(t){
@@ -4512,7 +4562,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         return arow(title+path,chip('','Next: '+T.lv[q.i],cont?'ok':'')+chip('',q.of+' module'+(q.of===1?'':'s'))+chip('time',lesCount(t,n)+' × '+hm(lesHours(t,n)*60))+(S.cash<fee?chip('cash','Need '+money(fee-S.cash)+' more','warn'):''),btn('enrol',t,'Enrol · '+money(fee),0,S.cash<fee),'',cont?'nextstep':'');
       }).join('');
       return boxed((now?psec('now','📘 Now studying',chip('time',hm(lm)+' / '+loadLimitTxt().replace(' hours','h'),lm>BU.loadMinutes?'warn':'')+(S.burn>0?chip('','Burnt out','warn'):''),
-          'Each lesson takes the time shown and costs energy. Attend a lesson at least every few days: '+'3 days without one is a warning, and 5 to 6 days gets you expelled. More than '+loadLimitTxt()+' of work and study a day for '+dayN(BU.daysInARow)+' running causes burnout'+(S.loadStreak?' (streak: '+S.loadStreak+' of '+BU.daysInARow+')':'')+'.')+now:'')+
+          'Each lesson takes the time shown and costs '+Math.abs(CONFIG.education.lessonEnergyPerHour)+'% energy and '+Math.abs(CONFIG.education.lessonHappinessPerHour)+' happiness an hour. Attend a lesson at least every few days: '+'3 days without one is a warning, and 5 to 6 days gets you expelled. More than '+loadLimitTxt()+' of work and study a day for '+dayN(BU.daysInARow)+' running causes burnout'+(S.loadStreak?' (streak: '+S.loadStreak+' of '+BU.daysInARow+')':'')+'.')+now:'')+
         psec('tracks','🎓 Pathways',S.expelled>0?chip('','Expelled '+S.expelled+'d','warn'):'','Each pathway is a ladder of qualifications (Certificate → Degree → … → Masters). You pay tuition once when you enrol in a qualification, and earn it by completing all its modules. You can study several pathways at once.')+
         '<div class="jb2">'+tracks+'</div>')},
     bank:function(){
@@ -4579,7 +4629,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         arow('🍔 '+cap(TREATS.snack.n)+' · '+money(G(TREATS.snack.cost)),treatCh(TREATS.snack),btn('treat','snack','Buy'))+
         arow('🍟 '+cap(TREATS.meal.n)+' · '+money(G(TREATS.meal.cost)),treatCh(TREATS.meal),btn('treat','meal','Buy combo')))},
     resto:function(){
-      return boxed(psec('menu','🍽️ Menu','','A meal here counts as your daily meal. Healthy meals add health and, three in five days, lower your chance of falling ill.')+
+      return boxed(psec('menu','🍽️ Menu','','A meal here counts as your daily meal ('+TREATS.cafe.n+' is a snack, not a meal). Healthy meals add health and, three in five days, lower your chance of falling ill.')+
+        arow(cap(TREATS.cafe.n)+' · '+money(G(TREATS.cafe.cost)),treatCh(TREATS.cafe)+chip('','Not a meal'),btn('treat','cafe','Order'))+
         arow(cap(TREATS.dine.n)+' · '+money(G(TREATS.dine.cost)),treatCh(TREATS.dine),btn('treat','dine','Dine in'))+
         arow(cap(TREATS.feast.n)+' · '+money(G(TREATS.feast.cost)),treatCh(TREATS.feast),btn('treat','feast','Treat yourself')))},
     elec:function(){
@@ -4605,7 +4656,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     mall:function(){var CC=CONFIG.clothes;
       return boxed(psec('clothes','👔 Clothes',chip('time',hm(M(CC.buyUnits))+' to buy'),'Each outfit lasts a set number of days, then wears out; a new one replaces what you have. Jobs have a dress code. Bargaining takes '+hm(M(CC.bargainUnits))+' and moves the price by '+CC.bargainMin+(CC.bargainMax!==CC.bargainMin?'–'+CC.bargainMax:'')+'% either way: '+pctTxt(CC.bargainWinChance)+' of the time it goes down.')+
         ['casual','smart','suit'].map(function(k){var c=WEAR[k],pr=price(k),have=S.clothes[k];
-          return arow(c.n+' · '+money(pr)+(S.offer[k]!=null?' <small>(bargained)</small>':''),chip('','Lasts '+c.w+' days')+(have?chip('','Yours: '+have+'d left',have<=1?'warn':'ok'):''),
+          return arow(c.n+' · '+money(pr)+(S.offer[k]!=null?' <small>(bargained)</small>':''),chip('','Lasts '+c.w+' days')+(CC[k].happiness?chip('happy','+'+CC[k].happiness,'ok'):'')+(have?chip('','Yours: '+have+'d left',have<=1?'warn':'ok'):''),
             '<span class="btnrow">'+btn('cbuy',k,'Buy')+btn('bargain',k,'Bargain',1,!!S.barg[k])+'</span>')}).join(''))},
     thrift:function(){return boxed(psec('shop','🛍️ Second-hand',chip('time',hm(M(2))+' to buy'),'Cheaper than new. Second-hand devices break down more often; repair them at the Electronics Store.')+shop('thrift'))},
     pawn:function(){
@@ -4623,11 +4674,18 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       return boxed(psec('classes','🏋️ Classes',chip('','Visits '+n+' in 5 days',n?'ok':'')+(staff?chip('','Staff 50% off','ok'):''),'Classes take time and a little energy, but they build your health and lift your mood. Every session in the last 5 days lowers your chance of falling ill.')+
         GYM.map(function(g){var c=gymCost(g);return arow(g.ic+' '+g.n+' · '+money(c),chip('time',hm(g.min))+chip('energy','−'+g.en+'%')+chip('health','+'+g.hp)+chip('happy','+'+g.hap),btn('gym',g.k,'Join in',0,S.cash<c),g.d)}).join(''))},
     apt:function(){return house('apt')},
+    park:function(){
+      var LE=CONFIG.leisure,tired=S.energy<LE.jog.minEnergy;
+      return boxed(psec('park','🌳 In the park',chip('','Free'),'Free to use, any time. A walk lifts your mood and adds a little health; a jog costs energy but does more for your health. Under '+LE.jog.minEnergy+'% energy you are too tired to jog.')+
+        arow('🚶 Walk in the park',chip('time',hm(LE.walk.minutes))+chip('happy',sg(LE.walk.happiness))+chip('health',sg(LE.walk.health)),btn('fun','walk','Walk'))+
+        arow('🏃 Go for a jog',chip('time',hm(LE.jog.minutes))+chip('energy',sg(LE.jog.energy)+'%')+chip('happy',sg(LE.jog.happiness))+chip('health',sg(LE.jog.health)),btn('fun','jog','Jog',0,tired),tired?'Too tired to jog.':''))},
     bung:function(){return house('bung')}
   };
 
   var ORDER=['school','jobs','bung','bank','fast','hosp','resto','mall','apt','gym','elec','pawn','thrift','factory','market'];
-  function dist(a,b){var d=Math.abs(ORDER.indexOf(a)-ORDER.indexOf(b));return Math.min(d,ORDER.length-d)}
+  function ring(a,b){var d=Math.abs(ORDER.indexOf(a)-ORDER.indexOf(b));return Math.min(d,ORDER.length-d)}
+  /* the Park is a pocket off the road between the Apartment and the Clothes Mall: one step from either, other walks unchanged */
+  function dist(a,b){if(a===b)return 0;if(a==='park'||b==='park'){var o=a==='park'?b:a;return Math.min(ring('apt',o),ring('mall',o))+1}return ring(a,b)}
 
   /* ---- tiny 3D drawing kit: oblique projection, light from the upper left ---- */
   var E=' stroke="rgba(0,0,0,.3)" stroke-width=".6" stroke-linejoin="round"';
@@ -4811,6 +4869,17 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         Rc(46,58,14,36,'#1f2b3d',E)+Rc(48,61,10,12,'url(#glass)')+Rc(49,80,8,3,'#2c9a54',' class="blink"')+
         sw(68,38,16,.25,.75,28,'#a9d7ee')+Rc(8,92,60,3,'#c9ced4',E));
     },
+    /* small town park: lawn, path, trees, a bench, a pond and a wooden sign */
+    park:function(){
+      var tr=function(x,y,s){return Rc(x-1.2,y-s*.5,2.4,s*.5,'#6b4a2e')+'<circle cx="'+x+'" cy="'+(y-s)+'" r="'+(s*.6)+'" fill="url(#leaf)"/><circle cx="'+(x-s*.4)+'" cy="'+(y-s*.7)+'" r="'+(s*.45)+'" fill="url(#leaf)"/><circle cx="'+(x+s*.4)+'" cy="'+(y-s*.72)+'" r="'+(s*.46)+'" fill="url(#leaf)"/>'};
+      return SV(100,90,shade(50,82,44)+
+        '<ellipse cx="50" cy="66" rx="46" ry="18" fill="#8cc865" stroke="#5f9a43" stroke-width="1.5"/>'+
+        '<path d="M8 72Q40 60 56 66T94 62" fill="none" stroke="#e3d3a4" stroke-width="5" stroke-linecap="round"/>'+
+        '<ellipse cx="70" cy="74" rx="12" ry="5" fill="url(#water)" stroke="#5a8f6a" stroke-width="1"/>'+
+        tr(22,62,16)+tr(80,56,13)+tr(38,52,11)+
+        Rc(46,64,16,2.4,'#8a6a45',E)+Rc(47,66.4,1.4,4,'#5c4630')+Rc(59,66.4,1.4,4,'#5c4630')+Rc(46,60.5,16,1.8,'#8a6a45')+
+        Rc(12,30,1.8,18,'#6b4a2e')+Rc(3,22,22,9,'#7a5232',E)+T(14,29,6.5,'#fbeec8','PARK',16));
+    },
     /* dark brick pawn shop: three gold balls, neon sign, barred windows */
     pawn:function(){
       return SV(100,108,shade(40,103,48)+
@@ -4840,6 +4909,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     apt:['Mr. Ong, your landlord',['The walls are thin, but the rent is cheap.','Rent is due '+everyDays(RENT_EVERY)+'. I do not forget.','Please, no loud music after ten.','The lift works. Usually.','Your neighbour says hello. Your other neighbour says be quiet.','Home sweet home, more or less.']],
     thrift:['Edna',['Everything here has a story. Most of it is cheap.','Someone else’s junk, your treasure.','That fridge still works. Probably.','Gloves for the factory? Good thinking.','I price things by feel.','Come back tomorrow, the stock changes.']],
     pawn:['Sal',['Show me what you have. I pay half, and you can buy it back within 3 days.','No questions asked. Mostly.','Cash today, regrets tomorrow.','I keep your ticket safe. Do not lose yours.','Everything has a price.','Times are tough? I am open.']],
+    park:['Auntie Lin, on her morning walk',['Lovely day for a stroll.','Ten thousand steps, that is my secret.','The ducks know me by name.','A walk clears the head better than coffee.','Sit a while. The bench is free.','I jog every morning. Well, I walk fast.']],
     gym:['Coach Dana',['Welcome! Warm up first, hero.','Yoga at the front, weights at the back.','A little exercise keeps the doctor away.','Pilates is harder than it looks. Trust me.','Sweat now, sleep better tonight.','Staff get half price, in case you were wondering.']],
     bung:['The estate agent',['Lovely home. Lovely rent, too.','Garden views, quiet street, soft beds.','Steady job? Then we can talk.','Rest here and you wake up happier.','Neighbours here wave. Imagine that.','The deposit is steep, the sleep is better.']]
   };
@@ -5019,11 +5089,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   });
 
   var BP={school:[13,19,15],jobs:[37,22,12.5],bung:[62,19,17],bank:[87,18,17],fast:[91,41,14],resto:[91,67,14],hosp:[91,55,11.5],factory:[9,55,11.5],
-          mall:[86,97,16],apt:[62,97,11],elec:[36,97,16],pawn:[13,97,10],thrift:[9,67,12],market:[9,41,14],gym:[50,97,12]};
+          mall:[86,97,16],apt:[62,97,11],park:[74,90,11],elec:[36,97,16],pawn:[13,97,10],thrift:[9,67,12],market:[9,41,14],gym:[50,97,12]};
   var KN=[[20,24],[34,22],[50,25],[64,22],[80,24],[84,36],[81,50],[84,64],[80,77],[64,79],[48,76],[34,79],[20,77],[16,64],[19,50],[16,36]];
-  var SPUR={school:0,jobs:1,bung:3,bank:4,fast:5,hosp:6,factory:14,resto:7,mall:8,apt:9,gym:10,elec:11,pawn:12,thrift:13,market:15};
-  var PARKS=[[25.5,12,4.2,6.5,'pond'],[48.5,12,4,6,'trees'],[74,12,3,5,'trees'],[23,89,4.8,5.5,'fountain'],
-            [73,89,4.5,5.5,'trees']];
+  var SPUR={school:0,jobs:1,bung:3,bank:4,fast:5,hosp:6,factory:14,resto:7,mall:8,apt:9,park:9,gym:10,elec:11,pawn:12,thrift:13,market:15};
+  var PARKS=[[25.5,12,4.2,6.5,'pond'],[48.5,12,4,6,'trees'],[74,12,3,5,'trees'],[23,89,4.8,5.5,'fountain']];
 
   LOCS.forEach(function(l){
     var k=l[0], b=document.createElement('button');
@@ -5199,7 +5268,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(a==='work')work(g);else if(a==='treat')treat(g);else if(a==='class')study(g);else if(a==='enrol')enrol(g);else if(a==='apply')apply(g)
     else if(a==='alljobs'){allJobs=!allJobs;render()}
     else if(a==='buy')buy(g);else if(a==='cbuy')buyWear(g);else if(a==='bargain')bargain(g);else if(a==='sell')sell(g);else if(a==='dep'||a==='wd')moveMoney(a);
-    else if(a==='treat_ill')treatIll();else if(a==='checkup')checkup();else if(a==='ward')ward();else if(a==='insure')insure();else if(a==='paydebt')payDebt();else if(a==='payrent')payRent();else if(a==='nap')nap();else if(a==='arrears')payArrears();else if(a==='groc')buyGroc(g);else if(a==='bundle')buyBundle(g);else if(a==='chips')chips();else if(a==='eatchips')eatChips();else if(a==='lotto')buyTicket();else if(a==='cook')cook(g);else if(a==='eatc')eatCooked(g);else if(a==='eatp')eatPrem(g);else if(a==='binsp')binSpoiled();else if(a==='gym')gymSession(g);else if(a==='study')selfStudy();else if(a==='repair')repair(g);else if(a==='redeem')redeem(g);else if(a==='invest')invest(g);else if(a==='divest')divest(g);
+    else if(a==='treat_ill')treatIll();else if(a==='checkup')checkup();else if(a==='ward')ward();else if(a==='insure')insure();else if(a==='paydebt')payDebt();else if(a==='payrent')payRent();else if(a==='nap')nap();else if(a==='fun')leisure(g);else if(a==='arrears')payArrears();else if(a==='groc')buyGroc(g);else if(a==='bundle')buyBundle(g);else if(a==='chips')chips();else if(a==='eatchips')eatChips();else if(a==='lotto')buyTicket();else if(a==='cook')cook(g);else if(a==='eatc')eatCooked(g);else if(a==='eatp')eatPrem(g);else if(a==='binsp')binSpoiled();else if(a==='gym')gymSession(g);else if(a==='study')selfStudy();else if(a==='repair')repair(g);else if(a==='redeem')redeem(g);else if(a==='invest')invest(g);else if(a==='divest')divest(g);
     else if(a==='home')moveHome(g);else if(a==='rest')endWeek(true);
     else if(a==='borrow')borrow();else if(a==='repay')repay(false);else if(a==='repayall')repay(true);else if(a==='ltenure'){loanTenure=+g;render()}
     toTop();
@@ -5283,7 +5352,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   /* show CONFIG.time values in the fixed welcome text and HUD */
   (function timeText(){
     try{
-      $('cfgWalk').textContent=WALK+' minute'+(WALK===1?'':'s');
+      $('cfgWalk').textContent=WALK+' minute'+(WALK===1?'':'s');if($('cfgWalkE'))$('cfgWalkE').textContent=Math.abs(CONFIG.time.walkEnergy||0)+'%';
+      (function(){var LE=CONFIG.leisure,fx=function(L){return [L.energy?sg(L.energy)+'% energy':'',L.happiness?sg(L.happiness)+' happiness':'',L.health?sg(L.health)+' health':''].filter(Boolean).join(', ')},cf=FD.cafe;
+        if($('cfgFun'))$('cfgFun').textContent='at home, watch a show or play games ('+hm(LE.screen.minutes)+', '+fx(LE.screen)+', needs a TV or game console) or call your family '+(LE.call.perDay===1?'once':LE.call.perDay+' times')+' a day ('+hm(LE.call.minutes)+', '+fx(LE.call)+'). At the Park, walk ('+hm(LE.walk.minutes)+', '+fx(LE.walk)+') or jog ('+hm(LE.jog.minutes)+', '+fx(LE.jog)+'). The Restaurant also serves '+cf.name+' ('+hm(cf.minutes)+', '+sg(cf.energy)+'% energy, '+sg(cf.happiness)+' happiness), a snack rather than a meal.'})();
       $('cfgRent').textContent=everyDays(RENT_EVERY);
       $('apOf').textContent=' of '+hm(MAX_AP);
       $('cfgDebt').textContent=pctTxt(CONFIG.hospital.billInterest);
@@ -5341,10 +5412,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       return (h%12||12)+':'+pad2(m)+' '+(h<12?'AM':'PM');
     }
     function clockIcon(left){var h=Math.floor(clockMin(left)/60);return h>=5&&h<7?'🌅':h>=7&&h<17?'☀️':h>=17&&h<19?'🌇':'🌙'}
-    var KIND={walk:['Walking','#8aa0b3'],work:['Work','#f0bd4a'],study:['Study','#6aa0ff'],gym:['Gym','#ef7d72'],rest:['Rest','#a78bfa'],
+    var KIND={fun:['Leisure','#9bd36a'],walk:['Walking','#8aa0b3'],work:['Work','#f0bd4a'],study:['Study','#6aa0ff'],gym:['Gym','#ef7d72'],rest:['Rest','#a78bfa'],
               food:['Food','#5fcf92'],health:['Health','#ff9ecb'],errand:['Errands','#3cc0c3'],other:['Other','#6b7885']};
     var ACT_KIND={work:'work','class':'study',study:'study',gym:'gym',nap:'rest',cook:'food',eatc:'food',eatp:'food',treat:'food',chips:'food',eatchips:'food',
-                  groc:'food',bundle:'food',treat_ill:'health',checkup:'health',ward:'health'};
+                  groc:'food',bundle:'food',treat_ill:'health',checkup:'health',ward:'health',fun:'fun'};
     var nextKind=null;  /* what the player just pressed; used by the next render */
     document.addEventListener('click',function(e){
       var el=e.target;if(!el||!el.closest)return;
@@ -5475,7 +5546,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     try{if(localStorage.getItem('dailyGrind.preview')==='0')pvOn=false}catch(e){}
     /* button name (data-act) -> the function the game runs for it; same pairs as the click handler in the Shop panel */
     var PV_RUN={work:work,'class':study,study:selfStudy,gym:gymSession,nap:nap,cook:cook,treat:treat,eatc:eatCooked,eatp:eatPrem,
-                checkup:checkup,ward:ward,treat_ill:treatIll,buy:buy,groc:buyGroc,bundle:buyBundle,lotto:buyTicket,eatchips:eatChips};
+                checkup:checkup,ward:ward,treat_ill:treatIll,buy:buy,groc:buyGroc,bundle:buyBundle,lotto:buyTicket,eatchips:eatChips,fun:leisure};
     function pvVitals(){return {ap:S.ap,cash:S.cash,energy:S.energy,happy:S.happy,health:S.health,know:Math.floor(S.know)}}
     function dryRun(a,arg){
       var fn=PV_RUN[a];if(!fn)return null;
