@@ -6,6 +6,11 @@
 <title>Daily Grind</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
+/* Styles, in order: colours and dark theme (:root) · base, buttons and the town map · compact panel cards ·
+   the overview window and top bar · pop-ups and the end-of-day card · responsive rules (narrow windows, phones) ·
+   add-ons (clock, trend arrows, toasts, action preview, recap) · starting traits · later component fixes and the
+   final breakpoint overrides. Later rules win: .center, #log and .stat are styled in more than one place on purpose
+   (base look first, then the overview restyle, then breakpoints), so check the later rules before changing an early one. */
 :root{--mine:#b45309;--bg:#e9eef1;--surface:#fff;--ink:#16222e;--muted:#566676;--line:#cfd9e0;--teal:#0f7f82;--teal-ink:#fff;--gold:#e0a526;--red:#c8453b;--green:#2f8f5b;
 box-sizing:border-box;color-scheme:light}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--mine:#f0bd4a;--bg:#0f1a22;--surface:#18262f;--ink:#e8eef2;--muted:#94a6b3;--line:#2a3b47;--teal:#3cc0c3;--teal-ink:#06262a;--gold:#f0bd4a;--red:#ef7d72;--green:#5fcf92}}
@@ -108,7 +113,7 @@ input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-ra
 
 .over{position:fixed;inset:0;background:rgba(10,18,24,.82);display:none;align-items:center;justify-content:center;padding:20px;z-index:5000}
 .over.show{display:flex}
-/* compact panel pieces (pilot: Apartment, Bungalow, Bank) */
+/* compact panel cards used by every building: chips, rows (.arow), section headers (.psec) and cards (.pbox) */
 .chipl{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
 .chip{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--ink) 7%,var(--surface));color:var(--ink);font-size:.74rem;font-weight:700;line-height:1.4;white-space:nowrap}
 .chip .ic{width:1.15em;height:1.15em}
@@ -349,8 +354,8 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 .btnrow{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:58%}.btnrow .btn{white-space:nowrap}
 @media (max-width:640px){.btnrow{max-width:none;justify-content:flex-start}}
 
-/* bank: per-product amount boxes; work box removed */
-/* ===== Version 39 add-ons ===== */
+/* bank: per-product amount boxes */
+/* ===== add-ons (section 11 of the script) ===== */
 /* 1. clock + day bar (inside the dark HUD) */
 .daybar{flex:0 0 100%;display:flex;flex-direction:column;gap:3px;padding:0 2px 1px}
 .daybar .track{position:relative;display:flex;height:7px;border-radius:99px;overflow:hidden;background:rgba(255,255,255,.14)}
@@ -413,7 +418,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 #rcMsg{font-size:.8rem;font-weight:700;color:var(--green)}
 #rcText{width:100%;min-height:96px;margin-top:8px;font:inherit;font-size:.8rem;border:2px solid var(--line);border-radius:8px;padding:6px;background:var(--surface);color:var(--ink)}
 
-/* ===== Version 40: starting traits ===== */
+/* ===== starting traits (welcome screen) ===== */
 .traits{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:6px 0 12px}
 .trait{position:relative;display:flex;flex-direction:column;gap:3px;text-align:left;padding:8px 10px;border:2px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer;font-size:.78rem;line-height:1.3;color:var(--ink)}
 .trait input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;cursor:pointer}
@@ -466,7 +471,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
   .hud .places-btn{display:inline-flex}
 }
 .places-btn{display:none;min-height:36px;padding:4px 10px;font-size:.8rem}
-/* QA layout fixes: the Belongings line wraps instead of being cut off with "…" */
+/* the Belongings line wraps instead of being cut off with "…" */
 .three .kv b#belong{white-space:normal;overflow:visible;text-overflow:clip}
 /* Employment Office: the "Your job" tag may wrap so a long role name never pushes it past the card edge */
 .jb .opt .tag{white-space:nowrap;text-align:center}
@@ -709,18 +714,26 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
 <div id="toasts" aria-live="polite"></div>
 
 <script>
+/* Daily Grind game code. One closure, in this order (search for the numbered banners; CODE_MAP.md has more detail):
+     1. CONFIG                   every tunable number
+     2. WORLD TABLES             ranks, difficulty, icons, buildings, homes, items, jobs, School pathways, careers
+     3. STATE AND SAVES          blank() state, new game, save, load (migrations), game over
+     4. PLAYER ACTIONS           sound and feedback, time and money, work, study, shopping, food, bank, walking, gym, leisure, Factory
+     5. HEALTH, STRESS, NIGHT    illness, health, burnout, game-over checks, the overnight rollover
+     6. EVENTS AND ECONOMY       news, decisions, macro trends and shocks, storylines, mini stories, the end-of-day card
+     7. PANELS                   panel building blocks and every building's panel
+     8. MAP ART AND DIALOGUE     building illustrations and shopkeeper lines
+     9. RENDER                   repainting the screen from S
+    10. MAP LAYOUT AND INPUT     town map drawing, keyboard, buttons (the ACTIONS table), Rules text
+    11. ADD-ONS                  clock, trend arrows, toasts, action preview, recap, starting traits
+    12. START                    load the saved game or start a new one */
 (function(){
-  /* ================= MASTER CONFIG =================
-    Change these numbers to tune the game. Nothing else needs editing.
-    Group 1: world news, macro storylines and the price index.
-    Group 2: job qualifications, and the Factory's day labour, safety course and tour.
-    Group 3: time (day length, walking, rent cycle, game length, how long actions take).
-    Group 4: clothes (price, how long they last, bargaining).
-    Group 5: health, illness, the gym and the hospital.
-    Group 6: food, cooking, the fridge and hunger.
-    Group 7: burnout from too many hours of work and study.
-    Group 8: self-study, sleep and rest, housing, the lottery, leisure (home and Park), score and ranks.
-    (More groups will be added here, one at a time.) */
+  /* ==================================================================
+     1. CONFIG
+     Change these numbers to tune the game. Top-level keys, in order: start, education, events, macro, limits, market, jobs, factory,
+     time, clothes, health, illness, gym, hospital, food, burnout, selfStudy, gadgets, sleep, housing, lottery, leisure, loan,
+     bankrupt, shame, score, ranks, ui, traits. Each key has its own comment explaining its values.
+     ================================================================== */
   var CONFIG={
     /* Starting values for a new game. */
     start:{energy:85},
@@ -1266,7 +1279,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       {name:'Wealthy',    netWorth:5000,  icon:'💼', byDay:12, bonus:1000},
       {name:'Tycoon',      netWorth:10000, icon:'👑', byDay:15, bonus:2000}
     ],
-    /* Group 9, Version 39: clock, trend arrows, toasts, action preview, recap */
+    /* ui: clock, trend arrows, toasts, action preview, recap and the evening darkening (see ADD-ONS) */
     ui:{
       /* 1. Clock: the day starts at this hour. The HUD shows the time of day and a bar of how the day was spent. */
       clock:{startHour:7, use24h:false},
@@ -1306,7 +1319,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         {icon:'🤢', points:50,  words:['food poisoning']}
       ]
     },
-    /* Group 10, Version 40: starting traits.
+    /* traits: starting traits.
       The player picks one on the welcome screen (or none). Each trait is a list of CONFIG changes:
         {k:'sleep.awayShare', v:0.75}    sets that value to 0.75
         {k:'food.basic.cost', x:0.7}  multiplies the normal value by 0.7
@@ -1387,7 +1400,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     tr.lay=Math.min(1,(tr.lay||0)*mk('layoffStrength'));tr.cls=Math.min(1,(tr.cls||0)*mk('layoffStrength'));
     return tr;
   }
-  /* ================================================= */
+  /* ==================================================================
+     2. WORLD TABLES
+     Values derived from CONFIG plus the fixed tables: ranks, difficulty, icons, buildings, homes, items, jobs, School pathways, careers.
+     ================================================================== */
   var MAX_AP=CONFIG.time.dayMinutes, RENT_EVERY=CONFIG.time.rentEveryDays, GOAL=0, WALK=CONFIG.time.walkMinutes;
   /* time: S.ap is minutes left today. Activity costs are written in 'units'; M() turns units into minutes using CONFIG.time. */
   function M(u){var T=CONFIG.time;return Math.max(T.minAction,Math.round(u*T.minutesPerUnit/T.roundTo)*T.roundTo)}
@@ -1811,6 +1827,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     done();
   }
 
+  /* ==================================================================
+     3. STATE AND SAVES
+     blank() is the full shape of S. fresh() starts a game; save() and load() keep it in localStorage; finish() ends it.
+     ================================================================== */
   function blank(){return {fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
     S=blank();T0();PREV=null;applyPayVar();S.certVar={};Object.keys(TRACKS).forEach(function(t){S.certVar[t]=1+(Math.random()*2-1)*CONFIG.education.certVariance});
@@ -1923,7 +1943,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function finish(title,text){
     var lost=!/rank/.test(title)&&title.indexOf(TIERS[TIERS.length-1].n)<0;
     if(lost)snd('lose');
-    S.over=true;S.endDay=nightRun?S.day-1:S.day;  /* the last day actually played */clearSave();$('keep').hidden=true;
+    S.over=true;S.endDay=nightRun?S.day-1:S.day;  /* the last day actually played */
+    clearSave();$('keep').hidden=true;
     $('overTitle').textContent=title;
     $('overText').textContent=text;
     var sc=score(),best=bestScore(),first=(function(){try{return localStorage.getItem('dailyGrind.best')===null}catch(e){return true}})(),isTop=sc>0&&(first||sc>best);  /* a 0-point game is never a top score */
@@ -1990,6 +2011,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     return false;
   }
   function done(){ if(!checkWin()) render(); }
+  /* ==================================================================
+     4. PLAYER ACTIONS
+     Everything a button can do. Each action spends time (spendMin) and money, changes S, logs what happened (vitPar) and calls done().
+     ================================================================== */
   /* ---------- sound + floating feedback ---------- */
   var AC=null,MUTE=false;
   try{MUTE=localStorage.getItem('dailyGrind.mute')==='1'}catch(e){}
@@ -2748,6 +2773,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     }else return;
     done();
   }
+  /* ==================================================================
+     5. HEALTH, STRESS AND THE NIGHT
+     Illness and health, burnout, the game-over checks (stressTick) and rollover(), which runs everything that happens overnight.
+     ================================================================== */
   /* ---------- health: a slow-moving vital that shapes how often you fall ill ---------- */
   function goodCount(){return (S.good||[]).filter(function(d){return S.day-d<5}).length}
   function eatGood(n){S.good.push(S.day);S.good=S.good.filter(function(d){return S.day-d<5});S.health=clamp(S.health+n)}
@@ -3005,6 +3034,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     nightRank=true;try{done()}finally{nightRank=false}
   }
 
+  /* ==================================================================
+     6. EVENTS AND THE ECONOMY
+     Content tables (NEWS, CHOICES, MACRO, SAGAS, TWISTS, STORIES), the effect tokens (applyFx), macro trends and the end-of-day card (pickNight, endWeek).
+     ================================================================== */
   /* ---------- daily events: personal, economic news, yes/no decisions ---------- */
   var NEWS=[
     ["OPEC+ announces deep oil output cuts","Fuel and freight costs ripple through shop shelves.","p+8~20"],
@@ -4884,7 +4917,11 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if((S.tickets||[]).length)t+=shelf('🎟️ Lottery tickets','','<div class="room">'+S.tickets.map(function(x){return '<div class="thing"><span>🎟️</span><small>Draw day '+x.draw+'</small></div>'}).join('')+'</div>');
     return t;
   }
-  /* ---------- compact panel pieces (pilot: Apartment, Bungalow and Bank) ----------
+  /* ==================================================================
+     7. PANELS
+     Building blocks for compact cards (chip, arow, psec, boxed, more) and the panels map: one function per building.
+     ================================================================== */
+  /* ---------- compact panel pieces, used by every building ----------
     chip: one number with its icon · more: an ⓘ that opens the explanation · arow: name, chips and button on one line
     psec: a section heading whose ⓘ opens that section's rules (key k, stored as data-sec, keeps it open across re-renders) */
   function chip(k,v,cls){return '<span class="chip'+(cls?' '+cls:'')+'">'+(k?ic(k):'')+v+'</span>'}
@@ -5132,6 +5169,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function SV(w,h,b){return '<svg viewBox="0 0 '+w+' '+h+'" aria-hidden="true">'+b+'</svg>'}
   function loopN(n,fn){var s='';for(var i=0;i<n;i++)s+=fn(i);return s}
 
+  /* ==================================================================
+     8. MAP ART AND DIALOGUE
+     ART draws each building as inline SVG; GREET holds the shopkeepers' lines.
+     ================================================================== */
   var ART={
     factory:function(){
       return SV(150,118,shade(72,114,78)+
@@ -5361,6 +5402,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   var FLASH=null;
   /* vital number colour: red below 10, amber 10 to 29, yellow 30 to 60, green above 60 */
   function vitColor(v){return v<10?'#ef7d72':v<30?'#f0a030':v<=60?'#f0d040':'#5fcf92'}
+  /* ==================================================================
+     9. RENDER
+     ================================================================== */
   /* ---------- render: repaint the screen from S ----------
     render() is the only entry point; it calls the parts below in this order (the order matters: placeCenter() needs the
     overview filled in, the panel is drawn after the windows are shown or hidden, and save() runs last).
@@ -5551,6 +5595,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(k==='m'||k==='M'){$('muteBtn').click();return}
   });
 
+  /* ==================================================================
+     10. MAP LAYOUT AND INPUT
+     Where each building sits on the map, the roads and traffic, keyboard keys, button handlers (ACTIONS) and the Rules text from CONFIG.
+     ================================================================== */
   var BP={school:[13,19,15],jobs:[37,22,12.5],bung:[62,19,17],bank:[87,18,17],fast:[91,41,14],resto:[91,67,14],hosp:[91,55,11.5],factory:[9,55,11.5],
           mall:[86,97,16],apt:[62,97,11],park:[74,90,11],elec:[36,97,16],pawn:[13,97,10],thrift:[9,67,12],market:[9,41,14],gym:[50,97,12]};
   var KN=[[20,24],[34,22],[50,25],[64,22],[80,24],[84,36],[81,50],[84,64],[80,77],[64,79],[48,76],[34,79],[20,77],[16,64],[19,50],[16,36]];
@@ -5892,15 +5940,17 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       document.querySelectorAll('#diffs [data-diff]').forEach(function(b){var D=DIFF[b.dataset.diff],sm=b.querySelector('small');if(D&&sm)sm.textContent=D.d.replace(/\.$/,'')});
     }catch(e){console.warn('Rules text (timeText): a line could not be filled in from CONFIG, so the rest of this block was skipped.',e)}
   })();
-  /* =====================================================================
-    VERSION 39 ADD-ONS
-    Five features that sit on top of the game without changing the older functions:
-      1. Clock + day bar      2. Vital trend arrows      3. Toasts
-      4. Action preview      5. End-of-run recap
-    They work by wrapping render(), log() and finish(): the old code runs first, then the add-on
-    reads the game state and draws. Each feature is a separate section below, so deleting one section
-    removes that feature. All their settings live in CONFIG.ui (near the top of the script).
-    ===================================================================== */
+  /* ==================================================================
+     11. ADD-ONS
+     Features that sit on top of the core game: 1 clock and day bar, 2 vital trend arrows, 3 toasts, 4 action preview,
+     5 end-of-run recap, 6 starting traits. Their settings are in CONFIG.ui and CONFIG.traits.
+     How they hook in: this block replaces render(), log() and finish() with wrappers that call the original and then
+     the hooks registered in HOOK (before / after render, on each log line, on game over). A hook that throws is
+     caught by safe() and reported in the console, so one broken add-on cannot stop the game.
+     The action preview (dryRun) runs a real action on a copy of S. While it runs it swaps out everything the action
+     could touch outside S (render, log, sound, save, finish, Math.random and the others listed in its keep object) and
+     puts them all back afterwards. If an action starts using a new global function with side effects, add it there.
+     ================================================================== */
   (function addons39(){
     var UI=CONFIG.ui||{};
     var HOOK={before:[],after:[],onLog:[],onFinish:[]};  /* what each feature asks to run */
@@ -6268,7 +6318,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     function clearRecap(){if(!S.over){var r=$('recap');if(r&&r.parentNode)r.parentNode.removeChild(r)}}  /* nothing left over after New game */
     HOOK.before.push(trackWorth);HOOK.after.push(clearRecap);HOOK.onLog.push(logMoment);HOOK.onFinish.push(showRecap);
 
-    /* ---------- 6. STARTING TRAITS (Version 40) ----------
+    /* ---------- 6. STARTING TRAITS ----------
       On the welcome screen you pick one trait (or none). A trait is just a short list of CONFIG changes in
       CONFIG.traits.list: {k:'path.to.value', v:newValue} sets a value, {k:'path.to.value', x:1.25} multiplies it.
       We remember every value a trait could touch, put them all back to normal, then apply the chosen trait,
@@ -6339,6 +6389,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     HOOK.before.push(syncTrait);HOOK.after.push(paintTrait);
   })();
 
+  /* ==================================================================
+     12. START
+     ================================================================== */
   if(!load())fresh();
   CFG_WARN.forEach(function(w){log('⚙️ '+w,'bad');console.warn(w)});
 })();
