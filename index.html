@@ -1811,7 +1811,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     done();
   }
 
-  function blank(){return {fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:4,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
+  function blank(){return {fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
     S=blank();T0();PREV=null;applyPayVar();S.certVar={};Object.keys(TRACKS).forEach(function(t){S.certVar[t]=1+(Math.random()*2-1)*CONFIG.education.certVariance});
     S.sagaNext=sagaDay(1);
@@ -1852,48 +1852,72 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     el.textContent=t[0];el.title=t[1];el.className=t[2];
   }
   function clearSave(){try{localStorage.removeItem(SAVE_KEY)}catch(e){}}
-  function load(){
-    try{
-      var raw=localStorage.getItem(SAVE_KEY);if(!raw)return false;
-      var d=JSON.parse(raw);if(!d||!d.S||typeof d.S.day!=='number'||d.S.over)return false;
-      var b=blank();
-      if(!d.S.tmin){d.S.ap=MAX_AP;d.S.tmin=1}
-      if(!d.S.enr){d.S.enr={};Object.keys(TRACKS).forEach(function(t){var n=(d.S.edu||{})[t]||0,ls=(d.S.les||{})[t]||0;if(n<TRACKS[t].c[TRACKS[t].c.length-1]&&(ls>0||(n>0&&TRACKS[t].c.indexOf(n)<0)))d.S.enr[t]=TRACKS[t].c.filter(function(e){return n>=e}).length})}
-      if(!(d.S.ver>=2)&&d.S.career){var cr=d.S.career;if(cr.jobs!=null){cr.factory=cr.jobs;delete cr.jobs}['resto','bank','elec'].forEach(function(c){if(cr[c]!=null)cr[c]++});d.S.ver=2}
-      if(d.S.ver===2&&d.S.career){var cr2=d.S.career;Object.keys(cr2).forEach(function(c){if(!CAREERS[c])delete cr2[c]});d.S.ver=3}
-      /* kitchen moved from pantry + cooked lists to one food list with fridge spaces; old food counts as fridge days used so far */
-      if(!d.S.food&&(d.S.pantry||d.S.cooked)){var KF=CONFIG.food.keepDaysFridge,mv=function(t,p){return p.sp?{t:t,u:KF,sp:1}:{t:t,u:Math.min(KF-1,Math.max(0,d.S.day-(p.w||d.S.day)))}};
-        d.S.food=(d.S.pantry||[]).map(function(p){return mv(p.t==='prem'?'prem':'basic',p)}).concat((d.S.cooked||[]).map(function(c){return mv('cook',c)}))}
-      delete d.S.pantry;delete d.S.cooked;
-      /* burnout now counts work and study together; resting no longer adds to the recovery chance */
-      delete d.S.studyStreak;delete d.S.workStreak;delete d.S.sickRest;
-      /* one storyline a game: an older save that already had one waits gapDays; one that had none gets a start day */
-      if(d.S.sagaNext==null)d.S.sagaNext=d.S.saga?0:d.S.sagaLast?d.S.day+CONFIG.events.storyline.gapDays:Math.max(d.S.day,sagaDay(1));
-      Object.keys(b).forEach(function(k){if(d.S[k]===undefined)d.S[k]=b[k]});
-      /* Diploma merged into Degree; Doctorate and Specialist removed. Convert finished qualifications to the new pathways; part-done ones are reset. */
-      if(d.S.ver===3&&d.S.edu){
+  /* ---------- loading a save: migrate it, then hydrate it ----------
+    SAVE_VERSION is the save format the game writes now (S.ver). Older saves are brought up to date by the
+    MIGRATIONS below, run in this order on the stored data (several steps depend on the ones before them).
+    Most steps are un-versioned and safe to run on any save (they only act when an old field is there).
+    To change the save format: add a step at the right place in the list, keep old saves loadable, and if the
+    change is version-specific, raise SAVE_VERSION and the ver value in blank(). */
+  var SAVE_VERSION=4;
+  var MIGRATIONS=[
+    ['time left counted in minutes', function(s){if(!s.tmin){s.ap=MAX_AP;s.tmin=1}}],
+    ['enrolment record (enr) from qualification progress', function(s){
+      if(!s.enr){s.enr={};Object.keys(TRACKS).forEach(function(t){var n=(s.edu||{})[t]||0,ls=(s.les||{})[t]||0;if(n<TRACKS[t].c[TRACKS[t].c.length-1]&&(ls>0||(n>0&&TRACKS[t].c.indexOf(n)<0)))s.enr[t]=TRACKS[t].c.filter(function(e){return n>=e}).length})}}],
+    ['v1 to v2: the Factory career renamed, Restaurant, Bank and Electronics ranks shifted up one', function(s){
+      if(!(s.ver>=2)&&s.career){var cr=s.career;if(cr.jobs!=null){cr.factory=cr.jobs;delete cr.jobs}['resto','bank','elec'].forEach(function(c){if(cr[c]!=null)cr[c]++});s.ver=2}}],
+    ['v2 to v3: careers that no longer exist are dropped', function(s){
+      if(s.ver===2&&s.career){var cr=s.career;Object.keys(cr).forEach(function(c){if(!CAREERS[c])delete cr[c]});s.ver=3}}],
+    ['kitchen: pantry and cooked lists become one food list (old food counts as fridge days used so far)', function(s){
+      if(!s.food&&(s.pantry||s.cooked)){var KF=CONFIG.food.keepDaysFridge,mv=function(t,p){return p.sp?{t:t,u:KF,sp:1}:{t:t,u:Math.min(KF-1,Math.max(0,s.day-(p.w||s.day)))}};
+        s.food=(s.pantry||[]).map(function(p){return mv(p.t==='prem'?'prem':'basic',p)}).concat((s.cooked||[]).map(function(c){return mv('cook',c)}))}
+      delete s.pantry;delete s.cooked}],
+    ['removed fields: separate work and study streaks, rest-based recovery', function(s){delete s.studyStreak;delete s.workStreak;delete s.sickRest}],
+    ['one storyline a game: an old save that had one waits gapDays, one that had none gets a start day', function(s){
+      if(s.sagaNext==null)s.sagaNext=s.saga?0:s.sagaLast?s.day+CONFIG.events.storyline.gapDays:Math.max(s.day,sagaDay(1))}],
+    ['fields added since the save was made get their starting values from blank()', function(s,b){Object.keys(b).forEach(function(k){if(s[k]===undefined)s[k]=b[k]})}],
+    ['v3 to v4: Diploma merged into Degree, Doctorate and Specialist removed (finished levels converted, part-done ones reset)', function(s){
+      if(s.ver===3&&s.edu){
         var OLDQ={sal:{c:[2,5],lv:['Certificate','Diploma']},fnb:{c:[2,5,8],lv:['Certificate','Diploma','Degree']},fin:{c:[2,5,8,12],lv:['Certificate','Diploma','Degree','Masters']},tech:{c:[2,5,8,12],lv:['Certificate','Diploma','Degree','Masters']},med:{c:[2,5,8,12,16],lv:['Certificate','Diploma','Degree','Honours','Masters']},eng:{c:[2,5,8,12,16],lv:['Certificate','Diploma','Degree','Honours','Masters']}};
-        Object.keys(TRACKS).forEach(function(t){var o=OLDQ[t];if(!o)return;var n=d.S.edu[t]||0,k=0;o.c.forEach(function(e){if(n>=e)k++});
+        Object.keys(TRACKS).forEach(function(t){var o=OLDQ[t];if(!o)return;var n=s.edu[t]||0,k=0;o.c.forEach(function(e){if(n>=e)k++});
           var lab=k?o.lv[k-1]:null;if(lab==='Diploma')lab='Degree';
-          d.S.edu[t]=lab?TRACKS[t].c[TRACKS[t].lv.indexOf(lab)]:0});
-        d.S.enr={};d.S.les={};d.S.cert=null;d.S.ver=4;
-      }
-      /* jobs list changed: drop a saved job whose role no longer exists (or moved), so the player can re-apply */
-      var lostJob=null;Object.keys(d.S.career||{}).forEach(function(c){var rk=CAREERS[c]&&CAREERS[c].ranks[d.S.career[c]];if(!rk||(d.S.jobName&&d.S.jobName!==rk.r)){lostJob=d.S.jobName||c;delete d.S.career[c]}});
-      /* one job at a time: keep the best-paid job from an older save */
-      (function(){var cs=Object.keys(d.S.career||{});if(cs.length>1){var best=null,bp=-1;cs.forEach(function(c){var rk=CAREERS[c]&&CAREERS[c].ranks[d.S.career[c]];if(rk&&rk.pay>bp){bp=rk.pay;best=c}});var keep={};if(best)keep[best]=d.S.career[best];d.S.career=keep}
-        if(d.S.layoff>0){var c0=Object.keys(d.S.career)[0];if(c0)d.S.shut[CAREERS[c0].b||c0]=Math.min(4,d.S.layoff);d.S.layoff=0}
-        if(Object.keys(d.S.items||{}).some(function(k){return d.S.items[k]}))d.S.flags.buy=1})();
-      ['inv','edu','clothes'].forEach(function(k){Object.keys(b[k]).forEach(function(q){if(d.S[k][q]===undefined)d.S[k][q]=b[k][q]})});
-      PREV=null;S=d.S;applyPayVar();loc=LOCS.some(function(l){return l[0]===d.loc})?d.loc:S.home;view=d.view&&panels[d.view]?d.view:null;last=d.last||null;
-      if(!S.logs)S.logs=[];
-      $('log').innerHTML='';
-      S.logs.slice().reverse().forEach(function(e){var x=document.createElement('div');x.textContent=e[0];if(e[1])x.className=e[1];$('log').insertBefore(x,$('log').firstChild)});
-      $('over').classList.remove('show');
-      log('Welcome back. Your game was restored from your last session.','good');if(lostJob)log('The job list has changed and your old job ('+lostJob+') no longer exists. Apply for a new one at the Employment Office.','warn');
-      if(!S.flags.diff&&S.day===1)$('welcome').classList.add('show');
-      render();return true;
-    }catch(e){return false}
+          s.edu[t]=lab?TRACKS[t].c[TRACKS[t].lv.indexOf(lab)]:0});
+        s.enr={};s.les={};s.cert=null;s.ver=4;
+      }}],
+    ['jobs list changed: a saved job whose role no longer exists (or moved) is dropped so the player can re-apply', function(s,b,out){
+      Object.keys(s.career||{}).forEach(function(c){var rk=CAREERS[c]&&CAREERS[c].ranks[s.career[c]];if(!rk||(s.jobName&&s.jobName!==rk.r)){out.lostJob=s.jobName||c;delete s.career[c]}})}],
+    ['one job at a time (keep the best paid); an old layoff becomes a workplace closure; owning items ticks the shopping goal', function(s){
+      var cs=Object.keys(s.career||{});if(cs.length>1){var best=null,bp=-1;cs.forEach(function(c){var rk=CAREERS[c]&&CAREERS[c].ranks[s.career[c]];if(rk&&rk.pay>bp){bp=rk.pay;best=c}});var keep={};if(best)keep[best]=s.career[best];s.career=keep}
+      if(s.layoff>0){var c0=Object.keys(s.career)[0];if(c0)s.shut[CAREERS[c0].b||c0]=Math.min(4,s.layoff);s.layoff=0}
+      if(Object.keys(s.items||{}).some(function(k){return s.items[k]}))s.flags.buy=1}],
+    ['new investments, qualifications and outfits added to the nested lists', function(s,b){['inv','edu','clothes'].forEach(function(k){Object.keys(b[k]).forEach(function(q){if(s[k][q]===undefined)s[k][q]=b[k][q]})})}]
+  ];
+  /* brings stored data up to date in place; returns what the player should be told about */
+  function migrateSave(d){var b=blank(),out={lostJob:null};MIGRATIONS.forEach(function(m){m[1](d.S,b,out)});return out}
+  /* puts a migrated save into play: state, where you are, the daily log and the screen */
+  function hydrate(d,out){
+    PREV=null;S=d.S;applyPayVar();loc=LOCS.some(function(l){return l[0]===d.loc})?d.loc:S.home;view=d.view&&panels[d.view]?d.view:null;last=d.last||null;
+    if(!S.logs)S.logs=[];
+    $('log').innerHTML='';
+    S.logs.slice().reverse().forEach(function(e){var x=document.createElement('div');x.textContent=e[0];if(e[1])x.className=e[1];$('log').insertBefore(x,$('log').firstChild)});
+    $('over').classList.remove('show');
+    log('Welcome back. Your game was restored from your last session.','good');if(out.lostJob)log('The job list has changed and your old job ('+out.lostJob+') no longer exists. Apply for a new one at the Employment Office.','warn');
+    if(!S.flags.diff&&S.day===1)$('welcome').classList.add('show');
+    render();
+  }
+  /* true when a saved game was restored. A finished game or no save starts fresh. A save that cannot be read or
+    migrated is copied to SAVE_KEY+'.broken' first, so a later fix can still recover it. */
+  function load(){
+    var raw=null;
+    try{raw=localStorage.getItem(SAVE_KEY)}catch(e){return false}  /* storage blocked: the save status says so */
+    if(!raw)return false;
+    try{
+      var d=JSON.parse(raw);if(!d||!d.S||typeof d.S.day!=='number'||d.S.over)return false;
+      hydrate(d,migrateSave(d));return true;
+    }catch(e){
+      console.warn('Daily Grind: the saved game could not be loaded, so a new game starts. The old save is kept as '+SAVE_KEY+'.broken.',e);
+      try{localStorage.setItem(SAVE_KEY+'.broken',raw)}catch(x){}
+      return false;
+    }
   }
   function nextRentWeek(){return Math.ceil(S.day/RENT_EVERY)*RENT_EVERY}
   function finish(title,text){
