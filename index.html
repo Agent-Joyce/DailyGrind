@@ -5667,16 +5667,60 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var a=b.dataset.act,g=b.dataset.arg;
     toastAll=true;try{shopAct(a,g,b)}finally{toastAll=false}
   });
-  function shopAct(a,g,b){
-    if(a==='step'){stepAmt(g);return}  /* amount stepper: no scroll, no re-render */
-    if(a==='frig'){fridgeToggle(g);return}  /* fridge pick: stay where you are on the page */
-    if(a==='work')work(g);else if(a==='treat')treat(g);else if(a==='class')study(g);else if(a==='enrol')enrol(g);else if(a==='apply')apply(g)
-    else if(a==='alljobs'){allJobs=!allJobs;render()}
-    else if(a==='buy')buy(g);else if(a==='cbuy')buyWear(g);else if(a==='bargain')bargain(g);else if(a==='sell')sell(g);else if(a==='dep'||a==='wd')moveMoney(a);
-    else if(a==='treat_ill')treatIll();else if(a==='checkup')checkup();else if(a==='ward')ward();else if(a==='insure')insure();else if(a==='paydebt')payDebt();else if(a==='payrent')payRent();else if(a==='nap')nap();else if(a==='fun')leisure(g);else if(a==='fac')factoryDo(g);else if(a==='arrears')payArrears();else if(a==='groc')buyGroc(g);else if(a==='bundle')buyBundle(g);else if(a==='chips')chips();else if(a==='eatchips')eatChips();else if(a==='lotto')buyTicket();else if(a==='cook')cook(g);else if(a==='eatc')eatCooked(g);else if(a==='eatp')eatPrem(g);else if(a==='binsp')binSpoiled();else if(a==='gym')gymSession(g);else if(a==='study')selfStudy();else if(a==='repair')repair(g);else if(a==='redeem')redeem(g);else if(a==='invest')invest(g);else if(a==='divest')divest(g);
-    else if(a==='home')moveHome(g);else if(a==='rest')endWeek(true);
-    else if(a==='borrow')borrow();else if(a==='repay')repay(false);else if(a==='repayall')repay(true);else if(a==='ltenure'){loanTenure=+g;render()}
-  }
+  /* ---------- ACTIONS: every panel button (data-act) in one table ----------
+    run(arg, button)  what the button does (arg is its data-arg)
+    kind              its colour in the day bar under the clock (work, study, gym, rest, food, health, fun; anything else is "errand")
+    dry               the action preview may try it on a copy of the game (see dryRun; CONFIG.ui.preview.actions picks which ones it shows)
+    ui                only changes the screen (amount steppers, toggles): no game time passes
+    To add a button: give it data-act="name" in its panel and add one line here. */
+  var ACTIONS={
+    work:     {run:function(g){work(g)},          kind:'work',   dry:true},
+    fac:      {run:function(g){factoryDo(g)},     kind:'work'},
+    'class':  {run:function(g){study(g)},         kind:'study',  dry:true},
+    study:    {run:function(){selfStudy()},       kind:'study',  dry:true},
+    enrol:    {run:function(g){enrol(g)}},
+    apply:    {run:function(g){apply(g)}},
+    gym:      {run:function(g){gymSession(g)},    kind:'gym',    dry:true},
+    nap:      {run:function(){nap()},             kind:'rest',   dry:true},
+    fun:      {run:function(g){leisure(g)},       kind:'fun',    dry:true},
+    rest:     {run:function(){endWeek(true)}},
+    treat:    {run:function(g){treat(g)},         kind:'food',   dry:true},
+    groc:     {run:function(g){buyGroc(g)},       kind:'food',   dry:true},
+    bundle:   {run:function(g){buyBundle(g)},     kind:'food',   dry:true},
+    chips:    {run:function(){chips()},           kind:'food'},
+    eatchips: {run:function(){eatChips()},        kind:'food',   dry:true},
+    cook:     {run:function(g){cook(g)},          kind:'food',   dry:true},
+    eatc:     {run:function(g){eatCooked(g)},     kind:'food',   dry:true},
+    eatp:     {run:function(g){eatPrem(g)},       kind:'food',   dry:true},
+    binsp:    {run:function(){binSpoiled()}},
+    treat_ill:{run:function(){treatIll()},        kind:'health', dry:true},
+    checkup:  {run:function(){checkup()},         kind:'health', dry:true},
+    ward:     {run:function(){ward()},            kind:'health', dry:true},
+    insure:   {run:function(){insure()}},
+    paydebt:  {run:function(){payDebt()}},
+    buy:      {run:function(g){buy(g)},                          dry:true},
+    cbuy:     {run:function(g){buyWear(g)}},
+    bargain:  {run:function(g){bargain(g)}},
+    sell:     {run:function(g){sell(g)}},
+    repair:   {run:function(g){repair(g)}},
+    redeem:   {run:function(g){redeem(g)}},
+    lotto:    {run:function(){buyTicket()},                      dry:true},
+    home:     {run:function(g){moveHome(g)}},
+    payrent:  {run:function(){payRent()}},
+    arrears:  {run:function(){payArrears()}},
+    dep:      {run:function(){moveMoney('dep')}},
+    wd:       {run:function(){moveMoney('wd')}},
+    invest:   {run:function(g){invest(g)}},
+    divest:   {run:function(g){divest(g)}},
+    borrow:   {run:function(){borrow()}},
+    repay:    {run:function(){repay(false)}},
+    repayall: {run:function(){repay(true)}},
+    step:     {run:function(g){stepAmt(g)},       ui:true},  /* amount stepper: no re-render, the page stays where it is */
+    frig:     {run:function(g){fridgeToggle(g)},  ui:true},  /* fridge pick: the page stays where it is */
+    alljobs:  {run:function(){allJobs=!allJobs;render()},  ui:true},
+    ltenure:  {run:function(g){loanTenure=+g;render()},    ui:true}
+  };
+  function shopAct(a,g,b){var A=ACTIONS[a];if(A)A.run(g,b)}
   /* after a choice on the end-of-day card, jump back to the top so the next card is seen (panel buttons do not scroll: their news is a toast) */
   function toTop(){
     var c=$('center');c.scrollTop=0;
@@ -5844,14 +5888,12 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     function clockIcon(left){var h=Math.floor(clockMin(left)/60);return h>=5&&h<7?'🌅':h>=7&&h<17?'☀️':h>=17&&h<19?'🌇':'🌙'}
     var KIND={fun:['Leisure','#9bd36a'],walk:['Walking','#8aa0b3'],work:['Work','#f0bd4a'],study:['Study','#6aa0ff'],gym:['Gym','#ef7d72'],rest:['Rest','#a78bfa'],
               food:['Food','#5fcf92'],health:['Health','#ff9ecb'],errand:['Errands','#3cc0c3'],other:['Other','#6b7885']};
-    var ACT_KIND={work:'work','class':'study',study:'study',gym:'gym',nap:'rest',cook:'food',eatc:'food',eatp:'food',treat:'food',chips:'food',eatchips:'food',
-                  groc:'food',bundle:'food',treat_ill:'health',checkup:'health',ward:'health',fun:'fun',fac:'work'};
     var nextKind=null;  /* what the player just pressed; used by the next render */
     document.addEventListener('click',function(e){
       var el=e.target;if(!el||!el.closest)return;
       if(el.closest('.tile')){nextKind='walk';return}
       var b=el.closest('#shop [data-act]');
-      if(b)nextKind=ACT_KIND[b.dataset.act]||'errand';
+      if(b)nextKind=(ACTIONS[b.dataset.act]||{}).kind||'errand';  /* colours come from the ACTIONS table */
     },true);
     /* before render: if minutes went down since the last render, file them under the right colour */
     function trackTime(){
@@ -5983,12 +6025,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var PV_ACTIONS=PV.actions||['work','class','study','gym'];
     var pvOn=PV.on!==false;
     try{if(localStorage.getItem('dailyGrind.preview')==='0')pvOn=false}catch(e){}
-    /* button name (data-act) -> the function the game runs for it; same pairs as the click handler in the Shop panel */
-    var PV_RUN={work:work,'class':study,study:selfStudy,gym:gymSession,nap:nap,cook:cook,treat:treat,eatc:eatCooked,eatp:eatPrem,
-                checkup:checkup,ward:ward,treat_ill:treatIll,buy:buy,groc:buyGroc,bundle:buyBundle,lotto:buyTicket,eatchips:eatChips,fun:leisure};
     function pvVitals(){return {ap:S.ap,cash:S.cash,energy:S.energy,happy:S.happy,health:S.health,know:Math.floor(S.know)}}
     function dryRun(a,arg){
-      var fn=PV_RUN[a];if(!fn)return null;
+      var A=ACTIONS[a],fn=A&&A.dry?A.run:null;if(!fn)return null;  /* only actions marked dry in ACTIONS */
       /* everything the action could touch outside S, so we can put it back */
       var keep={S:S,loc:loc,view:view,last:last,PREV:PREV,sayLine:sayLine,render:render,log:log,snd:snd,done:done,refuse:refuse,
                 feedback:feedback,floater:floater,save:save,clearSave:clearSave,finish:finish,checkWin:checkWin,rnd:Math.random};
