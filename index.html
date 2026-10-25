@@ -5890,7 +5890,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       $('cfgHunger').textContent=Math.abs(CONFIG.food.hungryEnergy)+'% energy and '+Math.abs(CONFIG.food.hungryHappiness)+' happiness';
       var sd=CONFIG.clothes.startCasualDays;$('cfgClothes').textContent=sd+' day'+(sd===1?'':'s');
       document.querySelectorAll('#diffs [data-diff]').forEach(function(b){var D=DIFF[b.dataset.diff],sm=b.querySelector('small');if(D&&sm)sm.textContent=D.d.replace(/\.$/,'')});
-    }catch(e){}
+    }catch(e){console.warn('Rules text (timeText): a line could not be filled in from CONFIG, so the rest of this block was skipped.',e)}
   })();
   /* =====================================================================
     VERSION 39 ADD-ONS
@@ -6103,7 +6103,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         Math.random=function(){return 0.5};  /* any luck-based part gets a middle-of-the-road roll */
         fn(arg);
         out={before:before,after:pvVitals(),notes:notes,refused:refused,cert:!!S.cert,over:!!S.over,day:S.day!==keep.S.day};
-      }catch(e){out=null}
+      }catch(e){out=null;console.warn('Action preview (dryRun): '+a+' failed on the copy of the game, so it runs without a preview.',e)}
       S=keep.S;loc=keep.loc;view=keep.view;last=keep.last;PREV=keep.PREV;sayLine=keep.sayLine;render=keep.render;log=keep.log;snd=keep.snd;
       done=keep.done;refuse=keep.refuse;feedback=keep.feedback;floater=keep.floater;save=keep.save;clearSave=keep.clearSave;
       finish=keep.finish;checkWin=keep.checkWin;Math.random=keep.rnd;
