@@ -1047,3 +1047,14 @@ Display only; no rules change.
 - New `CONFIG.time.workHealthPerHour` (−1), `CONFIG.education.lessonHealthPerHour` (−1) and `CONFIG.selfStudy.healthPerHour` (−1), which replaces `selfStudy.health` (−2 a session).
 - **Home meals:** a cooked meal now gives +5 health (was +10), a ready-to-eat meal +1 (was +5). `CONFIG.food.basic.health` 5, `food.premium.health` 1.
 - The Rules Health line, the Study & work and School ⓘ texts and the Config Guide describe the new costs.
+
+## 71. Maintenance: easier to read and change (no gameplay change)
+
+Prompted by a maintainability review. Nothing a player sees or plays has changed: every step was checked against the previous version for identical panels (all buildings, status page, top bar, at desktop and phone width), identical content tables, identical results for 30 seeded simulation games, and a clean UI check.
+- **Content data:** `NEWS` and `CHOICES` have one record per line (they were single lines of 9 KB and 27 KB), so an edit to one headline or decision shows as a one-line change.
+- **One button table:** a single `ACTIONS` table says what each panel button runs, its day-bar colour and whether the action preview may try it. It replaces the long if/else chain in the click handler, the preview's own list (`PV_RUN`) and the day bar's list (`ACT_KIND`), which could drift apart.
+- **Saves:** loading is split into named `MIGRATIONS` steps (run in order), `migrateSave()` and `hydrate()`, with a `SAVE_VERSION` constant. Old v1–v3 saves load exactly as before (checked with hand-made saves of each version). New: a save that cannot be loaded is kept as `dailyGrind.save.v1.broken` instead of being overwritten, and a warning goes to the browser console.
+- **Rendering:** `render()` calls named parts in order (stats, pop-ups, top bar, overview cards, map, windows, panel, accessibility) instead of being one 120-line function.
+- **Comments:** the script has a contents list and twelve numbered section banners; version-history labels ("Version 39 add-ons", "pilot") are replaced by what the code does now; the CONFIG header lists the real groups; the CSS has a contents comment and component labels. New `CODE_MAP.md` explains where everything is and how to add an action, building, event, CONFIG value or save change.
+- **Errors:** the Rules-text setup and the action preview now report a failure in the browser console instead of failing silently (the Rules one hid a real bug once).
+- **Tests:** the UI check now also starts a game at each difficulty and with a trait, saves and reloads mid-game, and loads a damaged save.
