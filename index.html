@@ -5361,8 +5361,27 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   var FLASH=null;
   /* vital number colour: red below 10, amber 10 to 29, yellow 30 to 60, green above 60 */
   function vitColor(v){return v<10?'#ef7d72':v<30?'#f0a030':v<=60?'#f0d040':'#5fcf92'}
+  /* ---------- render: repaint the screen from S ----------
+    render() is the only entry point; it calls the parts below in this order (the order matters: placeCenter() needs the
+    overview filled in, the panel is drawn after the windows are shown or hidden, and save() runs last).
+    The add-ons wrap render() (see ADD-ONS): their before-hooks run first and their after-hooks (clock, trend arrows,
+    toasts) run after it. */
   function render(){
     fridgeSync();  /* a fridge that broke or was repaired changes what fits */
+    renderStats();
+    placeCenter();
+    renderGoals();
+    renderPopups();
+    renderHud();
+    renderOverviewCards();
+    renderMap();
+    renderWindows();
+    renderPanel();
+    renderA11y();
+    save();feedback();
+  }
+  /* day, time and vitals, and the Home & life, wardrobe and belongings lines of the overview */
+  function renderStats(){
     var H=HOUSE[S.home];
     $('day').textContent=Math.min(S.day,maxDays());
     $('ap').textContent=hm(S.ap);
@@ -5398,8 +5417,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     $('belong').textContent=nIt+' item'+(nIt!==1?'s':'')+(FF.length?' · 🍽 '+FF.length+' meal'+(FF.length>1?'s':'')+' ('+Math.min.apply(null,FF.map(function(p){return foodLeft(p)}))+'d left)':'')+(nSp?' · 🤢'+nSp:'')+(S.chips?' · 🥔'+S.chips:'');
     if((S.tickets||[]).length)$('belong').textContent+=' · 🎟️'+S.tickets.length;
     $('belongPop').innerHTML=belongList();
-    placeCenter();
-    renderGoals();
+  }
+  /* first-week goals, certificate and morning pop-ups: shown or hidden from S */
+  function renderPopups(){
     var gp=$('goalpop');
     if(S.goalPop&&!S.over&&!S.pending&&!S.cert&&!S.morning){$('gpList').innerHTML=goals().map(function(x){return '<li>✅ '+x[1]+'</li>'}).join('');var gpT=Math.min(TIERS.length-1,Math.max(0,S.tier+1));$('gpMsg').textContent='You have the basics down. Next target: '+TIERS[gpT].n+' at '+money(nextGoal())+' net worth'+(nextDueTxt()?nextDueTxt()+' for a +'+TIERS[gpT].b.toLocaleString()+' score bonus'+(maxDays()===Infinity?'.':' (it still counts as a rank until day '+maxDays()+').'):maxDays()===Infinity?'.':', within '+maxDays()+' days.');gp.classList.add('show')}else gp.classList.remove('show');
     var cp=$('certpop');
@@ -5410,6 +5430,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       var cn=$('cpNext');cn.hidden=!nxT;if(nxT){cn.textContent='Enrol in the '+TT.lv[C.l]+' · '+money(nxF);cn.disabled=S.cash<nxF||S.expelled>0}
       cp.classList.add('show')}else cp.classList.remove('show');
     var mo=$('morning');if(S.morning&&!S.over&&!S.pending&&!S.cert){$('mnT').textContent='☀️ Day '+S.day+(maxDays()!==Infinity?' of '+maxDays():'');$('mnSub').textContent='Before you start, a few things need your attention:';$('mnList').innerHTML=S.morning.map(function(x){return '<li class="'+x.l+'">'+x.t+'</li>'}).join('');mo.classList.add('show')}else mo.classList.remove('show');
+  }
+  /* the top bar: net worth, cash, investments, score, buttons and current pay, plus the Rules text that depends on difficulty */
+  function renderHud(){
     $('hNw').textContent=kMoney(worth());$('hNw').style.color=worth()<0?'#ef7d72':'';$('hKn').textContent=Math.floor(S.know)+'%';$('hCash').textContent=kMoney(S.cash);$('hNw').title=money(worth());$('hCash').title=money(S.cash);$('hEn').textContent=S.energy+'%';$('hHp').textContent=S.happy;$('hHl').textContent=S.health;$('hHl').style.color=S.health<30?'#ef7d72':'';
     $('hEn').style.color=S.energy<30?'#ef7d72':'';$('hHp').style.color=S.happy<30?'#ef7d72':'';$('hCash').style.color=S.cash<0?'#ef7d72':'';
     var hiv=invTotal();$('hInvC').hidden=!anyInv();if(anyInv()){var pl0=hiv-invSum('c');$('hInv').textContent=money(hiv);$('hInvPL').textContent=sm(pl0)+' ('+(pl0>=0?'+':'−')+Math.abs(invSum('c')?pl0/invSum('c')*100:0).toFixed(1)+'%)';$('hInvPL').style.color=pl0>=0?'#7fe0a6':'#ef7d72'}
@@ -5418,6 +5441,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var pi=payInfo(),pm0=prod().m;$('pay').textContent=money(pi.v)+(pi.n?'/shift':'');$('payRole').textContent=pi.txt+(pi.n&&pm0<1?' · ×'+Math.round(pm0*100)+'% today':'');
     $('dayMax').textContent=maxDays()===Infinity?'':' / '+maxDays();$('diffTag').textContent=Df().n;
     $('rlWin').textContent=maxDays()===Infinity?' (no time limit on Easy)':', within '+maxDays()+' days';$('rlTime').textContent=maxDays()===Infinity?'Not on Easy: there is no day limit.':'Day '+maxDays()+' passes and you are still under '+money(GOAL)+'.';
+  }
+  /* the overview's day recap, warnings, net-worth parts, investments line and rank goal */
+  function renderOverviewCards(){
+    var as=assets(),nw=worth(),tot=Math.max(nextGoal(),nw),iv=invTotal();  /* the same values renderStats() shows */
     var sm2=S.summary,sc=$('sumcard');sc.hidden=!sm2;
     if(sm2){var sg=function(v,suf){return '<b class="'+(v>0?'up':v<0?'dn':'')+'">'+(v>0?'+':v<0?'−':'±')+(suf==='$'?money(Math.abs(Math.round(v))):Math.abs(Math.round(v))+(suf||''))+'</b>'};
       sc.innerHTML='<span class="st">📊 Day '+sm2.day+' recap</span><span>Earned <b class="up">'+money(Math.round(sm2.earn))+'</b></span><span>Spent <b class="dn">'+money(Math.round(sm2.spend))+'</b></span><span>Net worth '+sg(sm2.dnw,'$')+'</span><span>⚡ '+sg(sm2.de,'%')+'</span><span>😊 '+sg(sm2.dh)+'</span><span>💚 '+sg(sm2.dl||0)+'</span><span>🧠 '+sg(sm2.dk)+'</span>'+
@@ -5438,7 +5465,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     else il.hidden=true;
     $('nw').textContent=money(nw);$('goalAmt').textContent=(S.tier>=0?TIERS[S.tier].ic+' '+TIERS[S.tier].n+' · ':'')+(S.tier<TIERS.length-1?'next: '+TIERS[S.tier+1].n+' '+money(nextGoal())+nextDueTxt():'top rank');
     $('sgCash').style.width=Math.max(0,S.cash)/tot*100+'%';$('sgBank').style.width=S.bank/tot*100+'%';$('sgAsset').style.width=as/tot*100+'%';$('sgInv').style.width=invTotal()/tot*100+'%';
-
+  }
+  /* the town map: evening darkness and each building's highlight, walk time, label and tags */
+  function renderMap(){
     /* evening: the town darkens as the day runs out (CONFIG.ui.evening); the morning resets S.ap, so it lights up again */
     var EV=CONFIG.ui.evening||{},evF=EV.fromMinutes||0,dusk=evF&&!S.over&&S.ap<evF?(EV.darkest||0)*(0.5+0.5*(1-S.ap/evF)):0;
     $('board').style.setProperty('--dusk',dusk.toFixed(3));$('board').classList.toggle('evening',dusk>0);
@@ -5450,7 +5479,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       t.setAttribute('aria-label',NAME[k]+(k===loc?', you are here':', '+hm(dist(loc,k)*WALK)+' walk')+(k===S.home&&!S.homeless?', your home':''));
       t.querySelector('.tags').innerHTML=(k===S.home&&!S.homeless?'<span class="tag">Home</span>':'')+(k===loc?'<span class="tag you">You</span>':'');
     });
-
+  }
+  /* which windows show (overview, building panel, end-of-day card) and the end-of-day card itself */
+  function renderWindows(){
     var pend=!!S.pending;
     document.body.classList.toggle('pending',pend);
     $('center').classList.toggle('wide',(view==='jobs'||view==='school'||view==='bank')&&!pend);
@@ -5465,6 +5496,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var wrap=$('evwrap'), was=wrap.hidden;
     wrap.hidden=!pend;
     if(pend){renderEvent();setTimeout(function(){var f=$('event').querySelector('button:not(:disabled)');if(f&&was)f.focus()},0);if(was){var c=$('event');c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop')}}
+  }
+  /* the open building's panel: title, shopkeeper line and body (typed amounts and open ⓘ sections are kept) */
+  function renderPanel(){
+    var pend=!!S.pending;
     if(view&&!pend){
       $('shopTitle').textContent=ICON[view]+' '+NAME[view];
       if(!sayLine||sayLine.k!==view)sayLine={k:view,t:greetLine(view)};
@@ -5478,11 +5513,13 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       [].forEach.call($('shopBody').querySelectorAll('details[data-sec]'),function(d){if(open[d.dataset.sec])d.open=true});
       if(S.over)$('shop').querySelectorAll('button').forEach(function(b){b.disabled=true});
     }
+  }
+  /* screen-reader roles for the bars, keyboard hints and the spoken latest message */
+  function renderA11y(){
     [['donutWrap',S.ap,MAX_AP,'Minutes left today'],['enBar',S.energy,100,'Energy'],['hpBar',S.happy,100,'Happiness'],['hlBar',S.health,100,'Health'],['knBar',Math.floor(S.know),100,'Knowledge']].forEach(function(m){
       var b=m[0]==='donutWrap'?$(m[0]):$(m[0]).parentNode;b.setAttribute('role','progressbar');b.setAttribute('aria-label',m[3]);b.setAttribute('aria-valuemin','0');b.setAttribute('aria-valuemax',String(m[2]));b.setAttribute('aria-valuenow',String(m[1]));});
     keyHints();
     if(last&&last.msg!==window.__srLast){window.__srLast=last.msg;$('sr').textContent=last.msg}
-    save();feedback();
   }
   function actionButtons(){
     var o=document.querySelector('.over.show');
