@@ -634,15 +634,15 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   <div class="traits" id="traits" role="radiogroup" aria-label="Starting trait"></div></details>
   <div id="diffsWrap"><h3>Choose a difficulty</h3>
   <div class="diffs" id="diffs">
-    <button class="btn alt" data-diff="easy"><b>Easy</b><small>$500 to start, 15 days, cheaper prices, fewer illnesses</small></button>
-    <button class="btn" data-diff="normal" id="welcomeGo"><b>Normal</b><small>$200 to start, 15 days, standard prices</small></button>
-    <button class="btn alt" data-diff="hard"><b>Hard</b><small>$100 to start, 15 days, prices +15%, pay −5%, more illness</small></button>
+    <button class="btn alt" data-diff="easy"><b>Easy</b><small>$500 to start, 20 days, cheaper prices, fewer illnesses</small></button>
+    <button class="btn" data-diff="normal" id="welcomeGo"><b>Normal</b><small>$200 to start, 20 days, standard prices</small></button>
+    <button class="btn alt" data-diff="hard"><b>Hard</b><small>$100 to start, 20 days, prices +15%, pay −5%, more illness</small></button>
   </div></div>
 </div></div>
 <div class="over" id="rules" role="dialog" aria-modal="true" aria-labelledby="rlT"><div class="card rules">
   <h2 id="rlT">How the game ends</h2>
   <h3 class="win">You win</h3>
-  <ul><li><b>Net worth reaches <span id="cfgGoal2">$1,000</span></b>: cash + bank + investments + the resale value of your things, minus hospital debt, rent arrears and any loan you owe<span id="rlWin">, within 15 days</span>. That makes you <b id="cfgRank1">🙂 Comfortable</b> and you have won.</li>
+  <ul><li><b>Net worth reaches <span id="cfgGoal2">$1,000</span></b>: cash + bank + investments + the resale value of your things, minus hospital debt, rent arrears and any loan you owe<span id="rlWin">, within 20 days</span>. That makes you <b id="cfgRank1">🙂 Comfortable</b> and you have won.</li>
   <li>Keep playing for a higher rank: <span id="cfgRanks"><b>💼 Wealthy</b> at $5,000 and <b>👑 Tycoon</b> at $10,000 (Tycoon ends the game)</span>. When time runs out, your best rank is your final result.</li>
   <li><span id="cfgOnTime">Reach a rank by its target day for bonus points.</span></li></ul>
   <h3 class="lose">You lose</h3>
@@ -652,7 +652,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     <li><b>Exhaustion:</b> energy at 10% or less at the end of two days in a row.</li>
     <li><b>You gave up:</b> happiness at 10 or less for three days in a row.</li>
     <li><b>Hospitalised:</b> <span id="cfgHungry">three days</span> in a row without a meal.</li>
-    <li><b>Time’s up:</b> <span id="rlTime">Day 15 passes and you are still under $1,000.</span></li>
+    <li><b>Time’s up:</b> <span id="rlTime">Day 20 passes and you are still under $1,000.</span></li>
   </ul>
   <h3>Stress that builds before then</h3>
   <ul>
@@ -746,16 +746,18 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       certKnowledge:{Certificate:5, Degree:10, Honours:15, Masters:20},
       certHappiness:{Certificate:5, Degree:10, Honours:15, Masters:20}},
     /* Night events.
-      storyline: every game has one multi-day storyline (oil crisis, pandemic, housing bubble...). It starts on the evening of a
-        random day from fromDay to toDay. After it ends, no new storyline starts for gapDays days (with 15-day games, one per game).
+      storyline: every game has exactly one multi-day storyline (oil crisis, pandemic, housing bubble...). It starts on the evening
+        of a random day from fromDay to (game length − daysBeforeEnd): day 3 to day 17 in a 20-day game.
+      storylineGap: clear days kept between the storyline and a macro shock, both ways. A shock only starts if even its longest
+        run (macroDays[1]) ends this many days before the storyline's start day, and none starts this many days after it ends.
       macroChance: each night, the chance a one-off macro shock starts. Never while a storyline or another shock is running,
-        never within bigGap days of one ending, and never so close to the storyline's start day that the two would overlap.
+        never within bigGap days of one ending (bigGap 3 = 2 clear days), and never too close to the storyline (storylineGap).
         macroDays is how many days a macro shock lasts.
       Separately, one daily event may happen (story, item, news, basic, decision, or none); the odds are relative weights and do not
         need to add to 1. The daily event happens even while a storyline or macro shock is running.
       Mini stories, macro shocks and storylines are dealt from a shuffled deck, like decisions and news: none repeats until all have been seen.
       forecast: when tonight's daily event is economic news, the chance the headline is tipped off that morning (morning notes and the Bank screen), so the player has the day to move money. 0 = never, 1 = always. */
-    events:{storyline:{fromDay:2,toDay:8,gapDays:15},macroChance:0.1,bigGap:3,macroDays:[3,5],story:0.2,item:0.2,news:0.1,basic:0,decision:0.3,none:0.2,forecast:0.7},
+    events:{storyline:{fromDay:3,daysBeforeEnd:3},storylineGap:2,macroChance:0.1,bigGap:3,macroDays:[3,5],story:0.2,item:0.2,news:0.1,basic:0,decision:0.3,none:0.2,forecast:0.7},
     macro:{
       /* Master dial for ALL world news, macro shocks and storylines.
         1 = normal, 0 = news has no economic effect, 2 = twice as strong. */
@@ -952,7 +954,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       walkMinutes:15,      // minutes to walk past one building on the ring road
       walkEnergy:-1,       // energy (%) for every walkMinutes of walking
       rentEveryDays:5,    // rent is due every this many days
-      gameDays:15,        // how many days a game lasts (all difficulties)
+      gameDays:20,        // how many days a game lasts (all difficulties)
       /* Most actions (eating, studying, shopping, working...) have a cost in 'units' in their
         own tables. Each unit is turned into minutes like this:
           minutes = units x minutesPerUnit, rounded to the nearest roundTo, never below minAction.
@@ -1275,9 +1277,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       byDay: target day. Reaching the rank by the end of that day adds 'bonus' points to the score (an "on-time" rank).
       Reaching it later still counts as the rank, without the bonus. byDay:0 = no target. A byDay past the game length is treated as the last day. */
     ranks:[
-      {name:'Comfortable', netWorth:1000,  icon:'🙂', byDay:8,  bonus:500},
-      {name:'Wealthy',    netWorth:5000,  icon:'💼', byDay:12, bonus:1000},
-      {name:'Tycoon',      netWorth:10000, icon:'👑', byDay:15, bonus:2000}
+      {name:'Comfortable', netWorth:1000,  icon:'🙂', byDay:10, bonus:500},
+      {name:'Wealthy',    netWorth:5000,  icon:'💼', byDay:16, bonus:1000},
+      {name:'Tycoon',      netWorth:10000, icon:'👑', byDay:20, bonus:2000}
     ],
     /* ui: clock, trend arrows, toasts, action preview, recap and the evening darkening (see ADD-ONS) */
     ui:{
@@ -1834,7 +1836,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function blank(){return {fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
     S=blank();T0();PREV=null;applyPayVar();S.certVar={};Object.keys(TRACKS).forEach(function(t){S.certVar[t]=1+(Math.random()*2-1)*CONFIG.education.certVariance});
-    S.sagaNext=sagaDay(1);
+    S.sagaNext=sagaDay();
     rollOpenings();planNews();loc='apt';view=null;last=null;
     $('log').innerHTML='';S.logs=[];
     $('over').classList.remove('show');$('welcome').classList.add('show');
@@ -1892,8 +1894,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         s.food=(s.pantry||[]).map(function(p){return mv(p.t==='prem'?'prem':'basic',p)}).concat((s.cooked||[]).map(function(c){return mv('cook',c)}))}
       delete s.pantry;delete s.cooked}],
     ['removed fields: separate work and study streaks, rest-based recovery', function(s){delete s.studyStreak;delete s.workStreak;delete s.sickRest}],
-    ['one storyline a game: an old save that had one waits gapDays, one that had none gets a start day', function(s){
-      if(s.sagaNext==null)s.sagaNext=s.saga?0:s.sagaLast?s.day+CONFIG.events.storyline.gapDays:Math.max(s.day,sagaDay(1))}],
+    ['one storyline a game: an old save that had one gets no more, one that had none gets a start day', function(s){
+      if(s.sagaNext==null)s.sagaNext=s.saga?0:s.sagaLast?0:Math.max(s.day,sagaDay())}],
+    ['storyline once a game (was: again after gapDays): a save whose storyline has ended schedules no other', function(s){
+      if(s.sagaLast&&!s.saga)s.sagaNext=0}],
     ['fields added since the save was made get their starting values from blank()', function(s,b){Object.keys(b).forEach(function(k){if(s[k]===undefined)s[k]=b[k]})}],
     ['v3 to v4: Diploma merged into Degree, Doctorate and Specialist removed (finished levels converted, part-done ones reset)', function(s){
       if(s.ver===3&&s.edu){
@@ -4013,8 +4017,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
        ["Water prices ease","Bills settle.","p-0.5 h+2"]]]}
   ];
   function sagaOf(id){var r=null;SAGAS.forEach(function(x){if(x.id===id)r=x});return r}
-  /* the day the next storyline starts: a random day in CONFIG.events.storyline's window, counted from day 'from' */
-  function sagaDay(from){var L=CONFIG.events.storyline;return from-1+L.fromDay+Math.floor(Math.random()*(L.toDay-L.fromDay+1))}
+  /* the day the storyline starts: a random day from fromDay to (game length − daysBeforeEnd), see CONFIG.events.storyline */
+  function sagaDay(){var L=CONFIG.events.storyline,a=L.fromDay,b=Math.max(a,CONFIG.time.gameDays-L.daysBeforeEnd);return a+Math.floor(Math.random()*(b-a+1))}
   function sagaStart(){
     var sg=draw('deckG',SAGAS);if(sg.id===S.sagaLast)sg=draw('deckG',SAGAS);  /* a new deck can start with the one just played */
     var len=sg.len[0]+Math.floor(Math.random()*(sg.len[1]-sg.len[0]+1)),e=sg.eff;
@@ -4024,7 +4028,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   /* today's chapter of the running storyline (or null when none is running) */
   function sagaEvent(){
     var st=S.saga,sg=sagaOf(st.id);
-    if(!sg){S.saga=null;S.sagaNext=S.day+CONFIG.events.storyline.gapDays;return null}
+    if(!sg){S.saga=null;S.sagaNext=0;return null}
     /* no chapter is shown twice in one storyline; if a phase runs out, only yesterday's is avoided */
     var k=st.day,N=st.len,phase=k===0?0:k>=N-1?3:k<Math.ceil(N*0.55)?1:2,used=st.used||[],list=sg.ph[phase].filter(function(c){return used.indexOf(c[0])<0});
     if(!list.length)list=sg.ph[phase].filter(function(c){return c[0]!==st.last});if(!list.length)list=sg.ph[phase];
@@ -4036,7 +4040,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     else{ev.fx=applyFx(c[2],true);ev.tone=/h\+|w\+|p-|r-/.test(c[2])&&!/h-|p\+|w-/.test(c[2])?'good':/h-|p\+|w-|e-/.test(c[2])?'bad':''}
     if(tr){tr.last=c[0];if(!ev.choice&&tr)ev.fx.push('Still going: '+trendNow(tr))}
     st.last=c[0];used.push(c[0]);st.used=used;st.day++;
-    if(st.day>=N){S.saga=null;S.sagaLast=sg.id;S.sagaNext=S.day+CONFIG.events.storyline.gapDays}
+    if(st.day>=N){S.saga=null;S.sagaLast=sg.id;S.sagaNext=0}  /* one storyline a game */
     return ev;
   }
   function macroEvent(){
@@ -4729,19 +4733,20 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   }
   /* cards for tonight, in order: the big event (if one starts or a saga chapter plays), then the daily event */
   function pickNight(){
-    var E=CONFIG.events,cards=[],wasActive=!!S.saga||macroRunning(),big=null;
+    var E=CONFIG.events,cards=[],story=!!S.saga,wasActive=story||macroRunning(),big=null;
+    if(!S.saga&&!macroRunning()&&(S.bigCool||0)>0)S.bigCool--;
     if(S.saga)big=sagaEvent();
-    else if(S.sagaNext>0&&S.day>=S.sagaNext&&!macroRunning()){
+    else if(S.sagaNext>0&&S.day>=S.sagaNext&&!macroRunning()&&!(S.bigCool>0)){  /* waits out a shock and the days after it */
+      story=true;
       sagaStart();var sid=S.saga.id;big=sagaEvent();
       if(sid==='house'){var lost=bubbleHit();if(lost){big.fx.push(lost);big.tone='bad'}}  /* the housing-bubble storyline can take your home (CONFIG.housing) */
     }else if(!macroRunning()){
-      if((S.bigCool||0)>0)S.bigCool--;
-      var room=!(S.sagaNext>0)||S.day+E.macroDays[1]<S.sagaNext;  /* a shock never runs into the storyline's start day */
+      var room=!(S.sagaNext>0)||S.day+E.macroDays[1]+E.storylineGap<=S.sagaNext;  /* even the longest shock ends storylineGap clear days before the storyline */
       if(!(S.bigCool>0)&&room&&Math.random()<E.macroChance)big=macroEvent();
     }
     if(big)cards.push(big);
     var daily=dailyPick();if(daily)cards.push(daily);
-    if(wasActive||S.saga||macroRunning())S.bigCool=E.bigGap;
+    if(wasActive||S.saga||macroRunning())S.bigCool=story?Math.max(E.bigGap,E.storylineGap+1):E.bigGap;  /* bigCool n = n−1 clear days */
     return cards;
   }
   function endWeek(rested){
