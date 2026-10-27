@@ -1110,3 +1110,21 @@ The Bank's products paid too little to matter (savings 1% a day, about $10 a day
 - **Computer card wording:** its row now reads "Bank and job hunt from home" with 🏦 Savings & investments and 💼 Job board chips (was "Bank app and Jobs app"); the header chip says "Online at home".
 - The morning money briefing and the Rules Bank line describe where the apps are.
 - **UI check:** two new situations (the phone home screen; the Jobs app). Its first run found the phone home screen showing "Your job: undefined" when a saved game had no job title stored; the Jobs app row now reads the title from the job itself.
+
+## 77. A Community Centre; the Pawn Shop becomes the Thrift Store's pawn counter
+
+Morale is what ends most games (in every simulation build the careful players give up on low happiness around day 11), and the only ways to lift it were solo and small. The Pawn Shop overlapped with the Thrift Store.
+- **🤝 Community Centre** (new building, on the Pawn Shop's spot on the map). Once a day each:
+  - **Night out with friends:** 3h, $25, −10% energy, +15 happiness.
+  - **Karaoke night:** 2h, $10, −5% energy, +9 happiness.
+  - **Volunteer:** 3h, free, −10% energy, +8 happiness, +2 knowledge.
+  - **A friend's job tip:** a night out (20%) or volunteering (30%) can get you one. For 3 days (counting today), your next job interview, in person or in the Jobs app, is 30% more likely to pass (still capped at 95%) and never fails for "no openings". The interview uses it up, pass or fail. It shows as a toast, a "🤝 Tip" chip on the job board and a morning reminder.
+  - New `CONFIG.community` {nightOut, karaoke, volunteer, tip}. A new Rules line, filled in from CONFIG.
+- **Pawn Shop → Thrift Store.** Pawning and redeeming move to a **💍 Sell & pawn** card at the Thrift Store, with the same rules (Sal pays half, a quarter if broken; buy back within 3 days for 15% more). The Pawn Shop's jobs move too:
+  - **"Thrift Store (Pawn counter)":** Counter Assistant, Appraiser, Pawnbroker.
+  - **"Thrift Store (Back office)":** Security Guard, Bookkeeper.
+
+  Their shifts are worked at the Thrift Store and count as Thrift Store work experience. In the Gold rush storyline, the "Pawn counter jobs" are the ones hit. The Online-shopping storyline's "Thrift Store jobs" are the Thrift Store's own lines only.
+- **Saves:** a game saved at the Pawn Shop opens at the Thrift Store; a closure and work experience there move to the Thrift Store; jobs and pawn tickets carry over unchanged.
+- **UI check:** the pawned-item situation moves to the Thrift Store; new situation "a friend's job tip".
+- **QA:** UI check clean at desktop and phone width (324 presses each, 17 situations, reload checks). Simulation report: [QA_Sim_2026-10-27_community-centre](docs/QA_Sim_2026-10-27_community-centre.md) (no regressions; the sim bots don't use the Community Centre yet, so its morale effect isn't measured).

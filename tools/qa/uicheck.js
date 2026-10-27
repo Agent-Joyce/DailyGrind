@@ -20,7 +20,7 @@
           BAD TEXT      "NaN", "undefined", "null" or "[object" shown to the player
      5. Situations the main game does not have (SITUATIONS): sick (cold/flu with medical bills, dengue, sick at home),
         rent arrears, a loan to repay, a pawned item to redeem, an industry-specific storyline (its peak, your own job hit,
-        the rumour), out of clothes (buying used ones, a job's shift disabled), bank offers, the phone home screen, the Bank app and the Jobs app. Each checks its buttons are there (MISSING) and presses them.
+        the rumour), out of clothes (buying used ones, a job's shift disabled), bank offers, the phone home screen, the Bank app and the Jobs app, a friend's job tip. Each checks its buttons are there (MISSING) and presses them.
      6. Flows: ending the day (end-of-day cards, morning card), the action preview, a certificate and its bonus toast,
         the Belongings list on the status page.
    Results: window.__UI_RESULTS, an on-page report, the browser console, and a message to the parent page
@@ -180,7 +180,7 @@
       mod:function(S){S.arrears={bal:120,days:4,fresh:0}}},
     {name:'a loan to repay',bld:'bank',need:['repay','repayall'],
       mod:function(S){S.loan={borrowed:500,principal:500,interest:12,taken:S.day-1,tenure:5,rate:4,due:S.day+4}  /* taken yesterday: the game blocks repaying on the day you borrow */}},
-    {name:'a pawned TV to redeem',bld:'pawn',need:['redeem'],
+    {name:'a pawned TV to redeem (Thrift Store pawn counter)',bld:'thrift',need:['redeem','sell'],
       mod:function(S){S.items.tv=0;delete S.broken.tv;S.pawned.tv={w:S.day,g:75}}},
     {name:'an industry-specific storyline at its peak (Employment Office outlook and board chips)',bld:'jobs',need:['apply'],
       mod:function(S){S.ind={id:'robots',day:3,len:5,sw:0.4,ph:2,last:'',used:[]};S.indNext=0}},
@@ -198,6 +198,8 @@
       mod:function(S){S.items.phone=1;delete S.broken.phone}},
     {name:'a promo deposit held, in the Bank app',bld:'bankapp',need:['invest'],
       mod:function(S){S.bankOffer=null;S.promo={v:520,c:500,lock:S.day+2,rate:3.4,last:0}}},
+    {name:'a friend’s job tip (Community Centre), at the Employment Office',bld:'jobs',need:['apply'],
+      mod:function(S){S.tip={until:S.day+2};S.career={}}},
     {name:'out of clothes, buying used ones',bld:'thrift',need:['ubuy'],
       mod:function(S){S.clothes={casual:0,smart:0,suit:0}}},
     {name:'out of clothes with a job (shift disabled, "No clothes" chip)',bld:'fast',need:[],

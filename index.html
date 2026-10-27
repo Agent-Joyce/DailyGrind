@@ -661,6 +661,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     <li><b>Tired (energy under 30):</b> shifts pay 15% less. Low energy that lasts also raises your chance of falling ill overnight: <span id="cfgIllEn">about 40% a night under 11 energy</span> (before health, diet and gym visits lower it).</li>
     <li><b>Morale (happiness under 40 / 25 / 20):</b> shifts pay 10% / 25% / 40% less, and below 20 your boss may demote or fire you.</li>
     <li><b>Factory without a job:</b> <span id="cfgFac">day labour on the loading dock (4h, once a day, no dress code) pays 60% of the lowest Factory wage and does not count as work experience. A safety course (once a game) counts as 1 shift of Factory work experience; a factory tour (once a game) adds a little knowledge.</span></li>
+    <li><b>Community Centre:</b> <span id="cfgComm">a night out, karaoke or volunteering lifts your mood, and friends can tip you off about jobs.</span></li>
     <li><b>Free time:</b> <span id="cfgFun">at home, watch a show or play games (1h, −1% energy, +7 happiness, needs a TV or console) or call your family once a day (30m, +3). At the Park, walk (1h, +5 happiness, +1 health) or jog (1h, −8% energy, +4 happiness, +3 health). The Restaurant also serves coffee and cake (45m, +3% energy, +6 happiness), a snack rather than a meal.</span></li>
     <li><b>Hunger:</b> skipping the daily meal costs <span id="cfgHunger">20% energy and 15 happiness</span>, and cuts productivity.</li>
     <li><b>Shame:</b> <span id="cfgShame">checked when you end the day: net worth under $0 costs 8 happiness and 5% energy; from day 6, net worth under $100 costs 3 happiness. Nothing is taken during the day.</span></li>
@@ -734,7 +735,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   /* ==================================================================
      1. CONFIG
      Change these numbers to tune the game. Top-level keys, in order: start, education, events, industry, macro, limits, market, bank, jobs, factory,
-     time, clothes, health, illness, gym, hospital, food, burnout, selfStudy, gadgets, sleep, housing, lottery, leisure, loan,
+     time, clothes, health, illness, gym, hospital, food, burnout, selfStudy, gadgets, sleep, housing, lottery, community, leisure, loan,
      bankrupt, shame, score, ranks, ui, traits. Each key has its own comment explaining its values.
      ================================================================== */
   var CONFIG={
@@ -913,7 +914,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   'Sorter':              [],                                                                            // $65
   'Thrift Store (Workshop): Repair Technician': ['Engineering Certificate'],                            // $140
 
-  // ---- Pawn Shop ----
+  // ---- Thrift Store pawn counter and back office (the old Pawn Shop) ----
   'Counter Assistant':  [],                                                                              // $80
   'Appraiser':          ['Finance Certificate', 'Sales Certificate'],                                    // $170
   'Pawnbroker':        ['Finance Degree', 'Sales Degree'],                                              // $290
@@ -1248,6 +1249,16 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       prizeMin:100, prizeMax:1000,
       winHappiness:15
     },
+    community:{
+      /* The Community Centre: social activities, each once a day (perDay). cost in $ before the price index, minutes of
+        the day, energy in %. tipChance: the chance a friend tips you off about a job (night out and volunteering). */
+      nightOut:  {cost:25, minutes:180, energy:-10, happiness:15, perDay:1, tipChance:0.2},
+      karaoke:   {cost:10, minutes:120, energy:-5,  happiness:9,  perDay:1},
+      volunteer: {minutes:180, energy:-10, happiness:8, knowledge:2, perDay:1, tipChance:0.3},
+      /* a friend's job tip lasts 'days' days (counting today): the next interview gets passBonus added to its pass
+        chance and never fails for "no openings". It is used up by that interview, pass or fail. */
+      tip:       {days:3, passBonus:0.3}
+    },
     leisure:{
       /* Free things to do for fun. minutes = time taken; energy in %.
         screen: watch a show or play games at home; needs a working TV or game console.
@@ -1517,7 +1528,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
 
   var LOCS=[['jobs','💼','Employment Office'],['school','🎓','School'],['bank','🏦','Bank'],['market','🛒','Supermarket'],
     ['fast','🍔','Fast Food'],['resto','🍝','Restaurant'],['elec','💻','Electronics Store'],['mall','🛍️','Clothes Mall'],
-    ['apt','🏢','Low-End Apartment'],['hosp','🏥','Hospital'],['factory','🏭','Factory'],['thrift','👕','Thrift Store'],['pawn','💍','Pawn Shop'],['bung','🏡','Classy Bungalow'],['gym','🏋️','Gym'],['park','🌳','Park']];
+    ['apt','🏢','Low-End Apartment'],['hosp','🏥','Hospital'],['factory','🏭','Factory'],['thrift','👕','Thrift Store'],['comm','🤝','Community Centre'],['bung','🏡','Classy Bungalow'],['gym','🏋️','Gym'],['park','🌳','Park']];
   var NAME={},ICON={};
   LOCS.forEach(function(l){ICON[l[0]]=l[1];NAME[l[0]]=l[2]});
   /* screens, not places: a device's home screen and its two apps (opened from the Overview's 📱 Phone button, or the 💻 Computer at home) */
@@ -1542,7 +1553,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if((S.tickets||[]).length)li.push('<li><span>🎟️</span>Lottery ticket × '+S.tickets.length+'</li>');
     var pw=Object.keys(S.pawned||{}).filter(function(k){return ITEMS[k]});
     return (li.length?'<ul>'+li.join('')+'</ul>':'<p style="margin:0">Nothing yet. Buy things at the Electronics Store or Thrift Store, and meals at the Supermarket.</p>')+
-      (pw.length?'<p>At the Pawn Shop: '+pw.map(function(k){return ITEMS[k].n}).join(', ')+'.</p>':'')+(S.homeless&&ks.length?'<p>Your things are in storage until you have a home again.</p>':'');
+      (pw.length?'<p>Pawned at the Thrift Store: '+pw.map(function(k){return ITEMS[k].n}).join(', ')+'.</p>':'')+(S.homeless&&ks.length?'<p>Your things are in storage until you have a home again.</p>':'');
   }
   function comfortMult(){return 1+(CONFIG.sleep.comfortBonus||0)*comfortItems().length}
   function restRate(){return HOUSE[S.home].rate*comfortMult()*(CONFIG.sleep.rateX||1)}  /* energy % per hour of rest */
@@ -1641,7 +1652,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     thrift:{n:'Thrift Store',ranks:[
       {r:'Shop Assistant',pay:70,t:'',l:0},
       {r:'Thrift Store Manager',pay:140,t:'cus',l:1,dress:'casual'}]},
-    pawn:{n:'Pawn Shop',ranks:[
+    pawn:{n:'Thrift Store (Pawn counter)',b:'thrift',ranks:[
       {r:'Counter Assistant',pay:80,t:'',l:0,dress:'casual'},
       {r:'Appraiser',pay:170,t:'fin',l:1,dress:'casual'},
       {r:'Pawnbroker',pay:290,t:'fin',l:2,dress:'suit'}]},
@@ -1690,7 +1701,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     thrift2:{n:'Thrift Store (Workshop)',b:'thrift',ranks:[
       {r:'Sorter',pay:65,t:'',l:0},
       {r:'Repair Technician',pay:140,t:'eng',l:1,dress:'casual'}]},
-    pawn2:{n:'Pawn Shop (Back office)',b:'pawn',ranks:[
+    pawn2:{n:'Thrift Store (Back office)',b:'thrift',ranks:[
       {r:'Security Guard',pay:95,t:'',l:0,dress:'casual'},
       {r:'Bookkeeper',pay:150,t:'fin',l:1,dress:'smart'}]},
     hosp2:{n:'Hospital (Support)',b:'hosp',ranks:[
@@ -1877,7 +1888,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
      3. STATE AND SAVES
      blank() is the full shape of S. fresh() starts a game; save() and load() keep it in localStorage; finish() ends it.
      ================================================================== */
-  function blank(){return {fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,ind:null,indNext:0,indId:'',macroLast:0,bankOffer:null,promo:null,deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:CONFIG.market.rateBase,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
+  function blank(){return {fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,ind:null,indNext:0,indId:'',macroLast:0,bankOffer:null,promo:null,comm:null,tip:null,deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:CONFIG.market.rateBase,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
     S=blank();T0();PREV=null;applyPayVar();S.certVar={};Object.keys(TRACKS).forEach(function(t){S.certVar[t]=1+(Math.random()*2-1)*CONFIG.education.certVariance});
     S.sagaNext=sagaDay();S.indNext=indDay();S.indId=INDUSTRY[Math.floor(Math.random()*INDUSTRY.length)].id;
@@ -1945,6 +1956,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     ['industry-specific storylines: a game saved before them gets one, if there is still time in the window', function(s){
       if(s.indNext==null&&!s.ind){var L=CONFIG.industry,last=CONFIG.time.gameDays-L.daysBeforeEnd,d=Math.max((s.day||1)+1,indDay());
         s.indNext=d<=last&&!s.over?d:0;s.indId=INDUSTRY[Math.floor(Math.random()*INDUSTRY.length)].id}}],
+    ['Pawn Shop merged into the Thrift Store: a closure and work experience there move to the Thrift Store', function(s){
+      if(s.shut&&s.shut.pawn){s.shut.thrift=Math.max(s.shut.thrift||0,s.shut.pawn);delete s.shut.pawn}
+      if(s.shiftsAt&&s.shiftsAt.pawn){s.shiftsAt.thrift=(s.shiftsAt.thrift||0)+s.shiftsAt.pawn;delete s.shiftsAt.pawn}}],
     ['fields added since the save was made get their starting values from blank()', function(s,b){Object.keys(b).forEach(function(k){if(s[k]===undefined)s[k]=b[k]})}],
     ['v3 to v4: Diploma merged into Degree, Doctorate and Specialist removed (finished levels converted, part-done ones reset)', function(s){
       if(s.ver===3&&s.edu){
@@ -1966,6 +1980,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function migrateSave(d){var b=blank(),out={lostJob:null};MIGRATIONS.forEach(function(m){m[1](d.S,b,out)});return out}
   /* puts a migrated save into play: state, where you are, the daily log and the screen */
   function hydrate(d,out){
+    if(d.loc==='pawn')d.loc='thrift';if(d.view==='pawn')d.view='thrift';  /* the Pawn Shop is now the Thrift Store's pawn counter */
     PREV=null;S=d.S;applyPayVar();loc=LOCS.some(function(l){return l[0]===d.loc})?d.loc:S.home;view=d.view&&panels[d.view]?d.view:null;last=d.last||null;
     if(!S.logs)S.logs=[];
     $('log').innerHTML='';
@@ -2164,8 +2179,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(!spendMin(60,0))return;
     var who=CAREERS[c].n;
     if(expShort(c,rk)){log('Not enough relevant working experience. '+rk.r+' at the '+who+' needs '+expTxt(c)+'. The 1h interview was wasted.','bad');return done()}
-    if(S.closed[id]){log('No openings now for '+rk.r+' at the '+who+'. The 1h interview slot was wasted. Try another day.','warn');return done()}
+    var tip=tipOn();if(tip)S.tip=null;  /* a friend's tip (Community Centre) is used up by this interview */
+    if(S.closed[id]&&!tip){log('No openings now for '+rk.r+' at the '+who+'. The 1h interview slot was wasted. Try another day.','warn');return done()}
     var pp=0.82-0.05*i+S.know/400+(S.happy-50)/300-(rk.dress&&!hasDress(rk.dress)?0.25:0)-(S.energy<30?0.1:0);
+    if(tip)pp+=CONFIG.community.tip.passBonus;
     pp=Math.max(0.2,Math.min(0.95,pp));
     if(Math.random()>pp){
       var why=rk.dress&&!hasDress(rk.dress)?'You turned up without the right clothes.':S.energy<30?'You looked exhausted.':S.happy<35?'Your low mood showed.':['Another candidate had more experience.','You fumbled a tricky question.','The manager wanted someone with more confidence.','You arrived a little late.','They went with an internal hire.'][Math.floor(Math.random()*5)];
@@ -2838,6 +2855,24 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     log(what+' ('+hm(L.minutes)+(vitTxt(v0)?', '+vitTxt(v0):'')+').','good');
     done();
   }
+  /* ---------- the Community Centre (CONFIG.community): social activities and friends' job tips ---------- */
+  function commToday(k){var c=S.comm;return c&&c.d===S.day?(c[k]||0):0}
+  function tipOn(){return !!(S.tip&&S.day<=S.tip.until)}
+  function community(k){
+    var C=CONFIG.community[k];if(!C||k==='tip')return;
+    if(loc!=='comm')return refuse('You can only do that at the Community Centre.');
+    if(commToday(k)>=C.perDay)return refuse('You have already done that today. Come back tomorrow.');
+    var cost=G(C.cost||0);
+    if(!spendMin(C.minutes,cost))return;
+    var v0=vitSnap();
+    S.energy=clamp(S.energy+(C.energy||0));S.happy=clamp(S.happy+(C.happiness||0));if(C.knowledge)S.know=clamp(S.know+C.knowledge);
+    if(!S.comm||S.comm.d!==S.day)S.comm={d:S.day};S.comm[k]=(S.comm[k]||0)+1;
+    var what={nightOut:'You had a night out with friends',karaoke:'You sang your heart out at karaoke night',volunteer:'You volunteered at the Community Centre'}[k];
+    log(what+' ('+hm(C.minutes)+(cost?', '+money(cost):'')+(vitTxt(v0)?', '+vitTxt(v0):'')+').','good');
+    if(C.tipChance&&Math.random()<C.tipChance){var T=CONFIG.community.tip;S.tip={until:S.day+T.days-1};
+      log('🤝 A friend tipped you off about openings. Your next job interview is easier (until the end of day '+S.tip.until+').','good')}
+    done();
+  }
   /* ---------- the Factory for outsiders: day labour, safety course, tour (CONFIG.factory) ---------- */
   function facJob(){return Object.keys(S.career).some(function(c){return cur(c)&&bOf(c)==='factory'})}
   function labourPay(){var low=Infinity;Object.keys(CAREERS).forEach(function(c){if(bOf(c)==='factory')CAREERS[c].ranks.forEach(function(r,i){low=Math.min(low,rolePay(c,i))})});return Math.round(low*CONFIG.factory.dayLabour.payShare)}
@@ -3118,6 +3153,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     planNews();
     var mn=(S.notes||[]).slice(),rw2=nextRentWeek(),H2=HOUSE[S.home];S.notes=[];
     mn.push.apply(mn,moneyBrief(i,invMoved));
+    if(tipOn())mn.push({l:'good',t:'🤝 A friend’s job tip is still good until the end of day '+S.tip.until+': your next interview is easier and never fails for “no openings”.'});
     if(naked())mn.unshift({l:'bad',t:'👕 You are out of clothes. You can’t work any shift until you buy some (new at the Clothes Mall, or used at the Thrift Store)'+(nakedHap?', and the shame cost you '+Math.abs(nakedHap)+' happiness overnight. It happens again every morning you wake up with nothing to wear.':'.')});
     if(S.newsPlan&&S.newsPlan.tip)mn.push({l:'rem',t:'📡 Tip-off: tonight’s headline is expected to be “'+S.newsPlan.n[0]+'” ('+newsHint(S.newsPlan.n)+'). You have today to move your savings and investments at the Bank.'});
     /* a rank target day passed yesterday without the rank */
@@ -4131,7 +4167,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     deliv:{r:['Delivery Rider','Delivery Driver','Delivery & Install']},crew:{r:['Crew Member','Kitchen Hand']},
     tills:{r:['Cashier','Shelf Stacker']},sup:{r:['Store Supervisor','Supermarket Manager','IT Support Lead']},
     med:{b:['hosp'],t:'med'},hsup:{r:['Hospital Porter','Cleaner']},eat:{b:['resto','fast']},fnb:{b:['resto','fast'],t:'fnb'},
-    mall:{b:['mall']},thrift:{b:['thrift']},appr:{r:['Appraiser','Pawnbroker']},pawn:{b:['pawn']},gym:{b:['gym']},eng:{r:['Technician','Design Engineer','Senior Engineer','Project Lead','Principal Engineer','Chief Engineer']}};
+    mall:{b:['mall']},thrift:{c:['thrift','thrift2']},appr:{r:['Appraiser','Pawnbroker']},pawn:{c:['pawn','pawn2']},gym:{b:['gym']},eng:{r:['Technician','Design Engineer','Senior Engineer','Project Lead','Principal Engineer','Chief Engineer']}};
   function ie(w,lab,pay,hire,cut){var e={w:IW[w],lab:lab,pay:pay||0};if(hire)e.hire=hire;if(cut)e.cut=cut;return e}
   var INDUSTRY=[
     {id:'chips',ic:'💾',n:'AI chip shortage',term:'Supply bottleneck: when one part that a whole industry needs runs short, production stalls everywhere it is used.',
@@ -4240,18 +4276,18 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         ['The mall fights back','Free returns and weekend events bring some shoppers back.','h+1'],
         ['The thrift craze cools','Thrift Store pay settles back down.','']]}]},
     {id:'gold',ic:'🪙',n:'Gold rush',term:'Commodity cycle: raw-material prices boom and bust, and the jobs that depend on them follow.',
-      rum:'Gold prices are climbing fast. Pawn Shop appraisers may be in demand.',
-      hit:'Appraisers and pawnbrokers are in demand, then the whole Pawn Shop is at risk.',ph:[
+      rum:'Gold prices are climbing fast. Appraisers at the Thrift Store’s pawn counter may be in demand.',
+      hit:'Appraisers and pawnbrokers are in demand, then every pawn counter job is at risk.',ph:[
       {on:[ie('appr','Appraisers and pawnbrokers',0.5,'open')],c:[
         ['Gold hits a record','Everyone digs out old jewellery to sell.','h+1'],
-        ['Queues at the Pawn Shop','Sal needs more appraisers.','']]},
+        ['Queues at the pawn counter','Sal needs more appraisers.','']]},
       {on:[ie('appr','Appraisers and pawnbrokers',1,'open')],c:[
         ['Gold fever','Sal pays appraisers extra to work late.','h+1'],
         ['Every ring in town gets weighed','The shop runs out of space in the safe.','']]},
-      {on:[ie('pawn','Pawn Shop jobs',-1,'freeze',1)],c:[
+      {on:[ie('pawn','Pawn counter jobs',-1,'freeze',1)],c:[
         ['Gold crashes','The price falls by a third in two days. Sal is stuck with a safe full of gold.','h-3'],
-        ['The Pawn Shop cuts staff','Sal lets staff go to cover the losses.','h-2']]},
-      {on:[ie('pawn','Pawn Shop jobs',-0.5)],c:[
+        ['The pawn counter cuts staff','Sal lets staff go to cover the losses.','h-2']]},
+      {on:[ie('pawn','Pawn counter jobs',-0.5)],c:[
         ['Gold steadies','Prices stop falling and Sal opens the doors again.','h+1'],
         ['Back to normal business','Old customers come back with their watches.','']]}]},
     {id:'fit',ic:'🏋️',n:'Viral fitness craze',term:'Fad: a sudden, short-lived craze. Businesses that hire for the peak are left over-staffed when it ends.',
@@ -5349,11 +5385,29 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     return boxed(t);
   }
 
+  /* the Thrift Store's own cards: used clothes and second-hand gadgets */
+  function thriftSec(){var U=CONFIG.clothes.used;
+    return psec('used','👕 Used clothes',chip('time',hm(M(CONFIG.clothes.buyUnits))+' to buy'),'Second-hand Smart Casual and Business Suits at '+pctTxt(U.priceShare)+' of the Clothes Mall price. They meet the same dress codes as new ones but only last '+U.days+' days (new ones last '+WEAR.smart.w+' to '+WEAR.suit.w+'), and a used suit gives no happiness lift. Buying replaces the outfit of the same kind you already have. No haggling here.')+
+        ['smart','suit'].map(function(k){var have=S.clothes[k];
+          return arow('Used '+WEAR[k].n+' · '+money(usedPrice(k)),chip('','Lasts '+U.days+' days')+(have?chip('','Yours: '+have+'d left',have<=1?'warn':'ok'):''),btn('ubuy',k,'Buy'))}).join('')+
+      psec('shop','🛍️ Second-hand',chip('time',hm(M(2))+' to buy'),'Cheaper than new. Second-hand devices break down more often; repair them at the Electronics Store.'+shopInfo('thrift'))+shop('thrift');
+  }
+  /* the Thrift Store's Sell & pawn counter (the old Pawn Shop): Sal pays for your things and keeps your tickets */
+  function pawnSec(){
+    var h='',n=0,t='';
+    Object.keys(ITEMS).forEach(function(k){
+      if(!S.items[k])return;n++;
+      h+=arow(ITEMS[k].ic+' '+ITEMS[k].n+(S.broken[k]?' (broken)':''),chip('cash','Pays '+money(Math.floor(G(ITEMS[k].p)/(S.broken[k]?4:2)))),btn('sell',k,'Pawn it'));
+    });
+    Object.keys(S.pawned).forEach(function(k){var p=S.pawned[k];
+      t+=arow('🎫 '+ITEMS[k].n,chip('cash','Redeem '+money(Math.round(p.g*1.15)))+chip('','Until day '+(p.w+3),S.day>=p.w+3?'warn':''),btn('redeem',k,'Redeem'))});
+    return (psec('pawn','💍 Sell & pawn',n?'':chip('','Nothing to pawn'),'Sal at the pawn counter pays half of what you paid (a quarter if it is broken), no questions asked. You can buy it back for 15% more within 3 days; after that Sal keeps it.')+h+(t?psec('tickets','🎫 Your pawn tickets','','')+t:''))
+  }
   var panels={
     jobs:function(){
       var mine=Object.keys(S.career).map(function(c){return CAREERS[c].ranks[S.career[c]].r}),E=CONFIG.jobs.experience,shut=Object.keys(S.shut);
       return boxed((shut.length?'<p class="bad arow-n">🔒 <b>Closed:</b> '+shut.map(function(b){return NAME[b]+' ('+S.shut[b]+'d)'}).join(', ')+'. No interviews or shifts there until they reopen.</p>':'')+indOutlook()+
-        psec('board','💼 Job board',mine.length?chip('','Your job: '+mine.join(', '),'ok'):chip('','No job yet','warn'),
+        psec('board','💼 Job board',(mine.length?chip('','Your job: '+mine.join(', '),'ok'):chip('','No job yet','warn'))+(tipOn()?chip('','🤝 Tip','ok'):''),
           'Pay shown is base pay: your actual wage also depends on your knowledge and well-being. Apply here, then work your shifts at the workplace. Openings come and go, and you can only hold one job at a time.'+(E&&E.shifts?' Jobs paying more than '+money(E.payAbove)+' a shift also need work experience: '+E.shifts+' shifts already worked at the same workplace (“Work exp needed”).':'')+' A job without a dress chip needs ordinary clothes (Casual Clothes or better). Green requirements are ones you already meet; 🔒 means you do not meet them all yet. Hover a qualification for its full name.')+
         board())},
     factory:function(){
@@ -5498,20 +5552,12 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         ['casual','smart','suit'].map(function(k){var c=WEAR[k],pr=price(k),have=S.clothes[k];
           return arow(c.n+' · '+money(pr)+(S.offer[k]!=null?' <small>(bargained)</small>':''),chip('','Lasts '+c.w+' days')+(CC[k].happiness?chip('happy','+'+CC[k].happiness,'ok'):'')+(have?chip('','Yours: '+have+'d left',have<=1?'warn':'ok'):''),
             '<span class="btnrow">'+btn('cbuy',k,'Buy')+btn('bargain',k,'Bargain',1,!!S.barg[k])+'</span>')}).join(''))},
-    thrift:function(){var U=CONFIG.clothes.used;
-      return boxed(psec('used','👕 Used clothes',chip('time',hm(M(CONFIG.clothes.buyUnits))+' to buy'),'Second-hand Smart Casual and Business Suits at '+pctTxt(U.priceShare)+' of the Clothes Mall price. They meet the same dress codes as new ones but only last '+U.days+' days (new ones last '+WEAR.smart.w+' to '+WEAR.suit.w+'), and a used suit gives no happiness lift. Buying replaces the outfit of the same kind you already have. No haggling here.')+
-        ['smart','suit'].map(function(k){var have=S.clothes[k];
-          return arow('Used '+WEAR[k].n+' · '+money(usedPrice(k)),chip('','Lasts '+U.days+' days')+(have?chip('','Yours: '+have+'d left',have<=1?'warn':'ok'):''),btn('ubuy',k,'Buy'))}).join('')+
-      psec('shop','🛍️ Second-hand',chip('time',hm(M(2))+' to buy'),'Cheaper than new. Second-hand devices break down more often; repair them at the Electronics Store.'+shopInfo('thrift'))+shop('thrift'))},
-    pawn:function(){
-      var h='',n=0,t='';
-      Object.keys(ITEMS).forEach(function(k){
-        if(!S.items[k])return;n++;
-        h+=arow(ITEMS[k].ic+' '+ITEMS[k].n+(S.broken[k]?' (broken)':''),chip('cash','Pays '+money(Math.floor(G(ITEMS[k].p)/(S.broken[k]?4:2)))),btn('sell',k,'Pawn it'));
-      });
-      Object.keys(S.pawned).forEach(function(k){var p=S.pawned[k];
-        t+=arow('🎫 '+ITEMS[k].n,chip('cash','Redeem '+money(Math.round(p.g*1.15)))+chip('','Until day '+(p.w+3),S.day>=p.w+3?'warn':''),btn('redeem',k,'Redeem'))});
-      return boxed(psec('pawn','💍 Pawn your things',n?'':chip('','Nothing to pawn'),'Sal pays half of what you paid (a quarter if it is broken), no questions asked. You can buy it back for 15% more within 3 days; after that Sal keeps it.')+h+(t?psec('tickets','🎫 Your pawn tickets','','')+t:''))
+    thrift:function(){return boxed(thriftSec()+pawnSec())},
+    comm:function(){
+      var C=CONFIG.community,row=function(k,ic,title,btnTxt){var c=C[k],cost=G(c.cost||0),dn=commToday(k)>=c.perDay;
+        return arow(ic+' '+title+(cost?' · '+money(cost):''),chip('time',hm(c.minutes))+(c.energy?chip('energy',sg(c.energy)+'%'):'')+chip('happy',sg(c.happiness))+(c.knowledge?chip('know',sg(c.knowledge)):'')+(c.tipChance?chip('','🤝 '+pctTxt(c.tipChance)+' job tip'):'')+(dn?chip('','✓ Done today','ok'):''),btn('comm',k,btnTxt,0,dn||S.cash<cost))};
+      return boxed(psec('comm','🤝 Tonight at the centre',tipOn()?chip('','🤝 Job tip until day '+S.tip.until,'ok'):chip('','Once a day each'),'Time with other people lifts your mood more than time alone. Each activity can be done once a day. A night out or volunteering can also get you a job tip from a friend: your next interview (here in town or in the Jobs app) is '+Math.round(C.tip.passBonus*100)+'% more likely to pass and never fails for “no openings”, for up to '+dayN(C.tip.days)+'. The tip is used up by that interview.')+
+        row('nightOut','🍻','Night out with friends','Go out')+row('karaoke','🎤','Karaoke night','Sing')+row('volunteer','🧡','Volunteer at the centre','Volunteer'))
     },
     gym:function(){
       var staff=isGymStaff(),n=gymCount();
@@ -5526,7 +5572,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     bung:function(){return house('bung')}
   };
 
-  var ORDER=['school','jobs','bung','bank','fast','hosp','resto','mall','apt','gym','elec','pawn','thrift','factory','market'];
+  var ORDER=['school','jobs','bung','bank','fast','hosp','resto','mall','apt','gym','elec','comm','thrift','factory','market'];
   function ring(a,b){var d=Math.abs(ORDER.indexOf(a)-ORDER.indexOf(b));return Math.min(d,ORDER.length-d)}
   /* the Park is a pocket off the road between the Apartment and the Clothes Mall: one step from either, other walks unchanged */
   function dist(a,b){if(a===b)return 0;if(a==='park'||b==='park'){var o=a==='park'?b:a;return Math.min(ring('apt',o),ring('mall',o))+1}return ring(a,b)}
@@ -5728,16 +5774,14 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         Rc(46,64,16,2.4,'#8a6a45',E)+Rc(47,66.4,1.4,4,'#5c4630')+Rc(59,66.4,1.4,4,'#5c4630')+Rc(46,60.5,16,1.8,'#8a6a45')+
         Rc(12,30,1.8,18,'#6b4a2e')+Rc(3,22,22,9,'#7a5232',E)+T(14,29,6.5,'#fbeec8','PARK',16));
     },
-    /* dark brick pawn shop: three gold balls, neon sign, barred windows */
-    pawn:function(){
+    /* community centre: a low hall with a red roof band, a banner, big windows and double doors */
+    comm:function(){
       return SV(100,108,shade(40,103,48)+
-        box(8,34,56,64,18,'url(#brickd)','#3a241d','#7a5a4c')+
-        T(36,46,11,'#ffb02e','PAWN',34,' class="blink" stroke="#ff6a00" stroke-width=".4"')+
-        Rc(14,50,40,2,'#222')+
-        [22,34,46].map(function(x){return '<path d="M'+x+' 52v3" stroke="#222"/><circle cx="'+x+'" cy="60" r="5.5" fill="url(#gold)"'+E+'/>'}).join('')+
-        win(14,70,18,20,'#f0cf8a')+loopN(5,function(i){return '<path d="M'+(17+i*3.4)+' 70v20" stroke="#222" stroke-width=".9"/>'}).replace(/ /g,' ')+
-        Rc(40,66,16,32,'#1d1d1f',E)+Rc(43,70,10,10,'url(#glass)')+Rc(44,84,8,4,'#2c9a54',' class="blink" style="animation-delay:.6s"')+
-        sw(64,34,18,.25,.75,20,'#2c2a30'));
+        box(6,46,62,52,18,'#efe3cc','#b9a37f','#f7efdf')+Rc(6,46,62,9,'#c0504d',E)+T(37,53,6,'#fff','COMMUNITY',54)+
+        win(11,60,16,14)+win(47,60,16,14)+Rc(29,70,16,28,'#7a5232',E)+'<path d="M37 70v28" stroke="#4a3220" stroke-width=".8"/>'+
+        Rc(14,80,12,9,'#2f8f6b',E)+T(20,86.5,3.6,'#fff','OPEN',10)+
+        '<circle cx="54" cy="84" r="3.2" fill="#e8742a"/><circle cx="60" cy="86" r="3" fill="#ffc94a"/>'+
+        sw(68,46,18,.2,.75,20,'#9b8664'));
     }
   };
   function art(k){return ART[k]()}
@@ -5760,7 +5804,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     mall:['Mei at the counter',['New stock today. Dress well and the Employment Office will take you seriously.','A suit for interviews, casual for everything else.','Try bargaining. I might say yes.','Clothes wear out faster than you think.','That colour suits you. Truly.','Half the town shops here on payday.']],
     apt:['Mr. Ong, your landlord',['The walls are thin, but the rent is cheap.','Rent is due '+everyDays(RENT_EVERY)+'. I do not forget.','Please, no loud music after ten.','The lift works. Usually.','Your neighbour says hello. Your other neighbour says be quiet.','Home sweet home, more or less.']],
     thrift:['Edna',['Everything here has a story. Most of it is cheap.','Someone else’s junk, your treasure.','That fridge still works. Probably.','Gloves for the factory? Good thinking.','I price things by feel.','Come back tomorrow, the stock changes.']],
-    pawn:['Sal',['Show me what you have. I pay half, and you can buy it back within 3 days.','No questions asked. Mostly.','Cash today, regrets tomorrow.','I keep your ticket safe. Do not lose yours.','Everything has a price.','Times are tough? I am open.']],
+    comm:['Rosa at the front desk',['Karaoke starts at eight. Bring a friend, or make one here.','Volunteers always welcome. The tea is free.','People who come here find work faster. Funny, that.','You look like you need a night out.','Lonely? You are in the right place.','Half the jobs in town are never advertised. Ask around.']],
     park:['Auntie Lin, on her morning walk',['Lovely day for a stroll.','Ten thousand steps, that is my secret.','The ducks know me by name.','A walk clears the head better than coffee.','Sit a while. The bench is free.','I jog every morning. Well, I walk fast.']],
     gym:['Coach Dana',['Welcome! Warm up first, hero.','Yoga at the front, weights at the back.','A little exercise keeps the doctor away.','Pilates is harder than it looks. Trust me.','Sweat now, sleep better tonight.','Staff get half price, in case you were wondering.']],
     bung:['The estate agent',['Lovely home. Lovely rent, too.','Garden views, quiet street, soft beds.','Steady job? Then we can talk.','Rest here and you wake up happier.','Neighbours here wave. Imagine that.','The deposit is steep, the sleep is better.']]
@@ -5990,9 +6034,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
      Where each building sits on the map, the roads and traffic, keyboard keys, button handlers (ACTIONS) and the Rules text from CONFIG.
      ================================================================== */
   var BP={school:[13,19,15],jobs:[37,22,12.5],bung:[62,19,17],bank:[87,18,17],fast:[91,41,14],resto:[91,67,14],hosp:[91,55,11.5],factory:[9,55,11.5],
-          mall:[86,97,16],apt:[62,97,11],park:[74,90,11],elec:[36,97,16],pawn:[13,97,10],thrift:[9,67,12],market:[9,41,14],gym:[50,97,12]};
+          mall:[86,97,16],apt:[62,97,11],park:[74,90,11],elec:[36,97,16],comm:[13,97,10],thrift:[9,67,12],market:[9,41,14],gym:[50,97,12]};
   var KN=[[20,24],[34,22],[50,25],[64,22],[80,24],[84,36],[81,50],[84,64],[80,77],[64,79],[48,76],[34,79],[20,77],[16,64],[19,50],[16,36]];
-  var SPUR={school:0,jobs:1,bung:3,bank:4,fast:5,hosp:6,factory:14,resto:7,mall:8,apt:9,park:9,gym:10,elec:11,pawn:12,thrift:13,market:15};
+  var SPUR={school:0,jobs:1,bung:3,bank:4,fast:5,hosp:6,factory:14,resto:7,mall:8,apt:9,park:9,gym:10,elec:11,comm:12,thrift:13,market:15};
   var PARKS=[[25.5,12,4.2,6.5,'pond'],[48.5,12,4,6,'trees'],[74,12,3,5,'trees'],[23,89,4.8,5.5,'fountain']];
 
   LOCS.forEach(function(l){
@@ -6182,6 +6226,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     gym:      {run:function(g){gymSession(g)},    kind:'gym',    dry:true},
     nap:      {run:function(){nap()},             kind:'rest',   dry:true},
     fun:      {run:function(g){leisure(g)},       kind:'fun',    dry:true},
+    comm:     {run:function(g){community(g)},     kind:'fun',    dry:true},
     rest:     {run:function(){endWeek(true)}},
     treat:    {run:function(g){treat(g)},         kind:'food',   dry:true},
     groc:     {run:function(g){buyGroc(g)},       kind:'food',   dry:true},
@@ -6323,6 +6368,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         if($('cfgStory'))$('cfgStory').textContent='each game has one global storyline (an oil crisis, a pandemic…), starting between day '+E.storyline.fromDay+' and day '+last(E.storyline)+', that moves prices, pay and interest for everyone; and one industry-specific storyline (a chip shortage, banks going all-in on AI…), starting between day '+I.fromDay+' and day '+last(I)+', that moves pay for particular jobs by '+Math.round(I.paySwing[0]*100)+'% to '+Math.round(I.paySwing[1]*100)+'% up or down, freezes or opens up hiring, and can lay you off or suspend your workplace. The Employment Office shows a rumour '+(I.rumourDays===1?'the day':I.rumourDays+' days')+' before it starts and its effects while it runs. The two may overlap; shorter macro shocks never come within '+E.storylineGap+' days of either.'})();
       (function(){var Mk=CONFIG.market,R=Mk.returns,O=CONFIG.bank.offers;
         if($('cfgBank'))$('cfgBank').textContent='savings pay about '+Mk.rateBase+'% a day (the rate moves with the news), a fixed deposit '+R.fdOverSavings+'× that, and the ETF, hedge fund and crypto expect about '+R.etf.base+'%, '+R.hf.base+'% and '+R.cry.base+'% a day in a steady market, with bigger swings the more they pay. With a phone or tablet (📱 Phone on the Overview), or a computer at home (💻 Computer in your home), the Bank app does all this without the walk (loans still need a visit), and the Jobs app shows the Employment Office job board, where you can apply online (1h, as in person). '+(O&&O.chance>0?'Some mornings from day '+O.fromDay+' the Bank has a one-day offer: a promo deposit at '+O.rate[0]+'–'+O.rate[1]+'% a day for '+dayN(O.days)+'. ':'')+'Each morning tells you what your money made overnight and the best return open to you.'})();
+      (function(){var C=CONFIG.community,f=function(c){return hm(c.minutes)+(c.cost?', $'+c.cost:'')+(c.energy?', '+sg(c.energy)+'% energy':'')+', '+sg(c.happiness)+' happiness'+(c.knowledge?', '+sg(c.knowledge)+' knowledge':'')};
+        if($('cfgComm'))$('cfgComm').textContent='once a day each: a night out with friends ('+f(C.nightOut)+'), karaoke ('+f(C.karaoke)+') or volunteering ('+f(C.volunteer)+'). A night out ('+pctTxt(C.nightOut.tipChance)+') or volunteering ('+pctTxt(C.volunteer.tipChance)+') can get you a friend’s job tip: for '+dayN(C.tip.days)+' your next interview is '+Math.round(C.tip.passBonus*100)+'% more likely to pass and never fails for “no openings”.'})();
       $('cfgRent').textContent=everyDays(RENT_EVERY);
       $('apOf').textContent=' of '+hm(MAX_AP);
       $('cfgDebt').textContent=pctTxt(CONFIG.hospital.billInterest);

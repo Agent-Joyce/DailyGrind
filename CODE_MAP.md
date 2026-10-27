@@ -16,7 +16,7 @@ Where things are in `index.html`, and how to make the common changes safely. Lin
 | 1 | CONFIG | Every tunable number, one top-level key per topic, each commented | `CONFIG` |
 | 2 | World tables | Values derived from CONFIG and the fixed tables | `TIERS`, `DIFF`, `ICO`, `LOCS`, `HOUSE`, `ITEMS`, `JOBS`, `TRACKS`, `CAREERS`, `BOARD`; helpers `hm()`, `M()`, `sg()`, `vitSnap()`/`vitPar()` |
 | 3 | State and saves | The state shape, new game, save status, loading old saves, game over | `blank()`, `fresh()`, `save()`, `SAVE_VERSION`, `MIGRATIONS`, `migrateSave()`, `hydrate()`, `load()`, `finish()` |
-| 4 | Player actions | Everything a button can do | `spendMin()`, `done()`, `refuse()`, `work()`, `study()`, `buy()`, `cook()`, `enter()`, `gymSession()`, `leisure()`, `factoryDo()` … |
+| 4 | Player actions | Everything a button can do | `spendMin()`, `done()`, `refuse()`, `work()`, `study()`, `buy()`, `cook()`, `enter()`, `gymSession()`, `leisure()`, `community()` (Community Centre), `factoryDo()` … |
 | 5 | Health, stress, night | Illness, health, burnout, game-over checks, the overnight pipeline | `healthTick()`, `burnTick()`, `stressTick()`, `rollover()` |
 | 6 | Events and economy | Content tables, effect tokens, macro trends, global and industry-specific storylines, the end-of-day card | `NEWS`, `CHOICES`, `MACRO`, `SAGAS`, `INDUSTRY`, `TWISTS`, `STORIES`, `applyFx()`, `trendTick()`, `indRole()`, `rolePay()`, `indTick()`, `pickNight()`, `endWeek()` |
 | 7 | Panels | Compact card building blocks and one panel per building | `chip()`, `arow()`, `psec()`, `more()`, `boxed()`, `house()`, `panels` |
