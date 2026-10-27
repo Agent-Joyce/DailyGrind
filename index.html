@@ -604,6 +604,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
           <div id="billsRow" hidden><span class="dot d5"></span>Bills<b id="billsv" class="owe">$0</b></div>
         </div>
         <div class="invline" id="invline" hidden></div>
+        <p class="bankapp"><button type="button" class="btn alt" id="bankAppBtn">📱 Bank app</button> <small id="bankAppNote"></small></p>
         <div class="invline" id="debtline" hidden></div>
       </div>
       <div class="loghead"><h2>Daily log</h2><span style="display:flex;gap:8px"><button class="btn alt" id="logBig" aria-expanded="false" aria-controls="log" title="Show more of the log">Expand log</button><button class="btn alt" id="rulesBtn" title="How the game ends">How it ends</button></span></div>
@@ -667,6 +668,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     <li><b>Health:</b> a slow-moving vital. Healthy meals, the gym, the Park and sleeping at home raise it; hunger, illness, junk food, burnout and <span id="cfgHpWork">work and study (1 health an hour of shifts, lessons and self-study)</span> lower it. Good health, a healthy diet and regular gym visits all cut your chance of falling ill.</li>
     <li><b>Layoffs and closures (two different things):</b> in a bad economy you can be <b>laid off</b> (the job is gone, so apply for a new one) or your workplace can <b>close</b> for 1 to 4 days (the Work button is disabled, but the job stays on your record and the morning message tells you when it is back). You can only hold one job at a time.</li>
     <li><b>Storylines:</b> <span id="cfgStory">each game has one global storyline (an oil crisis, a pandemic…) that moves prices, pay and interest for everyone, and one industry-specific storyline that hits particular jobs.</span></li>
+    <li><b>Bank:</b> <span id="cfgBank">savings earn interest every night; investments follow the economy.</span></li>
     <li><b>Loans:</b> <span id="cfgLoan">Borrow at the Bank in $50 steps.</span></li>
     <li><b>Work limit:</b> you can work at most <span id="cfgWork">12 hours</span> of shifts in one day.</li>
     <li><b>Burnout:</b> <span id="cfgBurn">studying more than 5 hours a day (school plus self-study), or working 9 hours or more a day, three days in a row costs 15 health and cuts shift pay by 20% for 3 days.</span></li>
@@ -731,7 +733,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
 (function(){
   /* ==================================================================
      1. CONFIG
-     Change these numbers to tune the game. Top-level keys, in order: start, education, events, industry, macro, limits, market, jobs, factory,
+     Change these numbers to tune the game. Top-level keys, in order: start, education, events, industry, macro, limits, market, bank, jobs, factory,
      time, clothes, health, illness, gym, hospital, food, burnout, selfStudy, gadgets, sleep, housing, lottery, leisure, loan,
      bankrupt, shame, score, ranks, ui, traits. Each key has its own comment explaining its values.
      ================================================================== */
@@ -813,9 +815,19 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         changes the savings rate, and the savings rate drives the fixed deposit.
         ETF, hedge fund and crypto follow the market mood, and are also pulled down when
         interest is above its normal level. The LOAN is not affected: its rates are fixed in CONFIG.loan. */
-      rateBase:1,        // the normal savings rate (% a day) that interest drifts back to
+      rateBase:2,        // the normal savings rate (% a day) that interest drifts back to
       rateReversion:0.1,  // each morning interest closes this share of its gap to rateBase (0 = never drifts back)
-      rateBeta:{etf:0.3, hf:0.4, cry:0.6}  // expected daily return lost per +1 point of interest above rateBase (gained when below)
+      rateBeta:{etf:0.3, hf:0.4, cry:0.6},  // expected daily return lost per +1 point of interest above rateBase (gained when below)
+      /* Expected daily return (%) of each investment. The fixed deposit pays the savings rate × fdOverSavings.
+        ETF, hedge fund and crypto expect base + mood × market mood (mood runs about −3 to +3), before the rateBeta pull.
+        The daily swing around it (VOL in section 4) is not here: higher return comes with bigger swings. */
+      returns:{fdOverSavings:1.25, etf:{base:2, mood:0.8}, hf:{base:3, mood:1.6}, cry:{base:4, mood:3}}
+    },
+    bank:{
+      /* Limited-time offers. Each morning from fromDay, a 'chance' that the Bank offers a promo deposit for that day only:
+        it locks between min and max dollars for 'days' days at a random rate (% a day) in the 'rate' range, then pays
+        principal plus interest into your cash. One promo deposit at a time. Keep the rate below the cheapest loan (CONFIG.loan). */
+      offers:{chance:0.15, fromDay:3, rate:[3,3.5], days:3, min:300, max:1000}
     },
     jobs:{
       /* Each new game, every job's pay (as set in CAREERS) is moved up or down at random by up to this much.
@@ -1508,6 +1520,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     ['apt','🏢','Low-End Apartment'],['hosp','🏥','Hospital'],['factory','🏭','Factory'],['thrift','👕','Thrift Store'],['pawn','💍','Pawn Shop'],['bung','🏡','Classy Bungalow'],['gym','🏋️','Gym'],['park','🌳','Park']];
   var NAME={},ICON={};
   LOCS.forEach(function(l){ICON[l[0]]=l[1];NAME[l[0]]=l[2]});
+  ICON.bankapp='📱';NAME.bankapp='Bank app';  /* a screen, not a place: opened from the Overview with a phone, tablet or computer */
 
   var HOUSE={apt:{rent:150,rest:25,hap:0,fee:0,rate:3},bung:{rent:350,rest:40,hap:10,fee:300,rate:4.5}};
   /* the fixed nightly change in words, leaving out anything that is 0 (CONFIG.sleep, health.nightly.always, selfStudy.nightlyLoss) */
@@ -1558,7 +1571,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   var GROUPS={fridge:['fridge','fridgeold'],phone:['phone','phoneold'],tv:['tv','tvnew'],computer:['computer','computerold'],tablet:['tablet','tabletold'],console:['console'],microwave:['microwave'],coffee:['coffee']};
   function ikey(g){var r=null;(GROUPS[g]||[g]).forEach(function(k){if(!r&&S.items[k]&&!S.broken[k])r=k});return r}
   function owns(g){return !!ikey(g)}
-  function invSum(f){return INVK.reduce(function(a,k){return a+((S.inv[k]||{})[f]||0)},0)}
+  function invSum(f){return INVK.reduce(function(a,k){return a+((S.inv[k]||{})[f]||0)},0)+((S.promo||{})[f]||0)}  /* includes a promo deposit (CONFIG.bank.offers) */
   function anyInv(){return invSum('v')>0.5}
   function invTotal(){return Math.round(invSum('v'))}
   var JOBS={free:{n:'Freelance coding',min:CONFIG.time.freelanceMinutes,pay:80,en:5,computer:1}};
@@ -1862,7 +1875,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
      3. STATE AND SAVES
      blank() is the full shape of S. fresh() starts a game; save() and load() keep it in localStorage; finish() ends it.
      ================================================================== */
-  function blank(){return {fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,ind:null,indNext:0,indId:'',macroLast:0,deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
+  function blank(){return {fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,ind:null,indNext:0,indId:'',macroLast:0,bankOffer:null,promo:null,deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:CONFIG.market.rateBase,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
     S=blank();T0();PREV=null;applyPayVar();S.certVar={};Object.keys(TRACKS).forEach(function(t){S.certVar[t]=1+(Math.random()*2-1)*CONFIG.education.certVariance});
     S.sagaNext=sagaDay();S.indNext=indDay();S.indId=INDUSTRY[Math.floor(Math.random()*INDUSTRY.length)].id;
@@ -2490,8 +2503,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   };
   var INVK=['fd','etf','hf','cry'];
   function expRet(k){
-    var M=CONFIG.market,adj=-(S.rate-M.rateBase)*((M.rateBeta||{})[k]||0);
-    return k==='fd'?S.rate*1.4:k==='etf'?0.9+0.8*S.mkt+adj:k==='hf'?1.4+1.6*S.mkt+adj:2+3*S.mkt+adj}
+    var M=CONFIG.market,R=M.returns,adj=-(S.rate-M.rateBase)*((M.rateBeta||{})[k]||0);
+    return k==='fd'?S.rate*R.fdOverSavings:R[k].base+R[k].mood*S.mkt+adj}
   var VOL={fd:0,etf:3,hf:8,cry:22},CAP={fd:[-30,35],etf:[-30,35],hf:[-30,35],cry:[-60,90]};
   /* investment odds for the Bank screen, from the same numbers tickInv uses: a usual day (2 days in 3) is expected ± VOL, within CAP */
   function phi(x){var t=1/(1+0.2316419*Math.abs(x)),p=0.3989423*Math.exp(-x*x/2)*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return x>0?1-p:p}
@@ -2515,7 +2528,11 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       r=Math.max(CAP[k][0],Math.min(CAP[k][1],r));
       var b=p.v;p.v=b*(1+r/100);p.last=p.v-b;p.lp=r;before+=b;after+=p.v;
     });
+    var pr=S.promo;if(pr&&pr.v>0.5){var pb=pr.v;pr.v=pb*(1+pr.rate/100);pr.last=pr.v-pb;before+=pb;after+=pr.v}
     S.wk={abs:after-before,pct:before?(after-before)/before*100:0};
+    if(pr&&S.day>=pr.lock){var pout=Math.round(pr.v),pgain=pout-Math.round(pr.c);S.cash+=pout;inc(Math.max(0,pgain));
+      S.notes.push({l:'good',t:'🎁 Your promo deposit matured: '+money(pout)+' (including '+money(pgain)+' interest) has been paid into your cash.'});
+      log('Promo deposit matured: '+money(pout)+' paid into your cash ('+sm(pgain)+' interest).','good');S.promo=null}
     /* fixed deposit matures: pay principal + interest into cash */
     var fd=S.inv.fd;
     if(fd.v>0.5&&fd.lock&&S.day>=fd.lock){var out=Math.round(fd.v),gain=out-Math.round(fd.c);S.cash+=out;inc(Math.max(0,gain));
@@ -2538,6 +2555,19 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     log('You invested '+money(n)+' in '+P.n.toLowerCase()+'.');
     done();
   }
+  /* the Bank's promo deposit for today (CONFIG.bank.offers): one at a time, locked until it matures */
+  function offerToday(){var o=S.bankOffer;return o&&o.day===S.day?o:null}
+  function buyOffer(){
+    var o=offerToday();if(!o)return refuse('There is no bank offer today.');
+    if(S.promo)return refuse('You already have a promo deposit. It matures on the morning of day '+S.promo.lock+'.');
+    var n=Math.min(bankAmt('amt_offer',o.min),o.max);
+    if(n>S.cash)return refuse('You only have '+money(S.cash)+' in cash. The offer needs at least '+money(o.min)+'.');
+    if(!spend(1,n))return;
+    S.today.spend-=n;
+    S.promo={v:n,c:n,lock:S.day+o.days,rate:o.rate,last:0};
+    log('You put '+money(n)+' in a promo deposit at '+o.rate.toFixed(1)+'% a day. It matures on the morning of day '+S.promo.lock+'.');
+    done();
+  }
   function divest(k){
     var P=INV[k],p=S.inv[k];
     if(p.v<=0.5)return refuse('You have nothing in the '+P.n.toLowerCase()+'.');
@@ -2551,6 +2581,23 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     S.cash+=Math.round(out);
     log('You sold '+money(Math.round(n))+' of your '+P.n.toLowerCase()+' and received '+money(Math.round(out))+'.'+note,note?'warn':'');
     done();
+  }
+  /* the morning money briefing: what your money made overnight, today's rates and the best return open to you */
+  function moneyBrief(interest,moved){
+    var a=[],o=offerToday(),O=CONFIG.bank.offers;
+    if(interest||Math.abs(moved)>=0.5)a.push({l:interest+moved>=0?'good':'warn',t:'💰 Your money made '+sm(interest+moved)+' overnight ('+[interest?'savings +'+money(interest):'',Math.abs(moved)>=0.5?'investments '+sm(moved):''].filter(Boolean).join(', ')+').'});
+    if(o)a.push({l:'good',t:'🎁 Bank offer, today only: a promo deposit at '+o.rate.toFixed(1)+'% a day for '+o.days+' days ('+money(o.min)+' to '+money(o.max)+'). It is paid back with interest when it matures.'});
+    var mood=S.mkt>0.5?'buoyant':S.mkt<-0.5?'weak':'steady',best={n:'savings',e:S.rate};
+    INVK.forEach(function(k){var P=INV[k];if(S.know<P.know||(P.dev&&!P.dev.split('|').some(owns)))return;var e=expRet(k);if(e>best.e)best={n:P.n.toLowerCase(),e:e}});
+    a.push({l:'rem',t:'📈 Today: savings '+S.rate.toFixed(1)+'% a day, fixed deposit '+expRet('fd').toFixed(1)+'%, market '+mood+' (ETF about '+pctS(expRet('etf'))+' a day). Best expected return open to you: '+best.n+' ('+pctS(best.e)+' a day'+(best.n==='savings'||best.n==='fixed deposit'?'':', with swings')+'). '+(bankDevice()?'Open the 📱 Bank app to act on it.':'Visit the Bank to act on it (a phone lets you use the Bank app).')});
+    return a;
+  }
+  /* the 📱 Bank app: savings, investments and offers from anywhere, with a phone, tablet or computer (loans need a visit) */
+  function bankDevice(){return owns('phone')||owns('tablet')||owns('computer')}
+  function openBankApp(){
+    if(S.over||S.pending)return;
+    if(!bankDevice())return refuse('The Bank app needs a working phone, tablet or computer. Without one, walk to the Bank.');
+    last=null;view='bankapp';sayLine=null;render();
   }
   /* ---- loans ---- */
   var loanTenure=null;
@@ -3015,6 +3062,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     /* second-hand gadgets can break down on their own */
     Object.keys(S.items).forEach(function(k){var it=ITEMS[k];if(S.items[k]&&it&&it.old&&!S.broken[k]&&Math.random()<it.old){S.broken[k]=1;S.notes.push({l:'bad',t:'🔧 Your '+it.n.toLowerCase()+' broke down overnight. Repair it at the Electronics Store (or buy a new one).'});log('Your '+it.n.toLowerCase()+' broke down.','bad')}});
     tickInv();
+    /* the Bank's promo offer for today, if any (CONFIG.bank.offers) */
+    (function(){var O=CONFIG.bank.offers;S.bankOffer=null;
+      if(O&&O.chance>0&&S.day>=O.fromDay&&Math.random()<O.chance)S.bankOffer={day:S.day,rate:Math.round((O.rate[0]+Math.random()*(O.rate[1]-O.rate[0]))*10)/10,days:O.days,min:O.min,max:O.max}})();
     healthTick(wasFed);burnTick();
     if(!Object.keys(TRACKS).some(function(t){return inProgress(t)})){S.enrolled=false;S.sinceClass=0}  /* nothing in progress: nothing to skip */
     if(S.expelled>0){S.expelled--;if(!S.expelled)log('You may enrol at School again.','good')}
@@ -3029,7 +3079,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     S.studied=false;
     if(loanTick())return;
     if(stressTick())return;
-    var i=Math.floor(S.bank*S.rate/100);
+    var i=Math.floor(S.bank*S.rate/100),invMoved=S.wk&&anyInv()?S.wk.abs:0;
     if(i>0){S.bank+=i;inc(i);log('Your bank paid '+money(i)+' in interest.','good')}
     if(S.homeless){if((S.day-1)%RENT_EVERY===0)log('No rent was due tonight: you have no home.')}
     else if((S.day-1)%RENT_EVERY===0&&S.rentPaid===S.day-1){log('Rent for day '+(S.day-1)+' was already paid. Mr. Ong tips his hat.','good');S.flags.rent=1}
@@ -3055,6 +3105,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     lottoDraw();
     planNews();
     var mn=(S.notes||[]).slice(),rw2=nextRentWeek(),H2=HOUSE[S.home];S.notes=[];
+    mn.push.apply(mn,moneyBrief(i,invMoved));
     if(naked())mn.unshift({l:'bad',t:'👕 You are out of clothes. You can’t work any shift until you buy some (new at the Clothes Mall, or used at the Thrift Store)'+(nakedHap?', and the shame cost you '+Math.abs(nakedHap)+' happiness overnight. It happens again every morning you wake up with nothing to wear.':'.')});
     if(S.newsPlan&&S.newsPlan.tip)mn.push({l:'rem',t:'📡 Tip-off: tonight’s headline is expected to be “'+S.newsPlan.n[0]+'” ('+newsHint(S.newsPlan.n)+'). You have today to move your savings and investments at the Bank.'});
     /* a rank target day passed yesterday without the rank */
@@ -5313,7 +5364,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
           'Each lesson takes the time shown and costs '+Math.abs(CONFIG.education.lessonEnergyPerHour)+'% energy, '+Math.abs(CONFIG.education.lessonHappinessPerHour)+' happiness and '+Math.abs(CONFIG.education.lessonHealthPerHour)+' health an hour. Attend a lesson at least every few days: '+'3 days without one is a warning, and 5 to 6 days gets you expelled. More than '+loadLimitTxt()+' of work and study a day for '+dayN(BU.daysInARow)+' running causes burnout'+(S.loadStreak?' (streak: '+S.loadStreak+' of '+BU.daysInARow+')':'')+'.')+now:'')+
         psec('tracks','🎓 Pathways',S.expelled>0?chip('','Expelled '+S.expelled+'d','warn'):'','Each pathway is a ladder of qualifications (Certificate → Degree → … → Masters). You pay tuition once when you enrol in a qualification, and earn it by completing all its modules. You can study several pathways at once.')+
         '<div class="jb2">'+tracks+'</div>')},
-    bank:function(){
+    bank:function(app){
+      /* app=true: the 📱 Bank app (panels.bankapp), the same screen without loans */
       /* one equal-sized card per product: title, risk, value, key numbers as chips, amount box, Deposit/Withdraw; the explanation sits behind ⓘ */
       /* amounts move in steps of BK_STEP, never below the product's minimum (see stepAmt) */
       var card=function(title,tag,ch,info,val,inputId,min,label,depAct,wdAct,arg,canWd){
@@ -5353,10 +5405,22 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         return card(P.n,P.risk+' risk · min '+money(P.min),ch,info,v,'amt_'+k,P.min,P.n,'invest','divest',k,has);
       }).join('');
       var mood=S.mkt>0.5?'buoyant':S.mkt<-0.5?'weak':'steady',tip=S.newsPlan&&S.newsPlan.tip&&S.newsPlan.day===S.day;
-      return boxed(loanCard()+
+      var offerCard=function(){
+        var o=offerToday(),pr=S.promo;
+        if(pr&&pr.v>0.5)return psec('offer','🎁 Promo deposit',chip('',pr.rate.toFixed(1)+'%/day','ok')+chip('','Matures day '+pr.lock),'Locked until it matures, then paid into your cash with its interest.')+
+          '<div class="loanb"><div class="bk-v">Worth <b class="up">'+money(Math.round(pr.v))+'</b> <small>(paid '+money(Math.round(pr.c))+')</small></div></div>';
+        if(!o)return '';
+        var amt=Math.min(bankAmt('amt_offer',o.min),o.max);
+        return psec('offer','🎁 Bank offer · today only',chip('',o.rate.toFixed(1)+'%/day','ok')+chip('','Locked '+dayN(o.days)),'A promo deposit, offered today only: '+o.rate.toFixed(1)+'% a day for '+dayN(o.days)+', between '+money(o.min)+' and '+money(o.max)+'. Your money is locked until it matures, then paid into your cash with its interest. One promo deposit at a time.')+
+          '<div class="loanb"><div class="bk-v">Put in '+money(amt)+' → get about <b>'+money(Math.round(amt*Math.pow(1+o.rate/100,o.days)))+'</b> on day '+(S.day+o.days)+'</div>'+
+          '<div class="bk-amt">'+btn('step','amt_offer|-1|'+o.min+'|'+o.max,'−',1,amt<=o.min)+'<input id="amt_offer" type="text" readonly value="'+amt+'" aria-label="Amount for the promo deposit in dollars">'+btn('step','amt_offer|1|'+o.min+'|'+o.max,'+',1,amt>=o.max)+'</div>'+
+          '<div class="bk-b">'+btn('offer','','Take the offer',0,S.cash<o.min)+'</div></div>';
+      };
+      return boxed((app?'<p class="arow-n">📱 Savings, investments and offers from anywhere. 💳 For a loan, visit the Bank in person.</p>':loanCard())+offerCard()+
         psec('invest','📈 Savings and investments',chip('','Market '+mood,mood==='weak'?'warn':mood==='buoyant'?'ok':'')+chip('','Savings '+S.rate.toFixed(1)+'%/day'),econNote()+'<br>'+invNote())+
         (tip?'<p class="arow-n">📡 <b>Tip-off for tonight:</b> “'+S.newsPlan.n[0]+'” ('+newsHint(S.newsPlan.n)+')</p>':'')+
         invTable()+'<div class="bk-grid">'+rows+'</div>')},
+    bankapp:function(){return panels.bank(true)},
     market:function(){
       /* food sorted by price, cheapest first; the lottery is not food, so it has its own card */
       var cap=fridgeCap(),CH=FD.chips,chLeft=Math.min(CH.maxPerDay-(S.chipsDay||0),CH.maxStored-(S.chips||0)),rows=[];
@@ -5652,6 +5716,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
 
   /* ---------- shopkeeper dialogue: several everyday lines per building, plus lines that react to you ---------- */
   var GREET={
+    bankapp:['🔔 Notification',['Your balance is up to date.','Rates refreshed just now.','Tip: money in savings earns interest every night.','Market news is in the Economy box on the Overview.']],
     factory:['Foreman Raj',['Hard hats on. The line does not stop for anyone.','We ship forty crates before lunch. Every day.','Keep your fingers away from the press, please.','Overtime is optional. Mostly.','Engineers sit upstairs with the air-con. Line workers sweat down here.','Smell that? Machine oil and ambition.']],
     jobs:['Marge at the desk',['Jobs are on the board. Bring your qualifications.','Take a number. Kidding, there is no queue today.','Firms are picky this week. Dress the part.','A certificate opens doors. A degree opens better ones.','Interviews take an hour, whether they love you or not.','Rejection is just practice for the next interview.']],
     school:['Professor Lim',['Five pathways, and the longer ones lead to the best jobs.','The library is open late if you need it.','Turn up to class. I notice who is missing.','Medicine is long, but the hospital pays well.','Knowledge compounds, just like interest.','Pop quiz tomorrow. Maybe.']],
@@ -5670,6 +5735,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     bung:['The estate agent',['Lovely home. Lovely rent, too.','Garden views, quiet street, soft beds.','Steady job? Then we can talk.','Rest here and you wake up happier.','Neighbours here wave. Imagine that.','The deposit is steep, the sleep is better.']]
   };
   function greetLine(k){
+    if(k==='bankapp'){var NL=GREET[k][1];return NL[Math.floor(Math.random()*NL.length)]}  /* an app notification, not a shopkeeper */
     var g=GREET[k],L=g[1].slice(),c=S.career,hold=Object.keys(c).some(function(x){return (CAREERS[x].b||x)===k});
     if(S.energy<30)L.push('You look exhausted. Have you slept at all?','Careful, you are running on fumes.');
     if(S.happy<30)L.push('Cheer up. Tomorrow is another day.');
@@ -5779,6 +5845,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   }
   /* the overview's day recap, warnings, net-worth parts, investments line and rank goal */
   function renderOverviewCards(){
+    (function(){var d=bankDevice(),o=offerToday();$('bankAppBtn').disabled=!d||!!S.over;
+      $('bankAppNote').textContent=!d?'Needs a phone, tablet or computer':o&&!S.promo?'🎁 Offer today: '+o.rate.toFixed(1)+'% a day':'Savings '+S.rate.toFixed(1)+'% a day'})();
     var as=assets(),nw=worth(),tot=Math.max(nextGoal(),nw),iv=invTotal();  /* the same values renderStats() shows */
     var sm2=S.summary,sc=$('sumcard');sc.hidden=!sm2;
     if(sm2){var sg=function(v,suf){return '<b class="'+(v>0?'up':v<0?'dn':'')+'">'+(v>0?'+':v<0?'−':'±')+(suf==='$'?money(Math.abs(Math.round(v))):Math.abs(Math.round(v))+(suf||''))+'</b>'};
@@ -5819,7 +5887,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function renderWindows(){
     var pend=!!S.pending;
     document.body.classList.toggle('pending',pend);
-    $('center').classList.toggle('wide',(view==='jobs'||view==='school'||view==='bank')&&!pend);
+    $('center').classList.toggle('wide',(view==='jobs'||view==='school'||view==='bank'||view==='bankapp')&&!pend);
     var pk=view+'|'+pend;if(window.__pk!==pk){window.__pk=pk;$('center').scrollTop=0}
     $('overview').hidden=!!view||pend;
     /* overview hidden by a click on the map: hide the whole window until the Overview button (or a new day) */
@@ -6112,6 +6180,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     dep:      {run:function(){moveMoney('dep')}},
     wd:       {run:function(){moveMoney('wd')}},
     invest:   {run:function(g){invest(g)}},
+    offer:    {run:function(){buyOffer()}},
     divest:   {run:function(g){divest(g)}},
     borrow:   {run:function(){borrow()}},
     repay:    {run:function(){repay(false)}},
@@ -6159,6 +6228,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   $('cpGo').addEventListener('click',function(){S.cert=null;render()});
   $('cpNext').addEventListener('click',function(){var c=S.cert;if(!c)return;S.cert=null;enrol(c.t)});
   $('mnGo').addEventListener('click',function(){S.morning=null;render()});
+  $('bankAppBtn').addEventListener('click',function(){openBankApp()});
   $('hudLeave').addEventListener('click',function(){if(S.over||S.pending)return;view=null;render()});
   /* clicking or tapping the map outside the open window works like Leave (buildings still walk you there) */
   /* ...and with no building open, it hides the overview window so the map is clear (the Overview button brings it back) */
@@ -6217,6 +6287,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         if($('cfgFun'))$('cfgFun').textContent='at home, watch a show or play games ('+hm(LE.screen.minutes)+', '+fx(LE.screen)+', needs a TV or game console) or call your family '+(LE.call.perDay===1?'once':LE.call.perDay+' times')+' a day ('+hm(LE.call.minutes)+', '+fx(LE.call)+'). At the Park, walk ('+hm(LE.walk.minutes)+', '+fx(LE.walk)+') or jog ('+hm(LE.jog.minutes)+', '+fx(LE.jog)+'). The Restaurant also serves '+cf.name+' ('+hm(cf.minutes)+', '+sg(cf.energy)+'% energy, '+sg(cf.happiness)+' happiness), a snack rather than a meal.'})();
       (function(){var E=CONFIG.events,I=CONFIG.industry,last=function(L){return CONFIG.time.gameDays-L.daysBeforeEnd};
         if($('cfgStory'))$('cfgStory').textContent='each game has one global storyline (an oil crisis, a pandemic…), starting between day '+E.storyline.fromDay+' and day '+last(E.storyline)+', that moves prices, pay and interest for everyone; and one industry-specific storyline (a chip shortage, banks going all-in on AI…), starting between day '+I.fromDay+' and day '+last(I)+', that moves pay for particular jobs by '+Math.round(I.paySwing[0]*100)+'% to '+Math.round(I.paySwing[1]*100)+'% up or down, freezes or opens up hiring, and can lay you off or suspend your workplace. The Employment Office shows a rumour '+(I.rumourDays===1?'the day':I.rumourDays+' days')+' before it starts and its effects while it runs. The two may overlap; shorter macro shocks never come within '+E.storylineGap+' days of either.'})();
+      (function(){var Mk=CONFIG.market,R=Mk.returns,O=CONFIG.bank.offers;
+        if($('cfgBank'))$('cfgBank').textContent='savings pay about '+Mk.rateBase+'% a day (the rate moves with the news), a fixed deposit '+R.fdOverSavings+'× that, and the ETF, hedge fund and crypto expect about '+R.etf.base+'%, '+R.hf.base+'% and '+R.cry.base+'% a day in a steady market, with bigger swings the more they pay. With a phone, tablet or computer, the 📱 Bank app on the Overview lets you do all this from anywhere (loans still need a visit). '+(O&&O.chance>0?'Some mornings from day '+O.fromDay+' the Bank has a one-day offer: a promo deposit at '+O.rate[0]+'–'+O.rate[1]+'% a day for '+dayN(O.days)+'. ':'')+'Each morning tells you what your money made overnight and the best return open to you.'})();
       $('cfgRent').textContent=everyDays(RENT_EVERY);
       $('apOf').textContent=' of '+hm(MAX_AP);
       $('cfgDebt').textContent=pctTxt(CONFIG.hospital.billInterest);

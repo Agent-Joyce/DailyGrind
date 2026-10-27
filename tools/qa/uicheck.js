@@ -20,7 +20,7 @@
           BAD TEXT      "NaN", "undefined", "null" or "[object" shown to the player
      5. Situations the main game does not have (SITUATIONS): sick (cold/flu with medical bills, dengue, sick at home),
         rent arrears, a loan to repay, a pawned item to redeem, an industry-specific storyline (its peak, your own job hit,
-        the rumour), out of clothes (buying used ones, a job's shift disabled). Each checks its buttons are there (MISSING) and presses them.
+        the rumour), out of clothes (buying used ones, a job's shift disabled), bank offers and the Bank app. Each checks its buttons are there (MISSING) and presses them.
      6. Flows: ending the day (end-of-day cards, morning card), the action preview, a certificate and its bonus toast,
         the Belongings list on the status page.
    Results: window.__UI_RESULTS, an on-page report, the browser console, and a message to the parent page
@@ -58,7 +58,7 @@
   }
   function closeOver(){[].forEach.call(document.querySelectorAll('.over.show'),function(o){o.classList.remove('show')})}
   function restore(where){
-    G.S=JSON.parse(base);S=G.S;G.loc=where||baseLoc;G.view=where||null;
+    G.S=JSON.parse(base);S=G.S;G.loc=where&&where!=='bankapp'?where:baseLoc;G.view=where||null;  /* the Bank app is a screen, not a place */
     closeOver();$('toasts').innerHTML='';G.render();$('toasts').innerHTML='';
   }
 
@@ -188,6 +188,12 @@
       mod:function(S){S.ind={id:'robots',day:3,len:5,sw:0.4,ph:2,last:'',used:[]};S.indNext=0;S.career={factory:0};S.jobName='Line Worker';S.shut={};S.ill=null;S.clothes.casual=Math.max(S.clothes.casual||0,3)}},
     {name:'an industry-specific storyline rumour (the day before it starts)',bld:'jobs',need:['apply'],
       mod:function(S){S.ind=null;S.indNext=S.day+1;S.indId='gold'}},
+    {name:'a bank offer today, at the Bank',bld:'bank',need:['offer','invest','dep'],
+      mod:function(S){S.bankOffer={day:S.day,rate:3.4,days:3,min:300,max:1000};S.promo=null}},
+    {name:'the 📱 Bank app with an offer (no loans)',bld:'bankapp',need:['offer','invest','dep','wd'],
+      mod:function(S){S.bankOffer={day:S.day,rate:3.4,days:3,min:300,max:1000};S.promo=null}},
+    {name:'a promo deposit held, in the Bank app',bld:'bankapp',need:['invest'],
+      mod:function(S){S.bankOffer=null;S.promo={v:520,c:500,lock:S.day+2,rate:3.4,last:0}}},
     {name:'out of clothes, buying used ones',bld:'thrift',need:['ubuy'],
       mod:function(S){S.clothes={casual:0,smart:0,suit:0}}},
     {name:'out of clothes with a job (shift disabled, "No clothes" chip)',bld:'fast',need:[],

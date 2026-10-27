@@ -41,6 +41,8 @@ Where things are in `index.html`, and how to make the common changes safely. Lin
 3. Write `myAction()` in section 4: check and refuse with `refuse('reason')`, spend time and money with `spendMin()`, take `v0 = vitSnap()`, change `S`, `log('What happened' + vitPar(v0) + '.')`, then `done()`. Writing the change with `vitPar` keeps the log, the toast and the real change in step.
 4. If it needs a game state to be pressable, add that to `setup()` or `SITUATIONS` in `tools/qa/uicheck.js`.
 
+**The 📱 Bank app** is a screen, not a place: `view='bankapp'` with `loc` unchanged, opened by `openBankApp()` from the Overview. `panels.bankapp` is `panels.bank(true)` (the Bank screen without the loan card), so changes to the Bank's savings and investment cards show in both.
+
 **Add a building**: a `LOCS` entry, a position in `BP`, a road spur in `SPUR`, art in `ART`, lines in `GREET`, a panel in `panels`, and walking distance (`ORDER` or `dist()`).
 
 **Add an event**: add a record to the right table in section 6. Outcomes are effect-token strings (`c` cash, `e` energy, `h` happiness, `l` health, `n` knowledge, …), applied through `applyFx()`, never by writing to `S` directly.
