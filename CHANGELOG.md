@@ -1107,4 +1107,4 @@ The Bank's products paid too little to matter (savings 1% a day, about $10 a day
 - **🏦 Bank app**: as before (savings, investments, offers; loans need a visit to the Bank). It no longer opens from a computer away from home.
 - **💼 Jobs app** (new): the same job board as the Employment Office, with the industry outlook. You can apply online; an application takes the same 1h as an interview and follows the same rules.
 - The morning money briefing and the Rules Bank line describe where the apps are.
-- **UI check:** two new situations (the phone home screen; the Jobs app).
+- **UI check:** two new situations (the phone home screen; the Jobs app). Its first run found the phone home screen showing "Your job: undefined" when a saved game had no job title stored; the Jobs app row now reads the title from the job itself.

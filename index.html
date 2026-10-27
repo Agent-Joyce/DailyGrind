@@ -5209,7 +5209,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var o=offerToday(),ind=S.ind&&S.ind.day>0?indOf(S.ind.id):null,rum=!ind&&S.indNext>0&&S.indNext>=S.day&&S.indNext-S.day<=CONFIG.industry.rumourDays;
     return boxed(psec('apps',title,chip('',appFrom==='pc'?'At home':'Anywhere'),'Apps save you the walk. The Bank app does savings, investments and offers (loans need a visit to the Bank). The Jobs app shows the same job board as the Employment Office; an online application takes the same 1h as an interview there.')+
       arow('🏦 Bank app',chip('','Savings '+S.rate.toFixed(1)+'%/day','ok')+(o&&!S.promo?chip('','🎁 Offer today','ok'):''),btn('app','bankapp','Open'))+
-      arow('💼 Jobs app',(S.career&&Object.keys(S.career).length?chip('','Your job: '+S.jobName):chip('','No job yet','warn'))+(ind?chip('',ind.ic+' '+ind.n,'warn'):rum?chip('','📣 Rumour','warn'):''),btn('app','jobsapp','Open')))
+      arow('💼 Jobs app',(myJob()?chip('','Your job: '+myJob().rk.r):chip('','No job yet','warn'))+(ind?chip('',ind.ic+' '+ind.n,'warn'):rum?chip('','📣 Rumour','warn'):''),btn('app','jobsapp','Open')))
   }
   /* Employment Office: the industry-specific storyline's rumour (before it starts) or today's effects (while it runs) */
   function indOutlook(){
