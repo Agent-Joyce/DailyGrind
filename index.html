@@ -604,7 +604,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
           <div id="billsRow" hidden><span class="dot d5"></span>Bills<b id="billsv" class="owe">$0</b></div>
         </div>
         <div class="invline" id="invline" hidden></div>
-        <p class="bankapp"><button type="button" class="btn alt" id="bankAppBtn">📱 Bank app</button> <small id="bankAppNote"></small></p>
+        <p class="bankapp"><button type="button" class="btn alt" id="phoneBtn">📱 Phone</button> <small id="phoneNote"></small></p>
         <div class="invline" id="debtline" hidden></div>
       </div>
       <div class="loghead"><h2>Daily log</h2><span style="display:flex;gap:8px"><button class="btn alt" id="logBig" aria-expanded="false" aria-controls="log" title="Show more of the log">Expand log</button><button class="btn alt" id="rulesBtn" title="How the game ends">How it ends</button></span></div>
@@ -1520,7 +1520,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     ['apt','🏢','Low-End Apartment'],['hosp','🏥','Hospital'],['factory','🏭','Factory'],['thrift','👕','Thrift Store'],['pawn','💍','Pawn Shop'],['bung','🏡','Classy Bungalow'],['gym','🏋️','Gym'],['park','🌳','Park']];
   var NAME={},ICON={};
   LOCS.forEach(function(l){ICON[l[0]]=l[1];NAME[l[0]]=l[2]});
-  ICON.bankapp='📱';NAME.bankapp='Bank app';  /* a screen, not a place: opened from the Overview with a phone, tablet or computer */
+  /* screens, not places: a device's home screen and its two apps (opened from the Overview's 📱 Phone button, or the 💻 Computer at home) */
+  ICON.phone='📱';NAME.phone='Phone';ICON.pc='💻';NAME.pc='Computer';ICON.bankapp='🏦';NAME.bankapp='Bank app';ICON.jobsapp='💼';NAME.jobsapp='Jobs app';
+  var APPS=['phone','pc','bankapp','jobsapp'];
 
   var HOUSE={apt:{rent:150,rest:25,hap:0,fee:0,rate:3},bung:{rent:350,rest:40,hap:10,fee:300,rate:4.5}};
   /* the fixed nightly change in words, leaving out anything that is 0 (CONFIG.sleep, health.nightly.always, selfStudy.nightlyLoss) */
@@ -2589,15 +2591,25 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(o)a.push({l:'good',t:'🎁 Bank offer, today only: a promo deposit at '+o.rate.toFixed(1)+'% a day for '+o.days+' days ('+money(o.min)+' to '+money(o.max)+'). It is paid back with interest when it matures.'});
     var mood=S.mkt>0.5?'buoyant':S.mkt<-0.5?'weak':'steady',best={n:'savings',e:S.rate};
     INVK.forEach(function(k){var P=INV[k];if(S.know<P.know||(P.dev&&!P.dev.split('|').some(owns)))return;var e=expRet(k);if(e>best.e)best={n:P.n.toLowerCase(),e:e}});
-    a.push({l:'rem',t:'📈 Today: savings '+S.rate.toFixed(1)+'% a day, fixed deposit '+expRet('fd').toFixed(1)+'%, market '+mood+' (ETF about '+pctS(expRet('etf'))+' a day). Best expected return open to you: '+best.n+' ('+pctS(best.e)+' a day'+(best.n==='savings'||best.n==='fixed deposit'?'':', with swings')+'). '+(bankDevice()?'Open the 📱 Bank app to act on it.':'Visit the Bank to act on it (a phone lets you use the Bank app).')});
+    a.push({l:'rem',t:'📈 Today: savings '+S.rate.toFixed(1)+'% a day, fixed deposit '+expRet('fd').toFixed(1)+'%, market '+mood+' (ETF about '+pctS(expRet('etf'))+' a day). Best expected return open to you: '+best.n+' ('+pctS(best.e)+' a day'+(best.n==='savings'||best.n==='fixed deposit'?'':', with swings')+'). '+(handheld()?'Open the Bank app on your phone to act on it.':owns('computer')?'Use the Bank app on your computer at home, or visit the Bank.':'Visit the Bank to act on it (a phone, tablet or computer gives you the Bank app).')});
     return a;
   }
   /* the 📱 Bank app: savings, investments and offers from anywhere, with a phone, tablet or computer (loans need a visit) */
-  function bankDevice(){return owns('phone')||owns('tablet')||owns('computer')}
-  function openBankApp(){
+  /* the apps run on a phone or tablet (anywhere) or a computer (at home); appFrom is the device the apps were opened on */
+  function handheld(){return owns('phone')||owns('tablet')}
+  function pcHere(){return owns('computer')&&atHome()&&!S.homeless}
+  function bankDevice(){return handheld()||owns('computer')}
+  var appFrom='phone';
+  function openDevice(d){
     if(S.over||S.pending)return;
-    if(!bankDevice())return refuse('The Bank app needs a working phone, tablet or computer. Without one, walk to the Bank.');
-    last=null;view='bankapp';sayLine=null;render();
+    if(d==='pc'?!owns('computer'):!handheld())return refuse(d==='pc'?'You need a working computer.':'You need a working phone or tablet. (A computer at home opens the same apps.)');
+    if(d==='pc'&&!pcHere())return refuse('Your computer is at home.');
+    appFrom=d;last=null;view=d;sayLine=null;render();
+  }
+  function openApp(k){
+    if(S.over||S.pending)return;
+    if(!(appFrom==='pc'?pcHere():handheld()))return refuse('You need a working phone or tablet, or your computer at home.');
+    last=null;view=k;sayLine=null;render();
   }
   /* ---- loans ---- */
   var loanTenure=null;
@@ -5192,6 +5204,13 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var x=indRole(c,i);if(!x)return '';var pc=Math.round(Math.abs(x.m-1)*100);
     return (pc?chip('',(x.m>1?'▲':'▼')+pc+'%',x.m>1?'ok':'warn'):'')+(x.freeze?chip('','Freeze','warn'):'')+(x.open?chip('','Hiring','ok'):'')+(x.cut?chip('',x.cut===1?'Cuts':'Closures','warn'):'');
   }
+  /* a device's home screen: the Bank app and the Jobs app */
+  function appHome(title){
+    var o=offerToday(),ind=S.ind&&S.ind.day>0?indOf(S.ind.id):null,rum=!ind&&S.indNext>0&&S.indNext>=S.day&&S.indNext-S.day<=CONFIG.industry.rumourDays;
+    return boxed(psec('apps',title,chip('',appFrom==='pc'?'At home':'Anywhere'),'Apps save you the walk. The Bank app does savings, investments and offers (loans need a visit to the Bank). The Jobs app shows the same job board as the Employment Office; an online application takes the same 1h as an interview there.')+
+      arow('🏦 Bank app',chip('','Savings '+S.rate.toFixed(1)+'%/day','ok')+(o&&!S.promo?chip('','🎁 Offer today','ok'):''),btn('app','bankapp','Open'))+
+      arow('💼 Jobs app',(S.career&&Object.keys(S.career).length?chip('','Your job: '+S.jobName):chip('','No job yet','warn'))+(ind?chip('',ind.ic+' '+ind.n,'warn'):rum?chip('','📣 Rumour','warn'):''),btn('app','jobsapp','Open')))
+  }
   /* Employment Office: the industry-specific storyline's rumour (before it starts) or today's effects (while it runs) */
   function indOutlook(){
     var L=CONFIG.industry,st=S.ind,g=st&&st.day>0?indOf(st.id):null,
@@ -5283,6 +5302,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var empty=!Object.keys(S.items).some(function(k){return S.items[k]})&&!F.length&&!S.chips&&!(S.tickets||[]).length;
     t+=psec('things','📦 Your things',empty?chip('','Nothing yet'):'','Buy belongings at the Electronics Store or Thrift Store, and meals at the Supermarket. A fridge holds '+FD.fridgeSpace+' meals and keeps them '+FD.keepDaysFridge+' days; food outside it keeps '+FD.keepDaysRoom+' days, counting the day you buy or cook it. Food that runs out turns spoiled.');
     if(!empty)t+=room();
+    /* --- computer: the Bank and Jobs apps at home --- */
+    var pcOk=owns('computer');
+    t+=psec('pc','💻 Computer',pcOk?chip('','Bank · Jobs','ok'):chip('',S.items.computer||S.items.computerold?'Broken':'No computer','warn'),'With a working computer at home you can use the Bank app (savings, investments, offers) and the Jobs app (the Employment Office job board, apply online) without walking. Buy one at the Electronics Store, or a used one at the Thrift Store.')+
+      arow('Bank app and Jobs app',pcOk?chip('','No walk','ok'):chip('','Needs a working computer','warn'),btn('pc','','Open',0,!pcOk));
     /* --- kitchen --- */
     var mealCh=function(g,hap){return chip('time',hm(FD.eatMinutes))+chip('energy','+'+g.en+'%')+chip('happy',sg(hap))+chip('health',sg(g.hp))};
     t+=psec('kitchen','🍳 Kitchen',chip('',S.fed?'✓ Eaten today':'No meal yet',S.fed?'ok':'warn')+chip('','Meals '+S.homeMeals+'/'+FD.homeMealsPerDay),
@@ -5416,11 +5439,14 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
           '<div class="bk-amt">'+btn('step','amt_offer|-1|'+o.min+'|'+o.max,'−',1,amt<=o.min)+'<input id="amt_offer" type="text" readonly value="'+amt+'" aria-label="Amount for the promo deposit in dollars">'+btn('step','amt_offer|1|'+o.min+'|'+o.max,'+',1,amt>=o.max)+'</div>'+
           '<div class="bk-b">'+btn('offer','','Take the offer',0,S.cash<o.min)+'</div></div>';
       };
-      return boxed((app?'<p class="arow-n">📱 Savings, investments and offers from anywhere. 💳 For a loan, visit the Bank in person.</p>':loanCard())+offerCard()+
+      return boxed((app?'<p class="arow-n">'+(appFrom==='pc'?'💻':'📱')+' Savings, investments and offers without the walk. 💳 For a loan, visit the Bank in person.</p>':loanCard())+offerCard()+
         psec('invest','📈 Savings and investments',chip('','Market '+mood,mood==='weak'?'warn':mood==='buoyant'?'ok':'')+chip('','Savings '+S.rate.toFixed(1)+'%/day'),econNote()+'<br>'+invNote())+
         (tip?'<p class="arow-n">📡 <b>Tip-off for tonight:</b> “'+S.newsPlan.n[0]+'” ('+newsHint(S.newsPlan.n)+')</p>':'')+
         invTable()+'<div class="bk-grid">'+rows+'</div>')},
     bankapp:function(){return panels.bank(true)},
+    jobsapp:function(){return panels.jobs()},
+    phone:function(){return appHome('📱 Your phone')},
+    pc:function(){return appHome('💻 Your computer')},
     market:function(){
       /* food sorted by price, cheapest first; the lottery is not food, so it has its own card */
       var cap=fridgeCap(),CH=FD.chips,chLeft=Math.min(CH.maxPerDay-(S.chipsDay||0),CH.maxStored-(S.chips||0)),rows=[];
@@ -5716,6 +5742,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
 
   /* ---------- shopkeeper dialogue: several everyday lines per building, plus lines that react to you ---------- */
   var GREET={
+    phone:['🔔 Notification',['2 apps installed: Bank and Jobs.','Battery full.','No new messages.']],
+    pc:['🔔 Notification',['Welcome back.','Your desktop is a mess, but the apps work.','Updates installed.']],
+    jobsapp:['🔔 Notification',['New listings are posted every morning.','Openings change daily. Apply early.','Tip: qualifications open better-paid jobs.']],
     bankapp:['🔔 Notification',['Your balance is up to date.','Rates refreshed just now.','Tip: money in savings earns interest every night.','Market news is in the Economy box on the Overview.']],
     factory:['Foreman Raj',['Hard hats on. The line does not stop for anyone.','We ship forty crates before lunch. Every day.','Keep your fingers away from the press, please.','Overtime is optional. Mostly.','Engineers sit upstairs with the air-con. Line workers sweat down here.','Smell that? Machine oil and ambition.']],
     jobs:['Marge at the desk',['Jobs are on the board. Bring your qualifications.','Take a number. Kidding, there is no queue today.','Firms are picky this week. Dress the part.','A certificate opens doors. A degree opens better ones.','Interviews take an hour, whether they love you or not.','Rejection is just practice for the next interview.']],
@@ -5735,7 +5764,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     bung:['The estate agent',['Lovely home. Lovely rent, too.','Garden views, quiet street, soft beds.','Steady job? Then we can talk.','Rest here and you wake up happier.','Neighbours here wave. Imagine that.','The deposit is steep, the sleep is better.']]
   };
   function greetLine(k){
-    if(k==='bankapp'){var NL=GREET[k][1];return NL[Math.floor(Math.random()*NL.length)]}  /* an app notification, not a shopkeeper */
+    if(APPS.indexOf(k)>=0){var NL=GREET[k][1];return NL[Math.floor(Math.random()*NL.length)]}  /* an app notification, not a shopkeeper */
     var g=GREET[k],L=g[1].slice(),c=S.career,hold=Object.keys(c).some(function(x){return (CAREERS[x].b||x)===k});
     if(S.energy<30)L.push('You look exhausted. Have you slept at all?','Careful, you are running on fumes.');
     if(S.happy<30)L.push('Cheer up. Tomorrow is another day.');
@@ -5845,8 +5874,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   }
   /* the overview's day recap, warnings, net-worth parts, investments line and rank goal */
   function renderOverviewCards(){
-    (function(){var d=bankDevice(),o=offerToday();$('bankAppBtn').disabled=!d||!!S.over;
-      $('bankAppNote').textContent=!d?'Needs a phone, tablet or computer':o&&!S.promo?'🎁 Offer today: '+o.rate.toFixed(1)+'% a day':'Savings '+S.rate.toFixed(1)+'% a day'})();
+    (function(){var d=handheld(),o=offerToday();$('phoneBtn').disabled=!d||!!S.over;
+      $('phoneNote').textContent=!d?'Needs a phone or tablet'+(owns('computer')?' (your computer at home has the apps)':''):'Bank and Jobs apps'+(o&&!S.promo?' · 🎁 bank offer today':'')})();
     var as=assets(),nw=worth(),tot=Math.max(nextGoal(),nw),iv=invTotal();  /* the same values renderStats() shows */
     var sm2=S.summary,sc=$('sumcard');sc.hidden=!sm2;
     if(sm2){var sg=function(v,suf){return '<b class="'+(v>0?'up':v<0?'dn':'')+'">'+(v>0?'+':v<0?'−':'±')+(suf==='$'?money(Math.abs(Math.round(v))):Math.abs(Math.round(v))+(suf||''))+'</b>'};
@@ -5887,7 +5916,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function renderWindows(){
     var pend=!!S.pending;
     document.body.classList.toggle('pending',pend);
-    $('center').classList.toggle('wide',(view==='jobs'||view==='school'||view==='bank'||view==='bankapp')&&!pend);
+    $('center').classList.toggle('wide',(view==='jobs'||view==='school'||view==='bank'||view==='bankapp'||view==='jobsapp')&&!pend);
     var pk=view+'|'+pend;if(window.__pk!==pk){window.__pk=pk;$('center').scrollTop=0}
     $('overview').hidden=!!view||pend;
     /* overview hidden by a click on the map: hide the whole window until the Overview button (or a new day) */
@@ -6181,6 +6210,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     wd:       {run:function(){moveMoney('wd')}},
     invest:   {run:function(g){invest(g)}},
     offer:    {run:function(){buyOffer()}},
+    app:      {run:function(g){openApp(g)},        ui:true},  /* opens an app screen: no time */
+    pc:       {run:function(){openDevice('pc')},   ui:true},
     divest:   {run:function(g){divest(g)}},
     borrow:   {run:function(){borrow()}},
     repay:    {run:function(){repay(false)}},
@@ -6228,7 +6259,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   $('cpGo').addEventListener('click',function(){S.cert=null;render()});
   $('cpNext').addEventListener('click',function(){var c=S.cert;if(!c)return;S.cert=null;enrol(c.t)});
   $('mnGo').addEventListener('click',function(){S.morning=null;render()});
-  $('bankAppBtn').addEventListener('click',function(){openBankApp()});
+  $('phoneBtn').addEventListener('click',function(){openDevice('phone')});
   $('hudLeave').addEventListener('click',function(){if(S.over||S.pending)return;view=null;render()});
   /* clicking or tapping the map outside the open window works like Leave (buildings still walk you there) */
   /* ...and with no building open, it hides the overview window so the map is clear (the Overview button brings it back) */
@@ -6288,7 +6319,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       (function(){var E=CONFIG.events,I=CONFIG.industry,last=function(L){return CONFIG.time.gameDays-L.daysBeforeEnd};
         if($('cfgStory'))$('cfgStory').textContent='each game has one global storyline (an oil crisis, a pandemic…), starting between day '+E.storyline.fromDay+' and day '+last(E.storyline)+', that moves prices, pay and interest for everyone; and one industry-specific storyline (a chip shortage, banks going all-in on AI…), starting between day '+I.fromDay+' and day '+last(I)+', that moves pay for particular jobs by '+Math.round(I.paySwing[0]*100)+'% to '+Math.round(I.paySwing[1]*100)+'% up or down, freezes or opens up hiring, and can lay you off or suspend your workplace. The Employment Office shows a rumour '+(I.rumourDays===1?'the day':I.rumourDays+' days')+' before it starts and its effects while it runs. The two may overlap; shorter macro shocks never come within '+E.storylineGap+' days of either.'})();
       (function(){var Mk=CONFIG.market,R=Mk.returns,O=CONFIG.bank.offers;
-        if($('cfgBank'))$('cfgBank').textContent='savings pay about '+Mk.rateBase+'% a day (the rate moves with the news), a fixed deposit '+R.fdOverSavings+'× that, and the ETF, hedge fund and crypto expect about '+R.etf.base+'%, '+R.hf.base+'% and '+R.cry.base+'% a day in a steady market, with bigger swings the more they pay. With a phone, tablet or computer, the 📱 Bank app on the Overview lets you do all this from anywhere (loans still need a visit). '+(O&&O.chance>0?'Some mornings from day '+O.fromDay+' the Bank has a one-day offer: a promo deposit at '+O.rate[0]+'–'+O.rate[1]+'% a day for '+dayN(O.days)+'. ':'')+'Each morning tells you what your money made overnight and the best return open to you.'})();
+        if($('cfgBank'))$('cfgBank').textContent='savings pay about '+Mk.rateBase+'% a day (the rate moves with the news), a fixed deposit '+R.fdOverSavings+'× that, and the ETF, hedge fund and crypto expect about '+R.etf.base+'%, '+R.hf.base+'% and '+R.cry.base+'% a day in a steady market, with bigger swings the more they pay. With a phone or tablet (📱 Phone on the Overview), or a computer at home (💻 Computer in your home), the Bank app does all this without the walk (loans still need a visit), and the Jobs app shows the Employment Office job board, where you can apply online (1h, as in person). '+(O&&O.chance>0?'Some mornings from day '+O.fromDay+' the Bank has a one-day offer: a promo deposit at '+O.rate[0]+'–'+O.rate[1]+'% a day for '+dayN(O.days)+'. ':'')+'Each morning tells you what your money made overnight and the best return open to you.'})();
       $('cfgRent').textContent=everyDays(RENT_EVERY);
       $('apOf').textContent=' of '+hm(MAX_AP);
       $('cfgDebt').textContent=pctTxt(CONFIG.hospital.billInterest);

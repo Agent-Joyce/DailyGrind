@@ -41,7 +41,7 @@ Where things are in `index.html`, and how to make the common changes safely. Lin
 3. Write `myAction()` in section 4: check and refuse with `refuse('reason')`, spend time and money with `spendMin()`, take `v0 = vitSnap()`, change `S`, `log('What happened' + vitPar(v0) + '.')`, then `done()`. Writing the change with `vitPar` keeps the log, the toast and the real change in step.
 4. If it needs a game state to be pressable, add that to `setup()` or `SITUATIONS` in `tools/qa/uicheck.js`.
 
-**The 📱 Bank app** is a screen, not a place: `view='bankapp'` with `loc` unchanged, opened by `openBankApp()` from the Overview. `panels.bankapp` is `panels.bank(true)` (the Bank screen without the loan card), so changes to the Bank's savings and investment cards show in both.
+**Device and app screens** are screens, not places: `view` changes and `loc` does not (`APPS` lists them). The 📱 Phone button on the Overview (`openDevice('phone')`, needs a working phone or tablet) and the 💻 Computer card at home (`openDevice('pc')`, needs a working computer and being at home) open a home screen (`appHome`) with two apps, opened by `openApp()`: `bankapp` is `panels.bank(true)` (the Bank screen without the loan card) and `jobsapp` is `panels.jobs()` (the Employment Office board; applying works the same). Changes to those panels show in the apps too.
 
 **Add a building**: a `LOCS` entry, a position in `BP`, a road spur in `SPUR`, art in `ART`, lines in `GREET`, a panel in `panels`, and walking distance (`ORDER` or `dist()`).
 

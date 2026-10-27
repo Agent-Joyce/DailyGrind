@@ -1099,3 +1099,12 @@ The Bank's products paid too little to matter (savings 1% a day, about $10 a day
 - **One-day offers.** Some mornings from day 3 (15% chance), the Bank offers a promo deposit for that day only: 3–3.5% a day for 3 days, $300 to $1,000, locked until it matures and then paid into your cash with its interest. It shows in the morning notes, at the Bank and in the app; one at a time; it counts in net worth while you hold it. New `CONFIG.bank.offers` {chance 0.15, fromDay 3, rate [3, 3.5], days 3, min 300, max 1000}.
 - **Rules:** a new Bank line, filled in from CONFIG.
 - **UI check:** three new situations (an offer at the Bank, the Bank app with an offer, a promo deposit held).
+
+## 76. 📱 Phone and 💻 Computer: the Bank app and a new Jobs app
+
+- **📱 Phone** (was the "📱 Bank app" button on the Overview, under Net worth): with a working phone or tablet it opens your phone's home screen, with two apps. Without one the button is disabled ("Needs a phone or tablet"; with only a computer it adds that your computer at home has the apps).
+- **💻 Computer** at home: a new card in your Apartment or Bungalow opens the same home screen. It is enabled only with a working computer, and works at home.
+- **🏦 Bank app**: as before (savings, investments, offers; loans need a visit to the Bank). It no longer opens from a computer away from home.
+- **💼 Jobs app** (new): the same job board as the Employment Office, with the industry outlook. You can apply online; an application takes the same 1h as an interview and follows the same rules.
+- The morning money briefing and the Rules Bank line describe where the apps are.
+- **UI check:** two new situations (the phone home screen; the Jobs app).
