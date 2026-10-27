@@ -18,7 +18,7 @@ Where things are in `index.html`, and how to make the common changes safely. Lin
 | 3 | State and saves | The state shape, new game, save status, loading old saves, game over | `blank()`, `fresh()`, `save()`, `SAVE_VERSION`, `MIGRATIONS`, `migrateSave()`, `hydrate()`, `load()`, `finish()` |
 | 4 | Player actions | Everything a button can do | `spendMin()`, `done()`, `refuse()`, `work()`, `study()`, `buy()`, `cook()`, `enter()`, `gymSession()`, `leisure()`, `factoryDo()` … |
 | 5 | Health, stress, night | Illness, health, burnout, game-over checks, the overnight pipeline | `healthTick()`, `burnTick()`, `stressTick()`, `rollover()` |
-| 6 | Events and economy | Content tables, effect tokens, macro trends, storylines, the end-of-day card | `NEWS`, `CHOICES`, `MACRO`, `SAGAS`, `TWISTS`, `STORIES`, `applyFx()`, `trendTick()`, `pickNight()`, `endWeek()` |
+| 6 | Events and economy | Content tables, effect tokens, macro trends, global and industry-specific storylines, the end-of-day card | `NEWS`, `CHOICES`, `MACRO`, `SAGAS`, `INDUSTRY`, `TWISTS`, `STORIES`, `applyFx()`, `trendTick()`, `indRole()`, `rolePay()`, `indTick()`, `pickNight()`, `endWeek()` |
 | 7 | Panels | Compact card building blocks and one panel per building | `chip()`, `arow()`, `psec()`, `more()`, `boxed()`, `house()`, `panels` |
 | 8 | Map art and dialogue | Building illustrations (inline SVG) and shopkeeper lines | `ART`, `GREET` |
 | 9 | Render | Repaints the screen from `S` | `render()` → `renderStats()`, `renderPopups()`, `renderHud()`, `renderOverviewCards()`, `renderMap()`, `renderWindows()`, `renderPanel()`, `renderA11y()` |
@@ -30,7 +30,7 @@ Where things are in `index.html`, and how to make the common changes safely. Lin
 
 - **Start:** the script defines everything, the add-ons wrap `render()`, `log()` and `finish()`, `timeText` fills the Rules text from CONFIG, then `load()` restores a save or `fresh()` starts a game.
 - **A button:** a click on any `#shop [data-act]` goes to `shopAct()`, which looks the name up in `ACTIONS` and runs it. The action changes `S`, logs what happened and calls `done()`, which calls `render()`. While the click runs, every log line becomes a toast.
-- **The night:** "End day" → `endWeek()` (where you slept, tonight's cards in `S.pending`) → the player taps through the cards → `rollover()` (rent, wear, sleep, hunger, food, macro trends, investments, health, burnout, school, loans, game-over checks, interest, the morning notes). CLAUDE.md lists the order in detail.
+- **The night:** "End day" → `endWeek()` (where you slept, tonight's cards in `S.pending`: the global storyline or a macro shock, the industry-specific storyline, then the daily event) → the player taps through the cards → `rollover()` (rent, wear, sleep, hunger, food, macro trends, investments, health, burnout, school, loans, game-over checks, interest, the morning notes). CLAUDE.md lists the order in detail.
 - **State:** everything about a game is in `S` (shape: `blank()`), saved to `localStorage` under `dailyGrind.save.v1`. Other keys: `dailyGrind.best` (top score), `dailyGrind.mute`, `dailyGrind.preview`, and `dailyGrind.save.v1.broken` (a save that could not be loaded).
 
 ## How to…
@@ -44,6 +44,8 @@ Where things are in `index.html`, and how to make the common changes safely. Lin
 **Add a building**: a `LOCS` entry, a position in `BP`, a road spur in `SPUR`, art in `ART`, lines in `GREET`, a panel in `panels`, and walking distance (`ORDER` or `dist()`).
 
 **Add an event**: add a record to the right table in section 6. Outcomes are effect-token strings (`c` cash, `e` energy, `h` happiness, `l` health, `n` knowledge, …), applied through `applyFx()`, never by writing to `S` directly.
+
+**Add an industry-specific storyline**: add an entry to `INDUSTRY` (section 6): `id`, `ic`, `n`, `term`, a rumour (`rum`), who it affects (`hit`) and four phases. Each phase lists its effects with `ie(group, label, pay, hire, cut)` (groups of roles are in `IW`: add one there if needed) and two or more chapters. Pay is a share of the game's swing (`CONFIG.industry.paySwing`), so −1 means down by the full swing. No other code changes are needed.
 
 **Add or change a CONFIG value**: put it in `CONFIG`, use it from there, update the matching `cfg…` Rules text (in `timeText`), the Config Guide (`docs/Daily Grind Config Guide.docx`) and `CHANGELOG.md`.
 

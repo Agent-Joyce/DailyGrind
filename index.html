@@ -666,6 +666,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     <li><b>Keyboard:</b> 1–9 press the numbered buttons, E ends the day, Esc leaves a building or closes a window, H opens these rules, M toggles sound. Tab moves between buildings.</li>
     <li><b>Health:</b> a slow-moving vital. Healthy meals, the gym, the Park and sleeping at home raise it; hunger, illness, junk food, burnout and <span id="cfgHpWork">work and study (1 health an hour of shifts, lessons and self-study)</span> lower it. Good health, a healthy diet and regular gym visits all cut your chance of falling ill.</li>
     <li><b>Layoffs and closures (two different things):</b> in a bad economy you can be <b>laid off</b> (the job is gone, so apply for a new one) or your workplace can <b>close</b> for 1 to 4 days (the Work button is disabled, but the job stays on your record and the morning message tells you when it is back). You can only hold one job at a time.</li>
+    <li><b>Storylines:</b> <span id="cfgStory">each game has one global storyline (an oil crisis, a pandemic…) that moves prices, pay and interest for everyone, and one industry-specific storyline that hits particular jobs.</span></li>
     <li><b>Loans:</b> <span id="cfgLoan">Borrow at the Bank in $50 steps.</span></li>
     <li><b>Work limit:</b> you can work at most <span id="cfgWork">12 hours</span> of shifts in one day.</li>
     <li><b>Burnout:</b> <span id="cfgBurn">studying more than 5 hours a day (school plus self-study), or working 9 hours or more a day, three days in a row costs 15 health and cuts shift pay by 20% for 3 days.</span></li>
@@ -730,7 +731,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
 (function(){
   /* ==================================================================
      1. CONFIG
-     Change these numbers to tune the game. Top-level keys, in order: start, education, events, macro, limits, market, jobs, factory,
+     Change these numbers to tune the game. Top-level keys, in order: start, education, events, industry, macro, limits, market, jobs, factory,
      time, clothes, health, illness, gym, hospital, food, burnout, selfStudy, gadgets, sleep, housing, lottery, leisure, loan,
      bankrupt, shame, score, ranks, ui, traits. Each key has its own comment explaining its values.
      ================================================================== */
@@ -758,6 +759,16 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       Mini stories, macro shocks and storylines are dealt from a shuffled deck, like decisions and news: none repeats until all have been seen.
       forecast: when tonight's daily event is economic news, the chance the headline is tipped off that morning (morning notes and the Bank screen), so the player has the day to move money. 0 = never, 1 = always. */
     events:{storyline:{fromDay:3,daysBeforeEnd:3},storylineGap:2,macroChance:0.1,bigGap:3,macroDays:[3,5],story:0.2,item:0.2,news:0.1,basic:0,decision:0.3,none:0.2,forecast:0.7},
+    /* Industry-specific storylines (the INDUSTRY table in section 6): one a game, on top of the global storyline (above), hitting
+      particular workplaces and roles. It may run at the same time as the global storyline; macro shocks keep storylineGap clear days from both.
+      fromDay, daysBeforeEnd: it starts on the evening of a random day from fromDay to (game length − daysBeforeEnd), picked on its own.
+      days: how many nights it runs [min, max], over its four phases (it begins, it escalates, at its peak, easing off).
+      paySwing: [min, max] share by which it moves pay. Each game rolls one swing S in this range; each phase moves its roles by S or half of S.
+      layoffChance: each night your own job is in a phase with cuts, the chance you are laid off (the job is gone).
+      suspendChance: if you are not laid off, the chance your workplace suspends work for suspendDays [min, max] days (your job is kept).
+      freezeShare: in a hiring freeze, the chance each affected role has no openings that day (normally 25%). Roles that are hiring always have openings.
+      rumourDays: how many days before it starts the Employment Office shows a rumour. */
+    industry:{fromDay:3,daysBeforeEnd:3,days:[5,6],paySwing:[0.2,0.5],layoffChance:0.06,suspendChance:0.15,suspendDays:[1,3],freezeShare:0.8,rumourDays:1},
     macro:{
       /* Master dial for ALL world news, macro shocks and storylines.
         1 = normal, 0 = news has no economic effect, 2 = twice as strong. */
@@ -1773,7 +1784,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function myJob(){var c=Object.keys(S.career)[0];return c&&CAREERS[c]&&cur(c)?{c:c,b:bOf(c),rk:cur(c)}:null}
   function shutLeft(b){return (S.shut&&S.shut[b])||0}
   function shutSum(){var n=0;Object.keys(S.shut||{}).forEach(function(b){n+=S.shut[b]||0});return n}
-  function rollOpenings(){S.closed={};Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk,i){if(Math.random()<0.25)S.closed[c+'_'+i]=1})})}
+  /* each morning about a quarter of roles have no openings; an industry-specific storyline freezes or opens up its roles */
+  function rollOpenings(){S.closed={};Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk,i){
+    var x=indRole(c,i),p=x&&x.open?0:x&&x.freeze?CONFIG.industry.freezeShare:0.25;if(Math.random()<p)S.closed[c+'_'+i]=1})})}
   /* meals out and Supermarket meals, built from CONFIG.food */
   var FD=CONFIG.food,TREATS={},GROC={};
   [['snack','burger'],['meal','combo'],['dine','dinner'],['feast','tasting'],['cafe','cafe']].forEach(function(p){var c=FD[p[1]];
@@ -1833,10 +1846,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
      3. STATE AND SAVES
      blank() is the full shape of S. fresh() starts a game; save() and load() keep it in localStorage; finish() ends it.
      ================================================================== */
-  function blank(){return {fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
+  function blank(){return {fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,ind:null,indNext:0,indId:'',macroLast:0,deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:1,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
     S=blank();T0();PREV=null;applyPayVar();S.certVar={};Object.keys(TRACKS).forEach(function(t){S.certVar[t]=1+(Math.random()*2-1)*CONFIG.education.certVariance});
-    S.sagaNext=sagaDay();
+    S.sagaNext=sagaDay();S.indNext=indDay();S.indId=INDUSTRY[Math.floor(Math.random()*INDUSTRY.length)].id;
     rollOpenings();planNews();loc='apt';view=null;last=null;
     $('log').innerHTML='';S.logs=[];
     $('over').classList.remove('show');$('welcome').classList.add('show');
@@ -1898,6 +1911,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       if(s.sagaNext==null)s.sagaNext=s.saga?0:s.sagaLast?0:Math.max(s.day,sagaDay())}],
     ['storyline once a game (was: again after gapDays): a save whose storyline has ended schedules no other', function(s){
       if(s.sagaLast&&!s.saga)s.sagaNext=0}],
+    ['industry-specific storylines: a game saved before them gets one, if there is still time in the window', function(s){
+      if(s.indNext==null&&!s.ind){var L=CONFIG.industry,last=CONFIG.time.gameDays-L.daysBeforeEnd,d=Math.max((s.day||1)+1,indDay());
+        s.indNext=d<=last&&!s.over?d:0;s.indId=INDUSTRY[Math.floor(Math.random()*INDUSTRY.length)].id}}],
     ['fields added since the save was made get their starting values from blank()', function(s,b){Object.keys(b).forEach(function(k){if(s[k]===undefined)s[k]=b[k]})}],
     ['v3 to v4: Diploma merged into Degree, Doctorate and Specialist removed (finished levels converted, part-done ones reset)', function(s){
       if(s.ver===3&&s.edu){
@@ -2090,7 +2106,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       rk=cur(k);
       if(!rk)return refuse('You have no job here yet. Apply at the Employment Office.');
       if(shutLeft(bOf(k))>0)return refuse('The '+NAME[bOf(k)]+' is closed for '+shutLeft(bOf(k))+' more day'+(shutLeft(bOf(k))>1?'s':'')+' (counting today). Your job as '+rk.r+' stays on your record and comes back when it reopens.');
-      var ef=effort(rk.pay);j={n:rk.r,min:ef.min,pay:rk.pay,en:ef.en,dress:rk.dress};
+      var ef=effort(rk.pay);j={n:rk.r,min:ef.min,pay:rolePay(k,S.career[k]),en:ef.en,dress:rk.dress};
     }else j=JOBS[k];
     if(S.ill)return refuse('You are sick with '+ILL[S.ill.k].n+' and can’t work. '+illCure());
     if(j.dress&&!hasDress(j.dress))return refuse("You don't meet the dress code! This shift needs "+DRESS[j.dress]+'. Visit the Clothes Mall.');
@@ -2128,7 +2144,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(old&&old.c!==c)log('You resigned as '+old.rk.r+' at the '+NAME[old.b]+' to take the new job. You can only hold one job at a time.','warn');
     else if(old)log('You were promoted from '+old.rk.r+'.','good');
     addWin('💼 '+(old&&old.c===c?'Promoted to ':'New job: ')+rk.r);
-    log('You passed the interview! You are now a '+rk.r+' at the '+who+' ('+money(Math.round(rk.pay*payIdx()))+' a shift). Work your shifts at the '+NAME[CAREERS[c].b||c]+'.','good');
+    log('You passed the interview! You are now a '+rk.r+' at the '+who+' ('+money(Math.round(rolePay(c,i)*payIdx()))+' a shift). Work your shifts at the '+NAME[CAREERS[c].b||c]+'.','good');
     done();
   }
   /* 'a burger' -> 'Burger', 'the chef’s tasting menu' -> 'Chef’s tasting menu' */
@@ -2748,7 +2764,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   }
   /* ---------- the Factory for outsiders: day labour, safety course, tour (CONFIG.factory) ---------- */
   function facJob(){return Object.keys(S.career).some(function(c){return cur(c)&&bOf(c)==='factory'})}
-  function labourPay(){var low=Infinity;Object.keys(CAREERS).forEach(function(c){if(bOf(c)==='factory')CAREERS[c].ranks.forEach(function(r){low=Math.min(low,r.pay)})});return Math.round(low*CONFIG.factory.dayLabour.payShare)}
+  function labourPay(){var low=Infinity;Object.keys(CAREERS).forEach(function(c){if(bOf(c)==='factory')CAREERS[c].ranks.forEach(function(r,i){low=Math.min(low,rolePay(c,i))})});return Math.round(low*CONFIG.factory.dayLabour.payShare)}
   function labourToday(){var f=S.fac||{};return f.ld===S.day?f.ln:0}
   function factoryDo(k){
     var F=CONFIG.factory,f=S.fac||(S.fac={});
@@ -2884,7 +2900,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   /* best-paid job you currently hold (pay per shift before productivity) */
   function payInfo(){
     var best=null,n=0;
-    Object.keys(S.career).forEach(function(c){var rk=CAREERS[c].ranks[S.career[c]];if(!rk)return;n++;var v=Math.round(Math.round(rk.pay*payIdx())*(1+S.know/400));if(!best||v>best.v)best={v:v,r:rk.r,c:c}});
+    Object.keys(S.career).forEach(function(c){var rk=CAREERS[c].ranks[S.career[c]];if(!rk)return;n++;var v=Math.round(Math.round(rolePay(c,S.career[c])*payIdx())*(1+S.know/400));if(!best||v>best.v)best={v:v,r:rk.r,c:c}});
     return best?{v:best.v,txt:best.r+' · '+NAME[CAREERS[best.c].b||best.c]+(n>1?' (+'+(n-1)+' more job'+(n>2?'s':'')+')':''),n:n}:{v:0,txt:'no job',n:0};
   }
   function stressList(){
@@ -2976,6 +2992,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     S.know=clamp(S.know+SN.nightlyLoss+gb.know+(anyInv()?SN.nightlyInvesting:0));
     shutTick();
     trendTick();
+    indTick();  /* industry-specific storyline: layoffs and suspensions */
     /* second-hand gadgets can break down on their own */
     Object.keys(S.items).forEach(function(k){var it=ITEMS[k];if(S.items[k]&&it&&it.old&&!S.broken[k]&&Math.random()<it.old){S.broken[k]=1;S.notes.push({l:'bad',t:'🔧 Your '+it.n.toLowerCase()+' broke down overnight. Repair it at the Electronics Store (or buy a new one).'});log('Your '+it.n.toLowerCase()+' broke down.','bad')}});
     tickInv();
@@ -4016,6 +4033,228 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
        ["Rationing ends","Showers are back to normal.","h+3"],
        ["Water prices ease","Bills settle.","p-0.5 h+2"]]]}
   ];
+  /* ---------- industry-specific storylines (CONFIG.industry) ----------
+    One a game, on top of the global storyline (SAGAS), and it may run at the same time. Each hits particular workplaces and
+    roles over four phases (it begins, it escalates, at its peak, easing off), one chapter a night like a global storyline.
+    A phase's effects hold from its chapter's night until the next chapter (the last one holds for one more day).
+    rum: the rumour shown in the Employment Office before it starts. hit: who is affected, shown on the first card.
+    ph: four phases, each {on:[effects], c:[chapters]}. Chapters are [title, text, fx], as in SAGAS.
+    An effect is {w:who, lab:its name in the outlook, pay:share of this game's swing S (−1 = pay down by S, 0.5 = up by half S),
+      hire:'freeze' (few openings: CONFIG.industry.freezeShare) or 'open' (always openings), cut:1 (layoffs and suspensions) or 's' (suspensions only)}.
+    who picks roles by workplace {b:[...]}, career line {c:[...]}, role name {r:[...]} and/or qualification field {t:'med'}; all given keys must match.
+    Effects that match the same role add up their pay. */
+  var IW={fac:{b:['factory']},line:{r:['Line Worker','Forklift Driver']},esales:{c:['elec']},repair:{r:['Repair Technician']},
+    etech:{c:['elec2']},btech:{r:['Tech Developer']},bank:{r:['Teller','Internal Auditor','Market Risk Analyst']},
+    deliv:{r:['Delivery Rider','Delivery Driver','Delivery & Install']},crew:{r:['Crew Member','Kitchen Hand']},
+    tills:{r:['Cashier','Shelf Stacker']},sup:{r:['Store Supervisor','Supermarket Manager','IT Support Lead']},
+    med:{b:['hosp'],t:'med'},hsup:{r:['Hospital Porter','Cleaner']},eat:{b:['resto','fast']},fnb:{b:['resto','fast'],t:'fnb'},
+    mall:{b:['mall']},thrift:{b:['thrift']},appr:{r:['Appraiser','Pawnbroker']},pawn:{b:['pawn']},gym:{b:['gym']},eng:{r:['Technician','Design Engineer','Senior Engineer','Project Lead','Principal Engineer','Chief Engineer']}};
+  function ie(w,lab,pay,hire,cut){var e={w:IW[w],lab:lab,pay:pay||0};if(hire)e.hire=hire;if(cut)e.cut=cut;return e}
+  var INDUSTRY=[
+    {id:'chips',ic:'💾',n:'AI chip shortage',term:'Supply bottleneck: when one part that a whole industry needs runs short, production stalls everywhere it is used.',
+      rum:'Chip supplies are drying up. Factory and electronics sales jobs may be at risk; repair work may pick up.',
+      hit:'Factory and electronics sales jobs are hit; repair technicians are in demand.',ph:[
+      {on:[ie('fac','Factory jobs',-0.5),ie('esales','Electronics sales',-0.5,'freeze'),ie('repair','Repair technicians',0.5,'open')],c:[
+        ['Chip supplies dry up','A fire at an overseas chip plant halts deliveries. The Factory slows its lines.','h-1'],
+        ['Empty shelves at the electronics store','New laptops and phones are on back-order for weeks.','']]},
+      {on:[ie('fac','Factory jobs',-1,'freeze'),ie('esales','Electronics sales',-1,'freeze'),ie('repair','Repair technicians',1,'open')],c:[
+        ['The Factory cuts shifts','Half the assembly lines stand idle, waiting for chips.','h-2'],
+        ['Fix it, don’t replace it','With no new gadgets to buy, repair benches are piled high with old ones.','h+1']]},
+      {on:[ie('fac','Factory jobs',-1,'freeze'),ie('line','Line workers and forklift drivers',0,'freeze',1),ie('esales','Electronics sales',-1,'freeze',1),ie('repair','Repair technicians',1,'open')],c:[
+        ['Layoffs on the factory floor','Management lets line staff go until supplies return.','h-3'],
+        ['The electronics store trims staff','No stock, no sales, fewer people on the floor.','h-2']]},
+      {on:[ie('fac','Factory jobs',-0.5),ie('esales','Electronics sales',-0.5),ie('repair','Repair technicians',0.5)],c:[
+        ['First chip shipments arrive','The lines restart slowly. Pay is still below normal.','h+2'],
+        ['Back-orders start to clear','The electronics store reopens its waiting list.','h+1']]}]},
+    {id:'bankai',ic:'🤖',n:'Banks go all-in on AI',term:'Automation: machines or software taking over tasks people used to do. It creates some jobs and removes others.',
+      rum:'Talk at the Bank of a big AI project. Tech roles may be in demand; routine bank jobs may be at risk later.',
+      hit:'Tech roles are in demand; tellers, auditors and risk analysts are at risk later.',ph:[
+      {on:[ie('btech','Bank tech developers',0.5,'open'),ie('etech','Electronics Store tech roles',0.5,'open')],c:[
+        ['The Bank announces an AI programme','The board wants every process automated within a year. Recruiters call every developer in town.','h+1'],
+        ['Developers wanted','Job ads for software and AI roles double overnight.','']]},
+      {on:[ie('btech','Bank tech developers',1,'open'),ie('etech','Electronics Store tech roles',1,'open'),ie('bank','Tellers, auditors, risk analysts',0,'freeze')],c:[
+        ['Bidding war for tech talent','The Bank poaches developers with big raises.','h+1'],
+        ['Hiring freeze for counter staff','The Bank stops replacing tellers who leave.','h-1']]},
+      {on:[ie('btech','Bank tech developers',1,'open'),ie('etech','Electronics Store tech roles',1,'open'),ie('bank','Tellers, auditors, risk analysts',-0.5,'freeze',1)],c:[
+        ['The AI goes live','Chatbots now handle most accounts. Teller and audit roles are cut.','h-3'],
+        ['Restructuring at the Bank','Whole teams of analysts are told to reapply for fewer roles.','h-2']]},
+      {on:[ie('btech','Bank tech developers',0.5,'freeze'),ie('etech','Electronics Store tech roles',0.5,'freeze'),ie('bank','Tellers, auditors, risk analysts',-0.5,'freeze')],c:[
+        ['The project is finished','With the system built, the Bank stops hiring developers.','h-1'],
+        ['Fewer people behind the counter','Branches now run with a skeleton crew.','h-1']]}]},
+    {id:'delivery',ic:'🛵',n:'Delivery app price war',term:'Price war: rivals keep cutting prices (or raising pay) to win customers, often at a loss, until one gives up or they merge.',
+      rum:'Two delivery apps are about to launch in town. Riders and drivers may be in demand.',
+      hit:'Delivery jobs are in demand; fast-food crew lose shifts, and delivery pay may crash later.',ph:[
+      {on:[ie('deliv','Delivery riders and drivers',1,'open')],c:[
+        ['Delivery apps go to war','Two apps offer riders sign-up bonuses to win the town.','h+1'],
+        ['Free delivery everywhere','Orders flood in and every rider is busy.','']]},
+      {on:[ie('deliv','Delivery riders and drivers',1,'open'),ie('crew','Crew members and kitchen hands',-0.5)],c:[
+        ['Counter sales slump','Customers order from home, so in-store crew get fewer shifts.','h-1'],
+        ['Rider bonuses keep climbing','The apps pay extra for every evening shift.','h+1']]},
+      {on:[ie('deliv','Delivery riders and drivers',-1,'freeze',1),ie('crew','Crew members and kitchen hands',-0.5)],c:[
+        ['The apps merge','One app buys the other. Rider pay is cut overnight.','h-3'],
+        ['Riders let go','The merged app needs half the riders it had.','h-2']]},
+      {on:[ie('deliv','Delivery riders and drivers',-0.5)],c:[
+        ['Delivery settles down','Fees go up and orders fall back.','h+1'],
+        ['Crew shifts return','People drift back to eating in.','h+1']]}]},
+    {id:'checkout',ic:'🧾',n:'Self-checkout rollout',term:'Labour-saving technology: machines that let a business serve the same customers with fewer staff.',
+      rum:'The Supermarket is trialling self-checkout machines. Till and shelf jobs may be at risk.',
+      hit:'Cashiers and shelf stackers are at risk; supervisors and IT support are in demand.',ph:[
+      {on:[ie('tills','Cashiers and shelf stackers',-0.5,'freeze')],c:[
+        ['Self-checkouts arrive','Ten machines appear where three tills used to be.','h-1'],
+        ['“Unexpected item in the bagging area”','Shoppers grumble at the new machines.','h+1']]},
+      {on:[ie('tills','Cashiers and shelf stackers',-0.5,'freeze'),ie('sup','Supervisors, managers, IT support',0.5,'open')],c:[
+        ['Machines need minders','The store hires supervisors to help confused shoppers.',''],
+        ['IT support on call','Somebody has to fix the machines when they freeze.','']]},
+      {on:[ie('tills','Cashiers and shelf stackers',-1,'freeze',1),ie('sup','Supervisors, managers, IT support',0.5,'open')],c:[
+        ['Tills close for good','Half the cashiers are let go.','h-3'],
+        ['Night shelf team cut','Stock now arrives pre-packed on pallets.','h-2']]},
+      {on:[ie('tills','Cashiers and shelf stackers',-0.5),ie('sup','Supervisors, managers, IT support',0.5)],c:[
+        ['Shoppers get used to it','Queues are shorter and the store is quieter.','h+1'],
+        ['A few tills reopen','Older shoppers asked for them back.','h+1']]}]},
+    {id:'nurse',ic:'🩺',n:'Nursing shortage',term:'Labour shortage: when there are fewer workers than jobs, employers raise pay to attract them.',
+      rum:'The Hospital is short of nurses. Medical jobs may pay more; support staff may be outsourced.',
+      hit:'Medical roles are in demand; porters and cleaners are at risk.',ph:[
+      {on:[ie('med','Medical roles',0.5,'open')],c:[
+        ['Nurses quit in droves','Burnt-out staff leave for jobs abroad. Wards are short-handed.','h-1'],
+        ['Hiring bonuses at the Hospital','Every medical job now comes with a signing bonus.','h+1']]},
+      {on:[ie('med','Medical roles',1,'open')],c:[
+        ['Overtime on every ward','Medical staff are paid extra to cover the gaps.',''],
+        ['The Hospital raises medical pay','The board approves a pay rise to keep its nurses.','h+1']]},
+      {on:[ie('med','Medical roles',1,'open'),ie('hsup','Porters and cleaners',-1,'freeze',1)],c:[
+        ['Support staff outsourced','To pay for the nurses, porters and cleaners move to a contractor on lower pay.','h-3'],
+        ['Contract cleaners arrive','A new company takes over cleaning. Some old staff are let go.','h-2']]},
+      {on:[ie('med','Medical roles',0.5),ie('hsup','Porters and cleaners',-0.5)],c:[
+        ['Agency nurses arrive','Temporary staff ease the shortage, and the premium shrinks.',''],
+        ['Wards back to normal','Waiting lists start to fall.','h+1']]}]},
+    {id:'food',ic:'🤢',n:'Food poisoning scandal',term:'Consumer confidence: how willing people are to spend. One scare can empty a whole industry for weeks.',
+      rum:'Inspectors are visiting restaurants after reports of food poisoning. Restaurant and fast-food jobs may be at risk.',
+      hit:'Restaurant and fast-food jobs are hit; staff with food training are in demand afterwards.',ph:[
+      {on:[ie('eat','Restaurant and fast-food jobs',-0.5,'freeze','s')],c:[
+        ['Food poisoning outbreak','Dozens fall ill after eating out. Inspectors close kitchens for checks.','h-2'],
+        ['Diners stay away','Restaurants sit half empty.','h-1']]},
+      {on:[ie('eat','Restaurant and fast-food jobs',-1,'freeze','s')],c:[
+        ['Kitchens shut for inspection','Outlets are closed one by one until they pass.','h-2'],
+        ['Bookings cancelled','Shifts are cut as tables stay empty.','h-1']]},
+      {on:[ie('eat','Restaurant and fast-food jobs',-1,'freeze','s')],c:[
+        ['The source is found','A single supplier was to blame, but the town is still wary.','h-1'],
+        ['Staff sent home','With no customers, managers send staff home unpaid.','h-2']]},
+      {on:[ie('fnb','Trained food staff',0.5,'open')],c:[
+        ['Hiring rush for trained staff','Every reopened kitchen wants staff with food training.','h+2'],
+        ['Diners return','Restaurants fill up again, a new hygiene sticker in every window.','h+1']]}]},
+    {id:'mall',ic:'🛍️',n:'Online shopping hits the mall',term:'Disruption: a new way of selling that takes customers from an established industry.',
+      rum:'Online shops are undercutting the Clothes Mall. Mall jobs may be at risk; second-hand may boom.',
+      hit:'Clothes Mall jobs are hit; Thrift Store jobs are in demand.',ph:[
+      {on:[ie('mall','Clothes Mall jobs',-0.5,'freeze'),ie('thrift','Thrift Store jobs',0.5,'open')],c:[
+        ['Online fashion sale','A big online store sells clothes at half the mall’s prices.','h+1'],
+        ['Quiet mall corridors','Footfall drops for a second week.','h-1']]},
+      {on:[ie('mall','Clothes Mall jobs',-1,'freeze'),ie('thrift','Thrift Store jobs',1,'open')],c:[
+        ['Mall shops close floors','The top floor is roped off.','h-2'],
+        ['Second-hand is in','Thrift shopping goes viral and the Thrift Store needs more hands.','h+1']]},
+      {on:[ie('mall','Clothes Mall jobs',-1,'freeze',1),ie('thrift','Thrift Store jobs',1,'open')],c:[
+        ['Layoffs at the mall','Boutiques cut staff to survive.','h-3'],
+        ['Queues at the Thrift Store','The sorting room cannot keep up.','h+1']]},
+      {on:[ie('mall','Clothes Mall jobs',-0.5),ie('thrift','Thrift Store jobs',0.5)],c:[
+        ['The mall fights back','Free returns and weekend events bring some shoppers back.','h+1'],
+        ['The thrift craze cools','Thrift Store pay settles back down.','']]}]},
+    {id:'gold',ic:'🪙',n:'Gold rush',term:'Commodity cycle: raw-material prices boom and bust, and the jobs that depend on them follow.',
+      rum:'Gold prices are climbing fast. Pawn Shop appraisers may be in demand.',
+      hit:'Appraisers and pawnbrokers are in demand, then the whole Pawn Shop is at risk.',ph:[
+      {on:[ie('appr','Appraisers and pawnbrokers',0.5,'open')],c:[
+        ['Gold hits a record','Everyone digs out old jewellery to sell.','h+1'],
+        ['Queues at the Pawn Shop','Sal needs more appraisers.','']]},
+      {on:[ie('appr','Appraisers and pawnbrokers',1,'open')],c:[
+        ['Gold fever','Sal pays appraisers extra to work late.','h+1'],
+        ['Every ring in town gets weighed','The shop runs out of space in the safe.','']]},
+      {on:[ie('pawn','Pawn Shop jobs',-1,'freeze',1)],c:[
+        ['Gold crashes','The price falls by a third in two days. Sal is stuck with a safe full of gold.','h-3'],
+        ['The Pawn Shop cuts staff','Sal lets staff go to cover the losses.','h-2']]},
+      {on:[ie('pawn','Pawn Shop jobs',-0.5)],c:[
+        ['Gold steadies','Prices stop falling and Sal opens the doors again.','h+1'],
+        ['Back to normal business','Old customers come back with their watches.','']]}]},
+    {id:'fit',ic:'🏋️',n:'Viral fitness craze',term:'Fad: a sudden, short-lived craze. Businesses that hire for the peak are left over-staffed when it ends.',
+      rum:'A fitness challenge is going viral online. Gym jobs may be in demand.',
+      hit:'Gym jobs are in demand, then at risk when the fad fades.',ph:[
+      {on:[ie('gym','Gym jobs',0.5,'open')],c:[
+        ['A fitness challenge goes viral','Everyone in town is filming their workouts.','h+2'],
+        ['The gym is packed','There is a queue for every machine.','']]},
+      {on:[ie('gym','Gym jobs',1,'open')],c:[
+        ['Instructors in demand','The gym adds classes and pays instructors extra.','h+1'],
+        ['Memberships sell out','The front desk is overwhelmed.','']]},
+      {on:[ie('gym','Gym jobs',-0.5,'freeze',1)],c:[
+        ['The fad dies','The challenge is old news. Half the new members cancel.','h-2'],
+        ['The gym cuts its newest hires','Last in, first out.','h-2']]},
+      {on:[ie('gym','Gym jobs',-0.5)],c:[
+        ['A quiet gym','Only the regulars remain.',''],
+        ['Membership offers','The gym tries discounts to win people back.','h+1']]}]},
+    {id:'robots',ic:'🦾',n:'Robots on the factory floor',term:'Capital for labour: a firm buys machines (capital) to replace workers (labour), raising pay for the skilled staff who run them.',
+      rum:'The Factory is buying robots. Engineers may be in demand; line jobs may be at risk.',
+      hit:'Factory engineers are in demand; line workers and forklift drivers are at risk.',ph:[
+      {on:[ie('eng','Factory engineers',0.5,'open')],c:[
+        ['Robots ordered','The Factory signs a deal for a fleet of robot arms.',''],
+        ['Engineers wanted','The robots need people to install and program them.','h+1']]},
+      {on:[ie('eng','Factory engineers',1,'open'),ie('line','Line workers and forklift drivers',0,'freeze')],c:[
+        ['Robots installed','The first line runs without people.','h-1'],
+        ['Line hiring stops','No new line workers are taken on.','h-1']]},
+      {on:[ie('eng','Factory engineers',1,'open'),ie('line','Line workers and forklift drivers',-1,'freeze',1)],c:[
+        ['Line jobs cut','The robots run the night shift. Line staff are let go.','h-3'],
+        ['Forklifts go driverless','Self-driving forklifts arrive at the loading dock.','h-2']]},
+      {on:[ie('eng','Factory engineers',0.5),ie('line','Line workers and forklift drivers',-0.5)],c:[
+        ['Teething problems','Robots break down, and some line staff are called back.','h+1'],
+        ['The new normal','The Factory settles in with fewer, better-paid jobs.','']]}]}
+  ];
+  function indOf(id){var r=null;INDUSTRY.forEach(function(x){if(x.id===id)r=x});return r}
+  /* the day the industry-specific storyline starts: a random day from fromDay to (game length − daysBeforeEnd) */
+  function indDay(){var L=CONFIG.industry,a=L.fromDay,b=Math.max(a,CONFIG.time.gameDays-L.daysBeforeEnd);return a+Math.floor(Math.random()*(b-a+1))}
+  function indPhase(k,N){return k===0?0:k>=N-1?3:k<Math.ceil(N*0.55)?1:2}  /* same phase split as a global storyline */
+  /* the effects of the running industry-specific storyline's current phase (none before its first chapter or after it ends) */
+  function indOn(){var st=S.ind,g=st&&indOf(st.id);return g&&st.day>0?g.ph[st.ph].on:[]}
+  function indMatch(w,c,rk){var b=bOf(c);return (!w.b||w.b.indexOf(b)>=0)&&(!w.c||w.c.indexOf(c)>=0)&&(!w.r||w.r.indexOf(rk.r)>=0)&&(!w.t||rk.t===w.t)}
+  /* today's effect on one role: {m: pay multiplier, freeze, open, cut: 1|'s'}, or null when the role is not affected */
+  function indRole(c,i){
+    var on=indOn();if(!on.length)return null;
+    var rk=CAREERS[c].ranks[i],x=null;
+    on.forEach(function(e){if(!indMatch(e.w,c,rk))return;x=x||{p:0,freeze:0,open:0,cut:0};x.p+=e.pay||0;
+      if(e.hire==='freeze')x.freeze=1;if(e.hire==='open')x.open=1;if(e.cut&&x.cut!==1)x.cut=e.cut});
+    if(x)x.m=Math.max(0.2,1+x.p*S.ind.sw);
+    return x;
+  }
+  /* base pay of a role today, with the industry-specific storyline's change */
+  function rolePay(c,i){var rk=CAREERS[c].ranks[i],x=indRole(c,i);return x?Math.round(rk.pay*x.m):rk.pay}
+  function indStart(){
+    var g=indOf(S.indId)||INDUSTRY[Math.floor(Math.random()*INDUSTRY.length)],L=CONFIG.industry;
+    S.ind={id:g.id,day:0,len:L.days[0]+Math.floor(Math.random()*(L.days[1]-L.days[0]+1)),sw:Math.round((L.paySwing[0]+Math.random()*(L.paySwing[1]-L.paySwing[0]))*100)/100,ph:0,last:'',used:[]};
+    S.indNext=0;S.indId=g.id;
+  }
+  /* tonight's chapter of the industry-specific storyline */
+  function indEvent(){
+    var st=S.ind,g=indOf(st.id);if(!g){S.ind=null;return null}
+    var k=st.day,N=st.len,phase=indPhase(k,N),used=st.used||[],list=g.ph[phase].c.filter(function(c){return used.indexOf(c[0])<0});
+    if(!list.length)list=g.ph[phase].c;
+    var c=list[Math.floor(Math.random()*list.length)];
+    st.ph=phase;st.last=c[0];used.push(c[0]);st.used=used;st.day++;
+    var tag='🏭 Industry-specific storyline · '+g.ic+' '+g.n+' · day '+(k+1)+' of '+N+' · '+['it begins','it escalates','at its peak','easing off'][phase];
+    var ev={icon:g.ic,tag:tag,title:c[0],text:c[1]+(k===0?' <br><small>💼 <strong>Jobs:</strong> '+g.hit+' Check the Employment Office for today’s pay and openings.</small><br><small>📘 <strong>'+g.term.split(':')[0]+':</strong>'+g.term.slice(g.term.indexOf(':')+1)+'</small>':''),done:true,tone:'',fx:[],story:null};
+    ev.fx=applyFx(c[2],true);ev.fx.push(indNowTxt());
+    ev.tone=/h-/.test(c[2])?'bad':/h\+/.test(c[2])?'good':'';
+    return ev;
+  }
+  /* one line for the card: what the current phase does to jobs */
+  function indNowTxt(){
+    return 'Jobs today: '+indOn().map(function(e){var a=[];if(e.pay)a.push('pay '+(e.pay>0?'▲':'▼')+Math.round(Math.abs(e.pay)*S.ind.sw*100)+'%');
+      if(e.hire==='freeze')a.push('hiring freeze');if(e.hire==='open')a.push('hiring');if(e.cut)a.push(e.cut===1?'cuts':'closures');
+      return e.lab+(a.length?' ('+a.join(', ')+')':'')}).join('; ');
+  }
+  /* overnight: a player whose own job is in a phase with cuts may be laid off (job gone) or suspended (workplace closed, job kept) */
+  function indTick(){
+    var jb=myJob();if(!jb||shutLeft(jb.b))return;
+    var x=indRole(jb.c,S.career[jb.c]),L=CONFIG.industry,g=S.ind&&indOf(S.ind.id);if(!x||!x.cut||!g)return;
+    if(x.cut===1&&Math.random()<L.layoffChance){delete S.career[jb.c];
+      S.notes.push({l:'bad',t:'📉 '+g.n+': you were LAID OFF from your job as '+jb.rk.r+' at the '+NAME[jb.b]+'. The job is gone. Apply for a new one at the Employment Office.'});
+      log('Laid off from '+jb.rk.r+' because of: '+g.n+' (industry-specific storyline).','bad');return}
+    if(Math.random()<L.suspendChance){var D=L.suspendDays,nd=D[0]+Math.floor(Math.random()*(D[1]-D[0]+1));S.shut[jb.b]=nd;
+      S.notes.push({l:'bad',t:'🔒 '+g.n+': the '+NAME[jb.b]+' has suspended work for '+nd+' day'+(nd>1?'s':'')+'. Your job as '+jb.rk.r+' stays on your record.'});
+      log('The '+NAME[jb.b]+' is CLOSED for '+nd+' day'+(nd>1?'s':'')+' because of: '+g.n+'. Work is disabled, but your job stays on record.','bad')}
+  }
   function sagaOf(id){var r=null;SAGAS.forEach(function(x){if(x.id===id)r=x});return r}
   /* the day the storyline starts: a random day from fromDay to (game length − daysBeforeEnd), see CONFIG.events.storyline */
   function sagaDay(){var L=CONFIG.events.storyline,a=L.fromDay,b=Math.max(a,CONFIG.time.gameDays-L.daysBeforeEnd);return a+Math.floor(Math.random()*(b-a+1))}
@@ -4034,7 +4273,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(!list.length)list=sg.ph[phase].filter(function(c){return c[0]!==st.last});if(!list.length)list=sg.ph[phase];
     var c=list[Math.floor(Math.random()*list.length)],tr=null;
     S.trends.forEach(function(t){if(t.saga===sg.id)tr=t});
-    var tag=sg.ic+' '+sg.n+' · day '+(k+1)+' of '+N+' · '+['the story begins','it escalates','at its peak','easing off'][phase];
+    var tag='🌐 Global storyline · '+sg.ic+' '+sg.n+' · day '+(k+1)+' of '+N+' · '+['the story begins','it escalates','at its peak','easing off'][phase];
     var ev={icon:sg.ic,tag:tag,title:c[0],text:c[1]+(k===0?' <br><small>📘 <strong>'+sg.term.split(':')[0]+':</strong>'+sg.term.slice(sg.term.indexOf(':')+1)+'</small>':''),done:true,tone:'',fx:[],story:null};
     if(c[3]){ev.choice=true;ev.done=false;ev.y=c[3];ev.n=c[4]}
     else{ev.fx=applyFx(c[2],true);ev.tone=/h\+|w\+|p-|r-/.test(c[2])&&!/h-|p\+|w-/.test(c[2])?'good':/h-|p\+|w-|e-/.test(c[2])?'bad':''}
@@ -4733,20 +4972,27 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   }
   /* cards for tonight, in order: the big event (if one starts or a saga chapter plays), then the daily event */
   function pickNight(){
-    var E=CONFIG.events,cards=[],story=!!S.saga,wasActive=story||macroRunning(),big=null;
-    if(!S.saga&&!macroRunning()&&(S.bigCool||0)>0)S.bigCool--;
+    var E=CONFIG.events,cards=[],story=!!S.saga,wasActive=story||macroRunning(),big=null,ind=null;
+    var shockNear=macroRunning()||(S.macroLast>0&&S.day-S.macroLast<=E.storylineGap);  /* a shock running, or ended under storylineGap days ago */
+    if(S.ind&&S.ind.day>=S.ind.len)S.ind=null;  /* the industry-specific storyline's last phase held for one day after its last chapter */
+    if(!S.saga&&!S.ind&&!macroRunning()&&(S.bigCool||0)>0)S.bigCool--;
     if(S.saga)big=sagaEvent();
-    else if(S.sagaNext>0&&S.day>=S.sagaNext&&!macroRunning()&&!(S.bigCool>0)){  /* waits out a shock and the days after it */
+    else if(S.sagaNext>0&&S.day>=S.sagaNext&&!shockNear){  /* waits out a shock and the days after it */
       story=true;
       sagaStart();var sid=S.saga.id;big=sagaEvent();
       if(sid==='house'){var lost=bubbleHit();if(lost){big.fx.push(lost);big.tone='bad'}}  /* the housing-bubble storyline can take your home (CONFIG.housing) */
-    }else if(!macroRunning()){
-      var room=!(S.sagaNext>0)||S.day+E.macroDays[1]+E.storylineGap<=S.sagaNext;  /* even the longest shock ends storylineGap clear days before the storyline */
+    }else if(!macroRunning()&&!S.ind){
+      var room=[S.sagaNext,S.indNext].every(function(d){return !(d>0)||S.day+E.macroDays[1]+E.storylineGap<=d});  /* even the longest shock ends storylineGap clear days before each storyline */
       if(!(S.bigCool>0)&&room&&Math.random()<E.macroChance)big=macroEvent();
     }
+    if(S.ind)ind=indEvent();
+    else if(S.indNext>0&&S.day>=S.indNext&&!shockNear){indStart();ind=indEvent()}
     if(big)cards.push(big);
+    if(ind)cards.push(ind);
     var daily=dailyPick();if(daily)cards.push(daily);
     if(wasActive||S.saga||macroRunning())S.bigCool=story?Math.max(E.bigGap,E.storylineGap+1):E.bigGap;  /* bigCool n = n−1 clear days */
+    if(ind)S.bigCool=Math.max(S.bigCool||0,E.storylineGap+1);
+    if(macroRunning())S.macroLast=S.day;
     return cards;
   }
   function endWeek(rested){
@@ -4851,7 +5097,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       var rk=cur(k);
       if(!rk)return '<p><small>You don’t work here yet. Apply at the Employment Office.</small></p>';
       var ef=effort(rk.pay), en=ef.en, mins=ef.min;
-      var pm=prod().m,pr=prod(),sh=shutLeft(bOf(k));return arow(rk.r+' shift · '+money(shiftPay(rk.pay)),chip('time',hm(mins))+chip('energy','−'+en+'%')+chip('happy','−'+workHap(en))+hpChip(workHp(mins))+(rk.dress?chip('',DSHORT[rk.dress]+(rk.dress==='suit'?'':' or better'),hasDress(rk.dress)?'':'warn'):'')+(pm<1?chip('','Pay ×'+Math.round(pm*100)+'%','warn'):'')+(sh?chip('','Closed '+sh+'d','warn'):''),btn('work',k,sh?'Closed':'Work a shift',0,!!sh),
+      var pm=prod().m,pr=prod(),sh=shutLeft(bOf(k));return arow(rk.r+' shift · '+money(shiftPay(rolePay(k,S.career[k]))),chip('time',hm(mins))+chip('energy','−'+en+'%')+chip('happy','−'+workHap(en))+hpChip(workHp(mins))+indChips(k,S.career[k])+(rk.dress?chip('',DSHORT[rk.dress]+(rk.dress==='suit'?'':' or better'),hasDress(rk.dress)?'':'warn'):'')+(pm<1?chip('','Pay ×'+Math.round(pm*100)+'%','warn'):'')+(sh?chip('','Closed '+sh+'d','warn'):''),btn('work',k,sh?'Closed':'Work a shift',0,!!sh),
         sh?'Your job is safe and returns when the workplace reopens.':pm<1?'Pay is lower because of '+pr.rs.join(', ')+'.':'');
     }
     var j=JOBS[k], need=(j.computer&&!owns('computer'))?'Needs a working computer':'';
@@ -4870,6 +5116,22 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var up=$('shop').querySelector('[data-act="step"][data-arg^="'+id+'|1|"]');if(up)up.disabled=v>=max;
   }
   var allJobs=false;
+  /* chips for one role on the job board and the shift row: today's change from the industry-specific storyline */
+  function indChips(c,i){
+    var x=indRole(c,i);if(!x)return '';var pc=Math.round(Math.abs(x.m-1)*100);
+    return (pc?chip('',(x.m>1?'▲':'▼')+pc+'%',x.m>1?'ok':'warn'):'')+(x.freeze?chip('','Freeze','warn'):'')+(x.open?chip('','Hiring','ok'):'')+(x.cut?chip('',x.cut===1?'Cuts':'Closures','warn'):'');
+  }
+  /* Employment Office: the industry-specific storyline's rumour (before it starts) or today's effects (while it runs) */
+  function indOutlook(){
+    var L=CONFIG.industry,st=S.ind,g=st&&st.day>0?indOf(st.id):null,
+      info='Each game has one industry-specific storyline, on top of the global storyline. For a few days it moves pay for particular jobs by '+Math.round(L.paySwing[0]*100)+'% to '+Math.round(L.paySwing[1]*100)+'% up or down, freezes or opens up hiring, and can cut jobs. Each night your own job is hit by cuts, there is a '+pctTxt(L.layoffChance)+' chance you are laid off (the job is gone), and otherwise a '+pctTxt(L.suspendChance)+' chance your workplace suspends work for '+L.suspendDays[0]+' to '+L.suspendDays[1]+' days (the job is kept). Pay on the board and in your shift already includes the change.';
+    if(g)return psec('ind','📊 Industry outlook',chip('',g.ic+' '+g.n+' · day '+Math.min(st.day,st.len)+' of '+st.len,'warn'),info)+
+      indOn().map(function(e){var pc=Math.round(Math.abs(e.pay)*st.sw*100);
+        return arow(e.lab,(pc?chip('',(e.pay>0?'▲':'▼')+pc+'% pay',e.pay>0?'ok':'warn'):'')+(e.hire==='freeze'?chip('','Hiring freeze','warn'):'')+(e.hire==='open'?chip('','Hiring now','ok'):'')+(e.cut?chip('',e.cut===1?'Cuts':'Closures','warn'):''),'')}).join('');
+    var r=indOf(S.indId);
+    if(r&&S.indNext>0&&S.indNext>=S.day&&S.indNext-S.day<=L.rumourDays)return psec('ind','📊 Industry outlook',chip('','📣 Rumour','warn'),info)+'<p class="arow-n">📣 '+r.rum+'</p>';
+    return '';
+  }
   function board(){
     var order=[],by={};
     BOARD.forEach(function(c){var b=bOf(c);if(!by[b]){by[b]=[];order.push(b)}by[b].push(c)});
@@ -4894,7 +5156,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         /* short chips: qualifications (green once you have them), knowledge, dress code, and work experience still needed */
         var need=(rk.q||[]).map(function(q){return '<span class="chip'+(o.mine||o.have||meetsQ(q)?' ok':'')+'" title="'+qTxt(q)+'">'+qShort(q)+'</span>'}).join('')+(kreq(rk)?chip('know',kreq(rk),Math.floor(S.know)>=kreq(rk)?'ok':''):'')+(rk.dress&&rk.dress!=='casual'?chip('',DSHORT[rk.dress]):'')+
           (expBad?'<span class="chip warn" title="'+expTxt(o.c)+'">Work exp needed</span>':'');
-        return arow('<span class="rn">'+rk.r+'</span> <b class="jpay">'+money(Math.round(rk.pay*payIdx()))+'</b>',need,
+        return arow('<span class="rn">'+rk.r+'</span> <b class="jpay">'+money(Math.round(rolePay(o.c,o.i)*payIdx()))+'</b>',need+indChips(o.c,o.i),
           o.mine?'<span class="tag">Your job</span>':o.have?'<span class="tag">Past rank</span>':btn('apply',o.c+'_'+o.i,o.ok?'Apply':'🔒',!o.ok,!o.ok||sh>0),'','jrow'+(o.mine?' mine':expBad?' nextstep':''));
       }).join('')+'</div>';
     });
@@ -4994,7 +5256,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   var panels={
     jobs:function(){
       var mine=Object.keys(S.career).map(function(c){return CAREERS[c].ranks[S.career[c]].r}),E=CONFIG.jobs.experience,shut=Object.keys(S.shut);
-      return boxed((shut.length?'<p class="bad arow-n">🔒 <b>Closed:</b> '+shut.map(function(b){return NAME[b]+' ('+S.shut[b]+'d)'}).join(', ')+'. No interviews or shifts there until they reopen.</p>':'')+
+      return boxed((shut.length?'<p class="bad arow-n">🔒 <b>Closed:</b> '+shut.map(function(b){return NAME[b]+' ('+S.shut[b]+'d)'}).join(', ')+'. No interviews or shifts there until they reopen.</p>':'')+indOutlook()+
         psec('board','💼 Job board',mine.length?chip('','Your job: '+mine.join(', '),'ok'):chip('','No job yet','warn'),
           'Pay shown is base pay: your actual wage also depends on your knowledge and well-being. Apply here, then work your shifts at the workplace. Openings come and go, and you can only hold one job at a time.'+(E&&E.shifts?' Jobs paying more than '+money(E.payAbove)+' a shift also need work experience: '+E.shifts+' shifts already worked at the same workplace (“Work exp needed”).':'')+' A job without a dress chip needs ordinary clothes (Casual Clothes or better). Green requirements are ones you already meet; 🔒 means you do not meet them all yet. Hover a qualification for its full name.')+
         board())},
@@ -5928,6 +6190,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         var SH=CONFIG.shame;if($('cfgShame'))$('cfgShame').textContent='checked when you end the day: net worth under $0 costs '+Math.abs(SH.debtHappiness)+' happiness and '+Math.abs(SH.debtEnergy)+'% energy'+(SH.nearlyBrokeFromDay>1?'; from day '+SH.nearlyBrokeFromDay+', ':'; ')+'net worth under $'+SH.nearlyBrokeBelow+' costs '+Math.abs(SH.nearlyBrokeHappiness)+' happiness. Nothing is taken during the day.';
         var F=CONFIG.factory;if($('cfgFac'))$('cfgFac').textContent='day labour on the loading dock ('+hm(F.dayLabour.minutes)+', '+(F.dayLabour.perDay===1?'once':F.dayLabour.perDay+' times')+' a day, no dress code) pays '+pctTxt(F.dayLabour.payShare)+' of the lowest Factory wage and does not count as work experience. A safety course (once a game, '+hm(F.course.minutes)+', +'+F.course.knowledge+' knowledge) counts as '+F.course.expShifts+' shift'+(F.course.expShifts>1?'s':'')+' of Factory work experience; a factory tour (once a game, '+hm(F.tour.minutes)+') adds '+F.tour.knowledge+' knowledge and '+F.tour.happiness+' happiness.';
         if($('cfgFun'))$('cfgFun').textContent='at home, watch a show or play games ('+hm(LE.screen.minutes)+', '+fx(LE.screen)+', needs a TV or game console) or call your family '+(LE.call.perDay===1?'once':LE.call.perDay+' times')+' a day ('+hm(LE.call.minutes)+', '+fx(LE.call)+'). At the Park, walk ('+hm(LE.walk.minutes)+', '+fx(LE.walk)+') or jog ('+hm(LE.jog.minutes)+', '+fx(LE.jog)+'). The Restaurant also serves '+cf.name+' ('+hm(cf.minutes)+', '+sg(cf.energy)+'% energy, '+sg(cf.happiness)+' happiness), a snack rather than a meal.'})();
+      (function(){var E=CONFIG.events,I=CONFIG.industry,last=function(L){return CONFIG.time.gameDays-L.daysBeforeEnd};
+        if($('cfgStory'))$('cfgStory').textContent='each game has one global storyline (an oil crisis, a pandemic…), starting between day '+E.storyline.fromDay+' and day '+last(E.storyline)+', that moves prices, pay and interest for everyone; and one industry-specific storyline (a chip shortage, banks going all-in on AI…), starting between day '+I.fromDay+' and day '+last(I)+', that moves pay for particular jobs by '+Math.round(I.paySwing[0]*100)+'% to '+Math.round(I.paySwing[1]*100)+'% up or down, freezes or opens up hiring, and can lay you off or suspend your workplace. The Employment Office shows a rumour '+(I.rumourDays===1?'the day':I.rumourDays+' days')+' before it starts and its effects while it runs. The two may overlap; shorter macro shocks never come within '+E.storylineGap+' days of either.'})();
       $('cfgRent').textContent=everyDays(RENT_EVERY);
       $('apOf').textContent=' of '+hm(MAX_AP);
       $('cfgDebt').textContent=pctTxt(CONFIG.hospital.billInterest);

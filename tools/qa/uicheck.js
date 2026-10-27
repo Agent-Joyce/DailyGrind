@@ -19,7 +19,8 @@
           OVERLAP       a button covers its row's text, or two buttons overlap
           BAD TEXT      "NaN", "undefined", "null" or "[object" shown to the player
      5. Situations the main game does not have (SITUATIONS): sick (cold/flu with medical bills, dengue, sick at home),
-        rent arrears, a loan to repay, a pawned item to redeem. Each checks its buttons are there (MISSING) and presses them.
+        rent arrears, a loan to repay, a pawned item to redeem, an industry-specific storyline (its peak, your own job hit,
+        the rumour). Each checks its buttons are there (MISSING) and presses them.
      6. Flows: ending the day (end-of-day cards, morning card), the action preview, a certificate and its bonus toast,
         the Belongings list on the status page.
    Results: window.__UI_RESULTS, an on-page report, the browser console, and a message to the parent page
@@ -180,7 +181,13 @@
     {name:'a loan to repay',bld:'bank',need:['repay','repayall'],
       mod:function(S){S.loan={borrowed:500,principal:500,interest:12,taken:S.day-1,tenure:5,rate:4,due:S.day+4}  /* taken yesterday: the game blocks repaying on the day you borrow */}},
     {name:'a pawned TV to redeem',bld:'pawn',need:['redeem'],
-      mod:function(S){S.items.tv=0;delete S.broken.tv;S.pawned.tv={w:S.day,g:75}}}
+      mod:function(S){S.items.tv=0;delete S.broken.tv;S.pawned.tv={w:S.day,g:75}}},
+    {name:'an industry-specific storyline at its peak (Employment Office outlook and board chips)',bld:'jobs',need:['apply'],
+      mod:function(S){S.ind={id:'robots',day:3,len:5,sw:0.4,ph:2,last:'',used:[]};S.indNext=0}},
+    {name:'an industry-specific storyline hitting your own job (shift row chips)',bld:'factory',need:['work'],
+      mod:function(S){S.ind={id:'robots',day:3,len:5,sw:0.4,ph:2,last:'',used:[]};S.indNext=0;S.career={factory:0};S.jobName='Line Worker';S.shut={};S.ill=null;S.clothes.casual=Math.max(S.clothes.casual||0,3)}},
+    {name:'an industry-specific storyline rumour (the day before it starts)',bld:'jobs',need:['apply'],
+      mod:function(S){S.ind=null;S.indNext=S.day+1;S.indId='gold'}}
   ];
   async function situation(x){
     var keep=base,S0=JSON.parse(base);x.mod(S0);base=JSON.stringify(S0);

@@ -65,7 +65,7 @@
     for(var i=0;i<12;i++){
       var o=document.querySelector('.over.show');if(!o)return;
       var id=o.id,b=null;
-      if(id==='pvpop')b=$(mode==='random'&&R()<0.3?'pvNo':'pvGo');
+      if(id==='pvpop')b=mode==='random'&&R()<0.3?o:$('pvGo');  /* cancel = a click outside the box, on the overlay itself */
       else if(id==='morning')b=$('mnGo');else if(id==='goalpop')b=$('gpGo');
       else if(id==='certpop')b=(mode==='survive'&&!$('cpNext').hidden&&!$('cpNext').disabled&&wantNext())?$('cpNext'):$('cpGo');
       else if(id==='over'){if(!$('keep').hidden)b=$('keep');else return}  /* keep playing after a milestone, stop at game over */
