@@ -1106,5 +1106,7 @@ The Bank's products paid too little to matter (savings 1% a day, about $10 a day
 - **💻 Computer** at home: a new card in your Apartment or Bungalow opens the same home screen. It is enabled only with a working computer, and works at home.
 - **🏦 Bank app**: as before (savings, investments, offers; loans need a visit to the Bank). It no longer opens from a computer away from home.
 - **💼 Jobs app** (new): the same job board as the Employment Office, with the industry outlook. You can apply online; an application takes the same 1h as an interview and follows the same rules.
+- **← Phone / ← Computer:** the Bank app and the Jobs app have a back button at the top that returns to the home screen of the device they were opened on (no time). ← Leave still closes everything.
+- **Computer card wording:** its row now reads "Bank and job hunt from home" with 🏦 Savings & investments and 💼 Job board chips (was "Bank app and Jobs app"); the header chip says "Online at home".
 - The morning money briefing and the Rules Bank line describe where the apps are.
 - **UI check:** two new situations (the phone home screen; the Jobs app). Its first run found the phone home screen showing "Your job: undefined" when a saved game had no job title stored; the Jobs app row now reads the title from the job itself.

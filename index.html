@@ -5204,6 +5204,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var x=indRole(c,i);if(!x)return '';var pc=Math.round(Math.abs(x.m-1)*100);
     return (pc?chip('',(x.m>1?'▲':'▼')+pc+'%',x.m>1?'ok':'warn'):'')+(x.freeze?chip('','Freeze','warn'):'')+(x.open?chip('','Hiring','ok'):'')+(x.cut?chip('',x.cut===1?'Cuts':'Closures','warn'):'');
   }
+  /* back from an app to the home screen of the device it was opened on */
+  function appBack(){return '<p class="appback">'+btn('device',appFrom,appFrom==='pc'?'← Computer':'← Phone',1)+'</p>'}
   /* a device's home screen: the Bank app and the Jobs app */
   function appHome(title){
     var o=offerToday(),ind=S.ind&&S.ind.day>0?indOf(S.ind.id):null,rum=!ind&&S.indNext>0&&S.indNext>=S.day&&S.indNext-S.day<=CONFIG.industry.rumourDays;
@@ -5304,8 +5306,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(!empty)t+=room();
     /* --- computer: the Bank and Jobs apps at home --- */
     var pcOk=owns('computer');
-    t+=psec('pc','💻 Computer',pcOk?chip('','Bank · Jobs','ok'):chip('',S.items.computer||S.items.computerold?'Broken':'No computer','warn'),'With a working computer at home you can use the Bank app (savings, investments, offers) and the Jobs app (the Employment Office job board, apply online) without walking. Buy one at the Electronics Store, or a used one at the Thrift Store.')+
-      arow('Bank app and Jobs app',pcOk?chip('','No walk','ok'):chip('','Needs a working computer','warn'),btn('pc','','Open',0,!pcOk));
+    t+=psec('pc','💻 Computer',pcOk?chip('','Online at home','ok'):chip('',S.items.computer||S.items.computerold?'Broken':'No computer','warn'),'With a working computer at home you can use the Bank app (savings, investments, offers) and the Jobs app (the Employment Office job board, apply online) without walking. Buy one at the Electronics Store, or a used one at the Thrift Store.')+
+      arow('Bank and job hunt from home',pcOk?chip('','🏦 Savings & investments')+chip('','💼 Job board')+chip('','No walk','ok'):chip('','Needs a working computer','warn'),btn('pc','','Open',0,!pcOk));
     /* --- kitchen --- */
     var mealCh=function(g,hap){return chip('time',hm(FD.eatMinutes))+chip('energy','+'+g.en+'%')+chip('happy',sg(hap))+chip('health',sg(g.hp))};
     t+=psec('kitchen','🍳 Kitchen',chip('',S.fed?'✓ Eaten today':'No meal yet',S.fed?'ok':'warn')+chip('','Meals '+S.homeMeals+'/'+FD.homeMealsPerDay),
@@ -5439,12 +5441,12 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
           '<div class="bk-amt">'+btn('step','amt_offer|-1|'+o.min+'|'+o.max,'−',1,amt<=o.min)+'<input id="amt_offer" type="text" readonly value="'+amt+'" aria-label="Amount for the promo deposit in dollars">'+btn('step','amt_offer|1|'+o.min+'|'+o.max,'+',1,amt>=o.max)+'</div>'+
           '<div class="bk-b">'+btn('offer','','Take the offer',0,S.cash<o.min)+'</div></div>';
       };
-      return boxed((app?'<p class="arow-n">'+(appFrom==='pc'?'💻':'📱')+' Savings, investments and offers without the walk. 💳 For a loan, visit the Bank in person.</p>':loanCard())+offerCard()+
+      return boxed((app?appBack():'')+(app?'<p class="arow-n">'+(appFrom==='pc'?'💻':'📱')+' Savings, investments and offers without the walk. 💳 For a loan, visit the Bank in person.</p>':loanCard())+offerCard()+
         psec('invest','📈 Savings and investments',chip('','Market '+mood,mood==='weak'?'warn':mood==='buoyant'?'ok':'')+chip('','Savings '+S.rate.toFixed(1)+'%/day'),econNote()+'<br>'+invNote())+
         (tip?'<p class="arow-n">📡 <b>Tip-off for tonight:</b> “'+S.newsPlan.n[0]+'” ('+newsHint(S.newsPlan.n)+')</p>':'')+
         invTable()+'<div class="bk-grid">'+rows+'</div>')},
     bankapp:function(){return panels.bank(true)},
-    jobsapp:function(){return panels.jobs()},
+    jobsapp:function(){return appBack()+panels.jobs()},
     phone:function(){return appHome('📱 Your phone')},
     pc:function(){return appHome('💻 Your computer')},
     market:function(){
@@ -6212,6 +6214,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     offer:    {run:function(){buyOffer()}},
     app:      {run:function(g){openApp(g)},        ui:true},  /* opens an app screen: no time */
     pc:       {run:function(){openDevice('pc')},   ui:true},
+    device:   {run:function(g){openDevice(g)},     ui:true},  /* ← Phone / ← Computer: back to the device's home screen */
     divest:   {run:function(g){divest(g)}},
     borrow:   {run:function(){borrow()}},
     repay:    {run:function(){repay(false)}},
