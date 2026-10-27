@@ -20,7 +20,7 @@
           BAD TEXT      "NaN", "undefined", "null" or "[object" shown to the player
      5. Situations the main game does not have (SITUATIONS): sick (cold/flu with medical bills, dengue, sick at home),
         rent arrears, a loan to repay, a pawned item to redeem, an industry-specific storyline (its peak, your own job hit,
-        the rumour). Each checks its buttons are there (MISSING) and presses them.
+        the rumour), out of clothes (buying used ones, a job's shift disabled). Each checks its buttons are there (MISSING) and presses them.
      6. Flows: ending the day (end-of-day cards, morning card), the action preview, a certificate and its bonus toast,
         the Belongings list on the status page.
    Results: window.__UI_RESULTS, an on-page report, the browser console, and a message to the parent page
@@ -187,7 +187,11 @@
     {name:'an industry-specific storyline hitting your own job (shift row chips)',bld:'factory',need:['work'],
       mod:function(S){S.ind={id:'robots',day:3,len:5,sw:0.4,ph:2,last:'',used:[]};S.indNext=0;S.career={factory:0};S.jobName='Line Worker';S.shut={};S.ill=null;S.clothes.casual=Math.max(S.clothes.casual||0,3)}},
     {name:'an industry-specific storyline rumour (the day before it starts)',bld:'jobs',need:['apply'],
-      mod:function(S){S.ind=null;S.indNext=S.day+1;S.indId='gold'}}
+      mod:function(S){S.ind=null;S.indNext=S.day+1;S.indId='gold'}},
+    {name:'out of clothes, buying used ones',bld:'thrift',need:['ubuy'],
+      mod:function(S){S.clothes={casual:0,smart:0,suit:0}}},
+    {name:'out of clothes with a job (shift disabled, "No clothes" chip)',bld:'fast',need:[],
+      mod:function(S){S.clothes={casual:0,smart:0,suit:0};S.career={fast:0};S.jobName='Crew Member';S.shut={};S.ill=null}}
   ];
   async function situation(x){
     var keep=base,S0=JSON.parse(base);x.mod(S0);base=JSON.stringify(S0);

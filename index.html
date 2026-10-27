@@ -662,7 +662,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     <li><b>Factory without a job:</b> <span id="cfgFac">day labour on the loading dock (4h, once a day, no dress code) pays 60% of the lowest Factory wage and does not count as work experience. A safety course (once a game) counts as 1 shift of Factory work experience; a factory tour (once a game) adds a little knowledge.</span></li>
     <li><b>Free time:</b> <span id="cfgFun">at home, watch a show or play games (1h, −1% energy, +7 happiness, needs a TV or console) or call your family once a day (30m, +3). At the Park, walk (1h, +5 happiness, +1 health) or jog (1h, −8% energy, +4 happiness, +3 health). The Restaurant also serves coffee and cake (45m, +3% energy, +6 happiness), a snack rather than a meal.</span></li>
     <li><b>Hunger:</b> skipping the daily meal costs <span id="cfgHunger">20% energy and 15 happiness</span>, and cuts productivity.</li>
-    <li><b>Money shame:</b> <span id="cfgShame">checked when you end the day: net worth under $0 costs 8 happiness and 5% energy; from day 6, net worth under $100 costs 3 happiness. Nothing is taken during the day.</span></li>
+    <li><b>Shame:</b> <span id="cfgShame">checked when you end the day: net worth under $0 costs 8 happiness and 5% energy; from day 6, net worth under $100 costs 3 happiness. Nothing is taken during the day.</span></li>
     <li><b>Keyboard:</b> 1–9 press the numbered buttons, E ends the day, Esc leaves a building or closes a window, H opens these rules, M toggles sound. Tab moves between buildings.</li>
     <li><b>Health:</b> a slow-moving vital. Healthy meals, the gym, the Park and sleeping at home raise it; hunger, illness, junk food, burnout and <span id="cfgHpWork">work and study (1 health an hour of shifts, lessons and self-study)</span> lower it. Good health, a healthy diet and regular gym visits all cut your chance of falling ill.</li>
     <li><b>Layoffs and closures (two different things):</b> in a bad economy you can be <b>laid off</b> (the job is gone, so apply for a new one) or your workplace can <b>close</b> for 1 to 4 days (the Work button is disabled, but the job stays on your record and the morning message tells you when it is back). You can only hold one job at a time.</li>
@@ -1003,7 +1003,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       bargainUnits:1,      // time to haggle, in units
       bargainMin:10,        // haggling moves the price by between bargainMin%...
       bargainMax:10,      // ...and bargainMax%
-      bargainWinChance:0.5 // chance the price goes DOWN when you haggle (0.5 = 50/50)
+      bargainWinChance:0.5, // chance the price goes DOWN when you haggle (0.5 = 50/50)
+      /* used outfits sold at the Thrift Store (Smart Casual and Business Suit): priceShare of the Mall price above
+        (before the price index), lasting 'days' days. They meet the same dress codes as new ones; a used suit gives no happiness lift. */
+      used:{priceShare:0.3, days:3}
     },
     health:{
       start:80,              // health at the start of a game (0-100)
@@ -1277,7 +1280,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         Nearly broke (net worth under nearlyBrokeBelow): nearlyBrokeHappiness, only from nearlyBrokeFromDay (no warning or
         penalty before then, so new players are not nagged while they find their feet). */
       nearlyBrokeBelow:100, nearlyBrokeHappiness:-3, nearlyBrokeFromDay:6,
-      debtHappiness:-8, debtEnergy:-5
+      debtHappiness:-8, debtEnergy:-5,
+      noClothesHappiness:-5  // each morning you wake up owning no clothes at all (you also can't work any shift until you buy some)
     },
     score:{
       /* Final score = net worth + each vital x its weight + education levels x educationLevel. */
@@ -1823,6 +1827,18 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function G(n){return Math.round(n*S.px)}
   function price(k){return S.offer[k]!=null?S.offer[k]:G(WEAR[k].p)}
   function hasDress(req){var c=S.clothes;return req==='suit'?c.suit>0:req==='smart'?(c.smart>0||c.suit>0):(c.casual>0||c.smart>0||c.suit>0)}
+  /* no clothes at all: no shift away from home until you buy some */
+  function naked(){return !hasDress('casual')}
+  var NAKED='You have no clothes to wear. Buy some at the Clothes Mall, or used ones at the Thrift Store, before you can work a shift.';
+  /* used Smart Casual or Business Suit from the Thrift Store (CONFIG.clothes.used) */
+  function usedPrice(k){return G(WEAR[k].p*CONFIG.clothes.used.priceShare)}
+  function buyUsed(k){
+    var U=CONFIG.clothes.used,pr=usedPrice(k);
+    if(!spend(CONFIG.clothes.buyUnits,pr))return;
+    var v0=vitSnap();S.clothes[k]=U.days;S.flags.clothes=1;S.flags.buy=1;
+    log('You bought a used '+WEAR[k].n+' outfit for '+money(pr)+vitPar(v0)+'. It will last '+U.days+' days.');
+    done();
+  }
   function buyWear(k){
     var c=WEAR[k],pr=price(k);
     if(!spend(CONFIG.clothes.buyUnits,pr))return;
@@ -2105,6 +2121,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(c){
       rk=cur(k);
       if(!rk)return refuse('You have no job here yet. Apply at the Employment Office.');
+      if(naked())return refuse(NAKED);
       if(shutLeft(bOf(k))>0)return refuse('The '+NAME[bOf(k)]+' is closed for '+shutLeft(bOf(k))+' more day'+(shutLeft(bOf(k))>1?'s':'')+' (counting today). Your job as '+rk.r+' stays on your record and comes back when it reopens.');
       var ef=effort(rk.pay);j={n:rk.r,min:ef.min,pay:rolePay(k,S.career[k]),en:ef.en,dress:rk.dress};
     }else j=JOBS[k];
@@ -2773,6 +2790,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var v0;
     if(k==='labour'){
       var L=F.dayLabour,en=-L.energy;
+      if(naked())return refuse(NAKED);
       if(labourToday()>=L.perDay)return refuse('No more casual work today. Come back tomorrow.');
       if(S.ill)return refuse('You are sick with '+ILL[S.ill.k].n+' and can’t work. '+illCure());
       if(S.energy<20)return refuse('You’re too exhausted to work. Eat or rest first.');
@@ -2972,7 +2990,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     S.energy=clamp(S.energy+SLn.nightEnergy+S.restBonus);S.restBonus=0;
     var gb=gadgetBonus();S.restHrs=0;
     if(S.restHap)hWhy.push(sg(S.restHap)+' sleep');if(rested&&h.hap)hWhy.push(sg(h.hap)+' bed');if(gb.hap)hWhy.push(sg(gb.hap)+' gadgets');
-    S.happy=clamp(S.happy+SLn.nightHappiness+S.restHap+(rested?h.hap:0)+gb.hap);
+    var nakedHap=naked()?CONFIG.shame.noClothesHappiness||0:0;if(nakedHap)hWhy.push(sg(nakedHap)+' no clothes');
+    S.happy=clamp(S.happy+SLn.nightHappiness+S.restHap+(rested?h.hap:0)+gb.hap+nakedHap);
     if(owns('coffee')&&!S.homeless){S.energy=clamp(S.energy+CONFIG.gadgets.coffeeEnergy);eWhy.push(sg(CONFIG.gadgets.coffeeEnergy)+'% coffee')}
     if(gb.hap||gb.know)log('Your gadgets at home: '+[gb.hap?'+'+gb.hap+' happiness':'',gb.know?'+'+(Math.round(gb.know*10)/10)+' knowledge':''].filter(Boolean).join(', ')+(gb.hrs?' ('+(Math.round(gb.hrs*10)/10)+'h rested at home yesterday)':'')+'.','good');
     var wasFed=S.fed;S.hungry=S.fed?0:S.hungry+1;
@@ -3036,6 +3055,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     lottoDraw();
     planNews();
     var mn=(S.notes||[]).slice(),rw2=nextRentWeek(),H2=HOUSE[S.home];S.notes=[];
+    if(naked())mn.unshift({l:'bad',t:'👕 You are out of clothes. You can’t work any shift until you buy some (new at the Clothes Mall, or used at the Thrift Store)'+(nakedHap?', and the shame cost you '+Math.abs(nakedHap)+' happiness overnight. It happens again every morning you wake up with nothing to wear.':'.')});
     if(S.newsPlan&&S.newsPlan.tip)mn.push({l:'rem',t:'📡 Tip-off: tonight’s headline is expected to be “'+S.newsPlan.n[0]+'” ('+newsHint(S.newsPlan.n)+'). You have today to move your savings and investments at the Bank.'});
     /* a rank target day passed yesterday without the rank */
     (function(){var i=S.tier+1,due=tierDue(i);if(i<TIERS.length&&due&&S.day===due+1&&reachedTier()<i)mn.push({l:'warn',t:'⭐ You missed the day-'+due+' target for '+TIERS[i].ic+' '+TIERS[i].n+' ('+money(TIERS[i].v)+'), so its +'+TIERS[i].b.toLocaleString()+' on-time bonus is gone. It still counts as a rank if you reach it'+(maxDays()===Infinity?'':' by day '+maxDays())+'.'+(i+1<TIERS.length&&tierDue(i+1)?' Next target: '+TIERS[i+1].n+' by day '+tierDue(i+1)+'.':'')})})();
@@ -5097,8 +5117,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       var rk=cur(k);
       if(!rk)return '<p><small>You don’t work here yet. Apply at the Employment Office.</small></p>';
       var ef=effort(rk.pay), en=ef.en, mins=ef.min;
-      var pm=prod().m,pr=prod(),sh=shutLeft(bOf(k));return arow(rk.r+' shift · '+money(shiftPay(rolePay(k,S.career[k]))),chip('time',hm(mins))+chip('energy','−'+en+'%')+chip('happy','−'+workHap(en))+hpChip(workHp(mins))+indChips(k,S.career[k])+(rk.dress?chip('',DSHORT[rk.dress]+(rk.dress==='suit'?'':' or better'),hasDress(rk.dress)?'':'warn'):'')+(pm<1?chip('','Pay ×'+Math.round(pm*100)+'%','warn'):'')+(sh?chip('','Closed '+sh+'d','warn'):''),btn('work',k,sh?'Closed':'Work a shift',0,!!sh),
-        sh?'Your job is safe and returns when the workplace reopens.':pm<1?'Pay is lower because of '+pr.rs.join(', ')+'.':'');
+      var pm=prod().m,pr=prod(),sh=shutLeft(bOf(k));return arow(rk.r+' shift · '+money(shiftPay(rolePay(k,S.career[k]))),chip('time',hm(mins))+chip('energy','−'+en+'%')+chip('happy','−'+workHap(en))+hpChip(workHp(mins))+indChips(k,S.career[k])+(rk.dress?chip('',DSHORT[rk.dress]+(rk.dress==='suit'?'':' or better'),hasDress(rk.dress)?'':'warn'):'')+(pm<1?chip('','Pay ×'+Math.round(pm*100)+'%','warn'):'')+(sh?chip('','Closed '+sh+'d','warn'):'')+(naked()?chip('','No clothes','warn'):''),btn('work',k,sh?'Closed':'Work a shift',0,!!sh||naked()),
+        sh?'Your job is safe and returns when the workplace reopens.':naked()?NAKED:pm<1?'Pay is lower because of '+pr.rs.join(', ')+'.':'');
     }
     var j=JOBS[k], need=(j.computer&&!owns('computer'))?'Needs a working computer':'';
     return arow(j.n+' shift · '+money(shiftPay(j.pay)),chip('time',hm(j.min))+chip('energy','−'+j.en+'%')+chip('happy','−'+workHap(j.en))+hpChip(workHp(j.min)),btn('work',k,'Work a shift',0,!!need),need);
@@ -5266,7 +5286,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       /* no job here: one card, with the factory's own text at the start of its ⓘ */
       var F=CONFIG.factory,L=F.dayLabour,f=S.fac||{},lt=labourToday()>=L.perDay,en=-L.energy;
       var t=psec('outside','🧰 No job here? You can still',closed||chip('','Open to everyone'),about+' Day labour needs no job and no dress code, but pays '+pctTxt(L.payShare)+' of the lowest Factory wage and does not count as work experience. It counts towards your daily work limit and burnout. The safety course counts as '+F.course.expShifts+' shift'+(F.course.expShifts>1?'s':'')+' of Factory work experience. The course and the tour are once a game.');
-      t+=arow('🧰 Day labour on the loading dock · '+money(shiftPay(labourPay())),chip('time',hm(L.minutes))+chip('energy','−'+en+'%')+chip('happy','−'+workHap(en))+hpChip(workHp(L.minutes))+(lt?chip('','✓ Done today','ok'):chip('',L.perDay===1?'Once a day':L.perDay+' a day')),btn('fac','labour','Work',0,sh||lt||!!S.ill),S.ill?'You are sick and can’t work.':'');
+      t+=arow('🧰 Day labour on the loading dock · '+money(shiftPay(labourPay())),chip('time',hm(L.minutes))+chip('energy','−'+en+'%')+chip('happy','−'+workHap(en))+hpChip(workHp(L.minutes))+(lt?chip('','✓ Done today','ok'):chip('',L.perDay===1?'Once a day':L.perDay+' a day'))+(naked()?chip('','No clothes','warn'):''),btn('fac','labour','Work',0,sh||lt||!!S.ill||naked()),S.ill?'You are sick and can’t work.':naked()?NAKED:'');
       t+=arow('🦺 Safety course · '+money(G(F.course.cost)),chip('time',hm(F.course.minutes))+chip('know','+'+F.course.knowledge)+chip('','+'+F.course.expShifts+' work exp','ok')+(f.course?chip('','✓ Done','ok'):''),btn('fac','course','Take course',0,sh||!!f.course));
       t+=arow('🚶 Factory tour · '+money(G(F.tour.cost)),chip('time',hm(F.tour.minutes))+chip('know','+'+F.tour.knowledge)+chip('happy','+'+F.tour.happiness)+(f.tour?chip('','✓ Done','ok'):''),btn('fac','tour','Take tour',0,sh||!!f.tour));
       return boxed(t)},
@@ -5386,7 +5406,11 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         ['casual','smart','suit'].map(function(k){var c=WEAR[k],pr=price(k),have=S.clothes[k];
           return arow(c.n+' · '+money(pr)+(S.offer[k]!=null?' <small>(bargained)</small>':''),chip('','Lasts '+c.w+' days')+(CC[k].happiness?chip('happy','+'+CC[k].happiness,'ok'):'')+(have?chip('','Yours: '+have+'d left',have<=1?'warn':'ok'):''),
             '<span class="btnrow">'+btn('cbuy',k,'Buy')+btn('bargain',k,'Bargain',1,!!S.barg[k])+'</span>')}).join(''))},
-    thrift:function(){return boxed(psec('shop','🛍️ Second-hand',chip('time',hm(M(2))+' to buy'),'Cheaper than new. Second-hand devices break down more often; repair them at the Electronics Store.'+shopInfo('thrift'))+shop('thrift'))},
+    thrift:function(){var U=CONFIG.clothes.used;
+      return boxed(psec('used','👕 Used clothes',chip('time',hm(M(CONFIG.clothes.buyUnits))+' to buy'),'Second-hand Smart Casual and Business Suits at '+pctTxt(U.priceShare)+' of the Clothes Mall price. They meet the same dress codes as new ones but only last '+U.days+' days (new ones last '+WEAR.smart.w+' to '+WEAR.suit.w+'), and a used suit gives no happiness lift. Buying replaces the outfit of the same kind you already have. No haggling here.')+
+        ['smart','suit'].map(function(k){var have=S.clothes[k];
+          return arow('Used '+WEAR[k].n+' · '+money(usedPrice(k)),chip('','Lasts '+U.days+' days')+(have?chip('','Yours: '+have+'d left',have<=1?'warn':'ok'):''),btn('ubuy',k,'Buy'))}).join('')+
+      psec('shop','🛍️ Second-hand',chip('time',hm(M(2))+' to buy'),'Cheaper than new. Second-hand devices break down more often; repair them at the Electronics Store.'+shopInfo('thrift'))+shop('thrift'))},
     pawn:function(){
       var h='',n=0,t='';
       Object.keys(ITEMS).forEach(function(k){
@@ -6076,6 +6100,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     paydebt:  {run:function(){payDebt()}},
     buy:      {run:function(g){buy(g)},                          dry:true},
     cbuy:     {run:function(g){buyWear(g)}},
+    ubuy:     {run:function(g){buyUsed(g)},                      dry:true},
     bargain:  {run:function(g){bargain(g)}},
     sell:     {run:function(g){sell(g)}},
     repair:   {run:function(g){repair(g)}},
@@ -6187,7 +6212,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         else if($('cfgCert'))$('cfgCert').textContent=cL.length?'Earning a qualification adds '+cL.map(function(l){return (cK[l]===cH[l]?sg(cK[l])+' knowledge and happiness':[cK[l]?sg(cK[l])+' knowledge':'',cH[l]?sg(cH[l])+' happiness':''].filter(Boolean).join(', '))+' for '+(l==='Honours'?'Honours':(l==='Masters'?'a Masters':'a '+l))}).join('; ')+'.':'';
         if($('cfgHpWork')){var hw=Math.abs(CONFIG.time.workHealthPerHour||0),hl=Math.abs(CONFIG.education.lessonHealthPerHour||0),hs=Math.abs(CONFIG.selfStudy.healthPerHour||0);
           $('cfgHpWork').textContent=hw===hl&&hl===hs?'work and study ('+hw+' health an hour of shifts, lessons and self-study)':'work and study (an hour costs '+hw+' health at work, '+hl+' in a lesson, '+hs+' in self-study)'}
-        var SH=CONFIG.shame;if($('cfgShame'))$('cfgShame').textContent='checked when you end the day: net worth under $0 costs '+Math.abs(SH.debtHappiness)+' happiness and '+Math.abs(SH.debtEnergy)+'% energy'+(SH.nearlyBrokeFromDay>1?'; from day '+SH.nearlyBrokeFromDay+', ':'; ')+'net worth under $'+SH.nearlyBrokeBelow+' costs '+Math.abs(SH.nearlyBrokeHappiness)+' happiness. Nothing is taken during the day.';
+        var SH=CONFIG.shame;if($('cfgShame'))$('cfgShame').textContent='checked when you end the day: net worth under $0 costs '+Math.abs(SH.debtHappiness)+' happiness and '+Math.abs(SH.debtEnergy)+'% energy'+(SH.nearlyBrokeFromDay>1?'; from day '+SH.nearlyBrokeFromDay+', ':'; ')+'net worth under $'+SH.nearlyBrokeBelow+' costs '+Math.abs(SH.nearlyBrokeHappiness)+' happiness. Nothing is taken during the day.'+(SH.noClothesHappiness?' Waking up with no clothes at all costs '+Math.abs(SH.noClothesHappiness)+' happiness, and you can’t work any shift until you buy some (freelance work at home is fine).':'');
         var F=CONFIG.factory;if($('cfgFac'))$('cfgFac').textContent='day labour on the loading dock ('+hm(F.dayLabour.minutes)+', '+(F.dayLabour.perDay===1?'once':F.dayLabour.perDay+' times')+' a day, no dress code) pays '+pctTxt(F.dayLabour.payShare)+' of the lowest Factory wage and does not count as work experience. A safety course (once a game, '+hm(F.course.minutes)+', +'+F.course.knowledge+' knowledge) counts as '+F.course.expShifts+' shift'+(F.course.expShifts>1?'s':'')+' of Factory work experience; a factory tour (once a game, '+hm(F.tour.minutes)+') adds '+F.tour.knowledge+' knowledge and '+F.tour.happiness+' happiness.';
         if($('cfgFun'))$('cfgFun').textContent='at home, watch a show or play games ('+hm(LE.screen.minutes)+', '+fx(LE.screen)+', needs a TV or game console) or call your family '+(LE.call.perDay===1?'once':LE.call.perDay+' times')+' a day ('+hm(LE.call.minutes)+', '+fx(LE.call)+'). At the Park, walk ('+hm(LE.walk.minutes)+', '+fx(LE.walk)+') or jog ('+hm(LE.jog.minutes)+', '+fx(LE.jog)+'). The Restaurant also serves '+cf.name+' ('+hm(cf.minutes)+', '+sg(cf.energy)+'% energy, '+sg(cf.happiness)+' happiness), a snack rather than a meal.'})();
       (function(){var E=CONFIG.events,I=CONFIG.industry,last=function(L){return CONFIG.time.gameDays-L.daysBeforeEnd};

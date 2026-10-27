@@ -1082,3 +1082,10 @@ Every game now has two storylines. The existing one is called the **global story
 - **UI check:** three new situations (the outlook at a storyline's peak, your own job hit, the rumour).
 - Checked over 3,000 seeded games: start days spread evenly over 3–17, exactly one a game, all ten storylines about equally often, and no macro shock within 2 days of either storyline.
 - **QA:** UI check clean at desktop and phone width (193 presses each, 9 situations, reload checks). Simulation report: [QA_Sim_2026-10-27_industry-storylines](docs/QA_Sim_2026-10-27_industry-storylines.md) (same endings as the base build; careful bots still give up on morale around day 11 in both builds). `tools/qa/sim.js`: the random bot cancels the action preview by clicking outside it (the old "No" button no longer exists).
+
+## 74. Used clothes at the Thrift Store; waking up with no clothes
+
+- **Used clothes:** the Thrift Store has a new 👕 Used clothes card selling a used Smart Casual outfit and a used Business Suit at 30% of the Clothes Mall price (about $54 and $90 before the price index), lasting 3 days. They meet the same dress codes as new ones; a used suit gives no happiness lift, and there is no haggling. Buying replaces the outfit of the same kind you already have, as at the Mall. New `CONFIG.clothes.used` {priceShare 0.3, days 3}.
+- **Out of clothes:** if all your clothes have worn out, you can't work any shift away from home (every job, including those with no dress code, and Factory day labour) until you buy some. Freelance coding at home still works. The shift and day-labour rows show a "No clothes" chip and the button is disabled.
+- **Shame:** each morning you wake up with no clothes costs 5 happiness (part of the overnight happiness line, "−5 no clothes"), and the morning pop-up opens with "👕 You are out of clothes…". New `CONFIG.shame.noClothesHappiness` (−5). The Rules line "Money shame" is now "Shame" and describes it.
+- **UI check:** two new situations (out of clothes at the Thrift Store; out of clothes with a job).
