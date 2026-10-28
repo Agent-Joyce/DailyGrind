@@ -5,13 +5,15 @@
    Ask the user before running simulations (CLAUDE.md), and save the report to docs/QA_Sim_<date>_<change>.md/.json.
 
    Usage (from the repo folder):
-     node tools/qa/run-sims.js <folder outside the repo> [survive=20] [random=10] [surviveSeed=1] [randomSeed=101] [page]
+     node tools/qa/run-sims.js <folder outside the repo> [survive=20] [random=10] [surviveSeed=1] [randomSeed=101] [page] [--no-comm]
+   --no-comm: the careful player does not use the Community Centre (to measure what it adds to morale).
    page: another copy of index.html to run instead (for example the base build when comparing two builds).
    Seeds replay the same games as long as index.html has not changed. */
 const fs=require('fs'),path=require('path');
 let pw;try{pw=require('playwright')}catch(e){pw=require('/opt/node22/lib/node_modules/playwright')}
 const here=__dirname,repo=path.resolve(here,'..','..');
-const [outArg,sv='20',rn='10',ss='1',rs='101',page]=process.argv.slice(2);
+const argv=process.argv.slice(2),flags=argv.filter(a=>a.startsWith('--')),noComm=flags.includes('--no-comm');
+const [outArg,sv='20',rn='10',ss='1',rs='101',page]=argv.filter(a=>!a.startsWith('--'));
 if(!outArg)throw new Error('Usage: node tools/qa/run-sims.js <folder outside the repo> [survive] [random] [surviveSeed] [randomSeed] [page]');
 const out=path.resolve(outArg);
 if((out+path.sep).startsWith(repo+path.sep))throw new Error('The output folder must be outside the repo (the test copy must not be committed).');
@@ -26,7 +28,7 @@ const hook='  window.__G={get S(){return S},set S(v){S=v},get loc(){return loc},
   'hasDress:hasDress,price:price,qualFee:qualFee,lesCount:lesCount,lesHours:lesHours,inProgress:inProgress,expShort:expShort,'+
   'shutLeft:shutLeft,myJob:myJob,dist:dist,homeFee:homeFee};';
 src=src.replace(marker,hook+'\n'+marker);
-const cfg=`<script>window.__QA={survive:${+sv},random:${+rn},surviveSeed:${+ss},randomSeed:${+rs}};</script><script src="sim.js"></script>`;
+const cfg=`<script>window.__QA={survive:${+sv},random:${+rn},surviveSeed:${+ss},randomSeed:${+rs},noComm:${noComm}};</script><script src="sim.js"></script>`;
 const at=src.lastIndexOf('</body>');src=src.slice(0,at)+cfg+'\n'+src.slice(at);
 fs.writeFileSync(path.join(out,'index.html'),src);
 fs.copyFileSync(path.join(here,'sim.js'),path.join(out,'sim.js'));
@@ -39,8 +41,8 @@ fs.copyFileSync(path.join(here,'sim.js'),path.join(out,'sim.js'));
   await pg.waitForFunction(()=>window.__QA_RESULTS,null,{timeout:1800000,polling:1000});
   const res=await pg.evaluate(()=>window.__QA_RESULTS);
   fs.writeFileSync(path.join(out,'results.json'),JSON.stringify(res,null,1));
-  console.log(`${res.length} games (survive ${sv} from seed ${ss}, random ${rn} from seed ${rs}); page errors: ${errs.length?errs.join(' | '):'none'}`);
-  res.forEach(r=>console.log(r.mode,r.seed,'day',r.lastDay,r.ending,'$'+r.netWorth,r.rank,r.job,r.vitals,Object.keys(r.issues).map(k=>k+(r.issues[k]>1?' x'+r.issues[k]:'')).join('; ')));
+  console.log(`${res.length} games (survive ${sv} from seed ${ss}, random ${rn} from seed ${rs}${noComm?', --no-comm':''}); page errors: ${errs.length?errs.join(' | '):'none'}`);
+  res.forEach(r=>console.log(r.mode,r.seed,'day',r.lastDay,r.ending,'$'+r.netWorth,r.rank,r.job,r.vitals,JSON.stringify(r.morale||{}),Object.keys(r.issues).map(k=>k+(r.issues[k]>1?' x'+r.issues[k]:'')).join('; ')));
   console.log('Results in '+path.join(out,'results.json'));
   await br.close();
 })().catch(e=>{console.error(e);process.exit(1)});

@@ -12,7 +12,7 @@
 
    After every click it checks: no script error, vitals 0-100, no NaN, bank and clothes not negative, fridge within
    capacity, at most one job, and that the log line's numbers (energy, happiness, health, knowledge) match the real
-   change. Settings come from window.__QA (written by run-sims.ps1). Results: an on-page report, the browser console,
+   change. Settings come from window.__QA (written by run-sims.js; noComm:true keeps the careful player out of the Community Centre). Results: an on-page report, the browser console,
    and a "Download JSON" button. */
 (function(){
   var QA=window.__QA||{survive:20,random:10,surviveSeed:1,randomSeed:101};
@@ -234,6 +234,30 @@
     if(S.cash>keep+100&&await go('bank')){var box=$('amt');if(box){box.value=String(Math.floor(G.S.cash-keep));await click(btn('dep',''),'dep')}}
     else if(S.cash<rent&&S.bank>0&&S.day%G.CONFIG.time.rentEveryDays>=G.CONFIG.time.rentEveryDays-1)await withdraw(Math.min(S.bank,rent+60));
   }
+  /* morale: free or cheap lifts, cheapest first, until happiness reaches 'aim', only while there is time (reserve()),
+    energy (25%+) and cash (rent and food kept) to spare. QA.noComm skips the Community Centre (to measure what it adds). */
+  var MOR={};
+  function after(dest,min,en,cost){
+    S=G.S;var W=G.CONFIG.time.walkMinutes,there=G.dist(G.loc,dest)*W,back=G.dist(dest,G.S.home)*W,we=Math.abs(G.CONFIG.time.walkEnergy||0)*there/W;
+    var keep=G.HOUSE[S.home].rent+60;
+    return S.ap-there-min>=300+back+15&&S.energy+en-we>=25&&S.cash-cost>=keep;
+  }
+  async function moraleStep(aim){
+    var C=G.CONFIG.community,L=G.CONFIG.leisure,acts=[
+      {k:'call',at:function(){return home()},act:'fun',arg:'call',c:L.call,cost:0},
+      {k:'walk',at:function(){return 'park'},act:'fun',arg:'walk',c:L.walk,cost:0}];
+    if(!QA.noComm&&C)acts.push({k:'volunteer',at:function(){return 'comm'},act:'comm',arg:'volunteer',c:C.volunteer,cost:0},
+      {k:'karaoke',at:function(){return 'comm'},act:'comm',arg:'karaoke',c:C.karaoke,cost:G.G(C.karaoke.cost||0)},
+      {k:'nightOut',at:function(){return 'comm'},act:'comm',arg:'nightOut',c:C.nightOut,cost:G.G(C.nightOut.cost||0)});
+    for(var i=0;i<acts.length&&G.S.happy<aim&&!G.S.over;i++){
+      var a=acts[i],dest=a.at();if(!dest||!a.c)continue;
+      if(!after(dest,a.c.minutes,a.c.energy||0,a.cost))continue;
+      if(!(await go(dest)))continue;
+      var b=btn(a.act,a.arg);if(!b)continue;
+      var h0=G.S.happy;await click(b,a.act+':'+a.arg);await popups('survive');
+      if(G.S.happy!==h0)MOR[a.k]=(MOR[a.k]||0)+1;
+    }
+  }
   async function surviveDay(){
     await popups('survive');if(G.S.over)return;
     var d=G.S.day;
@@ -243,6 +267,7 @@
     await ensureHome();
     await ensureClothes();
     await ensureFed();
+    if(G.S.happy<30)await moraleStep(50);  /* a low morning: a lift before work */
     if(!G.S.items.clothes&&G.S.cash>=G.G(25)+G.HOUSE[G.S.home].rent*0.5&&await go('thrift'))await click(btn('buy','clothes'),'buy:gloves');  /* work gloves: +$15 a shift */
     await applyStep();
     await ensureClothes();
@@ -250,6 +275,7 @@
     await studyStep();
     await workStep();
     await ensureFed();
+    await moraleStep(60);  /* top up before the night (it costs happiness) */
     await bankStep();
     if(G.S.day===d&&!G.S.over){if(home())await go(G.S.home);await endDay('survive')}
   }
@@ -257,7 +283,7 @@
   /* ---------- one run ---------- */
   async function sim(seed,mode){
     G=window.__G;R=mul(seed*7919+13);Math.random=mul(seed);
-    rep={seed:seed,mode:mode,issues:{}};clicks=0;target=null;errs.length=0;
+    rep={seed:seed,mode:mode,issues:{}};clicks=0;target=null;errs.length=0;MOR={};
     try{localStorage.removeItem('dailyGrind.save.v1')}catch(e){}
     G.fresh();
     await click($('welcomeGo'),'popup:start');
@@ -276,7 +302,7 @@
     rep.lastDay=Math.min(S.day,G.CONFIG.time.gameDays);rep.ending=S.over?$('overTitle').textContent:'still playing';
     rep.netWorth=Math.round(G.worth());rep.rank=maxRank>=0?ranks[maxRank].name:'none';rep.job=j?j.rk.r:'none';
     rep.quals=Object.keys(S.edu).filter(function(t){return lvl(t)}).map(function(t){return G.TRACKS[t].n+' '+G.TRACKS[t].lv[lvl(t)-1]}).join(', ');
-    rep.vitals='E'+S.energy+' H'+S.happy+' L'+S.health+' K'+Math.floor(S.know);rep.clicks=clicks;rep.worthByDay=tl;
+    rep.vitals='E'+S.energy+' H'+S.happy+' L'+S.health+' K'+Math.floor(S.know);rep.clicks=clicks;rep.worthByDay=tl;rep.morale=MOR;
     return rep;
   }
 
