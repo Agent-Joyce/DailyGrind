@@ -1128,3 +1128,17 @@ Morale is what ends most games (in every simulation build the careful players gi
 - **Saves:** a game saved at the Pawn Shop opens at the Thrift Store; a closure and work experience there move to the Thrift Store; jobs and pawn tickets carry over unchanged.
 - **UI check:** the pawned-item situation moves to the Thrift Store; new situation "a friend's job tip".
 - **QA:** UI check clean at desktop and phone width (324 presses each, 17 situations, reload checks). Simulation report: [QA_Sim_2026-10-27_community-centre](docs/QA_Sim_2026-10-27_community-centre.md) (no regressions; the sim bots don't use the Community Centre yet, so its morale effect isn't measured).
+
+## 78. QA: the careful simulation player looks after its morale (no game change)
+
+- `tools/qa/sim.js`: the careful player gets a `moraleStep()`. When happiness is under 30 in the morning it gets a lift before work, and before the night it tops happiness up towards 60. It uses the cheapest lift first (call family, a walk in the Park, then the Community Centre: volunteer, karaoke, night out), and only with time, energy and cash to spare. Each game's results record the activities used (`morale`).
+- `tools/qa/run-sims.js`: `--no-comm` keeps the careful player out of the Community Centre, to measure what it adds.
+- **Result** ([QA_Sim_2026-10-28_morale-bot](docs/QA_Sim_2026-10-28_morale-bot.md)), same game, same seeds:
+
+  | | Reached day 20 | Gave up on morale | Mean net worth | Reached Wealthy |
+  |---|---|---|---|---|
+  | Old bot | 0 of 20 | 20 | $1,339 | 0 |
+  | New bot | 19 of 20 | 0 | $5,216 | 12 |
+  | New bot without the Community Centre | 12 of 20 | 7 | $3,660 | 4 |
+
+  The one failure (seed 20) went bankrupt after its clothes wore out: it couldn't afford new ones at the Mall, and the bot doesn't know about used clothes at the Thrift Store yet.
