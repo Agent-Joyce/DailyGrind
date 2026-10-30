@@ -1142,3 +1142,33 @@ Morale is what ends most games (in every simulation build the careful players gi
   | New bot without the Community Centre | 12 of 20 | 7 | $3,660 | 4 |
 
   The one failure (seed 20) went bankrupt after its clothes wore out: it couldn't afford new ones at the Mall, and the bot doesn't know about used clothes at the Thrift Store yet.
+
+## 79. AI rivals (step 1): a 30-day game against easy, medium and expert rivals
+
+- **Two ways to play,** chosen on the welcome screen:
+  - **🎯 Single game:** 20 days, scored as before.
+  - **🏁 With AI rivals:** 30 days. Pick 1 to 3 rivals and their level (Easy, Medium, Expert or Mixed). The difficulty buttons show the game's length.
+- **The rival game:**
+  - **Length:** 30 days (`CONFIG.rivals.gameDays`).
+  - **Storylines:** their start windows stretch to day 27, and there are two industry-specific storylines (`industryStorylines` 2, at least `industryGapDays` 5 apart), different ones.
+  - **Rank target days:** stretch to 15/24/30.
+  - **Tycoon:** reaching it is a milestone, not the end. Everyone plays all 30 days. A single game still ends at Tycoon.
+- **Rivals live the same days you do,** played overnight by `rivalTick()`. They eat, apply for jobs (sharing your job openings), work, study towards the best job they can reach, look after their morale, save, and (experts) invest. They use the same pay, prices, fees, economy, storylines, layoffs and endings as you. They roll their own dice, so a single game plays exactly as before.
+  - **Easy:** often makes mistakes, studies little, keeps cash.
+  - **Medium:** plans a career, saves.
+  - **Expert:** plans by today's pay, works 3 shifts, invests in a good market, uses the Community Centre.
+  - New `CONFIG.rivals` {gameDays 30, industryStorylines 2, industryGapDays 5, dayOverheadMinutes 180, names, icons, levels}.
+- **Where you see them:**
+  - a **🏁 Town leaderboard** on the Overview (you and your rivals by net worth, job and today's change; tap a rival for their story);
+  - **🏁 lines in the morning news** (new jobs, promotions, qualifications, ranks, layoffs, drop-outs);
+  - the **town standings** on the end screen.
+- **Rules:** a new "AI rivals" line, and the ranks line says Tycoon ends only a single game.
+- **Code:** `gameLen()` is now the one source of the game length. `maxDays()`, the storyline windows, `tierDue()` and the save step read it.
+- **QA:**
+  - `run-sims.js --rivals=level [--rival-count=n]` plays rival games, and each result lists the rivals.
+  - The UI check looks at the town leaderboard.
+  - **Simulations** ([QA_Sim_2026-10-30_ai-rivals](docs/QA_Sim_2026-10-30_ai-rivals.md)):
+    - single games are unchanged, game for game;
+    - against the careful test player over 30 days, easy rivals average $1,459, medium $9,312 and expert $17,887;
+    - the test player finished first against easy and medium every time, and last against experts in 12 of 20 games. Experts are kept that strong as a stretch goal.
+- **Still to come (the design's next steps):** the Life Score (ranking by wealth, career, happiness, education and more), competing for job openings, interactions, alliances, betrayals and sabotage.
