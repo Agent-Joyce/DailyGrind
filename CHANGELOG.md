@@ -1172,3 +1172,25 @@ Morale is what ends most games (in every simulation build the careful players gi
     - against the careful test player over 30 days, easy rivals average $1,459, medium $9,312 and expert $17,887;
     - the test player finished first against easy and medium every time, and last against experts in 12 of 20 games. Experts are kept that strong as a stretch goal.
 - **Still to come (the design's next steps):** the Life Score (ranking by wealth, career, happiness, education and more), competing for job openings, interactions, alliances, betrayals and sabotage.
+
+## 80. AI rivals (step 2): the Life Score
+
+A game with AI rivals is now won on the **Life Score**, not on money alone.
+- **Places and points:** in each category, everyone (you and each rival) gets a place, and ties share the better place. A place earns 10 / 6 / 3 / 1 points (1st to 4th) × the category's weight. The most points wins.
+- **The categories:**
+
+  | Category | Weight | How it's measured |
+  |---|---|---|
+  | 💰 Wealth | ×3 | Net worth |
+  | 💼 Career | ×2 | The best-paid job held during the game |
+  | 😊 Happiness | ×2 | Average over the nights played |
+  | 🎓 Education | ×2 | Qualification levels earned; knowledge breaks ties |
+  | ❤️ Health | ×1 | Average over the nights played |
+  | 🛡️ Stability | ×1 | Fewest crisis days: no meal, rent arrears, an overdue loan, illness, no clothes (for rivals: no meal or in debt) |
+  | 🏁 First to the line | ×1 | Reaching Comfortable, then Wealthy, then Tycoon earliest |
+
+- **On the Overview,** the town leaderboard now ranks by Life Score points, showing each player's place, job, net worth and today's change. Tap anyone (you too) for their place in every category, and a rival for their story.
+- **At the end,** the end screen shows the Life Score standings, a table of every category (place, points and measure for each player, winners highlighted) and "Best at" badges, instead of the single-game score. The share recap shows your place and points. A rival game keeps its own best finish (`dailyGrind.bestRivals`) and no longer touches the single-game top score.
+- **Config:** new `CONFIG.rivals.scoring` {placePoints [10,6,3,1], categories: wealth ×3, career ×2, happiness ×2, education ×2, health ×1, stability ×1, first ×1, each with `on` and `weight`}.
+- **Rules:** the "AI rivals" Rules line describes the scoring from CONFIG.
+- **Saves:** each player keeps a small record (`S.life` and each rival's `life`, `rankDay`, `bestJob`). Rival saves from step 1 load and start their records from that day.

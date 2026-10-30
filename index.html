@@ -189,6 +189,8 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 .g-riv .rivrow{display:flex;gap:8px;align-items:baseline;font-size:.82rem;padding:3px 0;border-top:1px dashed var(--line)}.g-riv .rivrow:first-child{border-top:0}
 .g-riv .rivrow .rn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}.g-riv .rivrow b{white-space:nowrap}.g-riv .rivrow .rd{font-size:.7rem;white-space:nowrap}
 .g-riv .me{font-weight:700}.g-riv details summary{cursor:pointer;list-style:none}.g-riv details summary::-webkit-details-marker{display:none}.g-riv details ul{margin:2px 0 4px 18px;padding:0;font-size:.72rem;color:var(--muted,#667)}
+.lifetab-w{overflow-x:auto;margin:6px 0}.lifetab{border-collapse:collapse;font-size:.75rem;width:100%}.lifetab th,.lifetab td{border:1px solid var(--line);padding:3px 5px;text-align:left;vertical-align:top}
+.lifetab td.win{background:color-mix(in srgb,var(--gold) 25%,transparent)}.lifetab .me{font-weight:700}
 .standings{margin:6px 0 10px;text-align:left}.standings h3{margin:4px 0}.standings ol{margin:4px 0 0 20px;padding:0}.standings li{margin:2px 0}.standings .me{font-weight:700}
 .grp{border-radius:14px;padding:8px 12px 10px;margin:8px 0;border:2px solid var(--line);background:var(--surface)}
 .gh{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
@@ -1299,7 +1301,15 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         easy:  {mistakeChance:0.25, shifts:1, plans:false, studyHours:1.5, studyChance:0.35, applyTries:1, usesOutlook:false, bank:'none',    moraleAim:20, social:false},
         medium:{mistakeChance:0.08, shifts:2, plans:true,  studyHours:4,   studyChance:1,    applyTries:1, usesOutlook:false, bank:'savings', moraleAim:45, social:false},
         expert:{mistakeChance:0.02, shifts:3, plans:true,  studyHours:4.5, studyChance:1,    applyTries:2, usesOutlook:true,  bank:'invest',  moraleAim:60, social:true}
-      }
+      },
+      /* The Life Score: how a rival game is won. In each category every player gets a place (ties share the better one);
+        a place earns placePoints[place-1] x the category's weight. on:false leaves a category out. Happiness and health are
+        averages over the nights played; stability counts crisis days (no meal, rent arrears, an overdue loan, illness, no clothes);
+        career is the best-paid job held; education is qualification levels (knowledge breaks ties); first to the line rewards
+        reaching each rank earliest. */
+      scoring:{placePoints:[10,6,3,1], categories:{
+        wealth:{on:true,weight:3}, career:{on:true,weight:2}, happiness:{on:true,weight:2}, education:{on:true,weight:2},
+        health:{on:true,weight:1}, stability:{on:true,weight:1}, first:{on:true,weight:1}}}
     },
     leisure:{
       /* Free things to do for fun. minutes = time taken; energy in %.
@@ -1932,7 +1942,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
      3. STATE AND SAVES
      blank() is the full shape of S. fresh() starts a game; save() and load() keep it in localStorage; finish() ends it.
      ================================================================== */
-  function blank(){return {fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,ind:null,indNext:0,indId:'',macroLast:0,bankOffer:null,promo:null,comm:null,tip:null,mode:'single',rivals:[],rivalSeed:0,indLeft:0,deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:CONFIG.market.rateBase,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
+  function blank(){return {fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,ind:null,indNext:0,indId:'',macroLast:0,bankOffer:null,promo:null,comm:null,tip:null,mode:'single',rivals:[],rivalSeed:0,indLeft:0,life:null,deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:CONFIG.market.rateBase,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
     S=blank();T0();PREV=null;applyPayVar();S.certVar={};Object.keys(TRACKS).forEach(function(t){S.certVar[t]=1+(Math.random()*2-1)*CONFIG.education.certVariance});
     S.sagaNext=sagaDay();S.indNext=indDay();S.indId=INDUSTRY[Math.floor(Math.random()*INDUSTRY.length)].id;
@@ -2057,16 +2067,16 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     clearSave();$('keep').hidden=true;
     $('overTitle').textContent=title;
     $('overText').textContent=text;
-    var sc=score(),best=bestScore(),first=(function(){try{return localStorage.getItem('dailyGrind.best')===null}catch(e){return true}})(),isTop=sc>0&&(first||sc>best);  /* a 0-point game is never a top score */
+    var sc=score(),best=bestScore(),first=(function(){try{return localStorage.getItem('dailyGrind.best')===null}catch(e){return true}})(),isTop=S.mode!=='rivals'&&sc>0&&(first||sc>best);  /* a rival game has its own best (dailyGrind.bestRivals) */  /* a 0-point game is never a top score */
     if(isTop){try{localStorage.setItem('dailyGrind.best',String(sc))}catch(e){}}
     $('overScore').hidden=false;
     $('overScore').innerHTML=(isTop?'<div class="topscore">🏆 New personal-best score!</div>':first?'':'<div class="prevtop">Top score so far: <b>'+best.toLocaleString()+'</b></div>')+
       '<div class="bigscore">⭐ '+sc.toLocaleString()+' points</div><table class="sctab">'+scoreParts().map(function(p){return '<tr><td>'+p[0]+'</td><td>'+(p[1]<0?'−':'')+Math.abs(p[1]).toLocaleString()+'</td></tr>'}).join('')+'</table>';
-    if(S.mode==='rivals'&&S.rivals&&S.rivals.length){
-      var st=[{me:1,n:'⭐ You',w:Math.round(worth())}].concat(S.rivals.map(function(r){return {n:r.ic+' '+r.name+' ('+r.diff+')'+(r.out?' · out on day '+r.out.day:''),w:rivalWorth(r)}})).sort(function(a,b){return b.w-a.w});
-      var place=st.findIndex(function(o){return o.me})+1;
-      $('overScore').insertAdjacentHTML('afterbegin','<div class="standings"><h3>🏁 Town standings: you finished '+place+(place===1?'st':place===2?'nd':place===3?'rd':'th')+' of '+st.length+'</h3>'+(place===1?'<div class="topscore">🏆 Top of the town!</div>':'')+
-        '<ol>'+st.map(function(o){return '<li'+(o.me?' class="me"':'')+'>'+o.n+': '+money(o.w)+'</li>'}).join('')+'</ol></div>');
+    if(S.mode==='rivals'&&S.rivals&&S.rivals.length){  /* a rival game is won on the Life Score, not the single-game score */
+      var LP=lifeScore(),me=LP.filter(function(p){return p.me})[0],pb=null;try{pb=JSON.parse(localStorage.getItem('dailyGrind.bestRivals')||'null')}catch(e){}
+      var better=!pb||me.place<pb.place||(me.place===pb.place&&me.pts>pb.pts);if(better){try{localStorage.setItem('dailyGrind.bestRivals',JSON.stringify({place:me.place,pts:me.pts,of:LP.length}))}catch(e){}}
+      $('overScore').innerHTML=lifeTable()+(better&&pb?'<div class="topscore">🏆 Your best rival-game finish!</div>':pb?'<div class="prevtop">Best rival-game finish so far: <b>'+ordinal(pb.place)+' of '+pb.of+', '+pb.pts+' points</b></div>':'');
+      isTop=false;
     }
     if(isTop&&!lost)snd('win');  /* a personal best on a loss is still a loss: no win sound */
     $('over').classList.add('show');
@@ -3164,6 +3174,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     trendTick();
     indTick();  /* industry-specific storyline: layoffs and suspensions */
     rivalTick();  /* AI rivals live the day that has just ended (rival games only) */
+    lifeSample(wasFed);  /* your Life Score record for the day (rival games only) */
     /* second-hand gadgets can break down on their own */
     Object.keys(S.items).forEach(function(k){var it=ITEMS[k];if(S.items[k]&&it&&it.old&&!S.broken[k]&&Math.random()<it.old){S.broken[k]=1;S.notes.push({l:'bad',t:'🔧 Your '+it.n.toLowerCase()+' broke down overnight. Repair it at the Electronics Store (or buy a new one).'});log('Your '+it.n.toLowerCase()+' broke down.','bad')}});
     tickInv();
@@ -3698,7 +3709,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     for(var i=0;i<n;i++){var d=level==='mixed'?lv[i%3]:level,edu={};Object.keys(TRACKS).forEach(function(t){edu[t]=0});
       out.push({name:R.names[i],ic:R.icons[i],diff:d,cash:cash,bank:0,etf:0,energy:CONFIG.start.energy,happy:70,health:CONFIG.health.start,know:10,edu:edu,
         job:null,best:null,study:null,target:null,clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},shiftsAt:{},shut:0,
-        out:null,tier:-1,lowH:0,lowE:0,broke:0,hungry:0,hist:[],log:[],y:cash})}
+        out:null,tier:-1,lowH:0,lowE:0,broke:0,hungry:0,hist:[],log:[],y:cash,life:blankLife(),rankDay:{},bestJob:null})}
     return out;
   }
   /* the job worth aiming for: the best pay x days it could be worked, among jobs whose missing qualifications fit in the days left */
@@ -3740,7 +3751,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       if(!best)break;used+=60;
       var pp=Math.max(0.2,Math.min(0.95,0.82-0.05*best.i+r.know/400+(r.happy-50)/300-(r.energy<30?0.1:0)));
       if(rrand()<pp){var was=j;r.job={c:best.c,i:best.i};j=rivalJob(r);rivalNote(r,1,(was&&was.c===best.c?'was promoted to ':'got a new job: ')+j.rk.r+' at the '+NAME[j.b]+'.');
-        if(!r.best||rolePay(best.c,best.i)>r.best.pay)r.best={r:j.rk.r,pay:rolePay(best.c,best.i)};break}
+        if(!r.bestJob||j.rk.pay>r.bestJob.pay)r.bestJob={r:j.rk.r,pay:j.rk.pay};break}
     }
     /* work */
     var shifts=K.shifts-(mistake==='lazy'?1:0),load=0;
@@ -3797,12 +3808,66 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       else if(x&&x.cut&&rrand()<I.suspendChance)r.shut=I.suspendDays[0]+Math.floor(rrand()*(I.suspendDays[1]-I.suspendDays[0]+1))}
     /* ranks and endings, by the same rules as yours */
     var w=rivalWorth(r),t=-1;TIERS.forEach(function(x,i){if(w>=x.v)t=i});
-    if(t>r.tier){r.tier=t;rivalNote(r,1,'reached '+TIERS[t].ic+' '+TIERS[t].n+' ('+money(TIERS[t].v)+').')}
+    if(t>r.tier){if(!r.rankDay)r.rankDay={};for(var ti=r.tier+1;ti<=t;ti++)if(r.rankDay[ti]==null)r.rankDay[ti]=S.day-1;r.tier=t;rivalNote(r,1,'reached '+TIERS[t].ic+' '+TIERS[t].n+' ('+money(TIERS[t].v)+').')}
+    var LF=r.life||(r.life=blankLife());LF.h.push(r.happy);LF.l.push(r.health);if(r.hungry||r.cash<0)LF.crisis++;  /* the Life Score's record */
     var BR=CONFIG.bankrupt;r.broke=(w<BR.netWorthBelow&&S.day-1>=BR.fromDay)?r.broke+1:0;
     r.lowH=r.happy<=10?r.lowH+1:0;r.lowE=r.energy<=10?r.lowE+1:0;
     var end=r.broke>=BR.daysInARow?'went bankrupt':r.lowH>=3?'gave up':r.lowE>=2?'collapsed from exhaustion':r.hungry>=3?'was hospitalised (no food)':'';
     if(end){r.out={day:S.day-1,why:end};rivalNote(r,1,end+' on day '+(S.day-1)+'. Out of the race.')}
     r.hist.push(w);
+  }
+  /* ---------- the Life Score (rival games, CONFIG.rivals.scoring) ----------
+    Everyone is ranked in each life category; a place earns placePoints (1st, 2nd...) x the category's weight.
+    Happiness and health are averages over the days played, so a last-day rest cannot win them.
+    Each player keeps a record: life = {h:[happiness each night], l:[health each night], crisis: crisis days, best:{pay, r}}. */
+  var LIFE_CATS={
+    wealth:   {ic:'💰',n:'Wealth',    v:function(p){return p.worth},                        t:function(p){return money(p.worth)}},
+    career:   {ic:'💼',n:'Career',    v:function(p){return p.best?p.best.pay:0},             t:function(p){return p.best?p.best.r:'No job'}},
+    happiness:{ic:'😊',n:'Happiness', v:function(p){return lifeAvg(p.life.h)},               t:function(p){return 'average '+Math.round(lifeAvg(p.life.h))}},
+    education:{ic:'🎓',n:'Education', v:function(p){return p.levels*1000+(p.know||0)},            t:function(p){return p.levels+' level'+(p.levels===1?'':'s')+' · knowledge '+Math.floor(p.know||0)}},
+    health:   {ic:'❤️',n:'Health',    v:function(p){return lifeAvg(p.life.l)},               t:function(p){return 'average '+Math.round(lifeAvg(p.life.l))}},
+    stability:{ic:'🛡️',n:'Stability', v:function(p){return -(p.life.crisis||0)},            t:function(p){var c=p.life.crisis||0;return c?c+' crisis day'+(c>1?'s':''):'no crisis days'}},
+    first:    {ic:'🏁',n:'First to the line',v:function(p){var s=0;TIERS.forEach(function(x,i){var d=p.rankDay[i];if(d!=null)s+=(gameLen()+1-d)*Math.pow(100,i)});return s},
+               t:function(p){var a=[];TIERS.forEach(function(x,i){var d=p.rankDay[i];if(d!=null)a.push(x.ic+' day '+d)});return a.length?a.join(', '):'no rank yet'}}
+  };
+  function lifeAvg(a){return a&&a.length?a.reduce(function(x,y){return x+y},0)/a.length:0}
+  function blankLife(){return {h:[],l:[],crisis:0,best:null}}
+  /* tonight's record for you (called in rollover once a rival game's day is done) */
+  function lifeSample(wasFed){
+    if(S.mode!=='rivals')return;var L=S.life||(S.life=blankLife());
+    L.h.push(S.happy);L.l.push(S.health);
+    if(!wasFed||S.arrears||(S.loan&&S.day-1>S.loan.due)||S.ill||naked())L.crisis++;
+    var j=myJob();if(j&&(!L.best||j.rk.pay>L.best.pay))L.best={pay:j.rk.pay,r:j.rk.r};
+  }
+  /* everyone in a rival game, as the Life Score sees them */
+  function lifePlayers(){
+    var lv=0;Object.keys(TRACKS).forEach(function(t){lv+=lvl(t)});
+    var j=myJob(),L=S.life||blankLife(),best=L.best;if(j&&(!best||j.rk.pay>best.pay))best={pay:j.rk.pay,r:j.rk.r};
+    var out=[{me:1,ic:'⭐',name:'You',worth:Math.round(worth()),best:best,levels:lv,know:S.know,life:L,rankDay:S.rankDay||{}}];
+    (S.rivals||[]).forEach(function(r){var l2=0;Object.keys(TRACKS).forEach(function(t){l2+=rivalLv(r,t)});var rj=rivalJob(r),rb=r.bestJob;if(rj&&(!rb||rj.rk.pay>rb.pay))rb={pay:rj.rk.pay,r:rj.rk.r};
+      out.push({r:r,ic:r.ic,name:r.name,worth:rivalWorth(r),best:rb,levels:l2,know:r.know,life:r.life||blankLife(),rankDay:r.rankDay||{},out:r.out})});
+    return out;
+  }
+  /* places and points: ties share the better place */
+  function lifeScore(){
+    var P=lifePlayers(),SC=CONFIG.rivals.scoring,pts=SC.placePoints;
+    P.forEach(function(p){p.pts=0;p.cats={}});
+    Object.keys(SC.categories).forEach(function(k){var c=SC.categories[k],C=LIFE_CATS[k];if(!c||!c.on||!C)return;
+      P.forEach(function(p){var v=C.v(p),place=1+P.filter(function(q){return C.v(q)>v}).length,got=(pts[place-1]||0)*c.weight;p.cats[k]={place:place,pts:got,txt:C.t(p)};p.pts+=got})});
+    P.sort(function(a,b){return b.pts-a.pts||b.worth-a.worth});
+    P.forEach(function(p,i){p.place=1+P.filter(function(q){return q.pts>p.pts}).length});
+    return P;
+  }
+  function ordinal(n){return n+(n===1?'st':n===2?'nd':n===3?'rd':'th')}
+  /* the end screen's standings, category table and "best at" badges */
+  function lifeTable(){
+    var P=lifeScore(),SC=CONFIG.rivals.scoring,ks=Object.keys(SC.categories).filter(function(k){return SC.categories[k].on&&LIFE_CATS[k]}),me=P.filter(function(p){return p.me})[0];
+    var badges=ks.map(function(k){var w=P.filter(function(p){return p.cats[k].place===1});return LIFE_CATS[k].ic+' '+LIFE_CATS[k].n+': '+w.map(function(p){return p.me?'<b>you</b>':p.name}).join(' & ')}).join(' · ');
+    return '<div class="standings"><h3>🏁 Life Score: you finished '+ordinal(me.place)+' of '+P.length+'</h3>'+(me.place===1?'<div class="topscore">🏆 Top of the town!</div>':'')+
+      '<ol>'+P.map(function(p){return '<li'+(p.me?' class="me"':'')+'>'+p.ic+' '+p.name+(p.r?' <small>('+p.r.diff+(p.out?', out on day '+p.out.day:'')+')</small>':'')+': <b>'+p.pts+' points</b> · '+money(p.worth)+'</li>'}).join('')+'</ol>'+
+      '<div class="lifetab-w"><table class="lifetab"><tr><th></th>'+P.map(function(p){return '<th'+(p.me?' class="me"':'')+'>'+p.ic+' '+(p.me?'You':p.name)+'</th>'}).join('')+'</tr>'+
+      ks.map(function(k){var c=SC.categories[k];return '<tr><td>'+LIFE_CATS[k].ic+' '+LIFE_CATS[k].n+' <small>×'+c.weight+'</small></td>'+P.map(function(p){var x=p.cats[k];return '<td class="'+(x.place===1?'win ':'')+(p.me?'me':'')+'"><b>'+ordinal(x.place)+'</b> <small>+'+x.pts+'</small><br><small>'+x.txt+'</small></td>'}).join('')+'</tr>'}).join('')+
+      '</table></div><p class="sub">Best at: '+badges+'</p></div>';
   }
   function rivalTick(){
     if(S.mode!=='rivals'||!S.rivals)return;
@@ -6107,13 +6172,14 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   /* the town leaderboard (rival games): you and your rivals by net worth, with their job and today's change */
   function rivalBoard(){
     var box=$('rivBox');if(!box)return;var on=S.mode==='rivals'&&S.rivals&&S.rivals.length;box.hidden=!on;if(!on)return;
-    var me=myJob(),rows=[{me:1,ic:'⭐',name:'You',w:Math.round(worth()),job:me?me.rk.r:'No job',d:null}];
-    S.rivals.forEach(function(r){rows.push({r:r,ic:r.ic,name:r.name+' <small>('+r.diff+')</small>',w:rivalWorth(r),job:r.out?'Out: '+r.out.why+' (day '+r.out.day+')':(rivalJob(r)?rivalJob(r).rk.r:'No job'),d:rivalWorth(r)-r.y})});
-    rows.sort(function(a,b){return b.w-a.w});
-    $('rivSub').textContent='· day '+Math.min(S.day,maxDays())+' of '+maxDays();
-    $('rivList').innerHTML=rows.map(function(o,i){
-      var line='<span>'+(i+1)+'.</span><span class="rn">'+o.ic+' '+o.name+' · <small>'+o.job+'</small></span><b>'+money(o.w)+'</b>'+(o.d!=null&&o.d!==0?'<span class="rd '+(o.d>0?'up':'dn')+'">'+(o.d>0?'▲':'▼')+money(Math.abs(o.d))+'</span>':'');
-      return o.me?'<div class="rivrow me">'+line+'</div>':'<details><summary class="rivrow">'+line+'</summary><ul>'+(o.r.log.length?o.r.log.map(function(l){return '<li>'+l+'</li>'}).join(''):'<li>Nothing to report yet.</li>')+'</ul></details>';
+    var P=lifeScore();
+    $('rivSub').textContent='· Life Score · day '+Math.min(S.day,maxDays())+' of '+maxDays();
+    $('rivList').innerHTML=P.map(function(p){
+      var job=p.me?(myJob()?myJob().rk.r:'No job'):p.out?'Out: '+p.out.why+' (day '+p.out.day+')':(rivalJob(p.r)?rivalJob(p.r).rk.r:'No job');
+      var d=p.r?rivalWorth(p.r)-p.r.y:0;
+      var line='<span>'+ordinal(p.place)+'</span><span class="rn">'+p.ic+' '+p.name+(p.r?' <small>('+p.r.diff+')</small>':'')+' · <small>'+job+' · '+money(p.worth)+(d?' <span class="'+(d>0?'up':'dn')+'">'+(d>0?'▲':'▼')+money(Math.abs(d))+'</span>':'')+'</small></span><b>'+p.pts+' pts</b>';
+      var cats=Object.keys(p.cats).map(function(k){var x=p.cats[k];return LIFE_CATS[k].ic+' '+ordinal(x.place)+' ('+x.txt+')'}).join(' · ');
+      return '<details><summary class="rivrow'+(p.me?' me':'')+'">'+line+'</summary><ul><li>'+cats+'</li>'+(p.r?(p.r.log.length?p.r.log.map(function(l){return '<li>'+l+'</li>'}).join(''):'<li>Nothing to report yet.</li>'):'')+'</ul></details>';
     }).join('');
   }
   function renderOverviewCards(){
@@ -6556,7 +6622,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   $('diffs').addEventListener('click',function(e){
     var b=e.target.closest('[data-diff]');if(!b||S.flags.diff)return;
     if(pickMode!=='rivals'){S.mode='single';S.rivals=[];return}
-    S.mode='rivals';S.rivalSeed=(Math.random()*2147483647)|0;S.rivals=makeRivals(pickCount,pickLevel,DIFF[b.dataset.diff].cash);
+    S.mode='rivals';S.life=blankLife();S.rivalSeed=(Math.random()*2147483647)|0;S.rivals=makeRivals(pickCount,pickLevel,DIFF[b.dataset.diff].cash);
     S.indLeft=Math.max(0,(CONFIG.rivals.industryStorylines||1)-1);S.sagaNext=sagaDay();S.indNext=indDay();  /* storylines spread over the longer game */
   },true);
   $('diffs').addEventListener('click',function(e){
@@ -6591,7 +6657,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       (function(){var C=CONFIG.community,f=function(c){return hm(c.minutes)+(c.cost?', $'+c.cost:'')+(c.energy?', '+sg(c.energy)+'% energy':'')+', '+sg(c.happiness)+' happiness'+(c.knowledge?', '+sg(c.knowledge)+' knowledge':'')};
         if($('cfgComm'))$('cfgComm').textContent='once a day each: a night out with friends ('+f(C.nightOut)+'), karaoke ('+f(C.karaoke)+') or volunteering ('+f(C.volunteer)+'). A night out ('+pctTxt(C.nightOut.tipChance)+') or volunteering ('+pctTxt(C.volunteer.tipChance)+') can get you a friend’s job tip: for '+dayN(C.tip.days)+' your next interview is '+Math.round(C.tip.passBonus*100)+'% more likely to pass and never fails for “no openings”.'})();
       (function(){var R=CONFIG.rivals,T=CONFIG.time.gameDays,due=TIERS.filter(function(r){return r.d}).map(function(r){return Math.min(Math.round(r.d*R.gameDays/T),R.gameDays)});
-        if($('cfgRivals'))$('cfgRivals').textContent='choose “With AI rivals” on the welcome screen: 1 to 3 computer players (easy, medium, expert or mixed) live the same '+R.gameDays+' days in the same town, under the same prices, pay, storylines, layoffs and job openings. A rival game lasts '+R.gameDays+' days (a single game '+T+'), has '+R.industryStorylines+' industry-specific storylines, and its rank target days stretch to day '+due.join(', ')+'. Reaching '+TIERS[TIERS.length-1].n+' does not end a rival game: everyone plays all '+R.gameDays+' days. The Overview shows a town leaderboard by net worth, the morning news tells you what your rivals did, and the end screen shows the town standings.'})();
+        if($('cfgRivals'))$('cfgRivals').textContent='choose “With AI rivals” on the welcome screen: 1 to 3 computer players (easy, medium, expert or mixed) live the same '+R.gameDays+' days in the same town, under the same prices, pay, storylines, layoffs and job openings. A rival game lasts '+R.gameDays+' days (a single game '+T+'), has '+R.industryStorylines+' industry-specific storylines, and its rank target days stretch to day '+due.join(', ')+'. Reaching '+TIERS[TIERS.length-1].n+' does not end a rival game: everyone plays all '+R.gameDays+' days. The game is won on the Life Score: in each category everyone gets a place, worth '+R.scoring.placePoints.join('/')+' points (1st/2nd/…) × the category weight: '+Object.keys(R.scoring.categories).filter(function(k){return R.scoring.categories[k].on&&LIFE_CATS[k]}).map(function(k){return LIFE_CATS[k].n.toLowerCase()+' ×'+R.scoring.categories[k].weight}).join(', ')+'. Happiness and health count as averages over the game, stability counts crisis days (no meal, rent arrears, an overdue loan, illness, no clothes), career is your best-paid job, and first to the line rewards reaching each rank earliest. The Overview shows the running leaderboard, the morning news tells you what your rivals did, and the end screen shows every category.'})();
       $('cfgRent').textContent=everyDays(RENT_EVERY);
       $('apOf').textContent=' of '+hm(MAX_AP);
       $('cfgDebt').textContent=pctTxt(CONFIG.hospital.billInterest);
@@ -6978,7 +7044,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     function showRecap(title){
       var ms=topMoments(),chart=netWorthChart(),txt=recapText(title),box=$('overScore');
       box.insertAdjacentHTML('beforeend','<div class="recap" id="recap"><div class="rc-head"><span>🎮 Daily Grind</span><small>'+esc(Df().n+(traitTag()?' · '+traitTag():''))+' · day '+(S.endDay||Math.min(S.day,maxDays()))+'</small></div>'+
-        '<div class="rc-big">'+esc(title)+'</div><div class="rc-stats"><span>⭐ '+score().toLocaleString()+' points</span><span>💰 '+esc(money(worth()))+'</span></div>'+
+        '<div class="rc-big">'+esc(title)+'</div><div class="rc-stats"><span>'+(S.mode==='rivals'&&S.rivals&&S.rivals.length?(function(){var me=lifeScore().filter(function(p){return p.me})[0];return '🏁 '+ordinal(me.place)+' of '+(S.rivals.length+1)+' · '+me.pts+' Life Score points'})():'⭐ '+score().toLocaleString()+' points')+'</span><span>💰 '+esc(money(worth()))+'</span></div>'+
         (chart?'<div class="rc-h">Net worth by day</div>'+chart:'')+
         '<div class="rc-h">Biggest moments</div>'+(ms.length?'<ul class="rc-moments">'+ms.map(function(m){return '<li><b>Day '+m.d+'</b><span>'+esc(m.i+' '+m.t)+'</span></li>'}).join('')+'</ul>':'<div class="sub">A quiet run. No big moments this time.</div>')+
         '<div class="rc-actions"><button class="btn alt" id="rcShare" type="button">Share result</button><span id="rcMsg" role="status"></span></div><textarea id="rcText" readonly hidden aria-label="Result text to copy"></textarea></div>');

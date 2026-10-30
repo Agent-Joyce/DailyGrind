@@ -261,7 +261,7 @@
     /* a game with AI rivals: the town leaderboard on the status page, one rival's story opened */
     restore(null);G.S.mode='rivals';
     G.S.rivals=[['Maya','👩','easy',640,null],['Leo','🧔','medium',2380,{c:'hosp',i:1}],['Sam','🧑','expert',5120,{c:'bank',i:2}]].map(function(x){return {name:x[0],ic:x[1],diff:x[2],cash:x[3],bank:0,etf:0,job:x[4],y:x[3]-90,
-      log:['Day 3: got a new job.','Day 2: reached Comfortable.'],out:x[2]==='easy'?{day:9,why:'gave up'}:null,edu:{},clothes:{},shiftsAt:{},hist:[]}});
+      log:['Day 3: got a new job.','Day 2: reached Comfortable.'],out:x[2]==='easy'?{day:9,why:'gave up'}:null,edu:{},clothes:{},shiftsAt:{},hist:[],know:12,happy:60,health:80,energy:70,tier:0,rankDay:{0:4},bestJob:x[4]?{r:'Nurse',pay:210}:null,life:{h:[60,55],l:[80,82],crisis:1,best:null}}});
     G.view=null;G.render();var rb=$('rivBox');
     if(!rb||rb.hidden)note('MISSING','status page (rivals)','no town leaderboard in a game with AI rivals');
     else{if(rb.querySelectorAll('.rivrow').length!==4)note('BAD TEXT','town leaderboard','expected 4 rows (you and 3 rivals), found '+rb.querySelectorAll('.rivrow').length);

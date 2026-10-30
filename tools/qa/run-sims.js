@@ -28,7 +28,7 @@ if(src.split(marker).length!==2)throw new Error('Expected the line "'+marker+'" 
 const hook='  window.__G={get S(){return S},set S(v){S=v},get loc(){return loc},get view(){return view},CONFIG:CONFIG,fresh:fresh,enter:enter,render:function(){render()},'+
   'worth:worth,score:score,CAREERS:CAREERS,TRACKS:TRACKS,HOUSE:HOUSE,lvl:lvl,meets:meets,kreq:kreq,payIdx:payIdx,effort:effort,M:M,G:G,'+
   'hasDress:hasDress,price:price,qualFee:qualFee,lesCount:lesCount,lesHours:lesHours,inProgress:inProgress,expShort:expShort,'+
-  'shutLeft:shutLeft,myJob:myJob,dist:dist,homeFee:homeFee,maxDays:maxDays,rivalWorth:rivalWorth};';
+  'shutLeft:shutLeft,myJob:myJob,dist:dist,homeFee:homeFee,maxDays:maxDays,rivalWorth:rivalWorth,lifeScore:lifeScore};';
 src=src.replace(marker,hook+'\n'+marker);
 const cfg=`<script>window.__QA={survive:${+sv},random:${+rn},surviveSeed:${+ss},randomSeed:${+rs},noComm:${noComm},rivals:${JSON.stringify(rv)},rivalCount:${rvCount}};</script><script src="sim.js"></script>`;
 const at=src.lastIndexOf('</body>');src=src.slice(0,at)+cfg+'\n'+src.slice(at);

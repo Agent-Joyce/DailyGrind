@@ -308,6 +308,7 @@
     rep.netWorth=Math.round(G.worth());rep.rank=maxRank>=0?ranks[maxRank].name:'none';rep.job=j?j.rk.r:'none';
     rep.quals=Object.keys(S.edu).filter(function(t){return lvl(t)}).map(function(t){return G.TRACKS[t].n+' '+G.TRACKS[t].lv[lvl(t)-1]}).join(', ');
     rep.vitals='E'+S.energy+' H'+S.happy+' L'+S.health+' K'+Math.floor(S.know);rep.clicks=clicks;rep.worthByDay=tl;rep.morale=MOR;rep.days=G.maxDays();
+    if(S.mode==='rivals')rep.lifeScore=G.lifeScore().map(function(p){var c={};Object.keys(p.cats).forEach(function(k){c[k]=p.cats[k].place});return {name:p.name,me:!!p.me,diff:p.r?p.r.diff:'you',place:p.place,pts:p.pts,cats:c}});
     if(S.mode==='rivals')rep.rivals=S.rivals.map(function(r){return {name:r.name,diff:r.diff,worth:G.rivalWorth(r),tier:r.tier,out:r.out,job:r.job?G.CAREERS[r.job.c].ranks[r.job.i].r:'none',happy:r.happy,hist:r.hist}});
     return rep;
   }
