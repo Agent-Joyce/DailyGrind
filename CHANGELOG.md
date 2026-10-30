@@ -1194,3 +1194,4 @@ A game with AI rivals is now won on the **Life Score**, not on money alone.
 - **Config:** new `CONFIG.rivals.scoring` {placePoints [10,6,3,1], categories: wealth ×3, career ×2, happiness ×2, education ×2, health ×1, stability ×1, first ×1, each with `on` and `weight`}.
 - **Rules:** the "AI rivals" Rules line describes the scoring from CONFIG.
 - **Saves:** each player keeps a small record (`S.life` and each rival's `life`, `rankDay`, `bestJob`). Rival saves from step 1 load and start their records from that day.
+- **QA:** the UI check is clean (it caught a "knowledge NaN" for a rival record without knowledge, now guarded). Simulation report: [QA_Sim_2026-10-30_life-score](docs/QA_Sim_2026-10-30_life-score.md). The scoring works, but rivals win happiness, health and stability almost every time because they don't face events, illness or shame, which section 81 fixes.
