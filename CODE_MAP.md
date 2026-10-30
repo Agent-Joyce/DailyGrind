@@ -43,6 +43,8 @@ Where things are in `index.html`, and how to make the common changes safely. Lin
 
 **Device and app screens** are screens, not places: `view` changes and `loc` does not (`APPS` lists them). The 📱 Phone button on the Overview (`openDevice('phone')`, needs a working phone or tablet) and the 💻 Computer card at home (`openDevice('pc')`, needs a working computer and being at home) open a home screen (`appHome`) with two apps, opened by `openApp()`: `bankapp` is `panels.bank(true)` (the Bank screen without the loan card) and `jobsapp` is `panels.jobs()` (the Employment Office board; applying works the same). Changes to those panels show in the apps too.
 
+**AI rivals** (section 6, before the macro shocks): `makeRivals()`, `rivalDay()` and `rivalNight()` (one rival's day and night), `rivalTick()` (called from `rollover`), `rrand()` (the rivals' own dice), `rivalBoard()` (section 9, the Overview leaderboard). Tune them in `CONFIG.rivals.levels`. Read the game length through `gameLen()`.
+
 **Add a building**: a `LOCS` entry, a position in `BP`, a road spur in `SPUR`, art in `ART`, lines in `GREET`, a panel in `panels`, and walking distance (`ORDER` or `dist()`).
 
 **Add an event**: add a record to the right table in section 6. Outcomes are effect-token strings (`c` cash, `e` energy, `h` happiness, `l` health, `n` knowledge, …), applied through `applyFx()`, never by writing to `S` directly.

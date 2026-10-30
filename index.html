@@ -183,6 +183,13 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 #econ{display:flex;gap:6px;flex-wrap:wrap}
 #econ span{font-size:.8rem;font-weight:700;background:var(--surface);border:2px solid var(--line);border-radius:99px;padding:0 10px}
 #econ span.up{color:var(--red)}#econ span.dn{color:var(--green)}
+.modes .btn[aria-pressed="true"]{outline:3px solid var(--gold);outline-offset:1px}
+.rivopts{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin:6px 0 2px;font-size:.85rem}.rivopts>div{display:flex;gap:6px;align-items:center}
+.rseg{display:inline-flex;border:2px solid var(--line);border-radius:10px;overflow:hidden}.rseg button{border:0;background:var(--surface);color:var(--ink);padding:5px 10px;font:inherit;cursor:pointer}.rseg button.on{background:var(--teal,#2a9d8f);color:#fff;font-weight:700}
+.g-riv .rivrow{display:flex;gap:8px;align-items:baseline;font-size:.82rem;padding:3px 0;border-top:1px dashed var(--line)}.g-riv .rivrow:first-child{border-top:0}
+.g-riv .rivrow .rn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}.g-riv .rivrow b{white-space:nowrap}.g-riv .rivrow .rd{font-size:.7rem;white-space:nowrap}
+.g-riv .me{font-weight:700}.g-riv details summary{cursor:pointer;list-style:none}.g-riv details summary::-webkit-details-marker{display:none}.g-riv details ul{margin:2px 0 4px 18px;padding:0;font-size:.72rem;color:var(--muted,#667)}
+.standings{margin:6px 0 10px;text-align:left}.standings h3{margin:4px 0}.standings ol{margin:4px 0 0 20px;padding:0}.standings li{margin:2px 0}.standings .me{font-weight:700}
 .grp{border-radius:14px;padding:8px 12px 10px;margin:8px 0;border:2px solid var(--line);background:var(--surface)}
 .gh{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
 .three{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.three .grp{margin:0;padding:7px 9px 9px}
@@ -607,6 +614,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         <p class="bankapp"><button type="button" class="btn alt" id="phoneBtn">📱 Phone</button> <small id="phoneNote"></small></p>
         <div class="invline" id="debtline" hidden></div>
       </div>
+      <div class="grp g-riv" id="rivBox" hidden>
+        <div class="gh">🏁 Town leaderboard <small id="rivSub"></small></div>
+        <div id="rivList"></div>
+      </div>
       <div class="loghead"><h2>Daily log</h2><span style="display:flex;gap:8px"><button class="btn alt" id="logBig" aria-expanded="false" aria-controls="log" title="Show more of the log">Expand log</button><button class="btn alt" id="rulesBtn" title="How the game ends">How it ends</button></span></div>
       <div id="log" role="log"></div>
     </div>
@@ -633,6 +644,15 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   <details class="wmore"><summary><i class="ib">i</i>More about how to play</summary><div class="more-b">Working, studying and shopping all use time. End the day with <b>Sleep in Apartment</b> at home (the most rest) or <b>Sleep outside</b> anywhere else. Keep an eye on energy and happiness: low happiness cuts your pay. Start with a job at the Employment Office, work shifts, then study at School for better jobs. The <b>First week</b> checklist guides your first days, and the game saves automatically.</div></details>
   <details id="traitBox" class="tbox"><summary><span>🎭 Starting trait: <b id="traitPick">No trait</b></span><small>optional · tap to change</small></summary>
   <div class="traits" id="traits" role="radiogroup" aria-label="Starting trait"></div></details>
+  <div id="modeWrap"><h3>How do you want to play?</h3>
+  <div class="diffs modes" id="modes" role="radiogroup" aria-label="Game mode">
+    <button type="button" class="btn" data-mode="single" aria-pressed="true"><b>🎯 Single game</b><small id="modeSingleTxt">20 days, your own score</small></button>
+    <button type="button" class="btn alt" data-mode="rivals" aria-pressed="false"><b>🏁 With AI rivals</b><small id="modeRivalsTxt">30 days, a town leaderboard</small></button>
+  </div>
+  <div class="rivopts" id="rivOpts" hidden>
+    <div><span>Rivals</span><span class="rseg" id="rivCount"><button type="button" data-rc="1">1</button><button type="button" data-rc="2">2</button><button type="button" data-rc="3" class="on">3</button></span></div>
+    <div><span>Level</span><span class="rseg" id="rivLevel"><button type="button" data-rl="easy">Easy</button><button type="button" data-rl="medium" class="on">Medium</button><button type="button" data-rl="expert">Expert</button><button type="button" data-rl="mixed">Mixed</button></span></div>
+  </div></div>
   <div id="diffsWrap"><h3>Choose a difficulty</h3>
   <div class="diffs" id="diffs">
     <button class="btn alt" data-diff="easy"><b>Easy</b><small>$500 to start, 20 days, cheaper prices, fewer illnesses</small></button>
@@ -661,6 +681,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     <li><b>Tired (energy under 30):</b> shifts pay 15% less. Low energy that lasts also raises your chance of falling ill overnight: <span id="cfgIllEn">about 40% a night under 11 energy</span> (before health, diet and gym visits lower it).</li>
     <li><b>Morale (happiness under 40 / 25 / 20):</b> shifts pay 10% / 25% / 40% less, and below 20 your boss may demote or fire you.</li>
     <li><b>Factory without a job:</b> <span id="cfgFac">day labour on the loading dock (4h, once a day, no dress code) pays 60% of the lowest Factory wage and does not count as work experience. A safety course (once a game) counts as 1 shift of Factory work experience; a factory tour (once a game) adds a little knowledge.</span></li>
+    <li><b>AI rivals:</b> <span id="cfgRivals">in a game with AI rivals, computer players live the same days in the same town.</span></li>
     <li><b>Community Centre:</b> <span id="cfgComm">a night out, karaoke or volunteering lifts your mood, and friends can tip you off about jobs.</span></li>
     <li><b>Free time:</b> <span id="cfgFun">at home, watch a show or play games (1h, −1% energy, +7 happiness, needs a TV or console) or call your family once a day (30m, +3). At the Park, walk (1h, +5 happiness, +1 health) or jog (1h, −8% energy, +4 happiness, +3 health). The Restaurant also serves coffee and cake (45m, +3% energy, +6 happiness), a snack rather than a meal.</span></li>
     <li><b>Hunger:</b> skipping the daily meal costs <span id="cfgHunger">20% energy and 15 happiness</span>, and cuts productivity.</li>
@@ -735,7 +756,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   /* ==================================================================
      1. CONFIG
      Change these numbers to tune the game. Top-level keys, in order: start, education, events, industry, macro, limits, market, bank, jobs, factory,
-     time, clothes, health, illness, gym, hospital, food, burnout, selfStudy, gadgets, sleep, housing, lottery, community, leisure, loan,
+     time, clothes, health, illness, gym, hospital, food, burnout, selfStudy, gadgets, sleep, housing, lottery, community, rivals, leisure, loan,
      bankrupt, shame, score, ranks, ui, traits. Each key has its own comment explaining its values.
      ================================================================== */
   var CONFIG={
@@ -1259,6 +1280,27 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         chance and never fails for "no openings". It is used up by that interview, pass or fail. */
       tip:       {days:3, passBonus:0.3}
     },
+    rivals:{
+      /* A game with AI rivals (chosen on the welcome screen): 1 to 3 computer players live the same days in the same town.
+        gameDays: how long a rival game lasts (a single game lasts time.gameDays). Rank target days stretch with it.
+        industryStorylines: how many industry-specific storylines a rival game has (a single game has one); the next one starts
+          at least industryGapDays after the last one ends.
+        dayOverheadMinutes: walking and errands in a rival's day, so it sleeps about as long as a busy player.
+        names, icons: the rivals, in order.
+        levels: how each level plays. mistakeChance = chance a day goes wrong (skips a meal, studies, a shift, clothes or fun);
+          shifts = shifts a day; plans = aims at the best job reachable in the days left and studies for it; studyHours = most
+          hours of lessons a day; studyChance = chance it studies on a day; applyTries = job interviews a day; usesOutlook = judges
+          jobs by today's pay (the industry storyline included) rather than base pay; bank = none, savings or invest (savings and
+          the ETF in a good market); moraleAim = happiness it tops up to with calls, Park walks and (social) the Community Centre. */
+      gameDays:30, industryStorylines:2, industryGapDays:5,
+      dayOverheadMinutes:180,  // minutes of a rival's day spent walking between places and on errands (less time left to sleep)
+      names:['Maya','Leo','Sam'], icons:['👩','🧔','🧑'],
+      levels:{
+        easy:  {mistakeChance:0.25, shifts:1, plans:false, studyHours:1.5, studyChance:0.35, applyTries:1, usesOutlook:false, bank:'none',    moraleAim:20, social:false},
+        medium:{mistakeChance:0.08, shifts:2, plans:true,  studyHours:4,   studyChance:1,    applyTries:1, usesOutlook:false, bank:'savings', moraleAim:45, social:false},
+        expert:{mistakeChance:0.02, shifts:3, plans:true,  studyHours:4.5, studyChance:1,    applyTries:2, usesOutlook:true,  bank:'invest',  moraleAim:60, social:true}
+      }
+    },
     leisure:{
       /* Free things to do for fun. minutes = time taken; energy in %.
         screen: watch a show or play games at home; needs a working TV or game console.
@@ -1455,7 +1497,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function reachedTier(){var w=worth(),t=-1;TIERS.forEach(function(x,i){if(w>=x.v)t=i});return t}
   function nextGoal(){return TIERS[Math.min(S.tier+1,TIERS.length-1)].v}
   /* rank target days (CONFIG.ranks byDay): reaching a rank by its day earns its bonus */
-  function tierDue(i){var d=TIERS[i]&&TIERS[i].d;return d?Math.min(d,maxDays()):0}
+  function tierDue(i){var d=TIERS[i]&&TIERS[i].d;return d?Math.min(Math.round(d*gameLen()/CONFIG.time.gameDays),maxDays()):0}  /* target days stretch with a longer (rival) game */
   function onTime(i){var due=tierDue(i),rd=S.rankDay&&S.rankDay[i];return !!due&&rd!=null&&rd<=due}
   function rankBonus(){var b=0;TIERS.forEach(function(x,i){if(onTime(i))b+=x.b});return b}
   /* " by day 8" while the next rank's target day has not passed, else "" */
@@ -1467,7 +1509,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     hard:{n:'Hard',cash:100,days:CONFIG.time.gameDays,px:1.15,wage:0.95,ill:1.4,d:'$100 to start, '+CONFIG.time.gameDays+' days, prices 15% higher, pay 5% lower, more illness.'}
   };
   function Df(){return DIFF[S.diff]||DIFF.normal}
-  function maxDays(){return Df().days||Infinity}
+  /* how long this game lasts: a single game CONFIG.time.gameDays, a game with AI rivals CONFIG.rivals.gameDays */
+  function gameLen(){return S&&S.mode==='rivals'?CONFIG.rivals.gameDays:CONFIG.time.gameDays}
+  function maxDays(){return gameLen()}
   var S, loc, view, last=null;
   var toastAll=false, forceToast=[], nightRun=false;  /* nightRun: the overnight pipeline is running (a game that ends then ends on the day that just finished) */  /* toastAll: during a button click, every log line becomes a toast; forceToast: toasts shown even over a pop-up */
   var $=function(id){return document.getElementById(id)};
@@ -1888,7 +1932,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
      3. STATE AND SAVES
      blank() is the full shape of S. fresh() starts a game; save() and load() keep it in localStorage; finish() ends it.
      ================================================================== */
-  function blank(){return {fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,ind:null,indNext:0,indId:'',macroLast:0,bankOffer:null,promo:null,comm:null,tip:null,deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:CONFIG.market.rateBase,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
+  function blank(){return {fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,ind:null,indNext:0,indId:'',macroLast:0,bankOffer:null,promo:null,comm:null,tip:null,mode:'single',rivals:[],rivalSeed:0,indLeft:0,deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:CONFIG.market.rateBase,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
     S=blank();T0();PREV=null;applyPayVar();S.certVar={};Object.keys(TRACKS).forEach(function(t){S.certVar[t]=1+(Math.random()*2-1)*CONFIG.education.certVariance});
     S.sagaNext=sagaDay();S.indNext=indDay();S.indId=INDUSTRY[Math.floor(Math.random()*INDUSTRY.length)].id;
@@ -1954,7 +1998,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     ['storyline once a game (was: again after gapDays): a save whose storyline has ended schedules no other', function(s){
       if(s.sagaLast&&!s.saga)s.sagaNext=0}],
     ['industry-specific storylines: a game saved before them gets one, if there is still time in the window', function(s){
-      if(s.indNext==null&&!s.ind){var L=CONFIG.industry,last=CONFIG.time.gameDays-L.daysBeforeEnd,d=Math.max((s.day||1)+1,indDay());
+      if(s.indNext==null&&!s.ind){var L=CONFIG.industry,last=(s.mode==='rivals'?CONFIG.rivals.gameDays:CONFIG.time.gameDays)-L.daysBeforeEnd,d=Math.max((s.day||1)+1,indDay());
         s.indNext=d<=last&&!s.over?d:0;s.indId=INDUSTRY[Math.floor(Math.random()*INDUSTRY.length)].id}}],
     ['Pawn Shop merged into the Thrift Store: a closure and work experience there move to the Thrift Store', function(s){
       if(s.shut&&s.shut.pawn){s.shut.thrift=Math.max(s.shut.thrift||0,s.shut.pawn);delete s.shut.pawn}
@@ -2018,6 +2062,12 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     $('overScore').hidden=false;
     $('overScore').innerHTML=(isTop?'<div class="topscore">🏆 New personal-best score!</div>':first?'':'<div class="prevtop">Top score so far: <b>'+best.toLocaleString()+'</b></div>')+
       '<div class="bigscore">⭐ '+sc.toLocaleString()+' points</div><table class="sctab">'+scoreParts().map(function(p){return '<tr><td>'+p[0]+'</td><td>'+(p[1]<0?'−':'')+Math.abs(p[1]).toLocaleString()+'</td></tr>'}).join('')+'</table>';
+    if(S.mode==='rivals'&&S.rivals&&S.rivals.length){
+      var st=[{me:1,n:'⭐ You',w:Math.round(worth())}].concat(S.rivals.map(function(r){return {n:r.ic+' '+r.name+' ('+r.diff+')'+(r.out?' · out on day '+r.out.day:''),w:rivalWorth(r)}})).sort(function(a,b){return b.w-a.w});
+      var place=st.findIndex(function(o){return o.me})+1;
+      $('overScore').insertAdjacentHTML('afterbegin','<div class="standings"><h3>🏁 Town standings: you finished '+place+(place===1?'st':place===2?'nd':place===3?'rd':'th')+' of '+st.length+'</h3>'+(place===1?'<div class="topscore">🏆 Top of the town!</div>':'')+
+        '<ol>'+st.map(function(o){return '<li'+(o.me?' class="me"':'')+'>'+o.n+': '+money(o.w)+'</li>'}).join('')+'</ol></div>');
+    }
     if(isTop&&!lost)snd('win');  /* a personal best on a loss is still a loss: no win sound */
     $('over').classList.add('show');
     render();
@@ -3106,6 +3156,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     shutTick();
     trendTick();
     indTick();  /* industry-specific storyline: layoffs and suspensions */
+    rivalTick();  /* AI rivals live the day that has just ended (rival games only) */
     /* second-hand gadgets can break down on their own */
     Object.keys(S.items).forEach(function(k){var it=ITEMS[k];if(S.items[k]&&it&&it.old&&!S.broken[k]&&Math.random()<it.old){S.broken[k]=1;S.notes.push({l:'bad',t:'🔧 Your '+it.n.toLowerCase()+' broke down overnight. Repair it at the Electronics Store (or buy a new one).'});log('Your '+it.n.toLowerCase()+' broke down.','bad')}});
     tickInv();
@@ -3624,6 +3675,131 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(!S.trends.some(function(t){return t.r}))S.rate=clampRate(Math.round((S.rate+(M.rateBase-S.rate)*M.rateReversion)*100)/100);
     /* 3.2: prices drift back towards the difficulty's base price a little each day, so news cannot push them away forever */
     S.px=clampPx(S.px+(Df().px-S.px)*(CONFIG.macro.priceReversion||0));
+  }
+  /* ---------- AI rivals (CONFIG.rivals): computer players who live the same days in the same town ----------
+    Only in a game with rivals (S.mode 'rivals'). Each rival is a small record in S.rivals; rivalTick() plays the day each one
+    has just had, overnight, with the game's own numbers (pay, prices, fees, the economy, the storylines, the endings).
+    Rivals use their own random numbers (rrand, from S.rivalSeed), so they never change the dice of your own game. */
+  function rrand(){var a=S.rivalSeed|0;a=a+0x6D2B79F5|0;S.rivalSeed=a;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}
+  function rivalLv(r,t){var c=TRACKS[t].c,n=r.edu[t]||0,k=0;c.forEach(function(e){if(n>=e)k++});return k}
+  function rivalMeets(r,rk){return (rk.q||[]).every(function(q){return rivalLv(r,q[0])>=q[1]})}
+  function rivalJob(r){return r.job&&CAREERS[r.job.c]?{c:r.job.c,i:r.job.i,rk:CAREERS[r.job.c].ranks[r.job.i],b:bOf(r.job.c)}:null}
+  function rivalWorth(r){return Math.round(r.cash+r.bank+(r.etf||0))}
+  function rivalSkill(r){return CONFIG.rivals.levels[r.diff]||CONFIG.rivals.levels.medium}
+  function makeRivals(n,level,cash){
+    var R=CONFIG.rivals,lv=['easy','medium','expert'],out=[];
+    for(var i=0;i<n;i++){var d=level==='mixed'?lv[i%3]:level,edu={};Object.keys(TRACKS).forEach(function(t){edu[t]=0});
+      out.push({name:R.names[i],ic:R.icons[i],diff:d,cash:cash,bank:0,etf:0,energy:CONFIG.start.energy,happy:70,health:CONFIG.health.start,know:10,edu:edu,
+        job:null,best:null,study:null,target:null,clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},shiftsAt:{},shut:0,
+        out:null,tier:-1,lowH:0,lowE:0,broke:0,hungry:0,hist:[],log:[],y:cash})}
+    return out;
+  }
+  /* the job worth aiming for: the best pay x days it could be worked, among jobs whose missing qualifications fit in the days left */
+  function rivalModHours(t,n){return lesCount(t,n)*lesHours(t,n)}
+  function rivalTarget(r,daysLeft,perDay){
+    var best=null;
+    Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk,i){
+      var h=0;(rk.q||[]).forEach(function(q){var T=TRACKS[q[0]],end=T.c[q[1]-1];for(var m=r.edu[q[0]]||0;m<end;m++)h+=rivalModHours(q[0],m)});
+      if(h>daysLeft*perDay)return;if(kreq(rk)>r.know+h*0.9+6)return;
+      var pay=rivalSkill(r).usesOutlook?rolePay(c,i):rk.pay,v=pay*Math.max(0,daysLeft-Math.ceil(h/perDay)-1);
+      if(!best||v>best.v)best={c:c,i:i,v:v};
+    })});
+    return best;
+  }
+  function rivalNote(r,t,txt){r.log.unshift('Day '+(S.day-1)+': '+txt);r.log=r.log.slice(0,8);if(t)S.notes.push({l:'rem',t:'🏁 '+r.ic+' '+r.name+' '+txt})}
+  /* one rival's day (the day that has just ended) */
+  function rivalDay(r){
+    var K=rivalSkill(r),FDc=CONFIG.food,day=S.day-1,used=CONFIG.rivals.dayOverheadMinutes||0,mistake=rrand()<K.mistakeChance?['meal','study','lazy','clothes','fun'][Math.floor(rrand()*5)]:'',left=gameLen()-day;
+    var clamp100=function(v){return Math.max(0,Math.min(100,v))};
+    /* eat */
+    var meal=Math.round(G(FDc.basic.cost)*(1-(FDc.bundleDiscount||0)));
+    if(mistake!=='meal'&&r.cash>=meal){r.cash-=meal;r.energy=clamp100(r.energy+FDc.basic.energy);r.happy=clamp100(r.happy+FDc.basic.happiness);r.health=clamp100(r.health+FDc.basic.health);r.hungry=0;used+=90}
+    else r.hungry++;
+    /* aim (medium, expert) */
+    if(K.plans&&(!r.target||day%3===1))r.target=rivalTarget(r,left,K.studyHours||1);
+    /* clothes for the job (or the one aimed for) */
+    var j=rivalJob(r),want=(j&&j.rk.dress)||'casual';
+    if(mistake!=='clothes'&&!(r.clothes[want]>0||(want!=='suit'&&r.clothes.suit>0)||(want==='casual'&&r.clothes.smart>0))){var cp=G(WEAR[want].p);if(r.cash<cp&&r.bank>0){var w=Math.min(r.bank,cp-r.cash+20);r.bank-=w;r.cash+=w}if(r.cash>=cp){r.cash-=cp;r.clothes[want]=WEAR[want].w;used+=30}}
+    var dressed=function(d){var c=r.clothes;return d==='suit'?c.suit>0:d==='smart'?(c.smart>0||c.suit>0):(c.casual>0||c.smart>0||c.suit>0)};
+    /* apply for a better job it qualifies for (openings are shared with yours) */
+    for(var a=0;a<K.applyTries;a++){
+      var val=function(c,i){return (K.usesOutlook?rolePay(c,i):CAREERS[c].ranks[i].pay)+(r.target&&bOf(c)===bOf(r.target.c)?20:0)},cp0=j?val(j.c,j.i):0,best=null;  /* the target's workplace is worth a little extra (work experience) */
+      Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk,i){
+        if(j&&j.c===c&&j.i>=i)return;if(!rivalMeets(r,rk)||kreq(rk)>Math.floor(r.know))return;
+        if(S.closed[c+'_'+i]||shutLeft(bOf(c))>0)return;if(needsExp(rk)&&(r.shiftsAt[bOf(c)]||0)<CONFIG.jobs.experience.shifts)return;
+        if(rk.dress&&!dressed(rk.dress))return;var g=val(c,i)-cp0;
+        if(g>0&&(!best||g>best.g))best={c:c,i:i,g:g};
+      })});
+      if(!best)break;used+=60;
+      var pp=Math.max(0.2,Math.min(0.95,0.82-0.05*best.i+r.know/400+(r.happy-50)/300-(r.energy<30?0.1:0)));
+      if(rrand()<pp){var was=j;r.job={c:best.c,i:best.i};j=rivalJob(r);rivalNote(r,1,(was&&was.c===best.c?'was promoted to ':'got a new job: ')+j.rk.r+' at the '+NAME[j.b]+'.');
+        if(!r.best||rolePay(best.c,best.i)>r.best.pay)r.best={r:j.rk.r,pay:rolePay(best.c,best.i)};break}
+    }
+    /* work */
+    var shifts=K.shifts-(mistake==='lazy'?1:0),load=0;
+    if(r.shut>0)r.shut--;
+    else for(var s=0;s<shifts&&j;s++){
+      var ef=effort(j.rk.pay);if(r.energy-ef.en<25||load+ef.min>CONFIG.time.maxWorkMinutes||!dressed(j.rk.dress||'casual'))break;
+      var pm=(r.happy<20?.6:r.happy<25?.75:r.happy<40?.9:1)*(r.energy<30?.85:1)*(r.health<CONFIG.health.poorBelow?CONFIG.health.poorPay:1);
+      var pay=Math.round(Math.round(rolePay(j.c,j.i)*payIdx()*(1+r.know/400))*pm);
+      r.cash+=pay;r.energy=clamp100(r.energy-ef.en);r.happy=clamp100(r.happy-workHap(ef.en));r.health=clamp100(r.health+workHp(ef.min));
+      r.shiftsAt[j.b]=(r.shiftsAt[j.b]||0)+1;load+=ef.min;used+=ef.min;
+    }
+    /* study towards the target (or anything, for easy rivals now and then) */
+    var tg=r.target&&CAREERS[r.target.c]&&CAREERS[r.target.c].ranks[r.target.i],need=tg?(tg.q||[]).filter(function(q){return rivalLv(r,q[0])<q[1]}):[];
+    if(!K.plans&&!r.study&&rrand()<K.studyChance){var ts=Object.keys(TRACKS).filter(function(t){return (r.edu[t]||0)<totMods(t)});if(ts.length)need=[[ts[Math.floor(rrand()*ts.length)],9]]}
+    if(mistake!=='study'&&(need.length||r.study)&&rrand()<K.studyChance){
+      var t=r.study?r.study.t:need[0][0];
+      if(!r.study){var n0=r.edu[t]||0,fee=qualFee(t,n0),keep=HOUSE.apt.rent+80;if(r.cash-fee<keep&&r.bank>0){var w2=Math.min(r.bank,keep+fee-r.cash);r.bank-=w2;r.cash+=w2}
+        if(r.cash-fee>=keep){r.cash-=fee;r.study={t:t,lv:levelOf(t,n0),h:0}}}
+      if(r.study){var hrs=Math.min(K.studyHours,(CONFIG.burnout.loadMinutes-load)/60,Math.max(0,(r.energy-25)/Math.abs(CONFIG.education.lessonEnergyPerHour||5)));
+        if(hrs>=0.5){var lc=lessonCost(hrs);r.energy=clamp100(r.energy+lc.en);r.happy=clamp100(r.happy+lc.hap);r.health=clamp100(r.health+lc.hp);r.know=clamp100(r.know+Math.round(hrs));used+=hrs*60;
+          r.study.h+=hrs;var T=TRACKS[r.study.t];
+          while(r.study&&r.study.h>=rivalModHours(r.study.t,r.edu[r.study.t]||0)){r.study.h-=rivalModHours(r.study.t,r.edu[r.study.t]||0);r.edu[r.study.t]=(r.edu[r.study.t]||0)+1;r.know=clamp100(r.know+2+r.study.lv);
+            var nl=rivalLv(r,r.study.t);if(nl>r.study.lv){var E2=CONFIG.education,ln=T.lv[nl-1];r.know=clamp100(r.know+((E2.certKnowledge||{})[ln]||0));r.happy=clamp100(r.happy+((E2.certHappiness||{})[ln]||0));
+              rivalNote(r,nl>=2,'earned a '+T.n+' '+ln+'.');r.study=null}
+            else if((r.edu[r.study.t]||0)>=totMods(r.study.t))r.study=null}}}
+    }
+    /* morale: free and cheap lifts, cheapest first, up to the level's aim (CONFIG.community and CONFIG.leisure) */
+    if(mistake!=='fun'&&r.happy<K.moraleAim){var L=CONFIG.leisure,C=CONFIG.community,acts=[L.call,L.walk];if(K.social&&C)acts.push(C.volunteer,C.karaoke,C.nightOut);
+      acts.forEach(function(c){if(!c||r.happy>=K.moraleAim||used+c.minutes>1440-360)return;var cost=G(c.cost||0);if(r.cash-cost<HOUSE.apt.rent)return;if(c.energy&&r.energy+c.energy<25)return;
+        r.cash-=cost;r.happy=clamp100(r.happy+(c.happiness||0));r.energy=clamp100(r.energy+(c.energy||0));r.health=clamp100(r.health+(c.health||0));if(c.knowledge)r.know=clamp100(r.know+c.knowledge);used+=c.minutes})}
+    /* money: savings (medium), savings and the ETF in a good market (expert) */
+    var keepC=HOUSE.apt.rent+150+G(WEAR.casual.p);
+    if(K.bank!=='none'&&r.cash>keepC+50){r.bank+=r.cash-keepC;r.cash=keepC}
+    if(K.bank==='invest'){if(S.mkt>0.3&&r.bank>300){var mv=Math.round(r.bank/2);r.bank-=mv;r.etf+=mv}else if(S.mkt<-0.3&&r.etf>0){r.bank+=r.etf;r.etf=0}}
+    return used;
+  }
+  /* the night for one rival: sleep, hunger, clothes wear, interest, rent, layoffs, endings and news */
+  function rivalNight(r,used){
+    var SL=CONFIG.sleep,HN=CONFIG.health.nightly,FDc=CONFIG.food,clamp100=function(v){return Math.max(0,Math.min(100,v))};
+    var leftMin=Math.max(0,1440-used-60);
+    r.energy=clamp100(r.energy+SL.nightEnergy+Math.min(SL.maxEnergy,Math.round(leftMin/60*SL.perHour.apt*(SL.rateX||1))));
+    r.happy=clamp100(r.happy+SL.nightHappiness+sleepHap(leftMin));
+    r.health=clamp100(r.health+sleepHealth(leftMin)+(HN.always||0));
+    if(r.hungry){r.energy=clamp100(r.energy+FDc.hungryEnergy);r.happy=clamp100(r.happy+FDc.hungryHappiness);r.health=clamp100(r.health+HN.skippedMeal)}
+    r.know=clamp100(r.know+CONFIG.selfStudy.nightlyLoss);
+    ['casual','smart','suit'].forEach(function(k){if(r.clothes[k]>0)r.clothes[k]=Math.max(0,r.clothes[k]-CONFIG.clothes.wearPerDay)});
+    r.bank+=Math.floor(r.bank*S.rate/100);
+    if(r.etf>0)r.etf=Math.max(0,r.etf*(1+(expRet('etf')+VOL.etf*(rrand()*2-1)*1.7)/100));
+    if((S.day-1)%RENT_EVERY===0){var due=HOUSE.apt.rent,pay=Math.min(due,Math.max(0,r.cash));r.cash-=pay;due-=pay;var b=Math.min(due,r.bank);r.bank-=b;due-=b;r.cash-=due}
+    /* layoffs and closures: the industry-specific storyline and the economy's trends, as for you */
+    var j=rivalJob(r);
+    if(j){var x=indRole(j.c,j.i),I=CONFIG.industry,lay=0;S.trends.forEach(function(t){lay+=t.lay||0});
+      if((x&&x.cut===1&&rrand()<I.layoffChance)||rrand()<lay){r.job=null;rivalNote(r,1,'was laid off from '+j.rk.r+' at the '+NAME[j.b]+'.')}
+      else if(x&&x.cut&&rrand()<I.suspendChance)r.shut=I.suspendDays[0]+Math.floor(rrand()*(I.suspendDays[1]-I.suspendDays[0]+1))}
+    /* ranks and endings, by the same rules as yours */
+    var w=rivalWorth(r),t=-1;TIERS.forEach(function(x,i){if(w>=x.v)t=i});
+    if(t>r.tier){r.tier=t;rivalNote(r,1,'reached '+TIERS[t].ic+' '+TIERS[t].n+' ('+money(TIERS[t].v)+').')}
+    var BR=CONFIG.bankrupt;r.broke=(w<BR.netWorthBelow&&S.day-1>=BR.fromDay)?r.broke+1:0;
+    r.lowH=r.happy<=10?r.lowH+1:0;r.lowE=r.energy<=10?r.lowE+1:0;
+    var end=r.broke>=BR.daysInARow?'went bankrupt':r.lowH>=3?'gave up':r.lowE>=2?'collapsed from exhaustion':r.hungry>=3?'was hospitalised (no food)':'';
+    if(end){r.out={day:S.day-1,why:end};rivalNote(r,1,end+' on day '+(S.day-1)+'. Out of the race.')}
+    r.hist.push(w);
+  }
+  function rivalTick(){
+    if(S.mode!=='rivals'||!S.rivals)return;
+    S.rivals.forEach(function(r){if(r.out)return;r.y=rivalWorth(r);rivalNight(r,rivalDay(r))});
   }
   /* ---------- macro shocks: multi-day stories with daily effects ----------
     [title, what happens, economic term explained, minDays, maxDays, daily effects]
@@ -4323,7 +4499,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   ];
   function indOf(id){var r=null;INDUSTRY.forEach(function(x){if(x.id===id)r=x});return r}
   /* the day the industry-specific storyline starts: a random day from fromDay to (game length − daysBeforeEnd) */
-  function indDay(){var L=CONFIG.industry,a=L.fromDay,b=Math.max(a,CONFIG.time.gameDays-L.daysBeforeEnd);return a+Math.floor(Math.random()*(b-a+1))}
+  function indDay(){var L=CONFIG.industry,a=L.fromDay,b=Math.max(a,(S&&S.indLeft>0?Math.floor(gameLen()/2):gameLen()-L.daysBeforeEnd));  /* with a second one to come, the first starts in the first half */return a+Math.floor(Math.random()*(b-a+1))}
   function indPhase(k,N){return k===0?0:k>=N-1?3:k<Math.ceil(N*0.55)?1:2}  /* same phase split as a global storyline */
   /* the effects of the running industry-specific storyline's current phase (none before its first chapter or after it ends) */
   function indOn(){var st=S.ind,g=st&&indOf(st.id);return g&&st.day>0?g.ph[st.ph].on:[]}
@@ -4376,7 +4552,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   }
   function sagaOf(id){var r=null;SAGAS.forEach(function(x){if(x.id===id)r=x});return r}
   /* the day the storyline starts: a random day from fromDay to (game length − daysBeforeEnd), see CONFIG.events.storyline */
-  function sagaDay(){var L=CONFIG.events.storyline,a=L.fromDay,b=Math.max(a,CONFIG.time.gameDays-L.daysBeforeEnd);return a+Math.floor(Math.random()*(b-a+1))}
+  function sagaDay(){var L=CONFIG.events.storyline,a=L.fromDay,b=Math.max(a,gameLen()-L.daysBeforeEnd);return a+Math.floor(Math.random()*(b-a+1))}
   function sagaStart(){
     var sg=draw('deckG',SAGAS);if(sg.id===S.sagaLast)sg=draw('deckG',SAGAS);  /* a new deck can start with the one just played */
     var len=sg.len[0]+Math.floor(Math.random()*(sg.len[1]-sg.len[0]+1)),e=sg.eff;
@@ -5093,7 +5269,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function pickNight(){
     var E=CONFIG.events,cards=[],story=!!S.saga,wasActive=story||macroRunning(),big=null,ind=null;
     var shockNear=macroRunning()||(S.macroLast>0&&S.day-S.macroLast<=E.storylineGap);  /* a shock running, or ended under storylineGap days ago */
-    if(S.ind&&S.ind.day>=S.ind.len)S.ind=null;  /* the industry-specific storyline's last phase held for one day after its last chapter */
+    if(S.ind&&S.ind.day>=S.ind.len){var lastInd=S.ind.id;S.ind=null;  /* the industry-specific storyline's last phase held for one day after its last chapter */
+      if(S.indLeft>0){S.indLeft--;var IL=CONFIG.industry,lo=S.day+CONFIG.rivals.industryGapDays,hi=gameLen()-IL.daysBeforeEnd;  /* a rival game has another one (rival dice) */
+        if(lo<=hi){S.indNext=lo+Math.floor(rrand()*(hi-lo+1));var ids=INDUSTRY.filter(function(g){return g.id!==lastInd});S.indId=ids[Math.floor(rrand()*ids.length)].id}}}
     if(!S.saga&&!S.ind&&!macroRunning()&&(S.bigCool||0)>0)S.bigCool--;
     if(S.saga)big=sagaEvent();
     else if(S.sagaNext>0&&S.day>=S.sagaNext&&!shockNear){  /* waits out a shock and the days after it */
@@ -5919,7 +6097,20 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     $('rlWin').textContent=maxDays()===Infinity?' (no time limit on Easy)':', within '+maxDays()+' days';$('rlTime').textContent=maxDays()===Infinity?'Not on Easy: there is no day limit.':'Day '+maxDays()+' passes and you are still under '+money(GOAL)+'.';
   }
   /* the overview's day recap, warnings, net-worth parts, investments line and rank goal */
+  /* the town leaderboard (rival games): you and your rivals by net worth, with their job and today's change */
+  function rivalBoard(){
+    var box=$('rivBox');if(!box)return;var on=S.mode==='rivals'&&S.rivals&&S.rivals.length;box.hidden=!on;if(!on)return;
+    var me=myJob(),rows=[{me:1,ic:'⭐',name:'You',w:Math.round(worth()),job:me?me.rk.r:'No job',d:null}];
+    S.rivals.forEach(function(r){rows.push({r:r,ic:r.ic,name:r.name+' <small>('+r.diff+')</small>',w:rivalWorth(r),job:r.out?'Out: '+r.out.why+' (day '+r.out.day+')':(rivalJob(r)?rivalJob(r).rk.r:'No job'),d:rivalWorth(r)-r.y})});
+    rows.sort(function(a,b){return b.w-a.w});
+    $('rivSub').textContent='· day '+Math.min(S.day,maxDays())+' of '+maxDays();
+    $('rivList').innerHTML=rows.map(function(o,i){
+      var line='<span>'+(i+1)+'.</span><span class="rn">'+o.ic+' '+o.name+' · <small>'+o.job+'</small></span><b>'+money(o.w)+'</b>'+(o.d!=null&&o.d!==0?'<span class="rd '+(o.d>0?'up':'dn')+'">'+(o.d>0?'▲':'▼')+money(Math.abs(o.d))+'</span>':'');
+      return o.me?'<div class="rivrow me">'+line+'</div>':'<details><summary class="rivrow">'+line+'</summary><ul>'+(o.r.log.length?o.r.log.map(function(l){return '<li>'+l+'</li>'}).join(''):'<li>Nothing to report yet.</li>')+'</ul></details>';
+    }).join('');
+  }
   function renderOverviewCards(){
+    rivalBoard();
     (function(){var d=handheld(),o=offerToday();$('phoneBtn').disabled=!d||!!S.over;
       $('phoneNote').textContent=!d?'Needs a phone or tablet'+(owns('computer')?' (your computer at home has the apps)':''):'Bank and Jobs apps'+(o&&!S.promo?' · 🎁 bank offer today':'')})();
     var as=assets(),nw=worth(),tot=Math.max(nextGoal(),nw),iv=invTotal();  /* the same values renderStats() shows */
@@ -6341,12 +6532,34 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
 
   $('hudEnd').addEventListener('click',function(){if(S.over||S.pending)return;endWeek(false)});
   $('goals').addEventListener('click',function(e){if(e.target.id==='hideGoals'){S.tut=1;render()}});
+  /* the welcome screen's game mode: a single game, or a game with AI rivals (how many, which level) */
+  var pickMode='single',pickCount=3,pickLevel='medium';
+  function paintMode(){
+    [].forEach.call(document.querySelectorAll('#modes [data-mode]'),function(b){var on=b.dataset.mode===pickMode;b.setAttribute('aria-pressed',on?'true':'false');b.className='btn'+(on?'':' alt')});
+    $('rivOpts').hidden=pickMode!=='rivals';
+    [].forEach.call(document.querySelectorAll('#rivCount [data-rc]'),function(b){b.classList.toggle('on',+b.dataset.rc===pickCount)});
+    [].forEach.call(document.querySelectorAll('#rivLevel [data-rl]'),function(b){b.classList.toggle('on',b.dataset.rl===pickLevel)});
+    var n=pickMode==='rivals'?CONFIG.rivals.gameDays:CONFIG.time.gameDays;
+    $('modeSingleTxt').textContent=CONFIG.time.gameDays+' days, your own score';$('modeRivalsTxt').textContent=CONFIG.rivals.gameDays+' days, a town leaderboard';
+    document.querySelectorAll('#diffs [data-diff]').forEach(function(b){var D=DIFF[b.dataset.diff],sm=b.querySelector('small');if(D&&sm)sm.textContent=D.d.replace(/\.$/,'').replace(/\d+ days/,n+' days')});
+  }
+  $('modes').addEventListener('click',function(e){var b=e.target.closest('[data-mode]');if(!b)return;pickMode=b.dataset.mode;paintMode()});
+  $('rivOpts').addEventListener('click',function(e){var c=e.target.closest('[data-rc]'),l=e.target.closest('[data-rl]');if(c)pickCount=+c.dataset.rc;if(l)pickLevel=l.dataset.rl;paintMode()});
+  /* capture phase: before the difficulty handler below starts the game */
+  $('diffs').addEventListener('click',function(e){
+    var b=e.target.closest('[data-diff]');if(!b||S.flags.diff)return;
+    if(pickMode!=='rivals'){S.mode='single';S.rivals=[];return}
+    S.mode='rivals';S.rivalSeed=(Math.random()*2147483647)|0;S.rivals=makeRivals(pickCount,pickLevel,DIFF[b.dataset.diff].cash);
+    S.indLeft=Math.max(0,(CONFIG.rivals.industryStorylines||1)-1);S.sagaNext=sagaDay();S.indNext=indDay();  /* storylines spread over the longer game */
+  },true);
   $('diffs').addEventListener('click',function(e){
     var b=e.target.closest('[data-diff]');if(!b)return;
     var k=b.dataset.diff,D=DIFF[k];
     S.diff=k;S.flags.diff=1;S.cash=D.cash;S.px=D.px*(CONFIG.limits.startPriceMin+Math.random()*(CONFIG.limits.startPriceMax-CONFIG.limits.startPriceMin));S.wage=D.wage;S.today=null;T0();
     $('welcome').classList.remove('show');
-    log('Difficulty: '+D.n+'. '+D.d,'good');render();
+    log('Difficulty: '+D.n+'. '+D.d.replace(/\d+ days/,gameLen()+' days'),'good');
+    if(S.mode==='rivals')log('🏁 A game with AI rivals: '+S.rivals.map(function(r){return r.ic+' '+r.name+' ('+r.diff+')'}).join(', ')+'. They live the same '+gameLen()+' days in the same town. The leaderboard is on the Overview.','good');
+    render();
   });
   $('rulesBtn').addEventListener('click',function(){$('rules').classList.add('show');setTimeout(function(){$('rulesClose').focus()},0)});
   $('rulesClose').addEventListener('click',function(){$('rules').classList.remove('show')});
@@ -6370,6 +6583,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         if($('cfgBank'))$('cfgBank').textContent='savings pay about '+Mk.rateBase+'% a day (the rate moves with the news), a fixed deposit '+R.fdOverSavings+'× that, and the ETF, hedge fund and crypto expect about '+R.etf.base+'%, '+R.hf.base+'% and '+R.cry.base+'% a day in a steady market, with bigger swings the more they pay. With a phone or tablet (📱 Phone on the Overview), or a computer at home (💻 Computer in your home), the Bank app does all this without the walk (loans still need a visit), and the Jobs app shows the Employment Office job board, where you can apply online (1h, as in person). '+(O&&O.chance>0?'Some mornings from day '+O.fromDay+' the Bank has a one-day offer: a promo deposit at '+O.rate[0]+'–'+O.rate[1]+'% a day for '+dayN(O.days)+'. ':'')+'Each morning tells you what your money made overnight and the best return open to you.'})();
       (function(){var C=CONFIG.community,f=function(c){return hm(c.minutes)+(c.cost?', $'+c.cost:'')+(c.energy?', '+sg(c.energy)+'% energy':'')+', '+sg(c.happiness)+' happiness'+(c.knowledge?', '+sg(c.knowledge)+' knowledge':'')};
         if($('cfgComm'))$('cfgComm').textContent='once a day each: a night out with friends ('+f(C.nightOut)+'), karaoke ('+f(C.karaoke)+') or volunteering ('+f(C.volunteer)+'). A night out ('+pctTxt(C.nightOut.tipChance)+') or volunteering ('+pctTxt(C.volunteer.tipChance)+') can get you a friend’s job tip: for '+dayN(C.tip.days)+' your next interview is '+Math.round(C.tip.passBonus*100)+'% more likely to pass and never fails for “no openings”.'})();
+      (function(){var R=CONFIG.rivals,T=CONFIG.time.gameDays,due=TIERS.filter(function(r){return r.d}).map(function(r){return Math.min(Math.round(r.d*R.gameDays/T),R.gameDays)});
+        if($('cfgRivals'))$('cfgRivals').textContent='choose “With AI rivals” on the welcome screen: 1 to 3 computer players (easy, medium, expert or mixed) live the same '+R.gameDays+' days in the same town, under the same prices, pay, storylines, layoffs and job openings. A rival game lasts '+R.gameDays+' days (a single game '+T+'), has '+R.industryStorylines+' industry-specific storylines, and its rank target days stretch to day '+due.join(', ')+'. The Overview shows a town leaderboard by net worth, and the morning news tells you what your rivals did.'})();
       $('cfgRent').textContent=everyDays(RENT_EVERY);
       $('apOf').textContent=' of '+hm(MAX_AP);
       $('cfgDebt').textContent=pctTxt(CONFIG.hospital.billInterest);
@@ -6839,6 +7054,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   /* ==================================================================
      12. START
      ================================================================== */
+  paintMode();  /* the welcome screen's mode buttons and difficulty texts */
   if(!load())fresh();
   CFG_WARN.forEach(function(w){log('⚙️ '+w,'bad');console.warn(w)});
 })();

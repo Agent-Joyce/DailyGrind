@@ -122,7 +122,7 @@
   function allRanks(){var a=[];Object.keys(G.CAREERS).forEach(function(c){G.CAREERS[c].ranks.forEach(function(rk,i){a.push({c:c,i:i,rk:rk,b:G.CAREERS[c].b||c})})});return a}
   /* qualifications aim at the job worth the most over the days still left: pay x days it could be worked */
   function pickTarget(){
-    S=G.S;var daysLeft=G.CONFIG.time.gameDays-S.day+1,best=null;
+    S=G.S;var daysLeft=G.maxDays()-S.day+1,best=null;
     allRanks().forEach(function(o){
       var h=studyHoursLeft(o.rk);if(h>daysLeft*4.5)return;  /* about 4.5h of lessons a day stays under the burnout line */
       if(G.kreq(o.rk)>Math.floor(S.know)+h*0.9+6)return;
@@ -286,6 +286,11 @@
     rep={seed:seed,mode:mode,issues:{}};clicks=0;target=null;errs.length=0;MOR={};
     try{localStorage.removeItem('dailyGrind.save.v1')}catch(e){}
     G.fresh();
+    if(QA.rivals){  /* a game with AI rivals: QA.rivals = their level, QA.rivalCount = how many */
+      await click(document.querySelector('#modes [data-mode="rivals"]'),'mode:rivals');
+      await click(document.querySelector('#rivCount [data-rc="'+(QA.rivalCount||3)+'"]'),'rivals:count');
+      await click(document.querySelector('#rivLevel [data-rl="'+QA.rivals+'"]'),'rivals:level');
+    }
     await click($('welcomeGo'),'popup:start');
     var pb=$('previewBtn');
     if(mode==='survive'&&/on/.test(pb.textContent))pb.click();
@@ -299,10 +304,11 @@
     }
     errs.forEach(function(e){note('JS-ERROR',e)});
     S=G.S;var j=G.myJob(),ranks=G.CONFIG.ranks.slice().sort(function(a,b){return a.netWorth-b.netWorth});
-    rep.lastDay=Math.min(S.day,G.CONFIG.time.gameDays);rep.ending=S.over?$('overTitle').textContent:'still playing';
+    rep.lastDay=Math.min(S.day,G.maxDays());rep.ending=S.over?$('overTitle').textContent:'still playing';
     rep.netWorth=Math.round(G.worth());rep.rank=maxRank>=0?ranks[maxRank].name:'none';rep.job=j?j.rk.r:'none';
     rep.quals=Object.keys(S.edu).filter(function(t){return lvl(t)}).map(function(t){return G.TRACKS[t].n+' '+G.TRACKS[t].lv[lvl(t)-1]}).join(', ');
-    rep.vitals='E'+S.energy+' H'+S.happy+' L'+S.health+' K'+Math.floor(S.know);rep.clicks=clicks;rep.worthByDay=tl;rep.morale=MOR;
+    rep.vitals='E'+S.energy+' H'+S.happy+' L'+S.health+' K'+Math.floor(S.know);rep.clicks=clicks;rep.worthByDay=tl;rep.morale=MOR;rep.days=G.maxDays();
+    if(S.mode==='rivals')rep.rivals=S.rivals.map(function(r){return {name:r.name,diff:r.diff,worth:G.rivalWorth(r),tier:r.tier,out:r.out,job:r.job?G.CAREERS[r.job.c].ranks[r.job.i].r:'none',happy:r.happy,hist:r.hist}});
     return rep;
   }
 
@@ -326,7 +332,7 @@
     var agg={};out.forEach(function(r){Object.keys(r.issues).forEach(function(k){agg[k]=(agg[k]||0)+r.issues[k]})});
     var bugs=Object.keys(agg).filter(function(k){return /^(JS-ERROR|INVARIANT|STUCK|TEXT≠EFFECT|UI)/.test(k)});
     var summ=function(m){var rs=out.filter(function(r){return r.mode===m});if(!rs.length)return '';var ends={};rs.forEach(function(r){ends[r.ending]=(ends[r.ending]||0)+1});
-      return '<li><b>'+m+'</b> ('+rs.length+' runs): '+Object.keys(ends).map(function(e){return esc(e)+' ×'+ends[e]}).join(', ')+'; reached the last day: '+rs.filter(function(r){return r.lastDay>=__G.CONFIG.time.gameDays}).length+'</li>'};
+      return '<li><b>'+m+'</b> ('+rs.length+' runs): '+Object.keys(ends).map(function(e){return esc(e)+' ×'+ends[e]}).join(', ')+'; reached the last day: '+rs.filter(function(r){return r.lastDay>=__G.maxDays()}).length+'</li>'};
     var h='<h2 style="margin:0 0 6px">Daily Grind simulation runs</h2><p>'+out.length+' runs in '+Math.round(ms/1000)+'s. '+
       (bugs.length?'<b style="color:#b00">'+bugs.length+' kind(s) of problem found</b> (see below).':'<b style="color:#1a7f3c">No script errors, broken invariants, stuck days or log/effect mismatches.</b>')+'</p><ul>'+summ('survive')+summ('random')+'</ul>'+
       '<p><button id="qaJson">Download JSON</button> <button id="qaClose">Close report</button></p>'+

@@ -22,7 +22,7 @@
         rent arrears, a loan to repay, a pawned item to redeem, an industry-specific storyline (its peak, your own job hit,
         the rumour), out of clothes (buying used ones, a job's shift disabled), bank offers, the phone home screen, the Bank app and the Jobs app, a friend's job tip. Each checks its buttons are there (MISSING) and presses them.
      6. Flows: ending the day (end-of-day cards, morning card), the action preview, a certificate and its bonus toast,
-        the Belongings list on the status page.
+        the Belongings list on the status page, and the town leaderboard of a game with AI rivals.
    Results: window.__UI_RESULTS, an on-page report, the browser console, and a message to the parent page
    (so a harness page can collect the desktop and phone runs). Settings: window.__UICHECK = {autorun, seed}. */
 (function(){
@@ -258,6 +258,15 @@
     b.click();await y();var p=$('belongPop');
     if(!p||p.hidden)note('DEAD BUTTON','status page','the Belongings ⓘ did not open the list');
     else{if(!/Computer/.test(p.textContent))note('BAD TEXT','Belongings list','does not list the computer the player owns');layout('Belongings list',p.closest('.grp')||p);await shot('status')}
+    /* a game with AI rivals: the town leaderboard on the status page, one rival's story opened */
+    restore(null);G.S.mode='rivals';
+    G.S.rivals=[['Maya','👩','easy',640,null],['Leo','🧔','medium',2380,{c:'hosp',i:1}],['Sam','🧑','expert',5120,{c:'bank',i:2}]].map(function(x){return {name:x[0],ic:x[1],diff:x[2],cash:x[3],bank:0,etf:0,job:x[4],y:x[3]-90,
+      log:['Day 3: got a new job.','Day 2: reached Comfortable.'],out:x[2]==='easy'?{day:9,why:'gave up'}:null,edu:{},clothes:{},shiftsAt:{},hist:[]}});
+    G.view=null;G.render();var rb=$('rivBox');
+    if(!rb||rb.hidden)note('MISSING','status page (rivals)','no town leaderboard in a game with AI rivals');
+    else{if(rb.querySelectorAll('.rivrow').length!==4)note('BAD TEXT','town leaderboard','expected 4 rows (you and 3 rivals), found '+rb.querySelectorAll('.rivrow').length);
+      var d=rb.querySelector('details');if(d){d.open=true;await y()}layout('town leaderboard',rb);await shot('status_rivals')}
+    G.S.mode='single';G.S.rivals=[];
   }
 
   /* ---------- run and report ---------- */
