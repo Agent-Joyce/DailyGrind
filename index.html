@@ -2111,6 +2111,13 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var notes=[];for(var j=from;j<=t;j++){var due=tierDue(j);if(due)notes.push(onTime(j)?'⭐ '+TIERS[j].n+' on time (target day '+due+'): +'+TIERS[j].b.toLocaleString()+' score.':TIERS[j].n+' came after its target day ('+due+'), so no on-time bonus.')}
     for(var w=from;w<=t;w++)addWin(TIERS[w].ic+' '+TIERS[w].n+(onTime(w)?' on time':''));
     var nt=notes.length?' '+notes.join(' '):'';
+    if(t===TIERS.length-1&&S.mode==='rivals'){  /* a rival game goes on to its last day: the top rank is a milestone, the standings decide */
+      log('Milestone: '+T.n+' ('+money(T.v)+' net worth reached), the top rank. The race goes on to day '+maxDays()+': the town standings are taken at the end.'+nt,'good');
+      $('overTitle').textContent=T.ic+' You are '+T.n+'!';
+      $('overText').textContent='Net worth: '+money(worth())+' after '+day+' day'+(day>1?'s':'')+'. That is the top rank. '+(notes.length?notes.join(' ')+' ':'')+'Your rivals are still racing: keep going to day '+maxDays()+', when the town standings are taken.';
+      $('keep').hidden=false;$('overScore').hidden=true;$('over').classList.add('show');snd('win');rankBurst();
+      return false;
+    }
     if(t===TIERS.length-1){
       log('You reached '+T.n+' status with '+money(worth())+'. You win!'+nt,'good');
       snd('win');finish(T.ic+' '+T.n+'!','You built a net worth of '+money(worth())+' in '+day+' day'+(day>1?'s':'')+'. That is the top rank.'+nt);
@@ -6584,14 +6591,14 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       (function(){var C=CONFIG.community,f=function(c){return hm(c.minutes)+(c.cost?', $'+c.cost:'')+(c.energy?', '+sg(c.energy)+'% energy':'')+', '+sg(c.happiness)+' happiness'+(c.knowledge?', '+sg(c.knowledge)+' knowledge':'')};
         if($('cfgComm'))$('cfgComm').textContent='once a day each: a night out with friends ('+f(C.nightOut)+'), karaoke ('+f(C.karaoke)+') or volunteering ('+f(C.volunteer)+'). A night out ('+pctTxt(C.nightOut.tipChance)+') or volunteering ('+pctTxt(C.volunteer.tipChance)+') can get you a friend’s job tip: for '+dayN(C.tip.days)+' your next interview is '+Math.round(C.tip.passBonus*100)+'% more likely to pass and never fails for “no openings”.'})();
       (function(){var R=CONFIG.rivals,T=CONFIG.time.gameDays,due=TIERS.filter(function(r){return r.d}).map(function(r){return Math.min(Math.round(r.d*R.gameDays/T),R.gameDays)});
-        if($('cfgRivals'))$('cfgRivals').textContent='choose “With AI rivals” on the welcome screen: 1 to 3 computer players (easy, medium, expert or mixed) live the same '+R.gameDays+' days in the same town, under the same prices, pay, storylines, layoffs and job openings. A rival game lasts '+R.gameDays+' days (a single game '+T+'), has '+R.industryStorylines+' industry-specific storylines, and its rank target days stretch to day '+due.join(', ')+'. The Overview shows a town leaderboard by net worth, and the morning news tells you what your rivals did.'})();
+        if($('cfgRivals'))$('cfgRivals').textContent='choose “With AI rivals” on the welcome screen: 1 to 3 computer players (easy, medium, expert or mixed) live the same '+R.gameDays+' days in the same town, under the same prices, pay, storylines, layoffs and job openings. A rival game lasts '+R.gameDays+' days (a single game '+T+'), has '+R.industryStorylines+' industry-specific storylines, and its rank target days stretch to day '+due.join(', ')+'. Reaching '+TIERS[TIERS.length-1].n+' does not end a rival game: everyone plays all '+R.gameDays+' days. The Overview shows a town leaderboard by net worth, the morning news tells you what your rivals did, and the end screen shows the town standings.'})();
       $('cfgRent').textContent=everyDays(RENT_EVERY);
       $('apOf').textContent=' of '+hm(MAX_AP);
       $('cfgDebt').textContent=pctTxt(CONFIG.hospital.billInterest);
       $('cfgGoal').textContent=money(GOAL);$('cfgGoal2').textContent=money(GOAL);$('cfgRank1').textContent=TIERS[0].ic+' '+TIERS[0].n;
       var up=TIERS.slice(1),last=TIERS[TIERS.length-1];
       var parts=up.map(function(r){return '<b>'+r.ic+' '+r.n+'</b> at '+money(r.v)});
-      $('cfgRanks').innerHTML=(parts.length>1?parts.slice(0,-1).join(', ')+' and '+parts[parts.length-1]:parts[0])+' ('+last.n+' ends the game)';
+      $('cfgRanks').innerHTML=(parts.length>1?parts.slice(0,-1).join(', ')+' and '+parts[parts.length-1]:parts[0])+' ('+last.n+' ends a single game; a game with AI rivals goes on to its last day)';
       var tg=TIERS.map(function(r,i){return r.d?'<b>'+r.ic+' '+r.n+'</b> by day '+Math.min(r.d,CONFIG.time.gameDays||r.d)+' (+'+r.b.toLocaleString()+')':''}).filter(Boolean);
       $('cfgOnTime').parentNode.hidden=!tg.length;
       $('cfgOnTime').innerHTML='<b>Target days:</b> reach a rank by the end of its day for bonus score points: '+(tg.length>1?tg.slice(0,-1).join(', ')+' and '+tg[tg.length-1]:tg[0]||'')+'. A rank reached later still counts, without the bonus.';
