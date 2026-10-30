@@ -1288,6 +1288,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         industryStorylines: how many industry-specific storylines a rival game has (a single game has one); the next one starts
           at least industryGapDays after the last one ends.
         dayOverheadMinutes: walking and errands in a rival's day, so it sleeps about as long as a busy player.
+        illMix: when a rival falls ill (your nightly chance), the share of each illness; a rival who can afford it pays for treatment.
         names, icons: the rivals, in order.
         levels: how each level plays. mistakeChance = chance a day goes wrong (skips a meal, studies, a shift, clothes or fun);
           shifts = shifts a day; plans = aims at the best job reachable in the days left and studies for it; studyHours = most
@@ -1296,6 +1297,11 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
           the ETF in a good market); moraleAim = happiness it tops up to with calls, Park walks and (social) the Community Centre. */
       gameDays:30, industryStorylines:2, industryGapDays:5,
       dayOverheadMinutes:180,  // minutes of a rival's day spent walking between places and on errands (less time left to sleep)
+      /* rivals' own small life events, like your daily cards: each night a 'chance' of one outcome, picked at random from
+        'outcomes' (effect tokens: h happiness, l health, e energy, c cash; a~b is a range). Tonight's global and industry storyline
+        chapters, illness (CONFIG.illness) and money shame (CONFIG.shame) hit rivals as they hit you. */
+      illMix:{cold:0.5, flu:0.35, dengue:0.1, pneu:0.05},  // which illness a rival catches (they share your illness chance and illness data)
+      lifeEvents:{chance:0.6, outcomes:['h-2~6','h-5 c-15~40','h-4 e-6','h+2~4','h+3 c-10~25','l-2~4','h-3 l-2','e-8 h-2','c+10~30 h+2','h-8 l-3']},
       names:['Maya','Leo','Sam'], icons:['👩','🧔','🧑'],
       levels:{
         easy:  {mistakeChance:0.25, shifts:1, plans:false, studyHours:1.5, studyChance:0.35, applyTries:1, usesOutlook:false, bank:'none',    moraleAim:20, social:false},
@@ -3724,6 +3730,20 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     })});
     return best;
   }
+  /* an effect-token string applied to a rival (h, l, e, n, c; a~b rolls on the rivals' dice) */
+  function rivalFx(r,str){
+    String(str||'').split(/\s+/).forEach(function(tk){var m=tokRe.exec(tk);if(!m)return;
+      var sgn=m[2]==='-'?-1:1,a=+m[3],b=m[4]?+m[4]:a,v=Math.round(sgn*(a===b?a:Math.min(a,b)+rrand()*Math.abs(b-a)));  /* the same reading as applyFx0 */
+      var c100=function(x){return Math.max(0,Math.min(100,x))};
+      if(m[1]==='h')r.happy=c100(r.happy+v);else if(m[1]==='l')r.health=c100(r.health+v);else if(m[1]==='e')r.energy=c100(r.energy+v);else if(m[1]==='n')r.know=c100(r.know+v);else if(m[1]==='c')r.cash+=v});
+  }
+  /* a rival's chance of falling ill tonight: your rule (CONFIG.illness by energy and health, difficulty, pandemics), without the gym and diet */
+  function rivalIllChance(r){
+    var I=CONFIG.illness,rows=I.byEnergy.slice().sort(function(a,b){return a.energyUnder-b.energyUnder}),base=rows[rows.length-1].chance;
+    if((r.lowN||0)>=I.lowNights)for(var i=0;i<rows.length;i++)if(r.energy<rows[i].energyUnder){base=rows[i].chance;break}
+    var hr=I.byHealth.slice().sort(function(a,b){return b.healthAtLeast-a.healthAtLeast}),hf=1;for(var k=0;k<hr.length;k++)if(r.health>=hr[k].healthAtLeast){hf=hr[k].x||hr[k].chanceX||1;break}
+    return Math.min(I.maxChance,Math.max(0,base*I.cutForEveryone-I.minusForEveryone)*hf*Df().ill*trendIll());
+  }
   function rivalNote(r,t,txt){r.log.unshift('Day '+(S.day-1)+': '+txt);r.log=r.log.slice(0,8);if(t)S.notes.push({l:'rem',t:'🏁 '+r.ic+' '+r.name+' '+txt})}
   /* one rival's day (the day that has just ended) */
   function rivalDay(r){
@@ -3753,8 +3773,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       if(rrand()<pp){var was=j;r.job={c:best.c,i:best.i};j=rivalJob(r);rivalNote(r,1,(was&&was.c===best.c?'was promoted to ':'got a new job: ')+j.rk.r+' at the '+NAME[j.b]+'.');
         if(!r.bestJob||j.rk.pay>r.bestJob.pay)r.bestJob={r:j.rk.r,pay:j.rk.pay};break}
     }
+    /* ill: no work or lessons; a rival who can spare the money pays for treatment (cured from tomorrow) */
+    if(r.ill){var IL=ILL[r.ill.k],fee=G(IL.cost||Math.round((IL.lo+IL.hi)/2));if(K.bank!=='none'&&r.cash+r.bank>fee+HOUSE.apt.rent){var wf=Math.max(0,fee-r.cash);r.bank-=wf;r.cash+=wf-fee;r.ill.d=0;used+=120;rivalNote(r,0,'paid '+money(fee)+' to be treated for '+illShort(IL)+'.')}}
     /* work */
-    var shifts=K.shifts-(mistake==='lazy'?1:0),load=0;
+    var shifts=K.shifts-(mistake==='lazy'?1:0)-(r.ill?99:0),load=0;
     if(r.shut>0)r.shut--;
     else for(var s=0;s<shifts&&j;s++){
       var ef=effort(j.rk.pay);if(r.energy-ef.en<25||load+ef.min>CONFIG.time.maxWorkMinutes||!dressed(j.rk.dress||'casual'))break;
@@ -3766,7 +3788,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     /* study towards the target (or anything, for easy rivals now and then) */
     var tg=r.target&&CAREERS[r.target.c]&&CAREERS[r.target.c].ranks[r.target.i],need=tg?(tg.q||[]).filter(function(q){return rivalLv(r,q[0])<q[1]}):[];
     if(!K.plans&&!r.study&&rrand()<K.studyChance){var ts=Object.keys(TRACKS).filter(function(t){return (r.edu[t]||0)<totMods(t)});if(ts.length)need=[[ts[Math.floor(rrand()*ts.length)],9]]}
-    if(mistake!=='study'&&(need.length||r.study)&&rrand()<K.studyChance){
+    if(!r.ill&&mistake!=='study'&&(need.length||r.study)&&rrand()<K.studyChance){
       var t=r.study?r.study.t:need[0][0];
       if(!r.study){var n0=r.edu[t]||0,fee=qualFee(t,n0),keep=HOUSE.apt.rent+80;if(r.cash-fee<keep&&r.bank>0){var w2=Math.min(r.bank,keep+fee-r.cash);r.bank-=w2;r.cash+=w2}
         if(r.cash-fee>=keep){r.cash-=fee;r.study={t:t,lv:levelOf(t,n0),h:0}}}
@@ -3791,7 +3813,14 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   /* the night for one rival: sleep, hunger, clothes wear, interest, rent, layoffs, endings and news */
   function rivalNight(r,used){
     var SL=CONFIG.sleep,HN=CONFIG.health.nightly,FDc=CONFIG.food,clamp100=function(v){return Math.max(0,Math.min(100,v))};
-    var leftMin=Math.max(0,1440-used-60);
+    var I=CONFIG.illness,RV=CONFIG.rivals,leftMin=Math.max(0,1440-used-60);
+    r.lowN=r.energy<I.lowEnergyBelow?Math.min(I.lowWindow,(r.lowN||0)+1):Math.max(0,(r.lowN||0)-1);  /* low-energy nights, as for you */
+    (S.nightFx||[]).forEach(function(f){rivalFx(r,f)});  /* tonight's global and industry storyline chapters hit everyone */
+    var LE=RV.lifeEvents;if(LE&&rrand()<LE.chance)rivalFx(r,LE.outcomes[Math.floor(rrand()*LE.outcomes.length)]);  /* their own daily card */
+    if(r.ill){r.health=clamp100(r.health+HN.sick);r.happy=clamp100(r.happy+(ILL[r.ill.k].hap||0));if(--r.ill.d<=0){r.ill=null;rivalNote(r,0,'recovered.')}}
+    else if(rrand()<rivalIllChance(r)){var mix=RV.illMix,ks=Object.keys(mix),x=rrand(),k0=ks[ks.length-1];for(var q=0;q<ks.length;q++){x-=mix[ks[q]];if(x<0){k0=ks[q];break}}
+      r.ill={k:k0,d:ILL[k0].wk};rivalNote(r,1,'fell ill with '+illShort(ILL[k0])+'.')}
+    if(r.energy<HN.lowEnergyBelow)r.health=clamp100(r.health+HN.lowEnergy);
     r.energy=clamp100(r.energy+SL.nightEnergy+Math.min(SL.maxEnergy,Math.round(leftMin/60*SL.perHour.apt*(SL.rateX||1))));
     r.happy=clamp100(r.happy+SL.nightHappiness+sleepHap(leftMin));
     r.health=clamp100(r.health+sleepHealth(leftMin)+(HN.always||0));
@@ -3809,7 +3838,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     /* ranks and endings, by the same rules as yours */
     var w=rivalWorth(r),t=-1;TIERS.forEach(function(x,i){if(w>=x.v)t=i});
     if(t>r.tier){if(!r.rankDay)r.rankDay={};for(var ti=r.tier+1;ti<=t;ti++)if(r.rankDay[ti]==null)r.rankDay[ti]=S.day-1;r.tier=t;rivalNote(r,1,'reached '+TIERS[t].ic+' '+TIERS[t].n+' ('+money(TIERS[t].v)+').')}
-    var LF=r.life||(r.life=blankLife());LF.h.push(r.happy);LF.l.push(r.health);if(r.hungry||r.cash<0)LF.crisis++;  /* the Life Score's record */
+    var LF=r.life||(r.life=blankLife());LF.h.push(r.happy);LF.l.push(r.health);var jd=rivalJob(r),dr=jd&&jd.rk.dress,cl=r.clothes,undressed=dr&&!(dr==='suit'?cl.suit>0:dr==='smart'?(cl.smart>0||cl.suit>0):(cl.casual>0||cl.smart>0||cl.suit>0));
+    if(r.hungry||r.cash<0||r.ill||undressed)LF.crisis++;  /* the Life Score's record: the same crisis days as yours (no meal, in debt, ill, no clothes for the job) */
+    var SH=CONFIG.shame;if(w<0){r.happy=clamp100(r.happy+SH.debtHappiness);r.energy=clamp100(r.energy+SH.debtEnergy)}else if(w<SH.nearlyBrokeBelow&&S.day-1>=SH.nearlyBrokeFromDay)r.happy=clamp100(r.happy+SH.nearlyBrokeHappiness);  /* money shame, as for you */
     var BR=CONFIG.bankrupt;r.broke=(w<BR.netWorthBelow&&S.day-1>=BR.fromDay)?r.broke+1:0;
     r.lowH=r.happy<=10?r.lowH+1:0;r.lowE=r.energy<=10?r.lowE+1:0;
     var end=r.broke>=BR.daysInARow?'went bankrupt':r.lowH>=3?'gave up':r.lowE>=2?'collapsed from exhaustion':r.hungry>=3?'was hospitalised (no food)':'';
@@ -4601,7 +4632,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     st.ph=phase;st.last=c[0];used.push(c[0]);st.used=used;st.day++;
     var tag='🏭 Industry-specific storyline · '+g.ic+' '+g.n+' · day '+(k+1)+' of '+N+' · '+['it begins','it escalates','at its peak','easing off'][phase];
     var ev={icon:g.ic,tag:tag,title:c[0],text:c[1]+(k===0?' <br><small>💼 <strong>Jobs:</strong> '+g.hit+' Check the Employment Office for today’s pay and openings.</small><br><small>📘 <strong>'+g.term.split(':')[0]+':</strong>'+g.term.slice(g.term.indexOf(':')+1)+'</small>':''),done:true,tone:'',fx:[],story:null};
-    ev.fx=applyFx(c[2],true);ev.fx.push(indNowTxt());
+    ev.fx=applyFx(c[2],true);ev.fx.push(indNowTxt());(S.nightFx||(S.nightFx=[])).push(c[2]);
     ev.tone=/h-/.test(c[2])?'bad':/h\+/.test(c[2])?'good':'';
     return ev;
   }
@@ -4643,7 +4674,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var tag='🌐 Global storyline · '+sg.ic+' '+sg.n+' · day '+(k+1)+' of '+N+' · '+['the story begins','it escalates','at its peak','easing off'][phase];
     var ev={icon:sg.ic,tag:tag,title:c[0],text:c[1]+(k===0?' <br><small>📘 <strong>'+sg.term.split(':')[0]+':</strong>'+sg.term.slice(sg.term.indexOf(':')+1)+'</small>':''),done:true,tone:'',fx:[],story:null};
     if(c[3]){ev.choice=true;ev.done=false;ev.y=c[3];ev.n=c[4]}
-    else{ev.fx=applyFx(c[2],true);ev.tone=/h\+|w\+|p-|r-/.test(c[2])&&!/h-|p\+|w-/.test(c[2])?'good':/h-|p\+|w-|e-/.test(c[2])?'bad':''}
+    else{(S.nightFx||(S.nightFx=[])).push(c[2]);ev.fx=applyFx(c[2],true);ev.tone=/h\+|w\+|p-|r-/.test(c[2])&&!/h-|p\+|w-/.test(c[2])?'good':/h-|p\+|w-|e-/.test(c[2])?'bad':''}
     if(tr){tr.last=c[0];if(!ev.choice&&tr)ev.fx.push('Still going: '+trendNow(tr))}
     st.last=c[0];used.push(c[0]);st.used=used;st.day++;
     if(st.day>=N){S.saga=null;S.sagaLast=sg.id;S.sagaNext=0}  /* one storyline a game */
@@ -5339,6 +5370,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   }
   /* cards for tonight, in order: the big event (if one starts or a saga chapter plays), then the daily event */
   function pickNight(){
+    S.nightFx=[];  /* tonight's storyline chapters, which rivals feel too (rivalNight) */
     var E=CONFIG.events,cards=[],story=!!S.saga,wasActive=story||macroRunning(),big=null,ind=null;
     var shockNear=macroRunning()||(S.macroLast>0&&S.day-S.macroLast<=E.storylineGap);  /* a shock running, or ended under storylineGap days ago */
     if(S.ind&&S.ind.day>=S.ind.len){var lastInd=S.ind.id;S.ind=null;  /* the industry-specific storyline's last phase held for one day after its last chapter */
