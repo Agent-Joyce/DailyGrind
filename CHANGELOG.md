@@ -1195,3 +1195,22 @@ A game with AI rivals is now won on the **Life Score**, not on money alone.
 - **Rules:** the "AI rivals" Rules line describes the scoring from CONFIG.
 - **Saves:** each player keeps a small record (`S.life` and each rival's `life`, `rankDay`, `bestJob`). Rival saves from step 1 load and start their records from that day.
 - **QA:** the UI check is clean (it caught a "knowledge NaN" for a rival record without knowledge, now guarded). Simulation report: [QA_Sim_2026-10-30_life-score](docs/QA_Sim_2026-10-30_life-score.md). The scoring works, but rivals win happiness, health and stability almost every time because they don't face events, illness or shame, which section 81 fixes.
+
+## 81. AI rivals face your pressures
+
+Rivals had an easier life than you on happiness, health and stability, so they won those Life Score categories almost every time.
+- **Storyline chapters:** tonight's global and industry storyline chapters change every rival's happiness and health as they change yours.
+- **Their own small life events:** each night, with `chance` 0.6, one of `outcomes` (effect tokens such as `h-2~6`, `h-5 c-15~40`, `l-2~4`, `c+10~30 h+2`).
+- **Illness:** rivals fall ill at your nightly chance (`CONFIG.illness`: low-energy nights, health, difficulty, pandemics). `illMix` decides which illness. While ill, a rival can't work or study and loses health each night. A rival who can afford it pays for treatment.
+- **Money shame and low-energy health loss:** rivals get the same rules as you.
+- **Crisis days:** counted the same way as yours (no meal, in debt, ill, no clothes for the job).
+- **Config:** new `CONFIG.rivals.lifeEvents` {chance 0.6, outcomes} and `CONFIG.rivals.illMix` {cold 0.5, flu 0.35, dengue 0.1, pneu 0.05}. All of it runs on the rivals' own dice, so single games are unchanged (checked game for game).
+- **Result** ([QA_Sim_2026-10-31_rival-parity](docs/QA_Sim_2026-10-31_rival-parity.md)), the careful test player's Life Score wins against 3 rivals:
+
+  | Rival level | Before | After |
+  |---|---|---|
+  | Easy | 17 of 20 | 20 of 20 |
+  | Medium | 2 of 20 | 15 of 20 |
+  | Expert | 1 of 20 | 4 of 20 |
+
+  Stability now goes to the steady player, and happiness is a real trade-off. Health still hardly separates anyone (everyone ends at about 97–99).
