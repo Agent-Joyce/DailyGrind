@@ -1573,7 +1573,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function gameLen(){return S&&S.mode==='rivals'?CONFIG.rivals.gameDays:CONFIG.time.gameDays}
   function maxDays(){return gameLen()}
   var S, loc, view, last=null;
-  var toastAll=false, forceToast=[], nightRun=false;  /* nightRun: the overnight pipeline is running (a game that ends then ends on the day that just finished) */  /* toastAll: during a button click, every log line becomes a toast; forceToast: toasts shown even over a pop-up */
+  var toastAll=false, forceToast=[], nightRun=false, nightFed=false;  /* nightRun: the overnight pipeline is running (a game that ends then ends on the day that just finished) */  /* toastAll: during a button click, every log line becomes a toast; forceToast: toasts shown even over a pop-up */
   var $=function(id){return document.getElementById(id)};
   /* ---------- stat icons (small SVGs in the game's outline style) ---------- */
   var ICO={
@@ -2111,6 +2111,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   }
   function nextRentWeek(){return Math.ceil(S.day/RENT_EVERY)*RENT_EVERY}
   function finish(title,text){
+    if(nightRun)sampleNight(nightFed);  /* include an early-ending night before drawing the final score */
     var lost=!/rank/.test(title)&&title.indexOf(TIERS[TIERS.length-1].n)<0;
     if(lost)snd('lose');
     S.over=true;S.endDay=nightRun?S.day-1:S.day;  /* the last day actually played */
@@ -2436,7 +2437,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function payRent(){
     var H=HOUSE[S.home],due=nextRentWeek();
     if(S.rentPaid===due)return refuse('You have already paid rent for day '+due+'.');
-    var amt=myRent();if(!spendMin(0,amt))return;
+    var amt=myRent(due);if(!spendMin(0,amt))return;
     S.rentPaid=due;S.rentPaidAmt=amt;S.flags.rent=1;log('You paid '+money(amt)+' rent early'+(amt<H.rent?' (your half; '+flatmate().name+' pays the other half)':'')+' (covers the end of day '+due+').','good');done();
   }
   /* meal bundle: several portions at a discount (CONFIG.food); they keep like single meals */
@@ -3188,7 +3189,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     ['console','tv'].forEach(function(g){var k=ikey(g),d=k&&GD.perRestHour[k];if(d){hap+=(d.happiness||0)*hrs;know+=(d.knowledge||0)*hrs}});
     return {hap:Math.round(hap),know:know,hrs:hrs};
   }
-  function rollover(rested){nightRun=true;try{return rollover0(rested)}finally{nightRun=false}}
+  function rollover(rested){nightRun=true;nightFed=S.fed;try{return rollover0(rested)}finally{nightRun=false;nightFed=false}}
   function rollover0(rested){
     ovHidden=false;  /* a new day shows the overview again */
     if(S.over)return;
@@ -3228,7 +3229,6 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     trendTick();
     indTick();  /* industry-specific storyline: layoffs and suspensions */
     rivalTick();  /* AI rivals live the day that has just ended (rival games only) */
-    lifeSample(wasFed);  /* your Life Score record for the day (rival games only) */
     /* second-hand gadgets can break down on their own */
     Object.keys(S.items).forEach(function(k){var it=ITEMS[k];if(S.items[k]&&it&&it.old&&!S.broken[k]&&Math.random()<it.old){S.broken[k]=1;S.notes.push({l:'bad',t:'🔧 Your '+it.n.toLowerCase()+' broke down overnight. Repair it at the Electronics Store (or buy a new one).'});log('Your '+it.n.toLowerCase()+' broke down.','bad')}});
     tickInv();
@@ -3252,10 +3252,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var i=Math.floor(S.bank*S.rate/100),invMoved=S.wk&&anyInv()?S.wk.abs:0;
     if(i>0){S.bank+=i;inc(i);log('Your bank paid '+money(i)+' in interest.','good')}
     if(S.homeless){if((S.day-1)%RENT_EVERY===0)log('No rent was due tonight: you have no home.')}
-    else if((S.day-1)%RENT_EVERY===0&&S.rentPaid===S.day-1&&myRent()-(S.rentPaidAmt||h.rent)<=0){log('Rent for day '+(S.day-1)+' was already paid. Mr. Ong tips his hat.','good');S.flags.rent=1}
+    else if((S.day-1)%RENT_EVERY===0&&S.rentPaid===S.day-1&&myRent(S.day-1)-(S.rentPaidAmt||h.rent)<=0){log('Rent for day '+(S.day-1)+' was already paid. Mr. Ong tips his hat.','good');S.flags.rent=1}
     else if((S.day-1)%RENT_EVERY===0){
       S.flags.rent=1;
-      var rentDue=myRent()-(S.rentPaid===S.day-1?(S.rentPaidAmt||h.rent):0);  /* with a flatmate: your half, or all of it when they skipped their share; less anything paid early */
+      var rentDue=myRent(S.day-1)-(S.rentPaid===S.day-1?(S.rentPaidAmt||h.rent):0);  /* with a flatmate: your half, or all of it when they skipped their share; less anything paid early */
       var paid=Math.max(0,Math.min(S.cash,rentDue)),short=rentDue-paid;
       S.cash-=paid;outg(paid);
       if(!short)log((rentDue<h.rent?'Your '+(rentDue*2<=h.rent+1?'half of the ':'share of the ')+'rent ('+money(rentDue)+')':'Rent of '+money(rentDue))+' was deducted from your cash.','warn');
@@ -3268,6 +3268,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       }
     }
     arrearsTick();
+    sampleNight(wasFed);  /* completed overnight effects, once per player and night */
     T0();var t=S.today;
     var dnw=worth()-t.nw,best=false;
     if(dnw>(S.bestDay||0)){best=(S.bestDay||0)>0;S.bestDay=dnw}  /* the first good day sets the bar; later ones that beat it are flagged */
@@ -3889,8 +3890,6 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     /* ranks and endings, by the same rules as yours */
     var w=rivalWorth(r),t=-1;TIERS.forEach(function(x,i){if(w>=x.v)t=i});
     if(t>r.tier){if(!r.rankDay)r.rankDay={};for(var ti=r.tier+1;ti<=t;ti++)if(r.rankDay[ti]==null)r.rankDay[ti]=S.day-1;r.tier=t;rivalNote(r,2,'reached '+TIERS[t].ic+' '+TIERS[t].n+' ('+money(TIERS[t].v)+').')}
-    var LF=r.life||(r.life=blankLife());LF.h.push(r.happy);LF.l.push(r.health);if(r.ill||r.health<CONFIG.health.poorBelow)LF.unwell=(LF.unwell||0)+1;var jd=rivalJob(r),dr=jd&&jd.rk.dress,cl=r.clothes,undressed=dr&&!(dr==='suit'?cl.suit>0:dr==='smart'?(cl.smart>0||cl.suit>0):(cl.casual>0||cl.smart>0||cl.suit>0));
-    if(r.hungry||r.cash<0||r.ill||undressed)LF.crisis++;  /* the Life Score's record: the same crisis days as yours (no meal, in debt, ill, no clothes for the job) */
     var SH=CONFIG.shame;if(w<0){r.happy=clamp100(r.happy+SH.debtHappiness);r.energy=clamp100(r.energy+SH.debtEnergy)}else if(w<SH.nearlyBrokeBelow&&S.day-1>=SH.nearlyBrokeFromDay)r.happy=clamp100(r.happy+SH.nearlyBrokeHappiness);  /* money shame, as for you */
     var BR=CONFIG.bankrupt;r.broke=(w<BR.netWorthBelow&&S.day-1>=BR.fromDay)?r.broke+1:0;
     r.lowH=r.happy<=10?r.lowH+1:0;r.lowE=r.energy<=10?r.lowE+1:0;
@@ -3966,11 +3965,13 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       return true;
     });
     dueTomorrow().forEach(function(l){S.notes.push({l:'warn',t:dueTxt(l)})});
-    S.bets=(S.bets||[]).filter(function(b){
+    /* Snapshot growth before any refunds or winnings change a wallet. */
+    var betGrowth=(S.bets||[]).map(function(b){var r=S.rivals[b.i];return {me:worth()-b.y0,them:r?rivalWorth(r)-b.r0:0}});
+    S.bets=(S.bets||[]).filter(function(b,bi){
       var r=S.rivals[b.i];if(!r)return false;
       if(r.out){S.cash+=b.stake;r.cash+=b.stake;S.notes.push({l:'rem',t:'🎲 '+r.ic+' '+r.name+' is out of the race: your bet is off and your '+money(b.stake)+' stake is back.'});return false}
       if(today<=b.until)return true;
-      var me=worth()-b.y0,them=rivalWorth(r)-b.r0,head='🎲 The bet with '+r.ic+' '+r.name+' is settled: your net worth '+(me<0?'−':'+')+money(Math.abs(Math.round(me)))+', theirs '+(them<0?'−':'+')+money(Math.abs(Math.round(them)))+'. ';
+      var me=betGrowth[bi].me,them=betGrowth[bi].them,head='🎲 The bet with '+r.ic+' '+r.name+' is settled: your net worth '+(me<0?'−':'+')+money(Math.abs(Math.round(me)))+', theirs '+(them<0?'−':'+')+money(Math.abs(Math.round(them)))+'. ';
       if(Math.round(me)===Math.round(them)){S.cash+=b.stake;r.cash+=b.stake;S.notes.push({l:'rem',t:head+'A tie: both stakes back.'});return false}
       var win=me>them,enemy=(r.rel||0)<=X.enemyAt,d=win&&enemy?B.enemyLoseRel:B.rel;relAdd(r,d);
       if(win){S.cash+=2*b.stake;S.happy=clamp(S.happy+B.winHappiness)}else{r.cash+=2*b.stake;S.happy=clamp(S.happy+B.loseHappiness)}
@@ -4077,7 +4078,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   /* the flatmate: S.flat = {i, since, hd (day the home roll was made), here, did {d, cook, hangout, chores, clearAir}} */
   function flatmate(){var f=S.mode==='rivals'&&S.flat,r=f&&S.rivals&&S.rivals[f.i];return r&&!r.out?r:null}
   /* your rent on the coming rent day: half with a flatmate, all of it on a night they skipped their share */
-  function myRent(){var R=HOUSE[S.home].rent;return flatmate()&&!(S.flatSkip&&S.flatSkip===S.day-1)?Math.ceil(R/2):R}
+  function myRent(day){if(day==null)day=nextRentWeek();var R=HOUSE[S.home].rent;return flatmate()&&!(S.flatSkip&&S.flatSkip===day)?Math.ceil(R/2):R}
   /* the flatmate's share on rent day (in rivalNight); a skipped share falls on you */
   function flatShare(r){
     var F=TG().flat,R=HOUSE[S.home].rent,half=R-Math.ceil(R/2),ch=pick(F.skip,r.diff,0.1)+((r.rel||0)<0?F.skipEnemyMod:0);
@@ -4216,9 +4217,23 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   /* tonight's record for you (called in rollover once a rival game's day is done) */
   function lifeSample(wasFed){
     if(S.mode!=='rivals')return;var L=S.life||(S.life=blankLife());
+    if(L.lastDay===S.day-1)return;L.lastDay=S.day-1;
     L.h.push(S.happy);L.l.push(S.health);if(S.ill||S.health<CONFIG.health.poorBelow)L.unwell=(L.unwell||0)+1;
     if(!wasFed||S.arrears||(S.loan&&S.day-1>S.loan.due)||(S.rloans||[]).some(function(l){return l.dir==='out'&&l.def})||S.ill||naked())L.crisis++;
     var j=myJob();if(j&&(!L.best||j.rk.pay>L.best.pay))L.best={pay:j.rk.pay,r:j.rk.r};
+  }
+  /* Sample everyone after overnight health, shame, transfers, flatmates and rent.
+     finish() also calls this for an early exit; lastDay prevents a duplicate final night. */
+  function sampleNight(wasFed){
+    if(S.mode!=='rivals')return;
+    lifeSample(wasFed);
+    (S.rivals||[]).forEach(function(r){
+      var day=S.day-1;if(r.out&&r.out.day!==day)return;
+      var L=r.life||(r.life=blankLife());if(L.lastDay===day)return;L.lastDay=day;
+      L.h.push(r.happy);L.l.push(r.health);if(r.ill||r.health<CONFIG.health.poorBelow)L.unwell=(L.unwell||0)+1;
+      var jd=rivalJob(r),dr=jd&&jd.rk.dress,cl=r.clothes,undressed=dr&&!(dr==='suit'?cl.suit>0:dr==='smart'?(cl.smart>0||cl.suit>0):(cl.casual>0||cl.smart>0||cl.suit>0));
+      if(r.hungry||r.cash<0||r.ill||undressed)L.crisis++;
+    });
   }
   /* everyone in a rival game, as the Life Score sees them */
   function lifePlayers(){
