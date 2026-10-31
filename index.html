@@ -3953,7 +3953,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(c.minutes&&!spendMin(c.minutes,0))return;
     var v0=vitSnap(),res;
     if(k==='ignore'){r.rel=Math.max(-100,Math.min(100,(r.rel||0)+c.rel));res={d:c.rel,backfire:false}}
-    else{res=relGain(r,c.rel);S.happy=clamp(S.happy+(res.backfire?-1:(c.happiness||0)))}
+    else{res=relGain(r,c.rel);S.happy=clamp(S.happy+(c.happiness||0))}  /* tension costs relationship, not happiness: the chip stays true */
     e.done=true;
     log((k==='ignore'?'🙈 You ignored '+r.name:res.backfire?'🗯️ The '+(k==='chat'?'chat':'hello')+' with '+r.name+' turned tense':k==='chat'?'🗣️ You had a chat with '+r.name:'👋 You said hello to '+r.name)+vitPar(v0)+': '+relTxt(r,res)+'.',res.d<0?'warn':'good');
     done();
@@ -3976,7 +3976,6 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     who.forEach(function(i){var r=S.rivals[i],g=callRoll(),res;S.rcalled[i]=1;
       if(g>0)res=relGain(r,g);else{r.rel=Math.max(-100,Math.min(100,(r.rel||0)+g));res={d:g,backfire:false}}
       if(res.backfire||res.d<0)bad++;parts.push(r.name+' '+sg(res.d)+(res.backfire?' (it got tense)':res.d<0?' (an argument)':''))});
-    if(bad)S.happy=clamp(S.happy-bad);
     log('📞 '+(who.length>1?'Group call':'You called '+S.rivals[who[0]].name)+(home?' from home':' on your phone')+vitPar(v0)+'. Relationships: '+parts.join(', ')+'.',bad?'warn':'good');
     done();
   }
@@ -3990,10 +3989,13 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var r=S.rivals&&S.rivals[i],X=CONFIG.rivals.social.congratulate;if(!r||S.over)return;
     if(S.cong&&S.cong.d===S.day&&S.cong[i])return;
     toastAll=true;try{
+      /* this runs from the morning pop-up, which hides ordinary toasts: say the result with a forced toast */
+      if(S.ap<X.minutes){var nt='Not enough time to congratulate '+r.name+' ('+hm(X.minutes)+' needed, '+hm(S.ap)+' left).';forceToast.push({txt:nt,cls:'bad'});return refuse(nt)}
       if(!spendMin(X.minutes,0))return;
       if(!S.cong||S.cong.d!==S.day)S.cong={d:S.day};S.cong[i]=1;
-      var v0=vitSnap(),res=relGain(r,X.rel);S.happy=clamp(S.happy+(res.backfire?-1:X.happiness));
-      log((res.backfire?'🗯️ Your congratulations to '+r.name+' came across badly':'🎉 You congratulated '+r.name)+vitPar(v0)+': '+relTxt(r,res)+'.',res.d<0?'warn':'good');
+      var v0=vitSnap(),res=relGain(r,X.rel);S.happy=clamp(S.happy+X.happiness);
+      var msg=(res.backfire?'🗯️ Your congratulations to '+r.name+' came across badly':'🎉 You congratulated '+r.name)+vitPar(v0)+': '+relTxt(r,res)+'.';
+      forceToast.push({txt:msg,cls:res.d<0?'bad':'good'});log(msg,res.d<0?'warn':'good');
       done();
     }finally{toastAll=false}
   }

@@ -1242,3 +1242,31 @@ After Health stopped favouring rivals (section 82), the careful test player beat
   - expert: 6.
 
   Medium rivals average $12,240, between easy ($1,400) and expert ($17,930). Single games are unchanged.
+
+## 84. AI rivals: relationships, encounters, calls and congratulations
+
+Rivals are now people you deal with, not just names on the leaderboard.
+- **Relationship meter:** each rival's relationship with you runs from −100 to +100.
+  - **Labels:** 💢 enemy (−40 or less), 😠 rival (−15 or less), 😐 neutral, 🙂 friendly (15 or more), 🤝 friend (40 or more). They show on the leaderboard, and opening a rival's row shows the number.
+  - **Friends** tip you off about openings some mornings (15%), using the Community Centre's job tip.
+  - **Enemies** race you harder for openings (+25 points on their job-race chance).
+  - **A rival who beats you to an opening** drops 10 with you.
+- **Building a relationship always costs time:**
+  - **Encounters:** when you walk into a place a rival frequents (their workplace, School, the Community Centre, the Supermarket), there's a 35% chance they're there, at most once a day. A card at the top of the screen offers 🗣️ Chat (30 min, +2 happiness, +8), 👋 Say hello (10 min, +3) or 🙈 Ignore (no time, −3).
+  - **Calls:**
+    - **From home:** a 📞 Call row per rival costs what a family call costs (30 min, +3 happiness).
+    - **Anywhere, with a phone or tablet:** the new 📞 Calls app calls one rival, or ticked rivals together as a group call (30 min, +1 happiness).
+    - **Each rival on a call:** 10% −1 (an argument), 10% no change, 40% +1, 40% +2. Once a day per rival.
+  - **Congratulations:** morning news about a rival's new job, promotion, qualification or rank has a 🎉 Congratulate button (15 min, +1 happiness, +6), once per rival per morning. Its result shows over the morning pop-up.
+- **Tension:** when a relationship is below 0, any of these gains may backfire into the same-size loss of relationship. The time and happiness of the action are as shown, whatever happens. The chance is 1% per point below zero, up to 60% (20% at −20, 40% at −40). A feud is hard to mend.
+- **Config:** new `CONFIG.rivals.social` {friendAt, friendlyAt, rivalAt, enemyAt, encounterChance, chat, hello, ignore, congratulate, friendTipChance, enemyRaceBonus, racedRel, call {phoneMinutes, phoneHappiness, roll}, tension {per, max}}. A Rules sentence is generated from it.
+- **Saves:** each rival gains `rel` and `places`; `S` gains `enc`, `rcalled` and `cong`. All of it is on the rivals' own dice, so single games are unchanged.
+- **Checked by clicking through:**
+  - each encounter choice changes time, happiness and relationship exactly;
+  - one encounter a day;
+  - calls cost the right time and happiness, once a day per rival, with no phone call away from home without a phone;
+  - 2,000 calls landed at 10/11/41/38% for −1/0/+1/+2;
+  - tension works at −40;
+  - congratulating takes 15 minutes, can't be repeated, and is refused without time;
+  - a friend's tip arrives.
+- **UI check:** new situations for meeting a rival, calling from home, and the Calls app. Its first run caught calls costing an extra happiness point after an argument, which the row's chip didn't show. Arguments and tension now cost relationship only.

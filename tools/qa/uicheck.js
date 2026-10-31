@@ -20,7 +20,7 @@
           BAD TEXT      "NaN", "undefined", "null" or "[object" shown to the player
      5. Situations the main game does not have (SITUATIONS): sick (cold/flu with medical bills, dengue, sick at home),
         rent arrears, a loan to repay, a pawned item to redeem, an industry-specific storyline (its peak, your own job hit,
-        the rumour), out of clothes (buying used ones, a job's shift disabled), bank offers, the phone home screen, the Bank app and the Jobs app, a friend's job tip, a rival's job race. Each checks its buttons are there (MISSING) and presses them.
+        the rumour), out of clothes (buying used ones, a job's shift disabled), bank offers, the phone home screen, the Bank app and the Jobs app, a friend's job tip, a rival's job race, meeting and calling rivals. Each checks its buttons are there (MISSING) and presses them.
      6. Flows: ending the day (end-of-day cards, morning card), the action preview, a certificate and its bonus toast,
         the Belongings list on the status page, and the town leaderboard of a game with AI rivals.
    Results: window.__UI_RESULTS, an on-page report, the browser console, and a message to the parent page
@@ -58,7 +58,7 @@
   }
   function closeOver(){[].forEach.call(document.querySelectorAll('.over.show'),function(o){o.classList.remove('show')})}
   function restore(where){
-    G.S=JSON.parse(base);S=G.S;G.loc=where&&['phone','pc','bankapp','jobsapp'].indexOf(where)<0?where:baseLoc;G.view=where||null;  /* device and app screens are not places */
+    G.S=JSON.parse(base);S=G.S;G.loc=where&&['phone','pc','bankapp','jobsapp','callsapp'].indexOf(where)<0?where:baseLoc;G.view=where||null;  /* device and app screens are not places */
     closeOver();$('toasts').innerHTML='';G.render();$('toasts').innerHTML='';
   }
 
@@ -169,6 +169,9 @@
 
   /* ---------- situations the main game does not have: each starts from the main game, adds one situation,
     checks that its buttons are there, and presses everything in that building ---------- */
+  /* three rivals for the rival-game situations (the fields the screens read) */
+  function uiRivals(){return [['Maya','👩','easy',-30],['Leo','🧔','medium',20],['Sam','🧑','expert',55]].map(function(x){return {name:x[0],ic:x[1],diff:x[2],rel:x[3],cash:300,bank:0,etf:0,job:null,y:300,
+    log:[],out:null,edu:{},clothes:{casual:3,smart:0,suit:0},shiftsAt:{},hist:[],know:10,happy:60,health:80,energy:70,tier:-1,rankDay:{},bestJob:null,life:{h:[60],l:[80],crisis:0,unwell:0,best:null},places:['fast']}})}
   var SITUATIONS=[
     {name:'sick with a cold or the flu, with medical bills',bld:'hosp',need:['treat_ill','paydebt','checkup','insure'],
       mod:function(S){S.ill={k:'flu',d:1};S.medDebt=200}},
@@ -202,6 +205,12 @@
       mod:function(S){S.tip={until:S.day+2};S.career={}}},
     {name:'a rival took the last opening (job race), at the Employment Office',bld:'jobs',need:['apply'],
       mod:function(S){S.mode='rivals';S.career={};var k=null;Object.keys(G.CAREERS).some(function(c){if(G.CAREERS[c].ranks[0]&&!(G.CAREERS[c].ranks[0].q||[]).length){k=c+'_0';return true}});if(k){S.closed[k]=1;S.raced={};S.raced[k]='Maya'}}},
+    {name:'meeting a rival (encounter card), at the Fast Food',bld:'fast',need:['meet'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.enc={day:S.day,i:1,loc:'fast',done:false}}},
+    {name:'calling rivals from home',bld:'apt',need:['rcall'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.home='apt';S.homeless=0;S.rcalled=null}},
+    {name:'the Calls app (one rival or a group)',bld:'callsapp',need:['rcall'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.rcalled=null}},
     {name:'out of clothes, buying used ones',bld:'thrift',need:['ubuy'],
       mod:function(S){S.clothes={casual:0,smart:0,suit:0}}},
     {name:'out of clothes with a job (shift disabled, "No clothes" chip)',bld:'fast',need:[],
