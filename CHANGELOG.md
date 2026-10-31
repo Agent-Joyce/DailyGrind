@@ -1337,3 +1337,50 @@ Money can now move between you and your rivals. It always leaves one wallet and 
   - eight real days answering messages, with no script errors.
   - One bug was found and fixed along the way: a per-level chance of 0 was read as unset.
 - **UI check:** a new situation for the Messages app (a borrow request, a bet offer, a loan due tomorrow, a loan owed to you). Its first run caught the default warning chip running off the screen on phones, so it's now three short chips. 0 issues on desktop and phone.
+
+## 87. AI rivals: flatmates, study groups and rival cards
+
+Rivals now come into your home, your lessons and your nights.
+- **🏠 Flatmates:** at home, invite a rival to move in (30 min). They need to be at least 🙂 friendly and willing (easy 90%, medium 70%, expert 50%). A no costs 2 relationship.
+  - **Rent is split in half** on rent day. The flatmate pays the other half out of their own cash, instead of their own rent. The home header, the rent row, the early Pay rent and the morning rent message all show your half.
+  - **Skipped shares:** some rent days a flatmate skips their share (easy 25%, medium 10%, expert 3%, +10 points below 0). You then pay it all, with −8 relationship and −3 happiness.
+  - **Each night together:** +2 happiness for both of you as friends, +1 friendly, 0 neutral, −3 on bad terms. The relationship grows +1 a night while it's 0 or more.
+  - **When they're home** (60% of days, rolled once a day), a card at the top of your home screen offers four things to do together, each once a day:
+    - 🍳 Cook dinner together: 45 min, you pay half a basic meal. It counts as a meal, with +2 happiness and +4 relationship on top.
+    - 📺 Hang out: 1h, +4 happiness, +3 relationship.
+    - 🧹 Do the chores: 30 min, +1 health, +2 relationship.
+    - 🗣️ Clear the air: 30 min, +6 relationship. Only offered below 15.
+    - Below 0, any of them can turn into an argument.
+  - **Moving out:** asking them to leave takes 10 min and costs 10 relationship. They also leave on their own at −15, when they drop out of the race, when you move home, or when you lose your home.
+- **📚 Study groups:** a lesson in a pathway that a 🙂 friendly rival is also studying gives +1 knowledge and +1 happiness on top of the lesson, +2 relationship with each partner, and +1 knowledge for them. The lesson row shows a "👥 Study group" chip, and its happiness chip includes the bonus.
+- **🃏 Rival cards:** some nights (30%, at most one every 2 nights, from day 2) bring a Yes/No decision involving a rival. Each card is dealt once a game per rival:
+  - a lift to an interview;
+  - a birthday cake;
+  - a rumour to confront (it can turn into an argument);
+  - covering their shift (half their shift's pay, which comes out of their cash);
+  - revision help (when you're enrolled);
+  - soup when they're ill;
+  - a party;
+  - helping them move.
+
+  The relationship change and any argument show on the card's result line.
+- **Rules:** the AI rivals sentence now covers flatmates, study groups and rival cards.
+- **Config:** new `CONFIG.rivals.together`:
+  - `flat` {inviteMinutes, flatFrom, willing, inviteNoRel, kickMinutes, kickRel, leaveAt, skip, skipEnemyMod, skipRel, skipHappiness, nightHappiness, nightRel, homeChance, cook, hangout, chores, clearAir};
+  - `study` {groupKnowledge, groupHappiness, groupRel, partnerKnowledge};
+  - `cards` {chance, gap}.
+
+  The cards themselves are in the new `RIVAL_CARDS` table.
+- **Saves:** `S` gains `flat`, `flatSkip`, `rentPaidAmt` (what an early rent payment covered), `rcards` and `lastRCard`.
+- **Single games:** a seeded 15-day single game is identical to the previous build.
+- **Checked:**
+  - inviting (refused −2, accepted);
+  - the nightly bands at 50/20/0/−5;
+  - each activity's chips against the real change, once a day, cooking counting as a meal, "Clear the air" only below 15, no rows when they're out, warnings below 0;
+  - rent day: half each, and all of it with −8 on a skip;
+  - asking them to leave (−10), and leaving on their own at −15;
+  - a study group lesson (+1 knowledge, +1 happiness, +2, partner +1), with no bonus at neutral;
+  - all 8 cards with yes and no, the rumour's argument path, and covering a shift moving the rival's pay to you;
+  - the card gap and once-a-game rule.
+  - **Two bugs found and fixed:** the rent showed in full on day 1 (a fresh save's "skipped" day 0 matched), and the flatmate card was buried below the call rows. It now sits at the top of your home.
+- **UI check:** new situations for a flatmate who is home, one who is out, no flatmate yet (invite rows), and a study group at School. There's also a new flow that ends a rival-game day with a rival card dealt and checks its result line against the real change. 0 issues on desktop and phone.

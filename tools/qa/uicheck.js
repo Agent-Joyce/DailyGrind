@@ -21,8 +21,8 @@
           BAD TEXT      "NaN", "undefined", "null" or "[object" shown to the player
      5. Situations the main game does not have (SITUATIONS): sick (cold/flu with medical bills, dengue, sick at home),
         rent arrears, a loan to repay, a pawned item to redeem, an industry-specific storyline (its peak, your own job hit,
-        the rumour), out of clothes (buying used ones, a job's shift disabled), bank offers, the phone home screen, the Bank app and the Jobs app, a friend's job tip, a rival's job race, meeting and calling rivals. Each checks its buttons are there (MISSING) and presses them.
-     6. Flows: ending the day (end-of-day cards, morning card), the action preview, a certificate and its bonus toast,
+        the rumour), out of clothes (buying used ones, a job's shift disabled), bank offers, the phone home screen, the Bank app and the Jobs app, a friend's job tip, a rival's job race, meeting and calling rivals, the Messages app, a flatmate (home, out, none yet), a study group. Each checks its buttons are there (MISSING) and presses them.
+     6. Flows: ending the day (end-of-day cards, morning card), a night with a rival card (its fx line against the real change), the action preview, a certificate and its bonus toast,
         the Belongings list on the status page, and the town leaderboard of a game with AI rivals.
    Results: window.__UI_RESULTS, an on-page report, the browser console, and a message to the parent page
    (so a harness page can collect the desktop and phone runs). Settings: window.__UICHECK = {autorun, seed}. */
@@ -217,6 +217,14 @@
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.cash=Math.max(S.cash,400);S.asked=null;S.bets=[];
         S.msgs=[{id:1,i:0,k:'borrow',day:S.day,until:S.day+1,amt:80,back:88,st:null},{id:2,i:2,k:'bet',day:S.day,until:S.day+1,amt:50,back:0,st:null},{id:3,i:1,k:'bet',day:S.day-1,until:S.day,amt:50,back:0,st:'no'}];
         S.rloans=[{i:1,dir:'out',amt:100,owe:110,due:S.day+1,late:0},{i:2,dir:'in',amt:60,owe:66,due:S.day+2,late:0}];S.msgN=3}},
+    {name:'a flatmate who is home (cooking, hanging out, chores, clearing the air)',bld:'apt',need:['fdo','unflat'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.rivals[1].rel=10;S.home='apt';S.homeless=0;S.homeMeals=0;S.flat={i:1,since:S.day,hd:S.day,here:true,did:null}}},
+    {name:'a flatmate who is out, and inviting one',bld:'apt',need:['unflat'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.home='apt';S.homeless=0;S.flat={i:2,since:S.day,hd:S.day,here:false,did:null}}},
+    {name:'no flatmate yet (invite rows)',bld:'apt',need:['flat'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.home='apt';S.homeless=0;S.flat=null}},
+    {name:'a study group at School (a friendly rival on the same pathway)',bld:'school',need:['class'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();var t=Object.keys(S.enr||{})[0]||'sal';S.rivals[1].study={t:t,lv:0,h:0};S.rivals[1].rel=20}},
     {name:'out of clothes, buying used ones',bld:'thrift',need:['ubuy'],
       mod:function(S){S.clothes={casual:0,smart:0,suit:0}}},
     {name:'out of clothes with a job (shift disabled, "No clothes" chip)',bld:'fast',need:[],
@@ -243,6 +251,25 @@
     if(G.S.morning){popupFits('morning card');await shot('morning');var m=$('mnGo');if(m)m.click();await y()}
     errs.slice(e0).forEach(function(e){note('JS-ERROR','end of day',e)});
     layout('next morning (whole page)',document.body);
+  }
+  /* a night in a rival game with a rival card dealt: it shows, its Yes works, and its fx line matches the real change */
+  async function rivalCardNight(){
+    var keep=base,S0=JSON.parse(base);S0.mode='rivals';S0.rivals=uiRivals();S0.lastRCard=0;S0.rcards={};S0.day=Math.max(S0.day,3);base=JSON.stringify(S0);
+    var C=G.CONFIG.rivals.together.cards,c0=C.chance;C.chance=1;
+    try{
+      restore(G.S.home);var e0=errs.length;$('hudEnd').click();await y();
+      var seen=false;
+      for(var i=0;i<8&&G.S.pending;i++){var ev=G.S.pending.ev;
+        if(ev&&ev.rv&&!ev.done){seen=true;popupFits('rival card');layout('rival card',$('evwrap'));await shot('rivalcard');
+          var v0=vit(),b=document.querySelector('#event [data-act="evyes"]:not(:disabled)')||document.querySelector('#event [data-act="evno"]');b.click();await y();
+          var v1=vit(),fx=(G.S.pending&&G.S.pending.ev.fx||[]).join(', ');
+          [['happy',/([+−-]\d+) happiness/g],['energy',/([+−-]\d+)% energy/g]].forEach(function(k){var m,said=0,d=v1[k[0]]-v0[k[0]];while((m=k[1].exec(fx)))said+=num(m[1]);  /* an argument adds its own happiness item */if(said!==d)note('LOG≠EFFECT','rival card',k[0]+' shown '+said+' but it changed '+d+' ('+fx+')')});
+          continue}
+        var bb=document.querySelector('#event [data-act]:not(:disabled)');if(!bb)break;bb.click();await y()}
+      if(!seen)note('MISSING','rival card','no rival card was dealt with the chance at 100%');
+      if(G.S.morning){var m=$('mnGo');if(m)m.click();await y()}
+      errs.slice(e0).forEach(function(e){note('JS-ERROR','rival card night',e)});
+    }finally{C.chance=c0;base=keep}
   }
   async function preview(){
     restore('gym');var pb=$('previewBtn');if(pb&&/off/i.test(pb.textContent))pb.click();await y();
@@ -295,7 +322,7 @@
     var blds=[].map.call(document.querySelectorAll('.tile[data-loc]'),function(t){return t.dataset.loc});
     for(var i=0;i<blds.length;i++){box('UI check at '+innerWidth+'px: '+blds[i]+' ('+(i+1)+' of '+blds.length+')…');try{await building(blds[i])}catch(e){note('JS-ERROR',blds[i],'check crashed: '+(e&&e.message||e))}}
     for(var j=0;j<SITUATIONS.length;j++){box('UI check at '+innerWidth+'px: '+SITUATIONS[j].name+'…');try{stats.situations=(stats.situations||0)+1;await situation(SITUATIONS[j])}catch(e){note('JS-ERROR',SITUATIONS[j].name,'check crashed: '+(e&&e.message||e))}}
-    for(var f of [statusPage,preview,certificate,endOfDay]){try{await f()}catch(e){note('JS-ERROR',f.name,'check crashed: '+(e&&e.message||e))}}
+    for(var f of [statusPage,preview,certificate,endOfDay,rivalCardNight]){try{await f()}catch(e){note('JS-ERROR',f.name,'check crashed: '+(e&&e.message||e))}}
     var res={viewport:VP(),width:innerWidth,height:innerHeight,ms:Date.now()-t0,stats:stats,issues:issues};
     window.__UI_RESULTS=res;console.log('Daily Grind UI check',res);
     try{if(window.parent!==window)window.parent.postMessage({type:'dg-uicheck',res:res},'*')}catch(e){}
