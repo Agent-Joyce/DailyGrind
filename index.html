@@ -1291,7 +1291,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         illMix: when a rival falls ill (your nightly chance), the share of each illness; a rival who can afford it pays for treatment.
         names, icons: the rivals, in order.
         levels: how each level plays. mistakeChance = chance a day goes wrong (skips a meal, studies, a shift, clothes or fun);
-          shifts = shifts a day; plans = aims at the best job reachable in the days left and studies for it; studyHours = most
+          shifts = shifts a day (a fraction: 2.5 = a third shift on about half of days); plans = aims at the best job reachable in the days left and studies for it; studyHours = most
           hours of lessons a day; studyChance = chance it studies on a day; applyTries = job interviews a day; usesOutlook = judges
           jobs by today's pay (the industry storyline included) rather than base pay; bank = none, savings or invest (savings and
           the ETF in a good market); moraleAim = happiness it tops up to with calls, Park walks and (social) the Community Centre. */
@@ -1308,7 +1308,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       names:['Maya','Leo','Sam'], icons:['👩','🧔','🧑'],
       levels:{
         easy:  {mistakeChance:0.25, shifts:1, plans:false, studyHours:1.5, studyChance:0.35, applyTries:1, usesOutlook:false, bank:'none',    moraleAim:20, social:false},
-        medium:{mistakeChance:0.08, shifts:2, plans:true,  studyHours:4,   studyChance:1,    applyTries:1, usesOutlook:false, bank:'savings', moraleAim:45, social:false},
+        medium:{mistakeChance:0.03, shifts:2.25, plans:true,  studyHours:4,   studyChance:1,    applyTries:2, usesOutlook:false, bank:'savings', moraleAim:55, social:true},
         expert:{mistakeChance:0.02, shifts:3, plans:true,  studyHours:4.5, studyChance:1,    applyTries:2, usesOutlook:true,  bank:'invest',  moraleAim:60, social:true}
       },
       /* The Life Score: how a rival game is won. In each category every player gets a place (ties share the better one);
@@ -3780,7 +3780,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     /* ill: no work or lessons; a rival who can spare the money pays for treatment (cured from tomorrow) */
     if(r.ill){var IL=ILL[r.ill.k],fee=G(IL.cost||Math.round((IL.lo+IL.hi)/2));if(K.bank!=='none'&&r.cash+r.bank>fee+HOUSE.apt.rent){var wf=Math.max(0,fee-r.cash);r.bank-=wf;r.cash+=wf-fee;r.ill.d=0;used+=120;rivalNote(r,0,'paid '+money(fee)+' to be treated for '+illShort(IL)+'.')}}
     /* work */
-    var shifts=K.shifts-(mistake==='lazy'?1:0)-(r.ill?99:0),load=0;
+    var shifts=Math.floor(K.shifts)+(rrand()<K.shifts%1?1:0)-(mistake==='lazy'?1:0)-(r.ill?99:0),load=0;  /* 2.5 = a third shift on about half of days */
     if(r.shut>0)r.shut--;
     else for(var s=0;s<shifts&&j;s++){
       var ef=effort(j.rk.pay);if(r.energy-ef.en<25||load+ef.min>CONFIG.time.maxWorkMinutes||!dressed(j.rk.dress||'casual'))break;
