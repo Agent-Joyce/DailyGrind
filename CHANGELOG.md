@@ -1225,3 +1225,20 @@ Rivals had an easier life than you on happiness, health and stability, so they w
 - **Rules:** the AI rivals line describes both.
 - **UI check:** new situation "a rival took the last opening".
 - **QA:** the UI check is clean. Simulation report: [QA_Sim_2026-10-31_job-race](docs/QA_Sim_2026-10-31_job-race.md). Single games are unchanged. Health is now shared 1st in about two games in three. The careful test player's Life Score wins: easy 20/20, medium 19/20 (was 15), expert 5/20.
+
+## 83. Medium rivals tuned into a real race
+
+After Health stopped favouring rivals (section 82), the careful test player beat medium rivals in 19 games of 20.
+- **Medium rivals now:**
+  - make fewer mistakes: `mistakeChance` 0.08 → 0.03;
+  - work a third shift on about one day in four: `shifts` 2 → 2.25;
+  - go to up to two interviews a day: `applyTries` 1 → 2;
+  - aim for more happiness: `moraleAim` 45 → 55;
+  - use the Community Centre: `social` on.
+- **Fractional shifts:** the rival `shifts` setting can now be a fraction (2.25 = a third shift on about one day in four).
+- **Result** ([QA_Sim_2026-10-31_medium-tuning](docs/QA_Sim_2026-10-31_medium-tuning.md)), the careful test player's Life Score wins of 20:
+  - easy: 20;
+  - medium: 12 (was 19);
+  - expert: 6.
+
+  Medium rivals average $12,240, between easy ($1,400) and expert ($17,930). Single games are unchanged.
