@@ -1290,3 +1290,50 @@ An argument with a rival now hurts you as well as the relationship.
   - a tense chat that backfires nets 0;
   - the warning chip shows on call rows, and on the encounter card at −80 but not at +20.
 - **UI check:** rows that can end in an argument carry a `chance` class, and the check compares only their time chip, since their happiness depends on the dice. Their log text and toasts are still checked against the real change. 0 issues on desktop and phone.
+
+## 86. AI rivals: loans, bets and the 💬 Messages app
+
+Money can now move between you and your rivals. It always leaves one wallet and lands in the other, so nothing is created or lost except when a loan goes unpaid.
+- **💬 Messages app:** a new app on the phone and computer home screens in rival games. Its row shows "N new" and "💬 Due tomorrow" chips, and the Overview phone note shows them too.
+  - **Rival messages:** from the end of day 2, a rival may message you overnight (35% a night, one at most). It's either a request to borrow, with rivals short for rent asking first, or a friendly bet.
+  - **Answering:** a message lasts 2 days. Answering takes 10 min, or 5 min to say no. Letting a loan request expire counts as saying no.
+  - **Your own asks:** you can ask any rival for a loan, or offer them a bet. Each is once a day per rival.
+- **Lending to a rival:** $60–$150, paid back with 10% on the morning 3 days later.
+  - **When you lend:** relationship +6. Tension applies, so with a rival you're on bad terms with it can still turn into an argument.
+  - **Saying no:** −3.
+  - **Repayment:** the chance they pay on the due morning is easy 65%, medium 85%, expert 95%, with ±10 points for a friend or an enemy.
+  - **On time:** relationship +3.
+  - **Late:** they promise tomorrow, twice. After that the money is gone, the relationship drops 15 and you lose 3 happiness.
+- **Borrowing from a rival:** $50, $100, $200 or $300, at 10% for 3 days. They say yes only when all three hold:
+  - you're at least 🙂 friendly (15);
+  - they can spare it, keeping rent plus $60;
+  - their willingness roll passes: easy 90%, medium 70%, expert 50%.
+  - **A no** costs 3 relationship.
+  - **The reminder:** the morning before it's due, the morning pop-up and the Messages app remind you of the amount and of what happens if you don't pay.
+  - **On the due morning:** it's taken from your cash, then your bank, and paid on time it's +3.
+  - **Not paid in full:** relationship with the lender −50, with every other rival −25 (lost credibility), and −25 happiness, once.
+  - **What's left** is taken on later mornings with no further penalty. Each morning it's outstanding is a Life Score crisis day.
+  - **The ask row** shows the penalty up front.
+- **Friendly bets:** $50 each on who grows their net worth more over 3 days. Both stakes are held, and they still count in each net worth while held.
+  - **Win:** the pot and +3 happiness.
+  - **Lose:** −2 happiness.
+  - **A tie:** both stakes back.
+  - **Relationship:** +2 either way, but an enemy who loses drops 4.
+  - **When rivals accept yours:** easy 80%, medium 60%, expert 50%, if they can cover it.
+- **Out of the race:** a rival who drops out can't repay you, and any bet with them is refunded.
+- **Net worth:** money a rival owes you counts in your net worth (and against theirs), and the reverse for money you owe. The Overview leaderboard's rival rows list open loans and bets.
+- **Rules:** the AI rivals sentence now describes loans, the reminder, the default penalty and bets.
+- **Config:** new `CONFIG.rivals.money` {messageChance, firstDay, messageDays, replyMinutes, noMinutes, loan {interest, days, repayRel, min, max, askBuffer, easyAskChance, lendRel, refuseRel, lateDays, rivalDefaultRel, rivalDefaultHappiness, repay, friendMod, enemyMod, step, maxBorrow, borrowFrom, willing, askedNoRel, defaultRel, defaultOthersRel, defaultHappiness}, bet {stake, days, winHappiness, loseHappiness, rel, enemyLoseRel, accept}}.
+- **Saves:** `S` gains `msgs`, `rloans`, `bets`, `msgN` and `asked`. Old saves load with empty lists.
+- **Single games:** a seeded 15-day single game is identical to the previous build.
+- **Checked:**
+  - lending: cash −$X, +6, worth +interest;
+  - repayment on time; late twice, then default (−15, −3 happiness);
+  - a refusal (−3);
+  - a loan from a rival: their cash to yours, and the reminder the morning before (pop-up, app, home chip);
+  - a default when you're short: −50/−25/−25 applied once, with the rest collected the next morning and no second penalty;
+  - bets: win, loss and tie all move the pot correctly;
+  - a message expiring after 2 days (−3);
+  - eight real days answering messages, with no script errors.
+  - One bug was found and fixed along the way: a per-level chance of 0 was read as unset.
+- **UI check:** a new situation for the Messages app (a borrow request, a bet offer, a loan due tomorrow, a loan owed to you). Its first run caught the default warning chip running off the screen on phones, so it's now three short chips. 0 issues on desktop and phone.

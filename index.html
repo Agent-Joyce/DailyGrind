@@ -1316,7 +1316,21 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         congratulate:{minutes:15, rel:6, happiness:1}, friendTipChance:0.15, enemyRaceBonus:0.25, racedRel:-10,
         call:{phoneMinutes:30, phoneHappiness:1, roll:[[-1,0.1],[0,0.1],[1,0.4],[2,0.4]]},
         tension:{per:0.01, max:0.6},
-        argument:{happiness:-2}},  // an argument with a rival (a call that goes wrong, or tension) also costs you this much happiness  // which illness a rival catches (they share your illness chance and illness data)
+        argument:{happiness:-2}},  // an argument with a rival (a call that goes wrong, or tension) also costs you this much happiness
+      /* Money between you and your rivals (rival games only), through the 💬 Messages app on your phone or computer.
+        Rivals message you some nights (one a night at most, from the end of day firstDay); a message lasts messageDays days and
+        letting it expire counts as saying no. Replying takes replyMinutes (noMinutes to say no). Dollar amounts are scaled by G(). */
+      money:{messageChance:0.35, firstDay:2, messageDays:2, replyMinutes:10, noMinutes:5,
+        loan:{interest:0.1, days:3, repayRel:3,  // both ways: 10% on top, due on the morning 3 days after; paid in full on time: +3
+          /* a rival asks you to lend: when they are short for rent (cash + bank under rent + askBuffer); easy rivals sometimes ask anyway */
+          min:60, max:150, askBuffer:60, easyAskChance:0.15, lendRel:6, refuseRel:-3, lateDays:2, rivalDefaultRel:-15, rivalDefaultHappiness:-3,
+          repay:{easy:0.65, medium:0.85, expert:0.95}, friendMod:0.1, enemyMod:-0.1,  // their chance of paying on each due morning
+          /* you ask a rival to lend: they need to be at least friendly, keep rent + askBuffer, and pass their level's willingness roll */
+          step:50, maxBorrow:300, borrowFrom:15, willing:{easy:0.9, medium:0.7, expert:0.5}, askedNoRel:-3,
+          /* not paid in full on the due morning: once, −50 with the lender, −25 with every other rival, −25 happiness; the rest is collected later */
+          defaultRel:-50, defaultOthersRel:-25, defaultHappiness:-25},
+        /* a friendly bet: who grows their net worth more over `days` days; both stakes are held until then, the winner takes both */
+        bet:{stake:50, days:3, winHappiness:3, loseHappiness:-2, rel:2, enemyLoseRel:-4, accept:{easy:0.8, medium:0.6, expert:0.5}}},  // which illness a rival catches (they share your illness chance and illness data)
       lifeEvents:{chance:0.6, outcomes:['h-2~6','h-5 c-15~40','h-4 e-6','h+2~4','h+3 c-10~25','l-2~4','h-3 l-2','e-8 h-2','c+10~30 h+2','h-8 l-3']},
       names:['Maya','Leo','Sam'], icons:['👩','🧔','🧑'],
       levels:{
@@ -1608,8 +1622,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   var NAME={},ICON={};
   LOCS.forEach(function(l){ICON[l[0]]=l[1];NAME[l[0]]=l[2]});
   /* screens, not places: a device's home screen and its two apps (opened from the Overview's 📱 Phone button, or the 💻 Computer at home) */
-  ICON.callsapp='📞';NAME.callsapp='Calls';ICON.phone='📱';NAME.phone='Phone';ICON.pc='💻';NAME.pc='Computer';ICON.bankapp='🏦';NAME.bankapp='Bank app';ICON.jobsapp='💼';NAME.jobsapp='Jobs app';
-  var APPS=['phone','pc','bankapp','jobsapp','callsapp'];
+  ICON.callsapp='📞';NAME.callsapp='Calls';ICON.msgsapp='💬';NAME.msgsapp='Messages';ICON.phone='📱';NAME.phone='Phone';ICON.pc='💻';NAME.pc='Computer';ICON.bankapp='🏦';NAME.bankapp='Bank app';ICON.jobsapp='💼';NAME.jobsapp='Jobs app';
+  var APPS=['phone','pc','bankapp','jobsapp','callsapp','msgsapp'];
 
   var HOUSE={apt:{rent:150,rest:25,hap:0,fee:0,rate:3},bung:{rent:350,rest:40,hap:10,fee:300,rate:4.5}};
   /* the fixed nightly change in words, leaving out anything that is 0 (CONFIG.sleep, health.nightly.always, selfStudy.nightlyLoss) */
@@ -1964,7 +1978,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
      3. STATE AND SAVES
      blank() is the full shape of S. fresh() starts a game; save() and load() keep it in localStorage; finish() ends it.
      ================================================================== */
-  function blank(){return {fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,ind:null,indNext:0,indId:'',macroLast:0,bankOffer:null,promo:null,comm:null,tip:null,mode:'single',rivals:[],rivalSeed:0,indLeft:0,life:null,raced:{},jobRaces:0,enc:null,rcalled:null,cong:null,lastRace:'',deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:CONFIG.market.rateBase,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
+  function blank(){return {fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,ind:null,indNext:0,indId:'',macroLast:0,bankOffer:null,promo:null,comm:null,tip:null,mode:'single',rivals:[],rivalSeed:0,indLeft:0,life:null,raced:{},jobRaces:0,enc:null,rcalled:null,cong:null,msgs:[],rloans:[],bets:[],msgN:0,asked:null,lastRace:'',deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:CONFIG.market.rateBase,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
     S=blank();T0();PREV=null;applyPayVar();S.certVar={};Object.keys(TRACKS).forEach(function(t){S.certVar[t]=1+(Math.random()*2-1)*CONFIG.education.certVariance});
     S.sagaNext=sagaDay();S.indNext=indDay();S.indId=INDUSTRY[Math.floor(Math.random()*INDUSTRY.length)].id;
@@ -2114,7 +2128,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   }
   function score(){return Math.max(0,scoreParts().reduce(function(a,b){return a+b[1]},0))}
   function bestScore(){try{return +localStorage.getItem('dailyGrind.best')||0}catch(e){return 0}}
-  function worth(){return S.cash+S.bank+invTotal()+assets()-S.medDebt-(S.arrears?S.arrears.bal:0)-loanOwed()}
+  function worth(){return S.cash+S.bank+invTotal()+assets()-S.medDebt-(S.arrears?S.arrears.bal:0)-loanOwed()+rivalMoney(-1)}
   function rankBurst(){
     /* short celebratory particles over the rank-up modal */
     var host=$('over');if(!host)return;
@@ -3726,7 +3740,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function rivalLv(r,t){var c=TRACKS[t].c,n=r.edu[t]||0,k=0;c.forEach(function(e){if(n>=e)k++});return k}
   function rivalMeets(r,rk){return (rk.q||[]).every(function(q){return rivalLv(r,q[0])>=q[1]})}
   function rivalJob(r){return r.job&&CAREERS[r.job.c]?{c:r.job.c,i:r.job.i,rk:CAREERS[r.job.c].ranks[r.job.i],b:bOf(r.job.c)}:null}
-  function rivalWorth(r){return Math.round(r.cash+r.bank+(r.etf||0))}
+  function rivalWorth(r){return Math.round(r.cash+r.bank+(r.etf||0)+(S.rivals.indexOf(r)<0?0:rivalMoney(S.rivals.indexOf(r))))}
   function rivalSkill(r){return CONFIG.rivals.levels[r.diff]||CONFIG.rivals.levels.medium}
   function makeRivals(n,level,cash){
     var R=CONFIG.rivals,lv=['easy','medium','expert'],out=[];
@@ -3882,12 +3896,171 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
                t:function(p){var a=[];TIERS.forEach(function(x,i){var d=p.rankDay[i];if(d!=null)a.push(x.ic+' day '+d)});return a.length?a.join(', '):'no rank yet'}}
   };
   function lifeAvg(a){return a&&a.length?a.reduce(function(x,y){return x+y},0)/a.length:0}
+  /* ---------- money between you and your rivals (CONFIG.rivals.money): loans, bets and the 💬 Messages app ----------
+    S.rloans: {i rival, dir 'in' (they owe you) | 'out' (you owe them), amt lent, owe still to pay, due (morning of that day), late, def}.
+    S.bets: {i, stake (each side's, held until settled), until (last day counted), y0/r0 (your and their net worth at the start)}.
+    S.msgs: {id, i, k 'borrow'|'bet', day, until, amt, back, st (null until answered)}. Money only moves between wallets. */
+  function MX(){return CONFIG.rivals.money}
+  /* what loans and held stakes add to a net worth: i = −1 for you, or a rival's index */
+  function rivalMoney(i){
+    if(S.mode!=='rivals')return 0;var v=0;
+    (S.rloans||[]).forEach(function(l){var sgn=l.dir==='in'?1:-1;v+=i<0?sgn*l.owe:l.i===i?-sgn*l.owe:0});
+    (S.bets||[]).forEach(function(b){if(i<0||b.i===i)v+=b.stake});
+    return v;
+  }
+  function pick(o,k,d){return o&&o[k]!=null?o[k]:d}  /* a per-level number, where 0 is a real value */
+  function relAdd(r,d){r.rel=Math.max(-100,Math.min(100,(r.rel||0)+d));return {d:d,backfire:false}}  /* a straight change, no tension */
+  function rloan(i,dir){return (S.rloans||[]).filter(function(l){return l.i===i&&l.dir===dir})[0]}
+  function rbet(i){return (S.bets||[]).filter(function(b){return b.i===i})[0]}
+  function rivalSpare(r,amt){return r.cash+r.bank-amt>=HOUSE.apt.rent+MX().loan.askBuffer}
+  function rivalPay(r,amt){var c=Math.min(amt,Math.max(0,r.cash));r.cash-=c;r.bank-=amt-c}  /* cash first, then bank (the caller checks they have it) */
+  function payFromYou(amt){var c=Math.min(amt,Math.max(0,S.cash));S.cash-=c;var b=Math.min(amt-c,Math.max(0,S.bank));S.bank-=b;return c+b}
+  function betStake(){return G(MX().bet.stake)}
+  function askedToday(k){return S.asked&&S.asked.d===S.day&&S.asked[k]}
+  function markAsked(k){if(!S.asked||S.asked.d!==S.day)S.asked={d:S.day};S.asked[k]=1}
+  /* what an unpaid debt costs you: on the reminder, the ask row and the note */
+  function defaultTxt(r){var L=MX().loan;return 'relationship with '+r.name+' '+sg(L.defaultRel)+', with every other rival '+sg(L.defaultOthersRel)+', '+sg(L.defaultHappiness)+' happiness'}
+  function dueTxt(l){var r=S.rivals[l.i];return '💬 Reminder: you owe '+r.ic+' '+r.name+' '+money(l.owe)+', due tomorrow morning (day '+l.due+'). Keep it in your cash or bank: it is taken automatically. If it isn’t paid in full on time, your relationship with '+r.name+' sours ('+sg(MX().loan.defaultRel)+'), the other rivals lose trust in you ('+sg(MX().loan.defaultOthersRel)+' each) and you lose '+Math.abs(MX().loan.defaultHappiness)+' happiness.'}
+  function dueTomorrow(){return (S.rloans||[]).filter(function(l){return l.dir==='out'&&!l.def&&l.due===S.day+1})}
+  function newMsgs(){return (S.msgs||[]).filter(function(m){return !m.st}).length}
+  function startBet(i,stake){var r=S.rivals[i],B=MX().bet;S.cash-=stake;r.cash-=stake;var b={i:i,stake:stake,until:S.day+B.days-1,y0:0,r0:0};S.bets.push(b);b.y0=worth();b.r0=rivalWorth(r);return b}
+  /* the morning: loans and bets that fall due (in rivalTick, on the rivals' dice) */
+  function settleMoney(){
+    var L=MX().loan,B=MX().bet,X=CONFIG.rivals.social,today=S.day;
+    S.rloans=(S.rloans||[]).filter(function(l){
+      var r=S.rivals[l.i];if(!r)return false;
+      if(l.dir==='in'){  /* a rival owes you */
+        if(r.out){S.notes.push({l:'bad',t:'💬 '+r.ic+' '+r.name+' is out of the race and can’t pay back the '+money(l.owe)+' you lent them.'});return false}
+        if(today<l.due)return true;
+        var ch=pick(L.repay,r.diff,0.8)+((r.rel||0)>=X.friendAt?L.friendMod:(r.rel||0)<=X.enemyAt?L.enemyMod:0);
+        if(r.cash+r.bank>=l.owe&&rrand()<ch){rivalPay(r,l.owe);S.cash+=l.owe;relAdd(r,L.repayRel);S.notes.push({l:'good',t:'💬 '+r.ic+' '+r.name+' paid back the '+money(l.owe)+' they owed you (relationship '+sg(L.repayRel)+').'});return false}
+        if(++l.late>L.lateDays){relAdd(r,L.rivalDefaultRel);S.happy=clamp(S.happy+L.rivalDefaultHappiness);
+          S.notes.push({l:'bad',t:'💬 '+r.ic+' '+r.name+' can’t pay back the '+money(l.owe)+' they owe you. The money is gone: relationship '+sg(L.rivalDefaultRel)+', '+sg(L.rivalDefaultHappiness)+' happiness.'});return false}
+        S.notes.push({l:'warn',t:'💬 '+r.ic+' '+r.name+' hasn’t paid back the '+money(l.owe)+' they owe you. They promise tomorrow'+(l.late>=L.lateDays?' (their last chance)':'')+'.'});return true;
+      }
+      /* you owe a rival: taken from your cash, then your bank */
+      if(today<l.due)return true;
+      var paid=payFromYou(l.owe);l.owe-=paid;r.cash+=paid;
+      if(!l.owe){if(l.def)S.notes.push({l:'good',t:'💬 The last '+money(paid)+' you owed '+r.ic+' '+r.name+' was taken. That debt is cleared.'});
+        else{relAdd(r,L.repayRel);S.notes.push({l:'good',t:'💬 You paid '+r.ic+' '+r.name+' back '+money(paid)+' on time (relationship '+sg(L.repayRel)+').'})}return false}
+      if(!l.def){l.def=1;relAdd(r,L.defaultRel);S.rivals.forEach(function(o){if(o!==r&&!o.out)relAdd(o,L.defaultOthersRel)});S.happy=clamp(S.happy+L.defaultHappiness);
+        S.notes.push({l:'bad',t:'💬 You couldn’t pay '+r.ic+' '+r.name+' back in full this morning ('+(paid?money(paid)+' paid, ':'')+money(l.owe)+' still owed): '+defaultTxt(r)+'. Word gets around. The rest is taken from your cash or bank each morning until it’s paid.'})}
+      else if(paid)S.notes.push({l:'warn',t:'💬 '+money(paid)+' was taken towards what you owe '+r.name+' ('+money(l.owe)+' still owed).'});
+      return true;
+    });
+    dueTomorrow().forEach(function(l){S.notes.push({l:'warn',t:dueTxt(l)})});
+    S.bets=(S.bets||[]).filter(function(b){
+      var r=S.rivals[b.i];if(!r)return false;
+      if(r.out){S.cash+=b.stake;r.cash+=b.stake;S.notes.push({l:'rem',t:'🎲 '+r.ic+' '+r.name+' is out of the race: your bet is off and your '+money(b.stake)+' stake is back.'});return false}
+      if(today<=b.until)return true;
+      var me=worth()-b.y0,them=rivalWorth(r)-b.r0,head='🎲 The bet with '+r.ic+' '+r.name+' is settled: your net worth '+(me<0?'−':'+')+money(Math.abs(Math.round(me)))+', theirs '+(them<0?'−':'+')+money(Math.abs(Math.round(them)))+'. ';
+      if(Math.round(me)===Math.round(them)){S.cash+=b.stake;r.cash+=b.stake;S.notes.push({l:'rem',t:head+'A tie: both stakes back.'});return false}
+      var win=me>them,enemy=(r.rel||0)<=X.enemyAt,d=win&&enemy?B.enemyLoseRel:B.rel;relAdd(r,d);
+      if(win){S.cash+=2*b.stake;S.happy=clamp(S.happy+B.winHappiness)}else{r.cash+=2*b.stake;S.happy=clamp(S.happy+B.loseHappiness)}
+      S.notes.push({l:win?'good':'warn',t:head+(win?'You win '+money(b.stake)+' ('+sg(B.winHappiness):'You lose your '+money(b.stake)+' ('+sg(B.loseHappiness))+' happiness, relationship '+sg(d)+(win&&enemy?': '+r.name+' is a sore loser':'')+').'});
+      return false;
+    });
+  }
+  /* tonight's message from a rival, if any: a request to borrow (rivals short for rent first) or a bet */
+  function rivalMsgTick(){
+    var M=MX(),L=M.loan,today=S.day;
+    S.msgs=(S.msgs||[]).filter(function(m){
+      if(m.until>=today)return true;
+      var r=S.rivals[m.i];if(!m.st&&m.k==='borrow'&&r&&!r.out){relAdd(r,L.refuseRel);S.notes.push({l:'warn',t:'💬 You never answered '+r.ic+' '+r.name+'’s request to borrow '+money(m.amt)+': relationship '+sg(L.refuseRel)+'.'})}
+      return false});
+    if(today-1<M.firstDay||rrand()>=M.messageChance)return;
+    var free=S.rivals.map(function(r,i){return i}).filter(function(i){var r=S.rivals[i];return !r.out&&!S.msgs.some(function(m){return m.i===i&&!m.st})});
+    var ask=free.filter(function(i){var r=S.rivals[i];return !rloan(i,'in')&&(r.cash+r.bank<HOUSE.apt.rent+L.askBuffer||(r.diff==='easy'&&rrand()<L.easyAskChance))});
+    var st=betStake(),bet=free.filter(function(i){var r=S.rivals[i];return !rbet(i)&&r.cash>=st+HOUSE.apt.rent});
+    var k=ask.length?'borrow':bet.length?'bet':'',pool=k==='borrow'?ask:bet;if(!k)return;
+    var i=pool[Math.floor(rrand()*pool.length)],r=S.rivals[i],m={id:(S.msgN=(S.msgN||0)+1),i:i,k:k,day:today,until:today+M.messageDays-1,amt:st,back:0,st:null};
+    if(k==='borrow'){m.amt=Math.round(G(L.min+rrand()*(L.max-L.min))/10)*10;m.back=Math.round(m.amt*(1+L.interest))}
+    S.msgs.push(m);
+    S.notes.push({l:'rem',t:'💬 New message from '+r.ic+' '+r.name+(k==='borrow'?': can you lend them '+money(m.amt)+'?':': a friendly bet.')+' Open the Messages app on your phone or computer (answer by the end of day '+m.until+').'});
+  }
+  /* answering a rival's message: msg 'id|yes' or 'id|no' */
+  function replyMsg(arg){
+    var a=String(arg).split('|'),id=+a[0],yes=a[1]==='yes',M=MX(),L=M.loan,m=(S.msgs||[]).filter(function(x){return x.id===id})[0];
+    if(!m||m.st)return refuse('That message has already been answered.');
+    var r=S.rivals[m.i];if(!r||r.out)return refuse('That rival is out of the race.');
+    if(yes&&S.cash<m.amt)return refuse('You need '+money(m.amt)+' in cash to '+(m.k==='borrow'?'lend it':'put up the stake')+'.');
+    if(yes&&m.k==='bet'&&rbet(m.i))return refuse('You already have a bet running with '+r.name+'.');
+    if(yes&&m.k==='bet'&&r.cash<m.amt)return refuse(r.name+' can’t cover the stake any more.');
+    if(!spendMin(yes?M.replyMinutes:M.noMinutes,0))return;
+    var v0=vitSnap(),res;m.st=yes?'yes':'no';
+    if(m.k==='borrow'){
+      if(yes){S.cash-=m.amt;r.cash+=m.amt;S.rloans.push({i:m.i,dir:'in',amt:m.amt,owe:m.back,due:S.day+L.days,late:0});res=relGain(r,L.lendRel);if(res.backfire)argue();
+        log('💬 You lent '+r.name+' '+money(m.amt)+vitPar(v0)+'. They’ll pay back '+money(m.back)+' on the morning of day '+(S.day+L.days)+'. '+(res.backfire?'It still turned into an argument: ':'')+relTxt(r,res)+'.',res.d<0?'warn':'good')}
+      else{res=relAdd(r,L.refuseRel);log('💬 You told '+r.name+' you can’t lend them '+money(m.amt)+vitPar(v0)+': '+relTxt(r,res)+'.','warn')}
+    }else{
+      if(yes){var b=startBet(m.i,m.amt);log('🎲 You took '+r.name+'’s bet: '+money(m.amt)+' each, settled on the morning of day '+(b.until+1)+vitPar(v0)+'.','good')}
+      else log('🎲 You turned down '+r.name+'’s bet'+vitPar(v0)+'.','');
+    }
+    done();
+  }
+  /* asking a rival to lend you money: rborrow 'i|amount' */
+  function askBorrow(arg){
+    var a=String(arg).split('|'),i=+a[0],amt=+a[1],r=S.rivals&&S.rivals[i],M=MX(),L=M.loan;
+    if(!r||r.out)return refuse('That rival is out of the race.');
+    if(rloan(i,'out'))return refuse('You still owe '+r.name+'. Pay that back first.');
+    if(askedToday('l'+i))return refuse('You already asked '+r.name+' for a loan today.');
+    if(!(amt>0)||amt>G(L.maxBorrow))return refuse('You can ask for up to '+money(G(L.maxBorrow))+'.');
+    if(!spendMin(M.replyMinutes,0))return;
+    markAsked('l'+i);
+    var v0=vitSnap(),why=(r.rel||0)<L.borrowFrom?'you aren’t close enough yet':!rivalSpare(r,amt)?'they can’t spare it':rrand()>=pick(L.willing,r.diff,0.5)?'they’d rather not lend money':'';
+    if(why){var res=relAdd(r,L.askedNoRel);log('💬 '+r.name+' said no to lending you '+money(amt)+' ('+why+')'+vitPar(v0)+': '+relTxt(r,res)+'.','warn')}
+    else{rivalPay(r,amt);S.cash+=amt;var back=Math.round(amt*(1+L.interest)),due=S.day+L.days;S.rloans.push({i:i,dir:'out',amt:amt,owe:back,due:due,late:0});
+      log('💬 '+r.name+' lent you '+money(amt)+vitPar(v0)+'. Pay back '+money(back)+' by the morning of day '+due+': it is taken from your cash, then your bank. If it isn’t paid in full then: '+defaultTxt(r)+'.','good')}
+    done();
+  }
+  /* offering a rival a bet: rbet 'i' */
+  function offerBet(arg){
+    var i=+arg,r=S.rivals&&S.rivals[i],B=MX().bet,st=betStake();
+    if(!r||r.out)return refuse('That rival is out of the race.');
+    if(rbet(i))return refuse('You already have a bet running with '+r.name+'.');
+    if(askedToday('b'+i))return refuse('You already offered '+r.name+' a bet today.');
+    if(S.cash<st)return refuse('You need '+money(st)+' in cash for the stake.');
+    if(!spendMin(MX().replyMinutes,0))return;
+    markAsked('b'+i);var v0=vitSnap();
+    if(r.cash>=st+HOUSE.apt.rent&&rrand()<pick(B.accept,r.diff,0.5)){var b=startBet(i,st);log('🎲 '+r.name+' took your bet: '+money(st)+' each on who grows their net worth more, settled on the morning of day '+(b.until+1)+vitPar(v0)+'.','good')}
+    else log('🎲 '+r.name+' turned down your bet'+vitPar(v0)+'.','');
+    done();
+  }
+  /* the Messages app */
+  function msgsPanel(){
+    var M=MX(),L=M.loan,B=M.bet,st=betStake(),h='',X=CONFIG.rivals.social;
+    h+=psec('msgs','💬 Messages',chip('',newMsgs()?newMsgs()+' new':'No new messages',newMsgs()?'warn':''),'Rivals message you some nights: a request to borrow money or a friendly bet. A message lasts '+M.messageDays+' days; letting it expire counts as saying no. Answering takes '+hm(M.replyMinutes)+' ('+hm(M.noMinutes)+' to say no). Loans run '+L.days+' days at '+Math.round(L.interest*100)+'%; a bet is won by whoever grows their net worth more over '+B.days+' days, and the winner takes both stakes.');
+    dueTomorrow().forEach(function(l){var r=S.rivals[l.i];h+=arow('⚠️ You owe '+r.ic+' '+r.name+' '+money(l.owe)+', due tomorrow morning (day '+l.due+')','','','Keep it in your cash or bank: it is taken automatically. If it isn’t paid in full on time: '+defaultTxt(r)+'.')});
+    (S.rloans||[]).filter(function(l){return l.dir==='out'&&l.def}).forEach(function(l){var r=S.rivals[l.i];h+=arow('⚠️ You still owe '+r.ic+' '+r.name+' '+money(l.owe)+': it is taken from your cash or bank each morning.','','')});
+    var ms=(S.msgs||[]).slice().reverse();
+    if(!ms.length)h+='<p class="sub">No messages yet.</p>';
+    ms.forEach(function(m){var r=S.rivals[m.i];if(!r)return;var tense=(r.rel||0)<0;
+      if(m.k==='borrow'){var due=S.day+L.days,t=r.ic+' '+r.name+': “Can you lend me '+money(m.amt)+'? I’ll pay you back '+money(m.back)+'.”';
+        if(m.st){h+=arow(t,chip('',m.st==='yes'?'✓ You lent it':'✗ You said no',m.st==='yes'?'ok':''),'');return}
+        h+=arow(t,chip('time',hm(M.replyMinutes))+chip('cash','−'+money(m.amt))+chip('','💬 Back '+money(m.back)+' on day '+due)+chip('','Relationship '+sg(L.lendRel))+(tense?argueChip():'')+chip('','Answer by day '+m.until),btn('msg',m.id+'|yes','Lend '+money(m.amt),0,S.cash<m.amt),'',tense?'chance':'');
+        h+=arow('↩️ Say no to '+r.name,chip('time',hm(M.noMinutes))+chip('','Relationship '+sg(L.refuseRel),'warn'),btn('msg',m.id+'|no','Say no',1));
+      }else{var t2=r.ic+' '+r.name+': “Bet you '+money(m.amt)+' I grow my net worth more than you by day '+(S.day+B.days-1)+'.”';
+        if(m.st){h+=arow(t2,chip('',m.st==='yes'?'✓ You took the bet':'✗ You turned it down',m.st==='yes'?'ok':''),'');return}
+        h+=arow(t2,chip('time',hm(M.replyMinutes))+chip('cash','−'+money(m.amt)+' stake')+chip('','🎲 Win: +'+money(m.amt)+', '+sg(B.winHappiness)+' 😊')+chip('','Lose: '+sg(B.loseHappiness)+' 😊')+chip('','Answer by day '+m.until),btn('msg',m.id+'|yes','Take the bet',0,S.cash<m.amt||!!rbet(m.i)));
+        h+=arow('↩️ Turn down '+r.name+'’s bet',chip('time',hm(M.noMinutes)),btn('msg',m.id+'|no','Decline',1));
+      }});
+    var open=(S.rloans||[]).filter(function(l){return l.dir==='in'}).map(function(l){var r=S.rivals[l.i];return arow(r.ic+' '+r.name+' owes you '+money(l.owe),chip('','Due day '+l.due+(l.late?' (late)':''),l.late?'warn':''),'')}).join('')+
+      (S.bets||[]).map(function(b){var r=S.rivals[b.i];return arow('🎲 Bet with '+r.ic+' '+r.name+': '+money(b.stake)+' each',chip('','Settled on the morning of day '+(b.until+1)),'')}).join('');
+    if(open)h+=psec('mopen','Open loans and bets','','')+open;
+    h+=psec('mask','💬 Ask a rival','','Ask a rival to lend you money (they need to be at least 🙂 friendly, able to spare it, and willing: experts lend carefully). A no costs '+Math.abs(L.askedNoRel)+' relationship. Pay back '+Math.round(L.interest*100)+'% more on the morning '+L.days+' days later, from your cash or bank; if it isn’t paid in full then: '+defaultTxt({name:'the lender'})+', once. Or offer a bet of '+money(st)+' each. One ask of each kind per rival a day.');
+    S.rivals.forEach(function(r,i){if(r.out)return;var owe=rloan(i,'out'),asked=askedToday('l'+i),due=S.day+L.days,amts=[1,2,4,6].map(function(x){return G(L.step*x)}).filter(function(v){return v<=G(L.maxBorrow)});
+      h+=arow(r.ic+' Ask '+r.name+' for a loan',chip('time',hm(M.replyMinutes))+chip('',relLabel(r.rel||0))+chip('','Pay back +'+Math.round(L.interest*100)+'% on day '+due)+chip('','⚠️ Unpaid day '+due+': '+sg(L.defaultRel)+' with '+r.name,'warn')+chip('',sg(L.defaultOthersRel)+' with the others','warn')+chip('',sg(L.defaultHappiness)+' 😊','warn')+(owe?chip('','You owe '+money(owe.owe),'warn'):asked?chip('','✓ Asked today','ok'):''),
+        '<div class="btnrow">'+amts.map(function(v){return btn('rborrow',i+'|'+v,money(v),1,!!owe||!!asked)}).join('')+'</div>');
+      h+=arow(r.ic+' Offer '+r.name+' a bet',chip('time',hm(M.replyMinutes))+chip('cash','−'+money(st)+' stake')+chip('','🎲 More net worth growth by day '+(S.day+B.days-1))+(rbet(i)?chip('','Bet running','ok'):askedToday('b'+i)?chip('','✓ Offered today','ok'):''),btn('rbet',String(i),'Offer bet',1,!!rbet(i)||!!askedToday('b'+i)||S.cash<st));
+    });
+    return h;
+  }
   function blankLife(){return {h:[],l:[],crisis:0,unwell:0,best:null}}  /* unwell: nights ill or under CONFIG.health.poorBelow */
   /* tonight's record for you (called in rollover once a rival game's day is done) */
   function lifeSample(wasFed){
     if(S.mode!=='rivals')return;var L=S.life||(S.life=blankLife());
     L.h.push(S.happy);L.l.push(S.health);if(S.ill||S.health<CONFIG.health.poorBelow)L.unwell=(L.unwell||0)+1;
-    if(!wasFed||S.arrears||(S.loan&&S.day-1>S.loan.due)||S.ill||naked())L.crisis++;
+    if(!wasFed||S.arrears||(S.loan&&S.day-1>S.loan.due)||(S.rloans||[]).some(function(l){return l.dir==='out'&&l.def})||S.ill||naked())L.crisis++;
     var j=myJob();if(j&&(!L.best||j.rk.pay>L.best.pay))L.best={pay:j.rk.pay,r:j.rk.r};
   }
   /* everyone in a rival game, as the Life Score sees them */
@@ -4020,6 +4193,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var XS=CONFIG.rivals.social;
     S.rivals.forEach(function(r){if(r.out||(r.rel||0)<XS.friendAt||tipOn()||rrand()>=XS.friendTipChance)return;
       S.tip={until:S.day+CONFIG.community.tip.days-1};S.notes.push({l:'good',t:'🤝 '+r.ic+' '+r.name+' tipped you off about an opening: your next job interview is easier (until the end of day '+S.tip.until+').'})});
+    settleMoney();rivalMsgTick();  /* loans and bets due this morning, then tonight's message */
   }
   /* ---------- macro shocks: multi-day stories with daily effects ----------
     [title, what happens, economic term explained, minDays, maxDays, daily effects]
@@ -5646,7 +5820,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var o=offerToday(),ind=S.ind&&S.ind.day>0?indOf(S.ind.id):null,rum=!ind&&S.indNext>0&&S.indNext>=S.day&&S.indNext-S.day<=CONFIG.industry.rumourDays;
     return boxed(psec('apps',title,chip('',appFrom==='pc'?'At home':'Anywhere'),'Apps save you the walk. The Bank app does savings, investments and offers (loans need a visit to the Bank). The Jobs app shows the same job board as the Employment Office; an online application takes the same 1h as an interview there.')+
       arow('🏦 Bank app',chip('','Savings '+S.rate.toFixed(1)+'%/day','ok')+(o&&!S.promo?chip('','🎁 Offer today','ok'):''),btn('app','bankapp','Open'))+
-      (S.mode==='rivals'&&S.rivals&&S.rivals.length?arow('📞 Calls',chip('','Call a rival or a group'),btn('app','callsapp','Open')):'')+
+      (S.mode==='rivals'&&S.rivals&&S.rivals.length?arow('📞 Calls',chip('','Call a rival or a group'),btn('app','callsapp','Open'))+arow('💬 Messages',chip('',newMsgs()?newMsgs()+' new':'Loans and bets',newMsgs()?'warn':'')+(dueTomorrow().length?chip('','💬 Due tomorrow','warn'):''),btn('app','msgsapp','Open')):'')+
       arow('💼 Jobs app',(myJob()?chip('','Your job: '+myJob().rk.r):chip('','No job yet','warn'))+(ind?chip('',ind.ic+' '+ind.n,'warn'):rum?chip('','📣 Rumour','warn'):''),btn('app','jobsapp','Open')))
   }
   /* Employment Office: the industry-specific storyline's rumour (before it starts) or today's effects (while it runs) */
@@ -5905,6 +6079,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     phone:function(){return appHome('📱 Your phone')},
     callsapp:function(){var X=CONFIG.rivals.social;return appBack()+boxed(psec('calls','📞 Call your rivals',chip('time',hm(X.call.phoneMinutes)+' a call'),'Call one rival, or tick several and make one group call: either way it takes '+hm(X.call.phoneMinutes)+' and gives '+sg(X.call.phoneHappiness)+' happiness. Each rival on the call: usually +1 or +2 relationship, sometimes nothing, sometimes −1 (an argument). With a rival you are on bad terms with, it may get tense and make things worse. Each rival once a day.')+
       callRows(false)+'<p class="appback">'+btn('rcall','group','📞 Call selected (group call)')+'</p>')},
+    msgsapp:function(){return appBack()+boxed(msgsPanel())},
     pc:function(){return appHome('💻 Your computer')},
     market:function(){
       /* food sorted by price, cheapest first; the lottery is not food, so it has its own card */
@@ -6191,6 +6366,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
 
   /* ---------- shopkeeper dialogue: several everyday lines per building, plus lines that react to you ---------- */
   var GREET={
+    msgsapp:['🔔 Notification',['Loans between friends: pay back on time.','A friendly bet keeps things interesting.']],
     callsapp:['🔔 Notification',['Keep in touch: a quick call goes a long way.','Missed call from an unknown number.']],
     phone:['🔔 Notification',['2 apps installed: Bank and Jobs.','Battery full.','No new messages.']],
     pc:['🔔 Notification',['Welcome back.','Your desktop is a mess, but the apps work.','Updates installed.']],
@@ -6333,13 +6509,14 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       var d=p.r?rivalWorth(p.r)-p.r.y:0;
       var line='<span>'+ordinal(p.place)+'</span><span class="rn">'+p.ic+' '+p.name+(p.r?' <small>('+p.r.diff+' · '+relLabel(p.r.rel||0)+')</small>':'')+' · <small>'+job+' · '+money(p.worth)+(d?' <span class="'+(d>0?'up':'dn')+'">'+(d>0?'▲':'▼')+money(Math.abs(d))+'</span>':'')+'</small></span><b>'+p.pts+' pts</b>';
       var cats=Object.keys(p.cats).map(function(k){var x=p.cats[k];return LIFE_CATS[k].ic+' '+ordinal(x.place)+' ('+x.txt+')'}).join(' · ');
-      return '<details><summary class="rivrow'+(p.me?' me':'')+'">'+line+'</summary><ul>'+(p.r?'<li>Relationship '+sg(p.r.rel||0)+' ('+relLabel(p.r.rel||0)+')</li>':'')+'<li>'+cats+'</li>'+(p.r?(p.r.log.length?p.r.log.map(function(l){return '<li>'+l+'</li>'}).join(''):'<li>Nothing to report yet.</li>'):'')+'</ul></details>';
+      return '<details><summary class="rivrow'+(p.me?' me':'')+'">'+line+'</summary><ul>'+(p.r?'<li>Relationship '+sg(p.r.rel||0)+' ('+relLabel(p.r.rel||0)+')</li>'+moneyLis(S.rivals.indexOf(p.r)):'')+'<li>'+cats+'</li>'+(p.r?(p.r.log.length?p.r.log.map(function(l){return '<li>'+l+'</li>'}).join(''):'<li>Nothing to report yet.</li>'):'')+'</ul></details>';
     }).join('');
   }
+  function moneyLis(i){return (S.rloans||[]).filter(function(l){return l.i===i}).map(function(l){return '<li>💬 '+(l.dir==='in'?'Owes you '+money(l.owe):'You owe '+money(l.owe))+' (due day '+l.due+')</li>'}).join('')+(S.bets||[]).filter(function(b){return b.i===i}).map(function(b){return '<li>🎲 Bet of '+money(b.stake)+' each until day '+b.until+'</li>'}).join('')}
   function renderOverviewCards(){
     rivalBoard();
     (function(){var d=handheld(),o=offerToday();$('phoneBtn').disabled=!d||!!S.over;
-      $('phoneNote').textContent=!d?'Needs a phone or tablet'+(owns('computer')?' (your computer at home has the apps)':''):'Bank and Jobs apps'+(o&&!S.promo?' · 🎁 bank offer today':'')})();
+      $('phoneNote').textContent=!d?'Needs a phone or tablet'+(owns('computer')?' (your computer at home has the apps)':''):'Bank and Jobs apps'+(o&&!S.promo?' · 🎁 bank offer today':'')+(S.mode==='rivals'&&newMsgs()?' · 💬 '+newMsgs()+' new':'')+(S.mode==='rivals'&&dueTomorrow().length?' · 💬 due tomorrow':'')})();
     var as=assets(),nw=worth(),tot=Math.max(nextGoal(),nw),iv=invTotal();  /* the same values renderStats() shows */
     var sm2=S.summary,sc=$('sumcard');sc.hidden=!sm2;
     if(sm2){var sg=function(v,suf){return '<b class="'+(v>0?'up':v<0?'dn':'')+'">'+(v>0?'+':v<0?'−':'±')+(suf==='$'?money(Math.abs(Math.round(v))):Math.abs(Math.round(v))+(suf||''))+'</b>'};
@@ -6679,6 +6856,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     pc:       {run:function(){openDevice('pc')},   ui:true},
     meet:     {run:function(g){rivalMeet(g)},     kind:'fun'},
     rcall:    {run:function(g){rivalCall(g)},     kind:'fun'},
+    msg:      {run:function(g){replyMsg(g)},      kind:'fun'},
+    rborrow:  {run:function(g){askBorrow(g)},     kind:'fun'},
+    rbet:     {run:function(g){offerBet(g)},      kind:'fun'},
     device:   {run:function(g){openDevice(g)},     ui:true},  /* ← Phone / ← Computer: back to the device's home screen */
     divest:   {run:function(g){divest(g)}},
     borrow:   {run:function(){borrow()}},
@@ -6814,7 +6994,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       (function(){var C=CONFIG.community,f=function(c){return hm(c.minutes)+(c.cost?', $'+c.cost:'')+(c.energy?', '+sg(c.energy)+'% energy':'')+', '+sg(c.happiness)+' happiness'+(c.knowledge?', '+sg(c.knowledge)+' knowledge':'')};
         if($('cfgComm'))$('cfgComm').textContent='once a day each: a night out with friends ('+f(C.nightOut)+'), karaoke ('+f(C.karaoke)+') or volunteering ('+f(C.volunteer)+'). A night out ('+pctTxt(C.nightOut.tipChance)+') or volunteering ('+pctTxt(C.volunteer.tipChance)+') can get you a friend’s job tip: for '+dayN(C.tip.days)+' your next interview is '+Math.round(C.tip.passBonus*100)+'% more likely to pass and never fails for “no openings”.'})();
       (function(){var R=CONFIG.rivals,T=CONFIG.time.gameDays,due=TIERS.filter(function(r){return r.d}).map(function(r){return Math.min(Math.round(r.d*R.gameDays/T),R.gameDays)});
-        if($('cfgRivals'))$('cfgRivals').textContent='choose “With AI rivals” on the welcome screen: 1 to 3 computer players (easy, medium, expert or mixed) live the same '+R.gameDays+' days in the same town, under the same prices, pay, storylines, layoffs and job openings. A rival game lasts '+R.gameDays+' days (a single game '+T+'), has '+R.industryStorylines+' industry-specific storylines, and its rank target days stretch to day '+due.join(', ')+'. Reaching '+TIERS[TIERS.length-1].n+' does not end a rival game: everyone plays all '+R.gameDays+' days. The game is won on the Life Score: in each category everyone gets a place, worth '+R.scoring.placePoints.join('/')+' points (1st/2nd/…) × the category weight: '+Object.keys(R.scoring.categories).filter(function(k){return R.scoring.categories[k].on&&LIFE_CATS[k]}).map(function(k){return LIFE_CATS[k].n.toLowerCase()+' ×'+R.scoring.categories[k].weight}).join(', ')+'. Happiness counts as the average over the game, health as unwell nights (ill, or health under '+CONFIG.health.poorBelow+'), stability counts crisis days (no meal, rent arrears, an overdue loan, illness, no clothes), career is your best-paid job, and first to the line rewards reaching each rank earliest. '+(R.jobRace&&R.jobRace.chance>0?'When a '+R.jobRace.levels.join(' or ')+' rival gets a job, it may have taken the last opening: that role has no openings for you the next day (up to '+R.jobRace.maxPerGame+' times a game). ':'')+(function(){var X=R.social;return X?'Each rival has a relationship with you, from enemy to friend. Building it costs time: chat ('+hm(X.chat.minutes)+') or say hello ('+hm(X.hello.minutes)+') when you meet them around town, call them (from home, or by phone anywhere, one or a group; usually +1 or +2, sometimes an argument), or congratulate them on their news ('+hm(X.congratulate.minutes)+'). On bad terms, an interaction may turn tense and make things worse ('+pctTxt(X.tension.per*20)+' at −20, up to '+pctTxt(X.tension.max)+')'+(X.argument&&X.argument.happiness?'; an argument (a call that goes wrong, or tension) also costs you '+Math.abs(X.argument.happiness)+' happiness':'')+'. Friends sometimes tip you off about openings; enemies race you harder for them. ':''})()+'The Overview shows the running leaderboard, the morning news tells you what your rivals did, and the end screen shows every category.'})();
+        if($('cfgRivals'))$('cfgRivals').textContent='choose “With AI rivals” on the welcome screen: 1 to 3 computer players (easy, medium, expert or mixed) live the same '+R.gameDays+' days in the same town, under the same prices, pay, storylines, layoffs and job openings. A rival game lasts '+R.gameDays+' days (a single game '+T+'), has '+R.industryStorylines+' industry-specific storylines, and its rank target days stretch to day '+due.join(', ')+'. Reaching '+TIERS[TIERS.length-1].n+' does not end a rival game: everyone plays all '+R.gameDays+' days. The game is won on the Life Score: in each category everyone gets a place, worth '+R.scoring.placePoints.join('/')+' points (1st/2nd/…) × the category weight: '+Object.keys(R.scoring.categories).filter(function(k){return R.scoring.categories[k].on&&LIFE_CATS[k]}).map(function(k){return LIFE_CATS[k].n.toLowerCase()+' ×'+R.scoring.categories[k].weight}).join(', ')+'. Happiness counts as the average over the game, health as unwell nights (ill, or health under '+CONFIG.health.poorBelow+'), stability counts crisis days (no meal, rent arrears, an overdue loan, illness, no clothes), career is your best-paid job, and first to the line rewards reaching each rank earliest. '+(R.jobRace&&R.jobRace.chance>0?'When a '+R.jobRace.levels.join(' or ')+' rival gets a job, it may have taken the last opening: that role has no openings for you the next day (up to '+R.jobRace.maxPerGame+' times a game). ':'')+(function(){var X=R.social;return X?'Each rival has a relationship with you, from enemy to friend. Building it costs time: chat ('+hm(X.chat.minutes)+') or say hello ('+hm(X.hello.minutes)+') when you meet them around town, call them (from home, or by phone anywhere, one or a group; usually +1 or +2, sometimes an argument), or congratulate them on their news ('+hm(X.congratulate.minutes)+'). On bad terms, an interaction may turn tense and make things worse ('+pctTxt(X.tension.per*20)+' at −20, up to '+pctTxt(X.tension.max)+')'+(X.argument&&X.argument.happiness?'; an argument (a call that goes wrong, or tension) also costs you '+Math.abs(X.argument.happiness)+' happiness':'')+'. Friends sometimes tip you off about openings; enemies race you harder for them. ':''})()+(function(){var M=R.money;if(!M)return '';var L=M.loan,B=M.bet;return 'In the 💬 Messages app (phone or computer), rivals may ask to borrow money or offer a bet, and you can ask them. Loans run '+L.days+' days at '+Math.round(L.interest*100)+'%: you get a reminder the morning before yours is due, and if it isn’t paid in full on the due morning your relationship with the lender drops '+Math.abs(L.defaultRel)+', with every other rival '+Math.abs(L.defaultOthersRel)+', and you lose '+Math.abs(L.defaultHappiness)+' happiness. A rival who turns down your request drops '+Math.abs(L.askedNoRel)+'. A bet ('+money(G(B.stake))+' each) goes to whoever grows their net worth more over '+B.days+' days. '})()+'The Overview shows the running leaderboard, the morning news tells you what your rivals did, and the end screen shows every category.'})();
       $('cfgRent').textContent=everyDays(RENT_EVERY);
       $('apOf').textContent=' of '+hm(MAX_AP);
       $('cfgDebt').textContent=pctTxt(CONFIG.hospital.billInterest);

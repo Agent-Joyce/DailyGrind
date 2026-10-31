@@ -59,7 +59,7 @@
   }
   function closeOver(){[].forEach.call(document.querySelectorAll('.over.show'),function(o){o.classList.remove('show')})}
   function restore(where){
-    G.S=JSON.parse(base);S=G.S;G.loc=where&&['phone','pc','bankapp','jobsapp','callsapp'].indexOf(where)<0?where:baseLoc;G.view=where||null;  /* device and app screens are not places */
+    G.S=JSON.parse(base);S=G.S;G.loc=where&&['phone','pc','bankapp','jobsapp','callsapp','msgsapp'].indexOf(where)<0?where:baseLoc;G.view=where||null;  /* device and app screens are not places */
     closeOver();$('toasts').innerHTML='';G.render();$('toasts').innerHTML='';
   }
 
@@ -213,6 +213,10 @@
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.home='apt';S.homeless=0;S.rcalled=null}},
     {name:'the Calls app (one rival or a group)',bld:'callsapp',need:['rcall'],
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.rcalled=null}},
+    {name:'the Messages app (a request to borrow, a bet, a loan due tomorrow)',bld:'msgsapp',need:['msg','rborrow','rbet'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.cash=Math.max(S.cash,400);S.asked=null;S.bets=[];
+        S.msgs=[{id:1,i:0,k:'borrow',day:S.day,until:S.day+1,amt:80,back:88,st:null},{id:2,i:2,k:'bet',day:S.day,until:S.day+1,amt:50,back:0,st:null},{id:3,i:1,k:'bet',day:S.day-1,until:S.day,amt:50,back:0,st:'no'}];
+        S.rloans=[{i:1,dir:'out',amt:100,owe:110,due:S.day+1,late:0},{i:2,dir:'in',amt:60,owe:66,due:S.day+2,late:0}];S.msgN=3}},
     {name:'out of clothes, buying used ones',bld:'thrift',need:['ubuy'],
       mod:function(S){S.clothes={casual:0,smart:0,suit:0}}},
     {name:'out of clothes with a job (shift disabled, "No clothes" chip)',bld:'fast',need:[],
