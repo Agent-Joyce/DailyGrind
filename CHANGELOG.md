@@ -1214,3 +1214,13 @@ Rivals had an easier life than you on happiness, health and stability, so they w
   | Expert | 1 of 20 | 4 of 20 |
 
   Stability now goes to the steady player, and happiness is a real trade-off. Health still hardly separates anyone (everyone ends at about 97–99).
+
+## 82. AI rivals: a fair Health category, and the job race
+
+- **Health counts unwell nights, not average health.** Everyone used to average 97–99 health, so the category was decided by a point or two. It now counts the nights a player spent ill or ended under the "poor health" line (`CONFIG.health.poorBelow`). Fewer is better, and players with the same count share the place, so it only separates people who really got sick or run down. Shown as "no unwell nights" / "3 unwell nights".
+- **The job race (step 3 of the design).** When a medium or expert rival gets a job, there's a 50% chance it took the last opening.
+  - That role then has no openings for you the next day. The job board (Employment Office and Jobs app) shows a "🏁 Taken by Maya" chip, a morning note tells you, and applying anyway costs the usual hour with "Maya got there first".
+  - At most 3 times a game, never the same role twice running. Easy rivals don't race.
+  - New `CONFIG.rivals.jobRace` {chance 0.5, maxPerGame 3, levels medium, expert}, rolled on the rivals' own dice, so single games are unchanged.
+- **Rules:** the AI rivals line describes both.
+- **UI check:** new situation "a rival took the last opening".
