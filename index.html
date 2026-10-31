@@ -1315,7 +1315,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         chat:{minutes:30, happiness:2, rel:8}, hello:{minutes:10, rel:3}, ignore:{rel:-3},
         congratulate:{minutes:15, rel:6, happiness:1}, friendTipChance:0.15, enemyRaceBonus:0.25, racedRel:-10,
         call:{phoneMinutes:30, phoneHappiness:1, roll:[[-1,0.1],[0,0.1],[1,0.4],[2,0.4]]},
-        tension:{per:0.01, max:0.6}},  // which illness a rival catches (they share your illness chance and illness data)
+        tension:{per:0.01, max:0.6},
+        argument:{happiness:-2}},  // an argument with a rival (a call that goes wrong, or tension) also costs you this much happiness  // which illness a rival catches (they share your illness chance and illness data)
       lifeEvents:{chance:0.6, outcomes:['h-2~6','h-5 c-15~40','h-4 e-6','h+2~4','h+3 c-10~25','l-2~4','h-3 l-2','e-8 h-2','c+10~30 h+2','h-8 l-3']},
       names:['Maya','Leo','Sam'], icons:['👩','🧔','🧑'],
       levels:{
@@ -3930,6 +3931,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     r.rel=Math.max(-100,Math.min(100,rel+gain));
     return {d:gain,backfire:backfire};
   }
+  /* an argument with a rival (a call's −1, or tension) costs you happiness (CONFIG.rivals.social.argument) */
+  function argue(){S.happy=clamp(S.happy+(CONFIG.rivals.social.argument.happiness||0))}
+  /* the warning chip on any row that can end in an argument */
+  function argueChip(){var a=CONFIG.rivals.social.argument.happiness;return a?chip('','⚠️ Argument: '+sg(a)+' 😊','warn'):''}
   function relTxt(r,res){return 'relationship with '+r.name+' '+sg(res.d)+' (now '+sg(r.rel)+', '+relLabel(r.rel)+')'}
   /* today's encounter: when you walk into a place a rival frequents, a chance to meet them there (one a day, rival dice) */
   function maybeEncounter(l){
@@ -3941,10 +3946,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   }
   function encounterCard(){
     var e=S.enc;if(S.mode!=='rivals'||!e||e.day!==S.day||e.done||e.loc!==view||!S.rivals[e.i])return '';
-    var r=S.rivals[e.i],X=CONFIG.rivals.social,j=rivalJob(r);
+    var r=S.rivals[e.i],X=CONFIG.rivals.social,j=rivalJob(r),tense=(r.rel||0)<0;  /* below 0 a chat or hello may turn into an argument */
     return boxed(psec('enc',r.ic+' '+r.name+' is here',chip('',relLabel(r.rel||0)),r.name+' ('+r.diff+(j?', '+j.rk.r:'')+') is here too. Talking builds your relationship, but takes time; with someone you are on bad terms with it may turn tense and make things worse.')+
-      arow('🗣️ Chat',chip('time',hm(X.chat.minutes))+chip('happy',sg(X.chat.happiness))+chip('','Relationship '+sg(X.chat.rel)),btn('meet','chat','Chat'))+
-      arow('👋 Say hello',chip('time',hm(X.hello.minutes))+chip('','Relationship '+sg(X.hello.rel)),btn('meet','hello','Say hello',1))+
+      arow('🗣️ Chat',chip('time',hm(X.chat.minutes))+chip('happy',sg(X.chat.happiness))+chip('','Relationship '+sg(X.chat.rel))+(tense?argueChip():''),btn('meet','chat','Chat'),'',tense?'chance':'')+
+      arow('👋 Say hello',chip('time',hm(X.hello.minutes))+chip('','Relationship '+sg(X.hello.rel))+(tense?argueChip():''),btn('meet','hello','Say hello',1),'',tense?'chance':'')+
       arow('🙈 Ignore',chip('','No time')+chip('','Relationship '+sg(X.ignore.rel),'warn'),btn('meet','ignore','Ignore',1)));
   }
   function rivalMeet(k){
@@ -3953,9 +3958,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(c.minutes&&!spendMin(c.minutes,0))return;
     var v0=vitSnap(),res;
     if(k==='ignore'){r.rel=Math.max(-100,Math.min(100,(r.rel||0)+c.rel));res={d:c.rel,backfire:false}}
-    else{res=relGain(r,c.rel);S.happy=clamp(S.happy+(c.happiness||0))}  /* tension costs relationship, not happiness: the chip stays true */
+    else{res=relGain(r,c.rel);S.happy=clamp(S.happy+(c.happiness||0));if(res.backfire)argue()}  /* a tense chat or hello is an argument */
     e.done=true;
-    log((k==='ignore'?'🙈 You ignored '+r.name:res.backfire?'🗯️ The '+(k==='chat'?'chat':'hello')+' with '+r.name+' turned tense':k==='chat'?'🗣️ You had a chat with '+r.name:'👋 You said hello to '+r.name)+vitPar(v0)+': '+relTxt(r,res)+'.',res.d<0?'warn':'good');
+    log((k==='ignore'?'🙈 You ignored '+r.name:res.backfire?'🗯️ The '+(k==='chat'?'chat':'hello')+' with '+r.name+' turned into an argument':k==='chat'?'🗣️ You had a chat with '+r.name:'👋 You said hello to '+r.name)+vitPar(v0)+': '+relTxt(r,res)+'.',res.d<0?'warn':'good');
     done();
   }
   /* calls: from home (no phone needed, costs what a family call costs) or by phone anywhere (one rival or a group) */
@@ -3975,14 +3980,14 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(!S.rcalled||S.rcalled.d!==S.day)S.rcalled={d:S.day};
     who.forEach(function(i){var r=S.rivals[i],g=callRoll(),res;S.rcalled[i]=1;
       if(g>0)res=relGain(r,g);else{r.rel=Math.max(-100,Math.min(100,(r.rel||0)+g));res={d:g,backfire:false}}
-      if(res.backfire||res.d<0)bad++;parts.push(r.name+' '+sg(res.d)+(res.backfire?' (it got tense)':res.d<0?' (an argument)':''))});
+      if(res.backfire||res.d<0){bad++;argue()}parts.push(r.name+' '+sg(res.d)+(res.backfire?' (it got tense: an argument)':res.d<0?' (an argument)':''))});
     log('📞 '+(who.length>1?'Group call':'You called '+S.rivals[who[0]].name)+(home?' from home':' on your phone')+vitPar(v0)+'. Relationships: '+parts.join(', ')+'.',bad?'warn':'good');
     done();
   }
   function callRows(home){
     var X=CONFIG.rivals.social,LE=CONFIG.leisure.call,mins=home?LE.minutes:X.call.phoneMinutes,hap=home?LE.happiness:X.call.phoneHappiness;
     return S.rivals.map(function(r,i){if(r.out)return '';var c=calledToday(i);
-      return arow((home?'':'<input type="checkbox" data-rsel="'+i+'" aria-label="Add '+r.name+' to a group call"'+(c?' disabled':'')+'> ')+r.ic+' Call '+r.name,chip('time',hm(mins))+chip('happy',sg(hap))+chip('',relLabel(r.rel||0))+(c?chip('','✓ Called today','ok'):''),btn('rcall',String(i),'Call',home?1:0,!!c))}).join('');
+      return arow((home?'':'<input type="checkbox" data-rsel="'+i+'" aria-label="Add '+r.name+' to a group call"'+(c?' disabled':'')+'> ')+r.ic+' Call '+r.name,chip('time',hm(mins))+chip('happy',sg(hap))+argueChip()+chip('',relLabel(r.rel||0))+(c?chip('','✓ Called today','ok'):''),btn('rcall',String(i),'Call',home?1:0,!!c),'','chance')}).join('');  /* a call can always end in an argument */
   }
   /* congratulate a rival on this morning's news: 15 minutes, once a morning per rival */
   function congratulate(i){
@@ -3993,8 +3998,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       if(S.ap<X.minutes){var nt='Not enough time to congratulate '+r.name+' ('+hm(X.minutes)+' needed, '+hm(S.ap)+' left).';forceToast.push({txt:nt,cls:'bad'});return refuse(nt)}
       if(!spendMin(X.minutes,0))return;
       if(!S.cong||S.cong.d!==S.day)S.cong={d:S.day};S.cong[i]=1;
-      var v0=vitSnap(),res=relGain(r,X.rel);S.happy=clamp(S.happy+X.happiness);
-      var msg=(res.backfire?'🗯️ Your congratulations to '+r.name+' came across badly':'🎉 You congratulated '+r.name)+vitPar(v0)+': '+relTxt(r,res)+'.';
+      var v0=vitSnap(),res=relGain(r,X.rel);S.happy=clamp(S.happy+X.happiness);if(res.backfire)argue();
+      var msg=(res.backfire?'🗯️ Your congratulations to '+r.name+' came across badly and turned into an argument':'🎉 You congratulated '+r.name)+vitPar(v0)+': '+relTxt(r,res)+'.';
       forceToast.push({txt:msg,cls:res.d<0?'bad':'good'});log(msg,res.d<0?'warn':'good');
       done();
     }finally{toastAll=false}
@@ -6304,7 +6309,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       $('cpMsg').textContent=(opens.length?'New jobs open to you: '+opens.join(', ')+'. ':'')+(close.length?'Closer to: '+close.slice(0,4).join(', ')+' (they also need other qualifications). ':'')+(nxT?'Next up: the '+TT.lv[C.l]+' (tuition '+money(nxF)+', paid when you enrol).':'You have completed the whole pathway!');
       var cn=$('cpNext');cn.hidden=!nxT;if(nxT){cn.textContent='Enrol in the '+TT.lv[C.l]+' · '+money(nxF);cn.disabled=S.cash<nxF||S.expelled>0}
       cp.classList.add('show')}else cp.classList.remove('show');
-    var mo=$('morning');if(S.morning&&!S.over&&!S.pending&&!S.cert){$('mnT').textContent='☀️ Day '+S.day+(maxDays()!==Infinity?' of '+maxDays():'');$('mnSub').textContent='Before you start, a few things need your attention:';$('mnList').innerHTML=S.morning.map(function(x){var cg=x.rv!=null&&S.mode==='rivals'&&S.rivals&&S.rivals[x.rv];return '<li class="'+x.l+'">'+x.t+(cg?' '+(S.cong&&S.cong.d===S.day&&S.cong[x.rv]?'<small>✓ Congratulated</small>':'<button type="button" class="mini" data-cg="'+x.rv+'">🎉 Congratulate · '+hm(CONFIG.rivals.social.congratulate.minutes)+'</button>'):'')+'</li>'}).join('');mo.classList.add('show')}else mo.classList.remove('show');
+    var mo=$('morning');if(S.morning&&!S.over&&!S.pending&&!S.cert){$('mnT').textContent='☀️ Day '+S.day+(maxDays()!==Infinity?' of '+maxDays():'');$('mnSub').textContent='Before you start, a few things need your attention:';$('mnList').innerHTML=S.morning.map(function(x){var cg=x.rv!=null&&S.mode==='rivals'&&S.rivals&&S.rivals[x.rv];return '<li class="'+x.l+'">'+x.t+(cg?' '+(S.cong&&S.cong.d===S.day&&S.cong[x.rv]?'<small>✓ Congratulated</small>':'<button type="button" class="mini" data-cg="'+x.rv+'">🎉 Congratulate · '+hm(CONFIG.rivals.social.congratulate.minutes)+'</button>'+((S.rivals[x.rv].rel||0)<0?' <small>⚠️ on bad terms: an argument costs '+sg(CONFIG.rivals.social.argument.happiness)+' happiness</small>':'')):'')+'</li>'}).join('');mo.classList.add('show')}else mo.classList.remove('show');
   }
   /* the top bar: net worth, cash, investments, score, buttons and current pay, plus the Rules text that depends on difficulty */
   function renderHud(){
@@ -6809,7 +6814,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       (function(){var C=CONFIG.community,f=function(c){return hm(c.minutes)+(c.cost?', $'+c.cost:'')+(c.energy?', '+sg(c.energy)+'% energy':'')+', '+sg(c.happiness)+' happiness'+(c.knowledge?', '+sg(c.knowledge)+' knowledge':'')};
         if($('cfgComm'))$('cfgComm').textContent='once a day each: a night out with friends ('+f(C.nightOut)+'), karaoke ('+f(C.karaoke)+') or volunteering ('+f(C.volunteer)+'). A night out ('+pctTxt(C.nightOut.tipChance)+') or volunteering ('+pctTxt(C.volunteer.tipChance)+') can get you a friend’s job tip: for '+dayN(C.tip.days)+' your next interview is '+Math.round(C.tip.passBonus*100)+'% more likely to pass and never fails for “no openings”.'})();
       (function(){var R=CONFIG.rivals,T=CONFIG.time.gameDays,due=TIERS.filter(function(r){return r.d}).map(function(r){return Math.min(Math.round(r.d*R.gameDays/T),R.gameDays)});
-        if($('cfgRivals'))$('cfgRivals').textContent='choose “With AI rivals” on the welcome screen: 1 to 3 computer players (easy, medium, expert or mixed) live the same '+R.gameDays+' days in the same town, under the same prices, pay, storylines, layoffs and job openings. A rival game lasts '+R.gameDays+' days (a single game '+T+'), has '+R.industryStorylines+' industry-specific storylines, and its rank target days stretch to day '+due.join(', ')+'. Reaching '+TIERS[TIERS.length-1].n+' does not end a rival game: everyone plays all '+R.gameDays+' days. The game is won on the Life Score: in each category everyone gets a place, worth '+R.scoring.placePoints.join('/')+' points (1st/2nd/…) × the category weight: '+Object.keys(R.scoring.categories).filter(function(k){return R.scoring.categories[k].on&&LIFE_CATS[k]}).map(function(k){return LIFE_CATS[k].n.toLowerCase()+' ×'+R.scoring.categories[k].weight}).join(', ')+'. Happiness counts as the average over the game, health as unwell nights (ill, or health under '+CONFIG.health.poorBelow+'), stability counts crisis days (no meal, rent arrears, an overdue loan, illness, no clothes), career is your best-paid job, and first to the line rewards reaching each rank earliest. '+(R.jobRace&&R.jobRace.chance>0?'When a '+R.jobRace.levels.join(' or ')+' rival gets a job, it may have taken the last opening: that role has no openings for you the next day (up to '+R.jobRace.maxPerGame+' times a game). ':'')+(function(){var X=R.social;return X?'Each rival has a relationship with you, from enemy to friend. Building it costs time: chat ('+hm(X.chat.minutes)+') or say hello ('+hm(X.hello.minutes)+') when you meet them around town, call them (from home, or by phone anywhere, one or a group; usually +1 or +2, sometimes an argument), or congratulate them on their news ('+hm(X.congratulate.minutes)+'). On bad terms, an interaction may turn tense and make things worse ('+pctTxt(X.tension.per*20)+' at −20, up to '+pctTxt(X.tension.max)+'). Friends sometimes tip you off about openings; enemies race you harder for them. ':''})()+'The Overview shows the running leaderboard, the morning news tells you what your rivals did, and the end screen shows every category.'})();
+        if($('cfgRivals'))$('cfgRivals').textContent='choose “With AI rivals” on the welcome screen: 1 to 3 computer players (easy, medium, expert or mixed) live the same '+R.gameDays+' days in the same town, under the same prices, pay, storylines, layoffs and job openings. A rival game lasts '+R.gameDays+' days (a single game '+T+'), has '+R.industryStorylines+' industry-specific storylines, and its rank target days stretch to day '+due.join(', ')+'. Reaching '+TIERS[TIERS.length-1].n+' does not end a rival game: everyone plays all '+R.gameDays+' days. The game is won on the Life Score: in each category everyone gets a place, worth '+R.scoring.placePoints.join('/')+' points (1st/2nd/…) × the category weight: '+Object.keys(R.scoring.categories).filter(function(k){return R.scoring.categories[k].on&&LIFE_CATS[k]}).map(function(k){return LIFE_CATS[k].n.toLowerCase()+' ×'+R.scoring.categories[k].weight}).join(', ')+'. Happiness counts as the average over the game, health as unwell nights (ill, or health under '+CONFIG.health.poorBelow+'), stability counts crisis days (no meal, rent arrears, an overdue loan, illness, no clothes), career is your best-paid job, and first to the line rewards reaching each rank earliest. '+(R.jobRace&&R.jobRace.chance>0?'When a '+R.jobRace.levels.join(' or ')+' rival gets a job, it may have taken the last opening: that role has no openings for you the next day (up to '+R.jobRace.maxPerGame+' times a game). ':'')+(function(){var X=R.social;return X?'Each rival has a relationship with you, from enemy to friend. Building it costs time: chat ('+hm(X.chat.minutes)+') or say hello ('+hm(X.hello.minutes)+') when you meet them around town, call them (from home, or by phone anywhere, one or a group; usually +1 or +2, sometimes an argument), or congratulate them on their news ('+hm(X.congratulate.minutes)+'). On bad terms, an interaction may turn tense and make things worse ('+pctTxt(X.tension.per*20)+' at −20, up to '+pctTxt(X.tension.max)+')'+(X.argument&&X.argument.happiness?'; an argument (a call that goes wrong, or tension) also costs you '+Math.abs(X.argument.happiness)+' happiness':'')+'. Friends sometimes tip you off about openings; enemies race you harder for them. ':''})()+'The Overview shows the running leaderboard, the morning news tells you what your rivals did, and the end screen shows every category.'})();
       $('cfgRent').textContent=everyDays(RENT_EVERY);
       $('apOf').textContent=' of '+hm(MAX_AP);
       $('cfgDebt').textContent=pctTxt(CONFIG.hospital.billInterest);

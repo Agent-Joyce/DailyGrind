@@ -1270,3 +1270,23 @@ Rivals are now people you deal with, not just names on the leaderboard.
   - congratulating takes 15 minutes, can't be repeated, and is refused without time;
   - a friend's tip arrives.
 - **UI check:** new situations for meeting a rival, calling from home, and the Calls app. Its first run caught calls costing an extra happiness point after an argument, which the row's chip didn't show. Arguments and tension now cost relationship only.
+
+## 85. Arguments with rivals cost 2 happiness
+
+An argument with a rival now hurts you as well as the relationship.
+- **What counts as an argument:**
+  - a call where a rival's roll lands on −1, from home, by phone, or for any rival in a group call;
+  - any interaction that backfires through tension (chat, say hello, a call, congratulating).
+  - Ignoring a rival isn't an argument and stays free.
+- **The cost:** −2 happiness for each rival who argued, on top of the action's own happiness. A tense chat that backfires nets 0 (+2, then −2); a group call where two rivals argue nets −3 (+1, then −4). The log line and the Calls toast name the argument and show the real change.
+- **Rows warn you:** a ⚠️ "Argument: −2 😊" chip shows on every call row, since a call can always go wrong, and on chat, say hello and the morning 🎉 Congratulate button only when the relationship is below 0, the only time those can backfire.
+- **Rules:** the AI rivals sentence now says an argument costs you 2 happiness.
+- **Config:** new `CONFIG.rivals.social.argument` {happiness: −2}.
+- **Single games** are unchanged.
+- **Checked by clicking through** (forced outcomes):
+  - a call that turns into an argument costs 1 happiness net (+1, −2);
+  - a group call with two arguments costs 3 net;
+  - a call without one still gives +1;
+  - a tense chat that backfires nets 0;
+  - the warning chip shows on call rows, and on the encounter card at −80 but not at +20.
+- **UI check:** rows that can end in an argument carry a `chance` class, and the check compares only their time chip, since their happiness depends on the dice. Their log text and toasts are still checked against the real change. 0 issues on desktop and phone.

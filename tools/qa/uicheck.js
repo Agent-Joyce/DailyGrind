@@ -13,6 +13,7 @@
           TEXT≠EFFECT   the log line's energy / happiness / health / knowledge differ from the real change
           TOAST≠EFFECT  the toast's vital icons and numbers differ from the real change
           CHIP≠EFFECT   the chips on the button's row (time, energy, happiness, health, knowledge) differ from the real change
+                        (rows marked 'chance', such as a rival call that may end in an argument, compare only their time)
      4. Layout, on every panel, the status page and every pop-up:
           OVERFLOW      the page scrolls sideways, or something sticks out of its card or off the screen
           CLIPPED       a button's label does not fit in the button
@@ -119,7 +120,7 @@
     var b=shopButtons().filter(function(x){return key(x)===k})[idx];
     if(!b){note('DEAD BUTTON',bld,k+' disappeared after a restore');return}
     var where=bld+': '+(b.textContent.trim()||k).slice(0,40),row=b.closest('.arow,.opt');
-    var chips=parseChips(row),s0=JSON.stringify(G.S),html0=$('shopBody').innerHTML,n0=G.S.logs.length,v0=vit(),e0=errs.length,inp={};
+    var chanceRow=!!(row&&row.classList.contains('chance')),chips=parseChips(row),s0=JSON.stringify(G.S),html0=$('shopBody').innerHTML,n0=G.S.logs.length,v0=vit(),e0=errs.length,inp={};
     [].forEach.call(document.querySelectorAll('#shop input'),function(i){inp[i.id]=i.value});
     $('toasts').innerHTML='';
     b.click();await y();stats.clicks++;
@@ -136,7 +137,8 @@
       cmp('TEXT≠EFFECT',where,said,v0,v1);
       if(toasts.length)cmp('TOAST≠EFFECT',where,parseToasts(toasts),v0,v1);
       /* shop rows (buy, bundle, chips, bargain, sell, lottery) show what the thing does later, not what buying it does */
-      if(!refused&&lines.length&&!/^(buy|groc|bundle|chips|bargain|sell|lotto)\|/.test(k))cmp('CHIP≠EFFECT',where,chips,v0,v1);
+      /* rows marked 'chance' (a rival chat or call that may end in an argument) can't promise their happiness: only their time is compared */
+      if(!refused&&lines.length&&!/^(buy|groc|bundle|chips|bargain|sell|lotto)\|/.test(k))cmp('CHIP≠EFFECT',where,chanceRow?{ap:chips.ap}:chips,v0,v1);
       toasts.forEach(function(t){var r=t.getBoundingClientRect();if(r.right>innerWidth+1||r.left<-1)note('OVERFLOW',where,'toast goes off the screen')});
     }else{stats.popups.push(where);popupFits(where+' (pop-up)')}
   }
