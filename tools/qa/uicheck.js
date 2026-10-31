@@ -172,7 +172,7 @@
   /* ---------- situations the main game does not have: each starts from the main game, adds one situation,
     checks that its buttons are there, and presses everything in that building ---------- */
   /* three rivals for the rival-game situations (the fields the screens read) */
-  function uiRivals(){return [['Maya','👩','easy',-30],['Leo','🧔','medium',20],['Sam','🧑','expert',55]].map(function(x){return {name:x[0],ic:x[1],diff:x[2],rel:x[3],cash:300,bank:0,etf:0,job:null,y:300,
+  function uiRivals(){return [['Maya','👩','easy',-30],['Leo','🧔','medium',20],['Sam','🧑','expert',55]].map(function(x,i){return {personality:['generous','vindictive','reckless'][i],favours:{trust:i?1:-2,owed:i?1:0,entries:[{day:3,key:i?'soup':'refused'}]},name:x[0],ic:x[1],diff:x[2],rel:x[3],cash:300,bank:0,etf:0,job:null,y:300,
     log:[],out:null,edu:{},clothes:{casual:3,smart:0,suit:0},shiftsAt:{},hist:[],know:10,happy:60,health:80,energy:70,tier:-1,rankDay:{},bestJob:null,life:{h:[60],l:[80],crisis:0,unwell:0,best:null},places:['fast']}})}
   var SITUATIONS=[
     {name:'sick with a cold or the flu, with medical bills',bld:'hosp',need:['treat_ill','paydebt','checkup','insure'],
@@ -217,6 +217,8 @@
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.cash=Math.max(S.cash,400);S.asked=null;S.bets=[];
         S.msgs=[{id:1,i:0,k:'borrow',day:S.day,until:S.day+1,amt:80,back:88,st:null},{id:2,i:2,k:'bet',day:S.day,until:S.day+1,amt:50,back:0,st:null},{id:3,i:1,k:'bet',day:S.day-1,until:S.day,amt:50,back:0,st:'no'}];
         S.rloans=[{i:1,dir:'out',amt:100,owe:110,due:S.day+1,late:0},{i:2,dir:'in',amt:60,owe:66,due:S.day+2,late:0}];S.msgN=3}},
+    {name:'personality and remembered help in Messages',bld:'msgsapp',need:['rborrow','rbet'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.asked=null;S.bets=[];S.rloans=[];S.msgs=[]}},
     {name:'a flatmate who is home (cooking, hanging out, chores, clearing the air)',bld:'apt',need:['fdo','unflat'],
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.rivals[1].rel=10;S.home='apt';S.homeless=0;S.homeMeals=0;S.flat={i:1,since:S.day,hd:S.day,here:true,did:null}}},
     {name:'a flatmate who is out, and inviting one',bld:'apt',need:['unflat'],
@@ -304,12 +306,12 @@
     else{if(!/Computer/.test(p.textContent))note('BAD TEXT','Belongings list','does not list the computer the player owns');layout('Belongings list',p.closest('.grp')||p);await shot('status')}
     /* a game with AI rivals: the town leaderboard on the status page, one rival's story opened */
     restore(null);G.S.mode='rivals';
-    G.S.rivals=[['Maya','👩','easy',640,null],['Leo','🧔','medium',2380,{c:'hosp',i:1}],['Sam','🧑','expert',5120,{c:'bank',i:2}]].map(function(x){return {name:x[0],ic:x[1],diff:x[2],cash:x[3],bank:0,etf:0,job:x[4],y:x[3]-90,
+    G.S.rivals=[['Maya','👩','easy',640,null],['Leo','🧔','medium',2380,{c:'hosp',i:1}],['Sam','🧑','expert',5120,{c:'bank',i:2}]].map(function(x,i){return {personality:['generous','ambitious','vindictive'][i],favours:{trust:1,owed:1,entries:[{day:3,key:'soup'}]},name:x[0],ic:x[1],diff:x[2],cash:x[3],bank:0,etf:0,job:x[4],y:x[3]-90,
       log:['Day 3: got a new job.','Day 2: reached Comfortable.'],out:x[2]==='easy'?{day:9,why:'gave up'}:null,edu:{},clothes:{},shiftsAt:{},hist:[],know:12,happy:60,health:80,energy:70,tier:0,rankDay:{0:4},bestJob:x[4]?{r:'Nurse',pay:210}:null,life:{h:[60,55],l:[80,82],crisis:1,best:null}}});
     G.view=null;G.render();var rb=$('rivBox');
     if(!rb||rb.hidden)note('MISSING','status page (rivals)','no town leaderboard in a game with AI rivals');
     else{if(rb.querySelectorAll('.rivrow').length!==4)note('BAD TEXT','town leaderboard','expected 4 rows (you and 3 rivals), found '+rb.querySelectorAll('.rivrow').length);
-      var d=rb.querySelector('details');if(d){d.open=true;await y()}layout('town leaderboard',rb);await shot('status_rivals')}
+      var d=rb.querySelector('details');if(d){d.open=true;await y()}if(!/Generous/.test(rb.textContent)||!/You brought soup/.test(rb.textContent))note('MISSING','town leaderboard','personality or remembered favour missing');layout('town leaderboard',rb);await shot('status_rivals')}
     G.S.mode='single';G.S.rivals=[];
   }
 
