@@ -1224,3 +1224,4 @@ Rivals had an easier life than you on happiness, health and stability, so they w
   - New `CONFIG.rivals.jobRace` {chance 0.5, maxPerGame 3, levels medium, expert}, rolled on the rivals' own dice, so single games are unchanged.
 - **Rules:** the AI rivals line describes both.
 - **UI check:** new situation "a rival took the last opening".
+- **QA:** the UI check is clean. Simulation report: [QA_Sim_2026-10-31_job-race](docs/QA_Sim_2026-10-31_job-race.md). Single games are unchanged. Health is now shared 1st in about two games in three. The careful test player's Life Score wins: easy 20/20, medium 19/20 (was 15), expert 5/20.
