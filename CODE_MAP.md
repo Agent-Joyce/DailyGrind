@@ -1,5 +1,7 @@
 # Daily Grind code map
 
+**Rival agreements (November 2026):** `scaledStake`, `betStake(r)` and `potStake(r)` derive affordable stakes; `startBet` and `startPact` lock them. `rivalMsgTick` prioritizes hardship loans and calls `flatOfferMsg` for apartment invitations. `replyMsg` handles invitations and financial agreements. `pactTest`, `pactTick` and `respondBetrayal` handle commitment decisions; `pactRows` renders them. `moveHome`, `flatRows`, `flatTick` and `myRent` enforce bungalow single occupancy. The modern Bank presets and portrait timer are near `modernPaintBank` and `modernPortrait`. Optional fields on old saves include `S.betrayCase`, `S.lastFlatOffer`, pact `type`, `target`, `lastTest`, `progress`, `test`, and rival `lastLoanAsk` and `ties`.
+
 Where things are in `index.html`, and how to make the common changes safely. Line numbers move, so this map uses the
 **numbered section banners** in the script (search for `1. CONFIG`, `7. PANELS`, …) and the names below.
 

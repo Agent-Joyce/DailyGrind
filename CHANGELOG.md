@@ -1,5 +1,14 @@
 # Daily Grind: Changelog
 
+## Feature branch: housemates, stakes and pact commitments (2 November 2026)
+
+- Apartment housemate invitations can come from friendly rivals, including offers to replace a current housemate. Bungalows reject shared occupancy and require dismissing an apartment housemate before a move. Housemates are home 40% of days by default.
+- Rival hardship loan requests have a cooldown and display the locked loan terms. Lending can raise happiness; refusal reduces friendship. Existing due dates and settlement records remain authoritative.
+- Bet and pact stakes are capped by both players' net worth and available cash. Each accepted amount is locked. Wealth challenges use a configurable 30% share of the poorer participant's net worth, show reminders near the deadline and settle the pot once.
+- Rival career targeting now weights eligible opportunities by personality. Study, loyalty, wealth, emergency, royalty and savings pact offers use the existing pact and message flow; commitment tests, compensation and betrayal responses are available there.
+- Bank quick amounts accumulate, including percentages calculated from the first available balance. Savings and fixed-deposit estimates show the rate and tenure; portrait previews minimize after three seconds without dismissing manually opened profiles. Interactive bank controls have theme-aware contrast.
+- Browser-based regression and simulation checks require a Chromium executable, which is absent from this runtime; syntax and whitespace checks run locally.
+
 Changes made in this project. The game is the single file `index.html`. (`Daily Grind v42.html`, an identical copy kept earlier, has been removed from the repo.)
 
 Everything adjustable lives in the `CONFIG` block near the top of the script: `CONFIG.time`, `CONFIG.food`, `CONFIG.burnout`, `CONFIG.loan`, `CONFIG.bankrupt`, `CONFIG.market`, `CONFIG.sleep`, `CONFIG.health`.
