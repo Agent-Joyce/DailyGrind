@@ -106,7 +106,7 @@ p{margin:0 0 10px}
 input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-radius:8px;background:var(--bg);color:var(--ink)}
 
 .btn{font:inherit;font-weight:800;background:var(--teal);color:var(--teal-ink);border:3px solid var(--ink);border-radius:10px;box-shadow:0 5px 0 var(--ink);padding:9px 16px;min-height:44px;cursor:pointer}
-.btn.alt{background:var(--surface);color:var(--ink)}
+.btn.alt{background:var(--teal);color:var(--teal-ink)}
 .btn:active:not(:disabled){transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
 .btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:0 2px 0 var(--ink)}
 .btn:focus-visible,.tile:focus-visible,input:focus-visible{outline:4px solid var(--gold);outline-offset:2px}
@@ -185,7 +185,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 #econ span.up{color:var(--red)}#econ span.dn{color:var(--green)}
 .modes .btn[aria-pressed="true"]{outline:3px solid var(--gold);outline-offset:1px}
 .rivopts{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin:6px 0 2px;font-size:.85rem}.rivopts>div{display:flex;gap:6px;align-items:center}
-.rseg{display:inline-flex;border:2px solid var(--line);border-radius:10px;overflow:hidden}.rseg button{border:0;background:var(--surface);color:var(--ink);padding:5px 10px;font:inherit;cursor:pointer}.rseg button.on{background:var(--teal,#2a9d8f);color:#fff;font-weight:700}
+.rseg{display:inline-flex;border:2px solid var(--line);border-radius:10px;overflow:hidden}.rseg button{border:0;background:var(--teal);color:var(--teal-ink);padding:5px 10px;font:inherit;cursor:pointer}.rseg button.on{background:var(--teal);color:var(--teal-ink);font-weight:800;outline:2px solid var(--gold);outline-offset:-2px}
 .g-riv .rivrow{display:flex;gap:8px;align-items:baseline;font-size:.82rem;padding:3px 0;border-top:1px dashed var(--line)}.g-riv .rivrow:first-child{border-top:0}
 .g-riv .rivrow .rn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}.g-riv .rivrow b{white-space:nowrap}.g-riv .rivrow .rd{font-size:.7rem;white-space:nowrap}
 .g-riv .me{font-weight:700}.g-riv details summary{cursor:pointer;list-style:none}.g-riv details summary::-webkit-details-marker{display:none}.g-riv details ul{margin:2px 0 4px 18px;padding:0;font-size:.72rem;color:var(--muted,#667)}
@@ -208,7 +208,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 .goals{margin:5px 0 0;padding:4px 10px 6px;border:2px dashed var(--teal);border-radius:12px;background:color-mix(in srgb,var(--teal) 7%,var(--surface))}
 .goals .gh{display:flex;align-items:center;gap:8px;color:var(--teal);margin-bottom:2px}.goals .gh span{color:var(--muted)}
 .goal{font-size:.78rem;padding:1px 0}.pips{display:flex;gap:4px;margin:2px 0 3px}.pips i{flex:1;height:5px;border-radius:3px;background:var(--line)}.pips i.on{background:var(--teal)}.goal.done{color:var(--muted);text-decoration:line-through}
-.linkbtn{margin-left:auto;font:inherit;font-size:.72rem;background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;padding:2px 4px}
+.linkbtn{margin-left:auto;font:inherit;font-size:.72rem;background:var(--teal);border:0;border-radius:6px;color:var(--teal-ink);cursor:pointer;padding:2px 6px}
 .sumcard{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;margin:6px 0 0;padding:5px 10px;border-radius:12px;border:2px solid var(--line);background:var(--surface);font-size:.76rem}
 .sumcard .st{font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:.68rem;color:var(--muted)}.sumcard .up{color:var(--green)}.sumcard .dn{color:var(--red)}
 .sumcard .hits{flex-basis:100%;color:var(--red);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -219,7 +219,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 .diffs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:6px}.diffs .btn{display:flex;flex-direction:column;gap:3px;text-align:left;padding:8px 10px}.diffs small{font-weight:600;font-size:.72rem;opacity:.85}
 @media (max-width:640px){.diffs{grid-template-columns:1fr}}
 .mute.reset{font-size:.72rem;font-weight:800;padding:1px 8px;color:var(--red);border-color:color-mix(in srgb,var(--red) 45%,var(--line))}
-.mute{font:inherit;font-size:.9rem;background:none;border:2px solid var(--line);border-radius:8px;padding:0 6px;margin-left:6px;cursor:pointer;vertical-align:middle}
+.mute{font:inherit;font-size:.9rem;background:var(--teal);color:var(--teal-ink);border:2px solid var(--line);border-radius:8px;padding:0 6px;margin-left:6px;cursor:pointer;vertical-align:middle}
 .floater{position:absolute;z-index:1500;transform:translate(-50%,0);pointer-events:none;font-weight:800;font-size:.95rem;padding:1px 8px;border-radius:99px;background:rgba(255,255,255,.92);box-shadow:0 2px 6px rgba(0,0,0,.25);animation:floatup 1.4s ease-out forwards;white-space:nowrap}
 .ic{display:inline-block;width:1.15em;height:1.15em;vertical-align:-.22em;margin-right:3px;flex:none}
 .opt small .ic{width:1.25em;height:1.25em;margin:0 2px 0 4px}.opt small .ic:first-child{margin-left:0}
@@ -238,12 +238,12 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 @media (prefers-reduced-motion:reduce){.floater{animation:none}}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (hover:hover){.btn[data-k]{position:relative}.btn[data-k]::after{content:attr(data-k);position:absolute;top:-8px;right:-8px;min-width:16px;height:16px;padding:0 3px;border-radius:8px;background:var(--ink);color:var(--surface);font-size:.62rem;line-height:16px;text-align:center;box-shadow:none}}
-.btn.work{background:#e0a526;color:#16222e}.btn.work::before{content:'🛠️ '}
+.btn.work{background:var(--teal);color:var(--teal-ink)}.btn.work::before{content:'🛠️ '}
 .thing.groc{width:104px}.thing.groc em{font-style:normal;font-size:.6rem;font-weight:800;margin-top:2px;padding:1px 4px;border-radius:6px}
 .thing.groc.cold em,.life.cold{background:#dbeefe;color:#1d5f99}.thing.groc.warm em,.life.warm{background:#fde8d4;color:#9a4b12}
 .shelf{margin:8px 0 2px}.shelf h5{margin:0 0 3px;font-size:.8rem;font-weight:800}.shelf h5 small{font-weight:600;color:var(--muted);margin-left:4px}
 .thing.groc.pick{border-color:#1d5f99}.thing small b{font-weight:800}
-.thing .mini{margin-top:4px;font:inherit;font-size:.62rem;font-weight:800;padding:2px 6px;border:2px solid var(--ink);border-radius:7px;background:var(--bg);color:var(--ink);cursor:pointer}
+.mini{margin-top:4px;font:inherit;font-size:.72rem;font-weight:800;padding:2px 6px;border:2px solid var(--ink);border-radius:7px;background:var(--teal);color:var(--teal-ink);cursor:pointer}.thing .mini{font-size:.62rem}
 .life{display:inline-block;margin-top:4px;padding:2px 8px;border-radius:8px;font-size:.8rem;font-weight:700}
 .tleft{display:flex;align-items:center;gap:10px}.donut{width:46px;height:46px;flex:none}.donut circle{transition:stroke-dasharray .4s ease,stroke .4s}
 .worksec{margin:4px 0 6px;padding:2px 10px;border-radius:12px;background:color-mix(in srgb,#e0a526 14%,var(--surface));border:2px solid color-mix(in srgb,#e0a526 55%,var(--line))}.worksec.none{padding:6px 10px;background:var(--surface);border-style:dashed}
@@ -302,6 +302,14 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 .invline{display:inline-block;margin-right:12px;margin-top:4px;font-size:.78rem;color:var(--muted)}.invline b{color:var(--ink)}.invline .up{color:var(--green)}.invline .dn{color:var(--red)}
 .kb i{background:#8a5cc2}
 .meal{margin-top:5px;font-size:.78rem;font-weight:700}.meal.ok{color:var(--green)}.meal.no{color:var(--red)}
+.day-status{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.day-status span{border:2px solid rgba(255,255,255,.35);border-radius:8px;padding:2px 8px;font-size:.82rem;font-weight:800}.day-status .unfed{background:#8a2929;color:#fff}.day-status .fed{background:#146347;color:#fff}
+.board-phone{position:absolute;top:12px;right:12px;z-index:1200;background:var(--surface);border:2px solid var(--ink);border-radius:12px;padding:7px;max-width:185px;box-shadow:0 4px 12px #16222e55}.board-phone .btn{width:100%;min-height:38px}.board-phone small{display:block;font-size:.67rem;line-height:1.2;color:var(--ink);margin-top:3px}
+.tile .tag.job{background:var(--teal);color:var(--teal-ink)}.tile .tag.closed{background:var(--red);color:#fff}.tile .tag.home{background:#fff0a8}.tile .tag.you{background:var(--gold)}.tile .tags .tag{max-width:105px;white-space:normal;line-height:1.1}
+.board:has(.center.ovl) .board-phone{z-index:900}
+.rival-bars{display:grid;grid-template-columns:48px 1fr auto;align-items:center;gap:2px 7px;margin:4px 0 7px;font-size:.69rem}.rival-bars i{display:block;height:7px;min-width:2px;background:var(--teal);border-radius:7px}.rival-bars .track{height:7px;background:var(--line);border-radius:7px;overflow:hidden}.rival-bars b{font-size:.68rem}
+.edu-paths{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:3px 10px;width:100%}.edu-paths span{white-space:normal}.time-warn{color:#ffad42!important}.time-urgent{color:#ff6565!important}
+@media (min-width:641px){.hud .tcell b{font-size:1.12rem}.tcell.pay .g-vit.inpay{padding:10px;border:2px solid var(--teal);border-radius:12px;background:color-mix(in srgb,var(--teal) 8%,var(--surface))}.g-vit.inpay .mrow b{font-size:1.08rem}}
+@media (max-width:640px){.board-phone{top:6px;right:6px;max-width:130px;padding:4px}.board-phone .btn{font-size:.75rem;min-height:34px;padding:3px}.board-phone small{font-size:.56rem}.day-status{flex:1 1 100%;justify-content:center}.day-status span{font-size:.72rem}.rival-bars{grid-template-columns:42px 1fr auto}}
 .alerts{display:flex;flex-direction:column;gap:3px;margin:6px 0 0}.al{padding:3px 10px;border-radius:9px;font-size:.78rem;font-weight:700;border:2px solid var(--gold);background:color-mix(in srgb,var(--gold) 16%,var(--surface))}.al.bad{border-color:var(--red);background:color-mix(in srgb,var(--red) 13%,var(--surface))}.al.more{border:0;background:none;color:var(--muted);padding:0 4px}
 .rules{text-align:left;max-width:560px;max-height:92vh;overflow-y:auto}.rules h3{margin:12px 0 4px;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em}.rules ul{margin:0;padding-left:18px;font-size:.88rem}.rules li{margin:3px 0}.rules .win{color:var(--green)}.rules .lose{color:var(--red)}
 .warnbar{margin:6px 0 0;padding:6px 10px;border-radius:10px;background:color-mix(in srgb,var(--red) 14%,var(--surface));border:2px solid var(--red);font-size:.82rem;font-weight:700}
@@ -562,11 +570,13 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     <div class="tcell sc" data-tip="score" tabindex="0"><span class="l"><span class="sclbl">Score </span><i class="hinfo" aria-label="How the score is worked out">i</i></span><b id="hScore">0</b><small id="hBest"></small></div>
   </div>
   <div class="actbar" id="actbar"><button class="btn alt" id="hudLeave">← Leave</button><button class="btn alt places-btn" id="hudPlaces" title="List of places">📍 Places</button><button class="btn alt" id="hudOv" hidden title="Show the overview window">📋 Overview</button><button class="btn" id="hudEnd">Sleep in Apartment ☾</button></div>
+  <div class="day-status" aria-live="polite"><span id="dayMeal">🍽 No meal yet</span><span id="dayWork">💼 Worked 0h</span><span id="dayStudy">📚 Studied 0h</span></div>
   <div class="daybar" id="daybar" aria-hidden="true"></div>
 </header>
 <main class="board" id="board">
   <svg id="map" class="map" aria-hidden="true"></svg>
   <div class="cloud"></div><div class="cloud b"></div>
+  <div class="board-phone"><button type="button" class="btn" id="phoneBtn">📱 Phone apps</button><small id="phoneNote"></small></div>
   <section class="center" id="center" aria-label="Game panel">
     <div id="sr" class="sr" aria-live="polite" aria-atomic="true"></div>
     <div id="overview">
@@ -613,7 +623,6 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
           <div id="billsRow" hidden><span class="dot d5"></span>Bills<b id="billsv" class="owe">$0</b></div>
         </div>
         <div class="invline" id="invline" hidden></div>
-        <p class="bankapp"><button type="button" class="btn alt" id="phoneBtn">📱 Phone</button> <small id="phoneNote"></small></p>
         <div class="invline" id="debtline" hidden></div>
       </div>
       <div class="grp g-riv" id="rivBox" hidden>
@@ -1350,7 +1359,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
           leaveAt:-15,                                        // they move out on their own at this relationship or below
           skip:{easy:0.25, medium:0.1, expert:0.03}, skipEnemyMod:0.1, skipRel:-8, skipHappiness:-3,  // a rent day they don't pay their half (+skipEnemyMod below 0): you pay it all
           nightHappiness:{friend:2, friendly:1, neutral:0, bad:-3}, nightRel:1,  // each night together, for both of you; the relationship drifts up while it's 0 or more
-          homeChance:0.6,                                     // the chance they're home when you are, rolled once a day
+          homeChance:0.6, noChance:0.2, noRel:-1,             // a flatmate at home may be busy and decline; no time or cash spent
           cook:{minutes:45, happiness:2, rel:4},              // a basic meal cooked together (you pay half), plus this
           hangout:{minutes:60, happiness:4, rel:3}, chores:{minutes:30, health:1, rel:2}, clearAir:{minutes:30, rel:6, below:15}},
         /* a study group: a lesson in a pathway a friendly rival is also studying */
@@ -2226,22 +2235,16 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var nt=notes.length?' '+notes.join(' '):'';
     if(t===TIERS.length-1&&S.mode==='rivals'){  /* a rival game goes on to its last day: the top rank is a milestone, the standings decide */
       log('Milestone: '+T.n+' ('+money(T.v)+' net worth reached), the top rank. The race goes on to day '+maxDays()+': the town standings are taken at the end.'+nt,'good');
-      $('overTitle').textContent=T.ic+' You are '+T.n+'!';
-      $('overText').textContent='Net worth: '+money(worth())+' after '+day+' day'+(day>1?'s':'')+'. That is the top rank. '+(notes.length?notes.join(' ')+' ':'')+'Your rivals are still racing: keep going to day '+maxDays()+', when the town standings are taken.';
-      $('keep').hidden=false;$('overScore').hidden=true;$('over').classList.add('show');snd('win');rankBurst();
+      snd('win');rankBurst();render();
       return false;
     }
     if(t===TIERS.length-1){
-      log('You reached '+T.n+' status with '+money(worth())+'. You win!'+nt,'good');
-      snd('win');finish(T.ic+' '+T.n+'!','You built a net worth of '+money(worth())+' in '+day+' day'+(day>1?'s':'')+'. That is the top rank.'+nt);
-      rankBurst();
-      return true;
+      log('Milestone: '+T.n+' with '+money(worth())+'. '+(maxDays()===Infinity?'Keep playing.':'Keep playing until day '+maxDays()+'.')+nt,'good');
+      snd('win');rankBurst();render();return false;
     }
     var nx=TIERS[t+1],ndue=tierDue(t+1),nxDue=ndue&&day<=ndue?' by day '+ndue+' for +'+nx.b.toLocaleString()+' score':'';
     log('Milestone: '+T.n+' ('+money(T.v)+' net worth reached). Next: '+nx.n+' at '+money(nx.v)+nxDue+'.'+nt,'good');
-    $('overTitle').textContent=T.ic+' You are '+T.n+'!';
-    $('overText').textContent='Net worth: '+money(worth())+' after '+day+' day'+(day>1?'s':'')+'. '+(t===0?'You have won the game. ':'')+(notes.length?notes.join(' ')+' ':'')+'Keep playing to reach '+nx.n+' ('+money(nx.v)+')'+(nxDue?nxDue:maxDays()===Infinity?'':' before day '+maxDays()+' ends')+', or start a new game.';
-    $('keep').hidden=false;$('overScore').hidden=true;$('over').classList.add('show');snd('win');
+    snd('win');
     rankBurst();
     render();
     return false;
@@ -2777,12 +2780,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   }
   /* the morning money briefing: what your money made overnight, today's rates and the best return open to you */
   function moneyBrief(interest,moved){
-    var a=[],o=offerToday(),O=CONFIG.bank.offers;
+    var a=[],o=offerToday();
     if(interest||Math.abs(moved)>=0.5)a.push({l:interest+moved>=0?'good':'warn',t:'💰 Your money made '+sm(interest+moved)+' overnight ('+[interest?'savings +'+money(interest):'',Math.abs(moved)>=0.5?'investments '+sm(moved):''].filter(Boolean).join(', ')+').'});
     if(o)a.push({l:'good',t:'🎁 Bank offer, today only: a promo deposit at '+o.rate.toFixed(1)+'% a day for '+o.days+' days ('+money(o.min)+' to '+money(o.max)+'). It is paid back with interest when it matures.'});
-    var mood=S.mkt>0.5?'buoyant':S.mkt<-0.5?'weak':'steady',best={n:'savings',e:S.rate};
-    INVK.forEach(function(k){var P=INV[k];if(S.know<P.know||(P.dev&&!P.dev.split('|').some(owns)))return;var e=expRet(k);if(e>best.e)best={n:P.n.toLowerCase(),e:e}});
-    a.push({l:'rem',t:'📈 Today: savings '+S.rate.toFixed(1)+'% a day, fixed deposit '+expRet('fd').toFixed(1)+'%, market '+mood+' (ETF about '+pctS(expRet('etf'))+' a day). Best expected return open to you: '+best.n+' ('+pctS(best.e)+' a day'+(best.n==='savings'||best.n==='fixed deposit'?'':', with swings')+'). '+(handheld()?'Open the Bank app on your phone to act on it.':owns('computer')?'Use the Bank app on your computer at home, or visit the Bank.':'Visit the Bank to act on it (a phone, tablet or computer gives you the Bank app).')});
+    /* The Economy strip and Bank already show today's rates; repeating them every morning obscures actual changes. */
     return a;
   }
   /* the 📱 Bank app: savings, investments and offers from anywhere, with a phone, tablet or computer (loans need a visit) */
@@ -3348,6 +3349,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     [['casual',WEAR.casual.n],['smart',WEAR.smart.n],['suit',WEAR.suit.n]].forEach(function(c){if(S.clothes[c[0]]>0&&S.clothes[c[0]]<=CONFIG.clothes.wearPerDay)mn.push({l:'rem',t:'👕 Reminder: your '+c[1]+' wear out tonight. Buy new ones at the Clothes Mall to keep meeting dress codes.'})});
     var burnNote=mn.some(function(a){return /BURNOUT!/.test(a.t)});
     stressList().forEach(function(a){if(!/Rent of/.test(a.t)&&!(burnNote&&/^🔥 Burnout \(/.test(a.t)))mn.push(a)});
+    var seenMorning={};mn=mn.filter(function(x){var key=x.t.replace(/\s+/g,' ').trim();if(seenMorning[key])return false;seenMorning[key]=1;return true});
     S.morning=mn.length?mn:null;
     loc=S.hosp&&S.hosp.inWard?'hosp':S.home;view=null;
     log(S.hosp&&S.hosp.inWard?'A new day starts in the hospital ward.':S.homeless?'A new day starts. You woke up outside, with no home to go back to. You have 24 hours.':'A new day starts. You have 24 hours.');
@@ -3870,14 +3872,30 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   /* the job worth aiming for: the best pay x days it could be worked, among jobs whose missing qualifications fit in the days left */
   function rivalModHours(t,n){return lesCount(t,n)*lesHours(t,n)}
   function rivalTarget(r,daysLeft,perDay){
-    var best=null;
+    var best=null,other=null,otherTrack=null;
     Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk,i){
       var h=0;(rk.q||[]).forEach(function(q){var T=TRACKS[q[0]],end=T.c[q[1]-1];for(var m=r.edu[q[0]]||0;m<end;m++)h+=rivalModHours(q[0],m)});
       if(h>daysLeft*perDay)return;if(kreq(rk)>r.know+h*0.9+6)return;
       var pay=rivalSkill(r).usesOutlook?rolePay(c,i):rk.pay,v=pay*Math.max(0,daysLeft-Math.ceil(h/perDay)-1);
       if(!best||v>best.v)best={c:c,i:i,v:v};
+      if(c!==r.avoidCareer&&!(r.avoidCareers||[]).includes(c)&&(!other||v>other.v))other={c:c,i:i,v:v};
+      if(c!==r.avoidCareer&&!(r.avoidCareers||[]).includes(c)&&(rk.q||[]).some(function(q){return q[0]!==r.avoidTrack&&rivalLv(r,q[0])<q[1]})&&(!otherTrack||v>otherTrack.v))otherTrack={c:c,i:i,v:v};
     })});
-    return best;
+    return r.avoidCareer?(otherTrack||other||best):best;
+  }
+  /* Midway through a rival game, separate rivals pursuing the same career and qualification.
+     The later rival switches to its strongest feasible alternative and keeps that preference. */
+  function diversifyRivals(){
+    if(S.day-1<Math.ceil(gameLen()/2))return;
+    var seen={},taken=[];S.rivals.forEach(function(r){if(r.out)return;
+      var j=rivalJob(r),track=r.study&&r.study.t||Object.keys(TRACKS).sort(function(a,b){return rivalLv(r,b)-rivalLv(r,a)})[0];
+      var key=(j?j.c+'_'+j.i:'none')+'|'+track;
+      if(seen[key]&&!r.avoidCareer){r.avoidCareer=j?j.c:seen[key].target&&seen[key].target.c||'';r.avoidTrack=track;r.avoidCareers=taken.slice();
+        r.target=rivalTarget(r,gameLen()-(S.day-1),rivalSkill(r).studyHours||1);
+        if(r.target)rivalNote(r,0,'chose a different career path: '+CAREERS[r.target.c].n+'.')}
+      else if(!seen[key])seen[key]=r;
+      if(j&&taken.indexOf(j.c)<0)taken.push(j.c);if(r.target&&taken.indexOf(r.target.c)<0)taken.push(r.target.c);
+    });
   }
   /* an effect-token string applied to a rival (h, l, e, n, c; a~b rolls on the rivals' dice) */
   function rivalFx(r,str){
@@ -3910,13 +3928,15 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var dressed=function(d){var c=r.clothes;return d==='suit'?c.suit>0:d==='smart'?(c.smart>0||c.suit>0):(c.casual>0||c.smart>0||c.suit>0)};
     /* apply for a better job it qualifies for (openings are shared with yours) */
     for(var a=0;a<K.applyTries;a++){
-      var val=function(c,i){return (K.usesOutlook?rolePay(c,i):CAREERS[c].ranks[i].pay)+(r.target&&bOf(c)===bOf(r.target.c)?20:0)},cp0=j?val(j.c,j.i):0,best=null;  /* the target's workplace is worth a little extra (work experience) */
+      var val=function(c,i){return (K.usesOutlook?rolePay(c,i):CAREERS[c].ranks[i].pay)+(r.target&&bOf(c)===bOf(r.target.c)?20:0)},cp0=j?val(j.c,j.i):0,best=null,alternative=null;  /* the target's workplace is worth a little extra (work experience) */
       Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk,i){
         if(j&&j.c===c&&j.i>=i)return;if(!rivalMeets(r,rk)||kreq(rk)>Math.floor(r.know))return;
         if(S.closed[c+'_'+i]||shutLeft(bOf(c))>0||sabSnagged(r,c+'_'+i,day))return;if(needsExp(rk)&&(r.shiftsAt[bOf(c)]||0)<CONFIG.jobs.experience.shifts)return;
         if(rk.dress&&!dressed(rk.dress))return;var g=val(c,i)-cp0;
         if(g>0&&(!best||g>best.g))best={c:c,i:i,g:g};
+        if(g>0&&c!==r.avoidCareer&&!(r.avoidCareers||[]).includes(c)&&(!alternative||g>alternative.g))alternative={c:c,i:i,g:g};
       })});
+      if(r.avoidCareer&&alternative)best=alternative;
       if(!best)break;used+=60;
       var pp=Math.max(0.2,Math.min(0.95,0.82-0.05*best.i+r.know/400+(r.happy-50)/300-(r.energy<30?0.1:0)+repInterview(repOf(r))+(rivalPactOf(S.rivals.indexOf(r))?PX().rivalPacts.applyBonus:0)+sabInterview(r,day)));
       if(rrand()<pp){var was=j;r.job={c:best.c,i:best.i};r.took=best.c+'_'+best.i;j=rivalJob(r);rivalNote(r,2,(was&&was.c===best.c?'was promoted to ':'got a new job: ')+j.rk.r+' at the '+NAME[j.b]+'.');
@@ -4533,9 +4553,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       S.rivals.forEach(function(q,i){if(q.out)return;h+=arow(q.ic+' Invite '+q.name+' to move in',chip('time',hm(F.inviteMinutes))+chip('',relLabel(q.rel||0))+chip('','Rent '+money(Math.ceil(HOUSE[S.home].rent/2))+' each'),btn('flat',String(i),'Invite',1))});
       return h;
     }
-    var here=flatHere(),g=GROC.basic,tense=(r.rel||0)<0,am=function(k){return tense?argueChip():''},cls=tense?'chance':'';
+    var here=flatHere(),g=GROC.basic,tense=(r.rel||0)<0,am=function(k){return tense?argueChip():''},cls='chance';  /* a busy flatmate may decline */
     var TF=PX().theft.flatmate;if((r.rel||0)<0&&moodX().sabotage>0)h0w='<p class="bad arow-n">⚠️ On bad terms: a flatmate below '+TF.below+' may steal cash from you overnight. Keep your money in the bank.</p>';else h0w='';
-    h+=psec('flat','🏠 '+r.ic+' '+r.name+(here?' is home':' is out today'),chip('',relLabel(r.rel||0)),'Your flatmate pays half the rent. Each night together: '+sg(F.nightHappiness.friend)+' happiness for both if you are friends, '+sg(F.nightHappiness.friendly)+' if friendly, '+sg(F.nightHappiness.bad)+' on bad terms; the relationship grows '+sg(F.nightRel)+' a night while it is 0 or more. At '+F.leaveAt+' they move out. They are home on about '+pctTxt(F.homeChance)+' of days: then you can spend time together (each once a day).');
+    h+=psec('flat','🏠 '+r.ic+' '+r.name+(here?' is home':' is out today'),chip('',relLabel(r.rel||0)),'Your flatmate pays half the rent. Each night together: '+sg(F.nightHappiness.friend)+' happiness for both if you are friends, '+sg(F.nightHappiness.friendly)+' if friendly, '+sg(F.nightHappiness.bad)+' on bad terms; the relationship grows '+sg(F.nightRel)+' a night while it is 0 or more. At '+F.leaveAt+' they move out. They are home on about '+pctTxt(F.homeChance)+' of days. Even at home they may be busy and decline ('+pctTxt(F.noChance)+', relationship '+sg(F.noRel)+', no time or cash spent). Each shared action can be attempted once a day.');
     h+=h0w;
     if(here){
       var off=function(k){return !!flatDid(k)},done1=function(k){return flatDid(k)?chip('','✓ Done today','ok'):''};
@@ -4571,6 +4591,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(flatDid(k))return refuse('You have already done that together today.');
     if(k==='clearAir'&&(r.rel||0)>=c.below)return refuse('There is nothing to clear up with '+r.name+'.');
     if(k==='cook'&&homeFull())return refuse('You are full: '+numWord(FD.homeMealsPerDay)+' home meal'+(FD.homeMealsPerDay===1?'':'s')+' a day is plenty.');
+    if(S.ap<c.minutes||k==='cook'&&S.cash<cookCost())return refuse('You need '+hm(c.minutes)+(k==='cook'?' and '+money(cookCost()):'')+' to do this together.');
+    if(rrand()<F.noChance){var no=relAdd(r,F.noRel);if(!S.flat.did||S.flat.did.d!==S.day)S.flat.did={d:S.day};S.flat.did[k]=1;
+      log(r.name+' is busy and says no to '+({cook:'cooking',hangout:'hanging out',chores:'doing chores',clearAir:'talking'}[k]||'that')+' today: '+relTxt(r,no)+'. No time or money spent.','warn');render();return}
     if(!spendMin(c.minutes,k==='cook'?cookCost():0))return;
     var v0=vitSnap(),g=GROC.basic;
     if(!S.flat.did||S.flat.did.d!==S.day)S.flat.did={d:S.day};S.flat.did[k]=1;
@@ -4780,6 +4803,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   }
   function rivalTick(){
     if(S.mode!=='rivals'||!S.rivals)return;
+    diversifyRivals();
     S.rivals.forEach(function(r){if(r.out)return;r.y=rivalWorth(r);r.took=null;rivalNight(r,rivalDay(r))});
     /* the job race (CONFIG.rivals.jobRace): a role a rival just took may have no openings left for you today */
     var JR=CONFIG.rivals.jobRace;
@@ -6244,7 +6268,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     return {icon:lk.ic,tag:'Decision',title:lk.t,text:c[0],choice:true,y:c[1],n:c[2],done:false,fx:[],tone:''};
   }
   function macroRunning(){return S.trends.some(function(t){return t.macro&&t.left>0})}
-  function quietCard(){return {icon:'🌙',tag:'Quiet night',title:'Nothing happens',text:'A quiet evening. Nothing in the news or around town needs your attention.',done:true,tone:'',fx:[]}}
+  function quietCard(){var lines=['You get an uneventful evening to rest.','The town settles down early tonight.','No new surprises tonight.','A calm evening passes.'];return {icon:'🌙',tag:'Quiet night',title:'A calm night',text:lines[(S.day-1)%lines.length],done:true,tone:'',fx:[]}}
   /* one daily event from the weighted list; null means no event today */
   function dailyPick(){
     /* the morning already decided whether tonight is news (planNews); a save from before that has no plan and rolls as before */
@@ -6304,8 +6328,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     S.lowE=(S.lowE||[]).filter(function(d){return S.day-d<IL.lowWindow});
     S.restBonus=Math.round(sleepGain(S.ap)*share);
     S.restHap=Math.round(sleepHap(S.ap)*share);S.slept=Math.round(sleepHealth(S.ap)*share);S.sickSleep=home&&S.ill?1:0;if(home)S.restHrs=(S.restHrs||0)+S.ap/60;
-    var bed=home&&HOUSE[S.home].hap?', +'+HOUSE[S.home].hap+' happiness for the bed':'',drop=' The nightly change is '+nightTxt()+', so you wake up '+sg(S.restBonus+SL.nightEnergy)+'% energy and '+sg(S.restHap+(home?HOUSE[S.home].hap:0)+SL.nightHappiness)+' happiness before meals and other overnight effects.';
-    log((home?'You went to bed at home with '+hm(S.ap)+' left. Sleep gives +'+S.restBonus+'% energy and +'+S.restHap+' happiness ('+SL.happinessPerHour+' for every full hour of rest'+bed+'), and +'+S.slept+' health tonight.':(S.homeless?'You have no home, so you slept rough.':'You ended the day away from home and dozed off where you were.')+' Sleep gives only +'+S.restBonus+'% energy, +'+S.restHap+' happiness and +'+S.slept+' health (a night in a home of your own would give +'+sleepGain(S.ap)+'%, +'+sleepHap(S.ap)+' and +'+sleepHealth(S.ap)+').')+drop);
+    log((home?'You slept at home':'You bunked out')+' with '+hm(S.ap)+' left: +'+S.restBonus+'% energy, +'+S.restHap+' happiness, +'+S.slept+' health. Nightly change: '+nightTxt()+'.');
     if(!S.fed&&S.slept>0)log('You have not eaten today, so the '+sg(CONFIG.health.nightly.skippedMeal)+' health penalty will eat into the +'+S.slept+' you get from sleep. Eat something first to recover health.','warn');
     snd('day');
     var cards=pickNight();if(!cards.length)cards=[quietCard()];
@@ -7064,7 +7087,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     $('homeName').textContent=S.homeless?'No home':NAME[S.home];$('homeName').title=$('homeName').textContent;
     var be=bestEdu();
     $('edu').textContent=be?TRACKS[be].n+' '+TRACKS[be].lv[lvl(be)-1]:'High School';$('edu').title=$('edu').textContent;
-    $('eduSub').textContent=Object.keys(TRACKS).filter(function(t){return S.edu[t]}).map(function(t){return TRACKS[t].n.split(' ')[0]+' '+S.edu[t]+'/'+totMods(t)+' modules'}).join(' · ')||'No courses yet';
+    $('eduSub').className='edu-paths';$('eduSub').innerHTML=Object.keys(TRACKS).map(function(t){var l=lvl(t),T=TRACKS[t];return '<span title="'+(S.edu[t]||0)+'/'+totMods(t)+' modules">'+T.n+': <b>'+(l?T.lv[l-1]:'None completed')+'</b></span>'}).join('');
     var rw=nextRentWeek(), left=rw-S.day;
     $('rent').textContent=S.homeless?'None (no home)':S.rentPaid===rw?'Paid ✓ (day '+rw+')':money(H.rent)+(left===0?' due today':' in '+left+' day'+(left>1?'s':''));$('rent').title=S.homeless?'No rent while you have no home':'Due at the end of day '+rw;
     var pxs=Math.round(S.px*100), ws=Math.round(payIdx()*100);
@@ -7078,6 +7101,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var iv=invTotal();$('invv').textContent=money(iv);
     $('know').textContent=Math.floor(S.know);$('knBar').style.width=S.know+'%';
     $('meal').className='meal '+(S.fed?'ok':'no');$('meal').textContent=S.fed?'🍽 Ate today ✓':'🍽 No meal yet today';
+    $('dayMeal').className=S.fed?'fed':'unfed';$('dayMeal').textContent=S.fed?'🍽 Ate today ✓':'🍽 No meal yet';
+    $('dayWork').textContent='💼 Worked '+hm(S.workMin||0);$('dayStudy').textContent='📚 Studied '+hm(S.studyMin||0);
+    $('ap').className=S.ap<180?'time-urgent':S.ap<480?'time-warn':'';
     var nIt=Object.keys(S.items).filter(function(k){return S.items[k]}).length,FF=S.food.filter(function(p){return !p.sp}),nSp=S.food.length-FF.length;
     $('belong').textContent=nIt+' item'+(nIt!==1?'s':'')+(FF.length?' · 🍽 '+FF.length+' meal'+(FF.length>1?'s':'')+' ('+Math.min.apply(null,FF.map(function(p){return foodLeft(p)}))+'d left)':'')+(nSp?' · 🤢'+nSp:'')+(S.chips?' · 🥔'+S.chips:'');
     if((S.tickets||[]).length)$('belong').textContent+=' · 🎟️'+S.tickets.length;
@@ -7094,7 +7120,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       $('cpMsg').textContent=(opens.length?'New jobs open to you: '+opens.join(', ')+'. ':'')+(close.length?'Closer to: '+close.slice(0,4).join(', ')+' (they also need other qualifications). ':'')+(nxT?'Next up: the '+TT.lv[C.l]+' (tuition '+money(nxF)+', paid when you enrol).':'You have completed the whole pathway!');
       var cn=$('cpNext');cn.hidden=!nxT;if(nxT){cn.textContent='Enrol in the '+TT.lv[C.l]+' · '+money(nxF);cn.disabled=S.cash<nxF||S.expelled>0}
       cp.classList.add('show')}else cp.classList.remove('show');
-    var mo=$('morning');if(S.morning&&!S.over&&!S.pending&&!S.cert){$('mnT').textContent='☀️ Day '+S.day+(maxDays()!==Infinity?' of '+maxDays():'');$('mnSub').textContent='Before you start, a few things need your attention:';$('mnList').innerHTML=S.morning.map(function(x){var cg=x.rv!=null&&S.mode==='rivals'&&S.rivals&&S.rivals[x.rv];return '<li class="'+x.l+'">'+x.t+(cg?' '+(S.cong&&S.cong.d===S.day&&S.cong[x.rv]?'<small>✓ Congratulated</small>':'<button type="button" class="mini" data-cg="'+x.rv+'">🎉 Congratulate · '+hm(CONFIG.rivals.social.congratulate.minutes)+'</button>'+((S.rivals[x.rv].rel||0)<0?' <small>⚠️ on bad terms: an argument costs '+sg(CONFIG.rivals.social.argument.happiness)+' happiness</small>':'')):'')+'</li>'}).join('');mo.classList.add('show')}else mo.classList.remove('show');
+    var mo=$('morning');if(S.morning&&!S.over&&!S.pending&&!S.cert){$('mnT').textContent='☀️ Day '+S.day+(maxDays()!==Infinity?' of '+maxDays():'');$('mnSub').textContent='Overnight changes and what matters today';$('mnList').innerHTML=S.morning.map(function(x){var cg=x.rv!=null&&S.mode==='rivals'&&S.rivals&&S.rivals[x.rv];return '<li class="'+x.l+'">'+x.t+(cg?' '+(S.cong&&S.cong.d===S.day&&S.cong[x.rv]?'<small>✓ Congratulated</small>':'<button type="button" class="mini" data-cg="'+x.rv+'">🎉 Congratulate · '+hm(CONFIG.rivals.social.congratulate.minutes)+'</button>'+((S.rivals[x.rv].rel||0)<0?' <small>⚠️ on bad terms: an argument costs '+sg(CONFIG.rivals.social.argument.happiness)+' happiness</small>':'')):'')+'</li>'}).join('');mo.classList.add('show')}else mo.classList.remove('show');
   }
   /* the top bar: net worth, cash, investments, score, buttons and current pay, plus the Rules text that depends on difficulty */
   function renderHud(){
@@ -7102,7 +7128,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     $('hEn').style.color=S.energy<30?'#ef7d72':'';$('hHp').style.color=S.happy<30?'#ef7d72':'';$('hCash').style.color=S.cash<0?'#ef7d72':'';
     var hiv=invTotal();$('hInvC').hidden=!anyInv();if(anyInv()){var pl0=hiv-invSum('c');$('hInv').textContent=money(hiv);$('hInvPL').textContent=sm(pl0)+' ('+(pl0>=0?'+':'−')+Math.abs(invSum('c')?pl0/invSum('c')*100:0).toFixed(1)+'%)';$('hInvPL').style.color=pl0>=0?'#7fe0a6':'#ef7d72'}
     $('hScore').textContent=score().toLocaleString();var bs0=bestScore();$('hBest').textContent=bs0?'best '+bs0.toLocaleString():'';
-    $('hudLeave').hidden=!view||!!S.pending;$('hudEnd').disabled=!!S.over||!!S.pending;$('hudEnd').textContent=atHome()?sleepLabel()+' ☾':'Sleep outside ☾';
+    $('hudLeave').hidden=!view||!!S.pending;$('hudEnd').disabled=!!S.over||!!S.pending;$('hudEnd').textContent=atHome()?(S.mode==='rivals'?'Sleep ☾':sleepLabel()+' ☾'):S.mode==='rivals'?'Bunk Out ☾':'Sleep outside ☾';
+    $('hudEnd').title=(atHome()?'At home':'Outside')+': +'+Math.round(sleepGain(S.ap)*(atHome()?1:CONFIG.sleep.awayShare))+'% energy, +'+Math.round(sleepHap(S.ap)*(atHome()?1:CONFIG.sleep.awayShare))+' happiness, +'+Math.round(sleepHealth(S.ap)*(atHome()?1:CONFIG.sleep.awayShare))+' health';
     var pi=payInfo(),pm0=prod().m;$('pay').textContent=money(pi.v)+(pi.n?'/shift':'');$('payRole').textContent=pi.txt+(pi.n&&pm0<1?' · ×'+Math.round(pm0*100)+'% today':'');
     $('dayMax').textContent=maxDays()===Infinity?'':' / '+maxDays();$('diffTag').textContent=Df().n;
     $('rlWin').textContent=maxDays()===Infinity?' (no time limit on Easy)':', within '+maxDays()+' days';$('rlTime').textContent=maxDays()===Infinity?'Not on Easy: there is no day limit.':'Day '+maxDays()+' passes and you are still under '+money(GOAL)+'.';
@@ -7111,21 +7138,22 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   /* the town leaderboard (rival games): you and your rivals by net worth, with their job and today's change */
   function rivalBoard(){
     var box=$('rivBox');if(!box)return;var on=S.mode==='rivals'&&S.rivals&&S.rivals.length;box.hidden=!on;if(!on)return;
-    var P=lifeScore();
+    var P=lifeScore(),maxWorth=Math.max(1,...P.map(function(p){return Math.max(0,p.worth)})),maxCareer=Math.max(1,...P.map(function(p){return p.best?p.best.pay:0}));
     $('rivSub').textContent='· Life Score · day '+Math.min(S.day,maxDays())+' of '+maxDays()+' · '+moodX().icon+' '+moodX().name;
     $('rivList').innerHTML=P.map(function(p){
       var job=p.me?(myJob()?myJob().rk.r:'No job'):p.out?'Out: '+p.out.why+' (day '+p.out.day+')':(rivalJob(p.r)?rivalJob(p.r).rk.r:'No job');
       var d=p.r?rivalWorth(p.r)-p.r.y:0;
       var line='<span>'+ordinal(p.place)+'</span><span class="rn">'+p.ic+' '+p.name+(p.r?' <small>('+p.r.diff+' · '+personality(p.r).name+' · '+relLabel(p.r.rel||0)+')</small>':'')+' <small>🎖️ '+Math.round(p.rep)+'</small>'+((p.r&&ally()===p.r)||(p.me&&ally())?' <small>🤝 '+(p.me?'allied with '+ally().name:'your ally')+'</small>':'')+' · <small>'+job+' · '+money(p.worth)+(d?' <span class="'+(d>0?'up':'dn')+'">'+(d>0?'▲':'▼')+money(Math.abs(d))+'</span>':'')+'</small></span><b>'+p.pts+' pts</b>';
       var cats=Object.keys(p.cats).map(function(k){var x=p.cats[k];return LIFE_CATS[k].ic+' '+ordinal(x.place)+' ('+x.txt+')'}).join(' · ');
-      return '<details><summary class="rivrow'+(p.me?' me':'')+'">'+line+'</summary><ul>'+(p.me?politicsLis(-1):'')+(p.r?memoryProfile(p.r)+'<li>Relationship '+sg(p.r.rel||0)+' ('+relLabel(p.r.rel||0)+')'+(p.r.drift?' · overnight '+sg(p.r.drift):'')+'</li>'+politicsLis(S.rivals.indexOf(p.r))+moneyLis(S.rivals.indexOf(p.r))+(flatmate()===p.r?'<li>🏠 Your flatmate'+(S.flat.hd===S.day?(S.flat.here?' · home today':' · out today'):'')+'</li>':'')+(studyPartners(S.lastTrack).indexOf(p.r)>=0?'<li>📚 Studying the same pathway as you</li>':''):'')+'<li>'+cats+'</li>'+(p.r?(p.r.log.length?p.r.log.map(function(l){return '<li>'+l+'</li>'}).join(''):'<li>Nothing to report yet.</li>'):'')+'</ul></details>';
+      var bars='<div class="rival-bars" aria-label="'+p.name+' net worth '+money(p.worth)+'; career pay '+money(p.best?p.best.pay:0)+' per shift"><span>Wealth</span><span class="track"><i style="width:'+Math.max(0,p.worth)/maxWorth*100+'%"></i></span><b>'+money(p.worth)+'</b><span>Career</span><span class="track"><i style="width:'+(p.best?p.best.pay:0)/maxCareer*100+'%"></i></span><b>'+money(p.best?p.best.pay:0)+'/shift</b></div>';
+      return '<details><summary class="rivrow'+(p.me?' me':'')+'">'+line+'</summary>'+bars+'<ul>'+(p.me?politicsLis(-1):'')+(p.r?memoryProfile(p.r)+'<li>Relationship '+sg(p.r.rel||0)+' ('+relLabel(p.r.rel||0)+')'+(p.r.drift?' · overnight '+sg(p.r.drift):'')+'</li>'+politicsLis(S.rivals.indexOf(p.r))+moneyLis(S.rivals.indexOf(p.r))+(flatmate()===p.r?'<li>🏠 Your flatmate'+(S.flat.hd===S.day?(S.flat.here?' · home today':' · out today'):'')+'</li>':'')+(studyPartners(S.lastTrack).indexOf(p.r)>=0?'<li>📚 Studying the same pathway as you</li>':''):'')+'<li>'+cats+'</li>'+(p.r?(p.r.log.length?p.r.log.map(function(l){return '<li>'+l+'</li>'}).join(''):'<li>Nothing to report yet.</li>'):'')+'</ul></details>';
     }).join('');
   }
   function moneyLis(i){return (S.rloans||[]).filter(function(l){return l.i===i}).map(function(l){return '<li>💬 '+(l.dir==='in'?'Owes you '+money(l.owe):'You owe '+money(l.owe))+' (due day '+l.due+')</li>'}).join('')+(S.bets||[]).filter(function(b){return b.i===i}).map(function(b){return '<li>🎲 Bet of '+money(b.stake)+' each until day '+b.until+'</li>'}).join('')}
   function renderOverviewCards(){
     rivalBoard();
     (function(){var d=handheld(),o=offerToday();$('phoneBtn').disabled=!d||!!S.over;
-      $('phoneNote').textContent=!d?'Needs a phone or tablet'+(owns('computer')?' (your computer at home has the apps)':''):'Bank and Jobs apps'+(o&&!S.promo?' · 🎁 bank offer today':'')+(S.mode==='rivals'&&newMsgs()?' · 💬 '+newMsgs()+' new':'')+(S.mode==='rivals'&&dueTomorrow().length?' · 💬 due tomorrow':'')})();
+      $('phoneNote').textContent=!d?'Buy a phone or tablet to unlock':'Bank, Jobs'+(S.mode==='rivals'?', Calls, Messages':'')+(o&&!S.promo?' · 🎁 offer':'')+(S.mode==='rivals'&&newMsgs()?' · 💬 '+newMsgs()+' new':'')})();
     var as=assets(),nw=worth(),tot=Math.max(nextGoal(),nw),iv=invTotal();  /* the same values renderStats() shows */
     var sm2=S.summary,sc=$('sumcard');sc.hidden=!sm2;
     if(sm2){var sg=function(v,suf){return '<b class="'+(v>0?'up':v<0?'dn':'')+'">'+(v>0?'+':v<0?'−':'±')+(suf==='$'?money(Math.abs(Math.round(v))):Math.abs(Math.round(v))+(suf||''))+'</b>'};
@@ -7153,13 +7181,14 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     /* evening: the town darkens as the day runs out (CONFIG.ui.evening); the morning resets S.ap, so it lights up again */
     var EV=CONFIG.ui.evening||{},evF=EV.fromMinutes||0,dusk=evF&&!S.over&&S.ap<evF?(EV.darkest||0)*(0.5+0.5*(1-S.ap/evF)):0;
     $('board').style.setProperty('--dusk',dusk.toFixed(3));$('board').classList.toggle('evening',dusk>0);
+    var job=myJob(),jobPlace=job&&job.b,closed=jobPlace&&shutLeft(jobPlace)>0;
     document.querySelectorAll('.tile').forEach(function(t){
       var k=t.dataset.loc;
       t.classList.toggle('here',k===loc);
       t.classList.toggle('open',k===view);
       t.querySelector('.cost').textContent=k===loc?'':hm(dist(loc,k)*WALK);
-      t.setAttribute('aria-label',NAME[k]+(k===loc?', you are here':', '+hm(dist(loc,k)*WALK)+' walk')+(k===S.home&&!S.homeless?', your home':''));
-      t.querySelector('.tags').innerHTML=(k===S.home&&!S.homeless?'<span class="tag">Home</span>':'')+(k===loc?'<span class="tag you">You</span>':'');
+      t.setAttribute('aria-label',NAME[k]+(k===loc?', you are here':', '+hm(dist(loc,k)*WALK)+' walk')+(k===S.home&&!S.homeless?', your '+NAME[S.home]+' home':'')+(k===jobPlace?', your workplace'+(closed?', closed today':''):''));
+      t.querySelector('.tags').innerHTML=(k===S.home&&!S.homeless?'<span class="tag home">🏠 Your '+(S.home==='bung'?'bungalow':'apartment')+'</span>':'')+(k===jobPlace?'<span class="tag '+(closed?'closed':'job')+'">'+(closed?'🔒 Work closed':'💼 Your work')+'</span>':'')+(k===loc?'<span class="tag you">📍 You are here</span>':'');
     });
   }
   /* which windows show (overview, building panel, end-of-day card) and the end-of-day card itself */
@@ -7609,11 +7638,11 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       (function(){var E=CONFIG.events,I=CONFIG.industry,last=function(L){return CONFIG.time.gameDays-L.daysBeforeEnd};
         if($('cfgStory'))$('cfgStory').textContent='each game has one global storyline (an oil crisis, a pandemic…), starting between day '+E.storyline.fromDay+' and day '+last(E.storyline)+', that moves prices, pay and interest for everyone; and one industry-specific storyline (a chip shortage, banks going all-in on AI…), starting between day '+I.fromDay+' and day '+last(I)+', that moves pay for particular jobs by '+Math.round(I.paySwing[0]*100)+'% to '+Math.round(I.paySwing[1]*100)+'% up or down, freezes or opens up hiring, and can lay you off or suspend your workplace. The Employment Office shows a rumour '+(I.rumourDays===1?'the day':I.rumourDays+' days')+' before it starts and its effects while it runs. The two may overlap; shorter macro shocks never come within '+E.storylineGap+' days of either.'})();
       (function(){var Mk=CONFIG.market,R=Mk.returns,O=CONFIG.bank.offers;
-        if($('cfgBank'))$('cfgBank').textContent='savings pay about '+Mk.rateBase+'% a day (the rate moves with the news), a fixed deposit '+R.fdOverSavings+'× that, and the ETF, hedge fund and crypto expect about '+R.etf.base+'%, '+R.hf.base+'% and '+R.cry.base+'% a day in a steady market, with bigger swings the more they pay. With a phone or tablet (📱 Phone on the Overview), or a computer at home (💻 Computer in your home), the Bank app does all this without the walk (loans still need a visit), and the Jobs app shows the Employment Office job board, where you can apply online (1h, as in person). '+(O&&O.chance>0?'Some mornings from day '+O.fromDay+' the Bank has a one-day offer: a promo deposit at '+O.rate[0]+'–'+O.rate[1]+'% a day for '+dayN(O.days)+'. ':'')+'Each morning tells you what your money made overnight and the best return open to you.'})();
+        if($('cfgBank'))$('cfgBank').textContent='savings pay about '+Mk.rateBase+'% a day (the rate moves with the news), a fixed deposit '+R.fdOverSavings+'× that, and the ETF, hedge fund and crypto expect about '+R.etf.base+'%, '+R.hf.base+'% and '+R.cry.base+'% a day in a steady market, with bigger swings the more they pay. With a phone or tablet (📱 Phone apps on the map), or a computer at home (💻 Computer in your home), the Bank app does all this without the walk (loans still need a visit), and the Jobs app shows the Employment Office job board, where you can apply online (1h, as in person). '+(O&&O.chance>0?'Some mornings from day '+O.fromDay+' the Bank has a one-day offer: a promo deposit at '+O.rate[0]+'–'+O.rate[1]+'% a day for '+dayN(O.days)+'. ':'')+'Overnight gains appear in the morning summary; today’s rates and available products are shown at the Bank.'})();
       (function(){var C=CONFIG.community,f=function(c){return hm(c.minutes)+(c.cost?', $'+c.cost:'')+(c.energy?', '+sg(c.energy)+'% energy':'')+', '+sg(c.happiness)+' happiness'+(c.knowledge?', '+sg(c.knowledge)+' knowledge':'')};
         if($('cfgComm'))$('cfgComm').textContent='once a day each: a night out with friends ('+f(C.nightOut)+'), karaoke ('+f(C.karaoke)+') or volunteering ('+f(C.volunteer)+'). A night out ('+pctTxt(C.nightOut.tipChance)+') or volunteering ('+pctTxt(C.volunteer.tipChance)+') can get you a friend’s job tip: for '+dayN(C.tip.days)+' your next interview is '+Math.round(C.tip.passBonus*100)+'% more likely to pass and never fails for “no openings”.'})();
       (function(){var R=CONFIG.rivals,T=CONFIG.time.gameDays,due=TIERS.filter(function(r){return r.d}).map(function(r){return Math.min(Math.round(r.d*R.gameDays/T),R.gameDays)});
-        if($('cfgRivals'))$('cfgRivals').textContent='choose “With AI rivals” on the welcome screen: 1 to 3 computer players (easy, medium, expert or mixed) live the same '+R.gameDays+' days in the same town, under the same prices, pay, storylines, layoffs and job openings. A rival game lasts '+R.gameDays+' days (a single game '+T+'), has '+R.industryStorylines+' industry-specific storylines, and its rank target days stretch to day '+due.join(', ')+'. Reaching '+TIERS[TIERS.length-1].n+' does not end a rival game: everyone plays all '+R.gameDays+' days. The game is won on the Life Score: in each category everyone gets a place, worth '+R.scoring.placePoints.join('/')+' points (1st/2nd/…) × the category weight: '+Object.keys(R.scoring.categories).filter(function(k){return R.scoring.categories[k].on&&LIFE_CATS[k]}).map(function(k){return LIFE_CATS[k].n.toLowerCase()+' ×'+R.scoring.categories[k].weight}).join(', ')+'. Happiness counts as the average over the game, health as unwell nights (ill, or health under '+CONFIG.health.poorBelow+'), stability counts crisis days (no meal, rent arrears, an overdue loan, illness, no clothes), career is your best-paid job, and first to the line rewards reaching each rank earliest. '+'Personalities: '+Object.keys(R.personalities).map(function(k){var p=R.personalities[k];return p.name.toLowerCase()+' ('+p.about+')'}).join('; ')+'. Meaningful help and refusals are remembered (up to '+R.memory.maxEntries+' recent memories). Remembered trust changes lending by '+pctTxt(R.memory.lendPerTrust)+' per point, capped at '+R.memory.maxTrust+' points either way. Rivals can owe up to '+R.memory.maxOwed+' favours; each can become one job introduction on a later morning while you are on speaking terms. Open their Overview profile for their memories. '+(R.jobRace&&R.jobRace.chance>0?'When a '+R.jobRace.levels.join(' or ')+' rival gets a job, it may have taken the last opening: that role has no openings for you the next day (up to '+R.jobRace.maxPerGame+' times a game). ':'')+(function(){var X=R.social;return X?'Each rival has a relationship with you, from enemy to friend. Building it costs time: chat ('+hm(X.chat.minutes)+') or say hello ('+hm(X.hello.minutes)+') when you meet them around town, call them (from home, or by phone anywhere, one or a group; usually +1 or +2, sometimes an argument), or congratulate them on their news ('+hm(X.congratulate.minutes)+'). On bad terms, an interaction may turn tense and make things worse ('+pctTxt(X.tension.per*20)+' base chance at −20, up to '+pctTxt(X.tension.max)+'; personality also affects tension)' +(X.argument&&X.argument.happiness?'; an argument (a call that goes wrong, or tension) also costs you '+Math.abs(X.argument.happiness)+' happiness':'')+'. Friends sometimes tip you off about openings; enemies race you harder for them. ':''})()+(function(){var M=R.money;if(!M)return '';var L=M.loan,B=M.bet;return 'In the 💬 Messages app (phone or computer), rivals may ask to borrow money or offer a bet, and you can ask them. Loans run '+L.days+' days at '+Math.round(L.interest*100)+'%: you get a reminder the morning before yours is due, and if it isn’t paid in full on the due morning your relationship with the lender drops '+Math.abs(L.defaultRel)+', with every other rival '+Math.abs(L.defaultOthersRel)+', and you lose '+Math.abs(L.defaultHappiness)+' happiness. A rival who turns down your request drops '+Math.abs(L.askedNoRel)+'. A bet ('+money(S?G(B.stake):B.stake)+' each) goes to whoever grows their net worth more over '+B.days+' days. '})()+(function(){var T=R.together;if(!T)return '';var F=T.flat,Z=T.study;return 'At home you can invite a friendly rival to be your flatmate: rent is split in half, living together lifts or drags both your moods each night ('+sg(F.nightHappiness.friend)+' as friends, '+sg(F.nightHappiness.bad)+' on bad terms), some rent days they skip their share ('+sg(F.skipRel)+' relationship, '+sg(F.skipHappiness)+' happiness, and you pay it all), and they move out at '+F.leaveAt+'. When they are home you can cook, hang out, do chores or clear the air together. A lesson in a pathway a friendly rival is also studying is a study group: +'+Z.groupKnowledge+' knowledge, '+sg(Z.groupHappiness)+' happiness and '+sg(Z.groupRel)+' relationship. Some nights bring a decision involving a rival (a lift, a birthday, a rumour, covering a shift…). '})()+(function(){var Pp=R.politics;if(!Pp)return '';var Q=Pp.pact,Bt=Pp.betray,Rp=Pp.rep,mo=Pp.moods;return 'Town mood (welcome screen): '+Object.keys(mo).map(function(k){return mo[k].icon+' '+mo[k].name.toLowerCase()+(mo[k].betray?' (betrayals ×'+mo[k].betray+')':' (no betrayals)')}).join(', ')+'. Everyone has a reputation from 0 to 100 (start '+Rp.start+'): keeping a pact '+sg(Rp.keepPact)+', repaying a rival on time '+sg(Rp.repay)+', not paying back '+sg(Rp.defaulted)+', helping a rival '+sg(Rp.help)+', a betrayal '+sg(Rp.betray)+'; it shifts interview chances ('+pctTxt(Rp.interviewPer*10)+' per 10 points) and whether rivals accept your pacts and loans, and it is a Life Score category. With a 🤝 friend ('+Q.need+'+) you can make a '+Q.days+'-day pact in Messages, plain or with a shared pot ('+money(S?G(Q.pot):Q.pot)+' each, earning the savings rate +'+Q.potBonusRate+' point a day): an ally may pass you job tips and never takes the last opening from you; a pact kept to the end splits the pot ('+sg(Q.keepRel)+' relationship). An ally can betray you ('+Object.keys(Bt.chance).map(function(k){return k+' '+pctTxt(Bt.chance[k])}).join(', ')+' a night, experts ×'+Bt.lateMult+' in the last '+Bt.lateDays+' days): taking the pot, not repaying a loan, taking the job you are after, or leaking your plans; the betrayer drops to '+Bt.relTo+' with the victim and loses reputation. You can betray an ally too. Rivals make and break pacts with each other. Each night every rival’s relationship with you drifts by '+sg(Pp.drift.min)+' to '+sg(Pp.drift.max)+'. '})()+(function(){var Pp=R.politics,Z=Pp&&Pp.sabotage,TH=Pp&&Pp.theft;if(!Z||!TH)return '';var mv=Z.moves,mo=Pp.moods;return 'Sabotage ('+Object.keys(mo).filter(function(k){return mo[k].sabotage}).map(function(k){return mo[k].name.toLowerCase()}).join(' and ')+' towns; every move costs time): '+Object.keys(mv).map(function(k){var m=mv[k];return m.name.toLowerCase()+' ('+hm(m.minutes)+', caught '+pctTxt(m.caught)+')'}).join(', ')+'. Each earlier sabotage adds '+pctTxt(Z.perUse)+' to the chance of being caught, up to '+pctTxt(Z.maxCaught)+'. Caught: reputation '+sg(Z.caught.rep)+', relationship '+sg(Z.caught.rel)+', '+sg(Z.caught.happiness)+' happiness, and they may strike back; not caught after '+Z.gotAwayDays+' days: '+sg(Z.gotAwayHappiness)+' happiness. You can hit each rival '+Z.yourHitsPerRivalPerDay+' times a day and be hit '+Z.hitsOnYouPerDay+' times a night. Rivals sabotage you and each other; when you are not told who, accuse someone at the Community Centre (right: they lose reputation; wrong: relationship '+sg(Z.accuse.wrongRel)+' with the one you blamed and '+sg(Z.accuse.wrongHappiness)+' happiness). Cash can go missing overnight: a flatmate below '+TH.flatmate.below+' may steal, and burglars break in ('+pctTxt(TH.burglary.chance)+' a night) in the '+TH.burglary.homes.map(function(h){return NAME[h]||h}).join(', ')+'. A small theft ('+pctTxt(TH.small.min)+'–'+pctTxt(TH.small.max)+' of your cash) does not say who; a big one ('+pctTxt(TH.big.min)+'–'+pctTxt(TH.big.max)+') does, and a flatmate who takes it moves out. Money in the bank is never taken. '})()+'The Overview shows the running leaderboard, the morning news tells you what your rivals did, and the end screen shows every category.'})();
+        if($('cfgRivals'))$('cfgRivals').textContent='choose “With AI rivals” on the welcome screen: 1 to 3 computer players (easy, medium, expert or mixed) live the same '+R.gameDays+' days in the same town, under the same prices, pay, storylines, layoffs and job openings. A rival game lasts '+R.gameDays+' days (a single game '+T+'), has '+R.industryStorylines+' industry-specific storylines, and its rank target days stretch to day '+due.join(', ')+'. Reaching '+TIERS[TIERS.length-1].n+' does not end a rival game: everyone plays all '+R.gameDays+' days. The game is won on the Life Score: in each category everyone gets a place, worth '+R.scoring.placePoints.join('/')+' points (1st/2nd/…) × the category weight: '+Object.keys(R.scoring.categories).filter(function(k){return R.scoring.categories[k].on&&LIFE_CATS[k]}).map(function(k){return LIFE_CATS[k].n.toLowerCase()+' ×'+R.scoring.categories[k].weight}).join(', ')+'. Happiness counts as the average over the game, health as unwell nights (ill, or health under '+CONFIG.health.poorBelow+'), stability counts crisis days (no meal, rent arrears, an overdue loan, illness, no clothes), career is your best-paid job, and first to the line rewards reaching each rank earliest. '+'Personalities: '+Object.keys(R.personalities).map(function(k){var p=R.personalities[k];return p.name.toLowerCase()+' ('+p.about+')'}).join('; ')+'. Meaningful help and refusals are remembered (up to '+R.memory.maxEntries+' recent memories). Remembered trust changes lending by '+pctTxt(R.memory.lendPerTrust)+' per point, capped at '+R.memory.maxTrust+' points either way. Rivals can owe up to '+R.memory.maxOwed+' favours; each can become one job introduction on a later morning while you are on speaking terms. Open their Overview profile for their memories. '+(R.jobRace&&R.jobRace.chance>0?'When a '+R.jobRace.levels.join(' or ')+' rival gets a job, it may have taken the last opening: that role has no openings for you the next day (up to '+R.jobRace.maxPerGame+' times a game). ':'')+(function(){var X=R.social;return X?'Each rival has a relationship with you, from enemy to friend. Building it costs time: chat ('+hm(X.chat.minutes)+') or say hello ('+hm(X.hello.minutes)+') when you meet them around town, call them (from home, or by phone anywhere, one or a group; usually +1 or +2, sometimes an argument), or congratulate them on their news ('+hm(X.congratulate.minutes)+'). On bad terms, an interaction may turn tense and make things worse ('+pctTxt(X.tension.per*20)+' base chance at −20, up to '+pctTxt(X.tension.max)+'; personality also affects tension)' +(X.argument&&X.argument.happiness?'; an argument (a call that goes wrong, or tension) also costs you '+Math.abs(X.argument.happiness)+' happiness':'')+'. Friends sometimes tip you off about openings; enemies race you harder for them. ':''})()+(function(){var M=R.money;if(!M)return '';var L=M.loan,B=M.bet;return 'In the 💬 Messages app (phone or computer), rivals may ask to borrow money or offer a bet, and you can ask them. Loans run '+L.days+' days at '+Math.round(L.interest*100)+'%: you get a reminder the morning before yours is due, and if it isn’t paid in full on the due morning your relationship with the lender drops '+Math.abs(L.defaultRel)+', with every other rival '+Math.abs(L.defaultOthersRel)+', and you lose '+Math.abs(L.defaultHappiness)+' happiness. A rival who turns down your request drops '+Math.abs(L.askedNoRel)+'. A bet ('+money(S?G(B.stake):B.stake)+' each) goes to whoever grows their net worth more over '+B.days+' days. '})()+(function(){var T=R.together;if(!T)return '';var F=T.flat,Z=T.study;return 'At home you can invite a friendly rival to be your flatmate: rent is split in half, living together lifts or drags both your moods each night ('+sg(F.nightHappiness.friend)+' as friends, '+sg(F.nightHappiness.bad)+' on bad terms), some rent days they skip their share ('+sg(F.skipRel)+' relationship, '+sg(F.skipHappiness)+' happiness, and you pay it all), and they move out at '+F.leaveAt+'. When they are home you can cook, hang out, do chores or clear the air together; they may be busy and decline ('+pctTxt(F.noChance)+', relationship '+sg(F.noRel)+', no time or cash spent). A lesson in a pathway a friendly rival is also studying is a study group: +'+Z.groupKnowledge+' knowledge, '+sg(Z.groupHappiness)+' happiness and '+sg(Z.groupRel)+' relationship. Some nights bring a decision involving a rival (a lift, a birthday, a rumour, covering a shift…). '})()+(function(){var Pp=R.politics;if(!Pp)return '';var Q=Pp.pact,Bt=Pp.betray,Rp=Pp.rep,mo=Pp.moods;return 'Town mood (welcome screen): '+Object.keys(mo).map(function(k){return mo[k].icon+' '+mo[k].name.toLowerCase()+(mo[k].betray?' (betrayals ×'+mo[k].betray+')':' (no betrayals)')}).join(', ')+'. Everyone has a reputation from 0 to 100 (start '+Rp.start+'): keeping a pact '+sg(Rp.keepPact)+', repaying a rival on time '+sg(Rp.repay)+', not paying back '+sg(Rp.defaulted)+', helping a rival '+sg(Rp.help)+', a betrayal '+sg(Rp.betray)+'; it shifts interview chances ('+pctTxt(Rp.interviewPer*10)+' per 10 points) and whether rivals accept your pacts and loans, and it is a Life Score category. With a 🤝 friend ('+Q.need+'+) you can make a '+Q.days+'-day pact in Messages, plain or with a shared pot ('+money(S?G(Q.pot):Q.pot)+' each, earning the savings rate +'+Q.potBonusRate+' point a day): an ally may pass you job tips and never takes the last opening from you; a pact kept to the end splits the pot ('+sg(Q.keepRel)+' relationship). An ally can betray you ('+Object.keys(Bt.chance).map(function(k){return k+' '+pctTxt(Bt.chance[k])}).join(', ')+' a night, experts ×'+Bt.lateMult+' in the last '+Bt.lateDays+' days): taking the pot, not repaying a loan, taking the job you are after, or leaking your plans; the betrayer drops to '+Bt.relTo+' with the victim and loses reputation. You can betray an ally too. Rivals make and break pacts with each other. Each night every rival’s relationship with you drifts by '+sg(Pp.drift.min)+' to '+sg(Pp.drift.max)+'. '})()+(function(){var Pp=R.politics,Z=Pp&&Pp.sabotage,TH=Pp&&Pp.theft;if(!Z||!TH)return '';var mv=Z.moves,mo=Pp.moods;return 'Sabotage ('+Object.keys(mo).filter(function(k){return mo[k].sabotage}).map(function(k){return mo[k].name.toLowerCase()}).join(' and ')+' towns; every move costs time): '+Object.keys(mv).map(function(k){var m=mv[k];return m.name.toLowerCase()+' ('+hm(m.minutes)+', caught '+pctTxt(m.caught)+')'}).join(', ')+'. Each earlier sabotage adds '+pctTxt(Z.perUse)+' to the chance of being caught, up to '+pctTxt(Z.maxCaught)+'. Caught: reputation '+sg(Z.caught.rep)+', relationship '+sg(Z.caught.rel)+', '+sg(Z.caught.happiness)+' happiness, and they may strike back; not caught after '+Z.gotAwayDays+' days: '+sg(Z.gotAwayHappiness)+' happiness. You can hit each rival '+Z.yourHitsPerRivalPerDay+' times a day and be hit '+Z.hitsOnYouPerDay+' times a night. Rivals sabotage you and each other; when you are not told who, accuse someone at the Community Centre (right: they lose reputation; wrong: relationship '+sg(Z.accuse.wrongRel)+' with the one you blamed and '+sg(Z.accuse.wrongHappiness)+' happiness). Cash can go missing overnight: a flatmate below '+TH.flatmate.below+' may steal, and burglars break in ('+pctTxt(TH.burglary.chance)+' a night) in the '+TH.burglary.homes.map(function(h){return NAME[h]||h}).join(', ')+'. A small theft ('+pctTxt(TH.small.min)+'–'+pctTxt(TH.small.max)+' of your cash) does not say who; a big one ('+pctTxt(TH.big.min)+'–'+pctTxt(TH.big.max)+') does, and a flatmate who takes it moves out. Money in the bank is never taken. '})()+'The Overview shows the running leaderboard, the morning news tells you what your rivals did, and the end screen shows every category.'})();
       $('cfgRent').textContent=everyDays(RENT_EVERY);
       $('apOf').textContent=' of '+hm(MAX_AP);
       $('cfgDebt').textContent=pctTxt(CONFIG.hospital.billInterest);

@@ -1531,3 +1531,12 @@ The second half of the last rivals step (batch 4b). Everything here is light and
   - 20 real cutthroat days with no script errors.
   - **One change after the real-days run:** unsolved incidents now lapse after 5 days, after 7 had piled up on the "Who did it?" card.
 - **UI check:** new situations for Town talk, a rumour online, "Who did it?" and a flatmate on bad terms, plus a burglary-morning flow. 0 issues on desktop and phone.
+
+## 93. Flatmate choices and clearer daily play
+
+- Flatmates at home can decline cooking, hanging out, chores or a talk when busy (`CONFIG.rivals.together.flat.noChance`, default 20%). A no costs `noRel` (default −1) relationship, marks that shared action attempted for the day, and spends no time or cash. The same chance applies to each shared action.
+- Rank milestones, including the top rank, now celebrate in the log and on the map without an end/continue popup. The game runs until its day limit or another ending; Easy has no day limit. The first-week checklist still has its own completion notice.
+- Phone apps moved to a visible button on the town map. The HUD shows today's meal, work and study; the remaining-time text turns orange below eight hours and red below three. Home, location, workplace and a closed workplace have distinct map tags. Sleep labels distinguish at home from outside, including “Bunk Out” in rival games.
+- The Overview shows the highest completed qualification for every pathway. The rival leaderboard adds wealth and career-pay comparison bars. At midgame, rivals on the same job and study path pivot toward a feasible alternate career and qualification, retaining that preference for the rest of the game.
+- Clickable buttons use the teal palette. The morning card drops the unchanged daily rates briefing, collapses exact duplicate notices and uses a shorter heading. Quiet-night text varies across days, and the sleep recap is shorter.
+- Targeted DOM/game checks passed for the new action outcomes, milestones, day indicators, education, map tags, bars and rival pivot. The standard desktop/phone visual runner could not start: its Chromium binary was absent, and the browser download produced an invalid archive. Visual layout remains to be checked in a browser.

@@ -137,8 +137,9 @@
       cmp('TEXT≠EFFECT',where,said,v0,v1);
       if(toasts.length)cmp('TOAST≠EFFECT',where,parseToasts(toasts),v0,v1);
       /* shop rows (buy, bundle, chips, bargain, sell, lottery) show what the thing does later, not what buying it does */
-      /* rows marked 'chance' (a rival chat or call that may end in an argument) can't promise their happiness: only their time is compared */
-      if(!refused&&lines.length&&!/^(buy|groc|bundle|chips|bargain|sell|lotto)\|/.test(k))cmp('CHIP≠EFFECT',where,chanceRow?{ap:chips.ap}:chips,v0,v1);
+      /* Chance rows cannot promise vitals. A flatmate's refusal costs neither time nor cash. */
+      var flatNo=k.indexOf('fdo|')===0&&lines.some(function(l){return /is busy and says no/.test(l[0])});
+      if(!refused&&!flatNo&&lines.length&&!/^(buy|groc|bundle|chips|bargain|sell|lotto)\|/.test(k))cmp('CHIP≠EFFECT',where,chanceRow?{ap:chips.ap}:chips,v0,v1);
       toasts.forEach(function(t){var r=t.getBoundingClientRect();if(r.right>innerWidth+1||r.left<-1)note('OVERFLOW',where,'toast goes off the screen')});
     }else{stats.popups.push(where);popupFits(where+' (pop-up)')}
   }
