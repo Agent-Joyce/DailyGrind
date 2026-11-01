@@ -603,6 +603,28 @@ body[data-screen=town] #center{padding:0}body[data-screen=town] #overview,body[d
 
 /* Align portrait rows with the current reputation and alliance metadata. */
 .g-riv .rivrow{align-items:center}.g-riv .rivrow .rival-meta{display:block}
+
+/* Daily play: teal actions, visible daily progress and map landmarks. */
+button:not(.tile),button:not(.tile):hover,button:not(.tile):active,button:not(.tile)[aria-selected=true],button:not(.tile)[aria-pressed=true],button.nav-item[aria-current=page]{background:var(--teal)!important;color:var(--teal-ink)!important;border-color:var(--teal)!important}
+button[aria-current=page],button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--gold)!important}
+button svg{color:inherit}.quick-card small,.quick-card .quick-icon{color:inherit!important}.tile .lab{background:var(--teal);color:var(--teal-ink)}
+.daily-progress{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.daily-progress span{flex:1;min-width:100px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#e6f3ed;font-size:12px;font-weight:700}.daily-progress .not-eaten{background:#fff0df;color:#87521b}.daily-progress .eaten{background:#d5eee0;color:#185e43}
+.town-device{position:absolute;right:12px;top:12px;z-index:190;max-width:180px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}.town-device button{width:100%;min-height:44px}.town-device small{display:block;font-size:10px;margin-top:4px;color:var(--muted)}
+.tile .tags{display:flex;position:static;order:3;align-items:center;gap:2px;pointer-events:none}.tile .tag{font-size:9px;line-height:1.2;white-space:normal;text-align:center;border:0;box-shadow:0 1px 4px #16302b44}.tile .tag.you{background:#ffe0a0;color:#503400}.tile .tag.home{background:#fff4cb;color:#614713}.tile .tag.job{background:#d8f2ec;color:#15584d}.tile .tag.closed{background:#a42d32;color:#fff}.tile.here .pin{outline:3px solid #f1bc51;outline-offset:2px}.tile.workplace .pin{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--teal)}.tile.work-closed .pin{background:#a42d32}.tile.homeplace .lab{border:2px solid #f1bc51}
+.town-legend{font-size:10px;color:var(--ink)}.town-caption{max-width:calc(100% - 220px)}
+.time-warning{color:#c36507!important}.time-urgent{color:#cf3434!important}
+.education-paths{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}.education-paths>span{display:block;padding:8px;border:1px solid var(--line);border-radius:8px;font-size:11px}.education-paths b{display:block;font-size:12px}.kv:has(.education-paths){display:block}
+.rival-chart{display:grid;grid-template-columns:68px minmax(0,1fr) auto;gap:5px 8px;padding:0 0 14px;font-size:11px;align-items:center}.rival-chart .chart-track{height:8px;background:var(--line);border-radius:8px;overflow:hidden}.rival-chart .chart-track i{display:block;height:100%;background:var(--teal);border-radius:8px}.rival-chart .career-bar i{background:#b98731}.rival-chart b{font-size:11px}.rival-chart .chart-note{grid-column:1/-1;color:var(--muted);font-size:10px}
+#dayShade{position:fixed;inset:var(--head) 0 var(--foot);pointer-events:none;z-index:4400;background:#102331;opacity:var(--day-shade,0);transition:opacity .6s}.town-canvas::after{opacity:var(--map-dusk,0)}
+@media(min-width:641px){.g-vit.inpay{padding-top:12px;gap:12px 20px}.g-vit.inpay .mrow{font-size:13px}.g-vit.inpay .mrow b{font-size:20px}.g-vit .bar{height:8px}.meal{font-size:14px;font-weight:750}.app-status b{font-size:19px}.daily-progress span{font-size:13px}}
+@media(max-width:640px){.town-device{right:8px;top:8px;max-width:150px;padding:6px}.town-device small{font-size:9px}.town-device .btn{font-size:11px;padding:6px}.tile .tags{position:absolute;top:100%;left:50%;transform:translateX(-50%);width:95px}.tile .tag{font-size:8px;padding:1px 3px;max-width:95px}.tile .cost{display:none}.daily-progress{gap:5px}.daily-progress span{min-width:0;padding:8px 6px;font-size:10px}.education-paths{grid-template-columns:1fr}.rival-chart{grid-template-columns:62px minmax(0,1fr) auto;font-size:10px}.rival-chart b{font-size:10px}.app-status b{font-size:13px}#appTime{font-weight:800}.tile.here .lab{display:none}.town-caption{display:none}}
+/* Keep daily activity visible above every screen, including open buildings. */
+:root{--head:124px}#appTop{grid-template-rows:44px 30px;gap:8px 20px}#appTop .daily-progress{grid-column:1/-1;margin:0;justify-content:center;gap:10px}#appTop .daily-progress span{flex:0 1 190px;min-width:0;padding:5px 12px;font-size:12px;text-align:center}
+button:not(.tile) small,button:not(.tile) .quick-icon,button:not(.tile) .quick-icon svg{color:inherit!important}button:not(.tile) svg{stroke:currentColor}.town-device{max-width:175px}.town-device .btn{white-space:nowrap;font-size:12px;padding:8px}.town-device small{line-height:1.3}
+@media(max-width:640px){:root{--head:144px}#appTop{grid-template-rows:44px 28px 30px;gap:5px 8px}#appTop .daily-progress{gap:5px}#appTop .daily-progress span{padding:5px 4px;font-size:10px}.town-device{padding:4px;max-width:145px;top:4px;right:4px}.town-device small{display:none}.town-device .btn{min-height:36px;font-size:10px;padding:5px 7px}.town-caption{display:none}}
+#appTop .daily-progress{grid-row:2;flex-wrap:nowrap}#appTop .daily-progress span{flex:0 1 190px}
+.g-riv summary.rivrow{display:grid;grid-template-columns:auto 46px minmax(0,1fr) auto;gap:10px}.rival-chart{grid-column:1/-1;width:100%;padding:2px 0 6px;cursor:pointer}
+@media(max-width:640px){#appTop .daily-progress{grid-row:3;flex-wrap:nowrap}#appTop .daily-progress span{flex:1 1 0;min-width:0}.g-riv summary.rivrow{grid-template-columns:auto 40px minmax(0,1fr) auto;gap:8px}.rivrow>.rival-face{width:40px;height:40px}}
 </style>
 </head>
 <body>
@@ -2846,12 +2868,9 @@ body[data-screen=town] #center{padding:0}body[data-screen=town] #overview,body[d
   }
   /* the morning money briefing: what your money made overnight, today's rates and the best return open to you */
   function moneyBrief(interest,moved){
-    var a=[],o=offerToday(),O=CONFIG.bank.offers;
+    var a=[],o=offerToday();
     if(interest||Math.abs(moved)>=0.5)a.push({l:interest+moved>=0?'good':'warn',t:'💰 Your money made '+sm(interest+moved)+' overnight ('+[interest?'savings +'+money(interest):'',Math.abs(moved)>=0.5?'investments '+sm(moved):''].filter(Boolean).join(', ')+').'});
     if(o)a.push({l:'good',t:'🎁 Bank offer, today only: a promo deposit at '+o.rate.toFixed(1)+'% a day for '+o.days+' days ('+money(o.min)+' to '+money(o.max)+'). It is paid back with interest when it matures.'});
-    var mood=S.mkt>0.5?'buoyant':S.mkt<-0.5?'weak':'steady',best={n:'savings',e:S.rate};
-    INVK.forEach(function(k){var P=INV[k];if(S.know<P.know||(P.dev&&!P.dev.split('|').some(owns)))return;var e=expRet(k);if(e>best.e)best={n:P.n.toLowerCase(),e:e}});
-    a.push({l:'rem',t:'📈 Today: savings '+S.rate.toFixed(1)+'% a day, fixed deposit '+expRet('fd').toFixed(1)+'%, market '+mood+' (ETF about '+pctS(expRet('etf'))+' a day). Best expected return open to you: '+best.n+' ('+pctS(best.e)+' a day'+(best.n==='savings'||best.n==='fixed deposit'?'':', with swings')+'). '+(handheld()?'Open the Bank app on your phone to act on it.':owns('computer')?'Use the Bank app on your computer at home, or visit the Bank.':'Visit the Bank to act on it (a phone, tablet or computer gives you the Bank app).')});
     return a;
   }
   /* the 📱 Bank app: savings, investments and offers from anywhere, with a phone, tablet or computer (loans need a visit) */
@@ -3416,7 +3435,7 @@ body[data-screen=town] #center{padding:0}body[data-screen=town] #overview,body[d
     if(!S.homeless&&rw2-S.day===0&&S.rentPaid!==rw2)mn.push({l:S.cash<rentNext?'bad':'rem',t:'🏠 Rent of '+money(rentNext)+' is due tonight. You have '+money(S.cash)+' in cash.'});
     [['casual',WEAR.casual.n],['smart',WEAR.smart.n],['suit',WEAR.suit.n]].forEach(function(c){if(S.clothes[c[0]]>0&&S.clothes[c[0]]<=CONFIG.clothes.wearPerDay)mn.push({l:'rem',t:'👕 Reminder: your '+c[1]+' wear out tonight. Buy new ones at the Clothes Mall to keep meeting dress codes.'})});
     var burnNote=mn.some(function(a){return /BURNOUT!/.test(a.t)});
-    stressList().forEach(function(a){if(!/Rent of/.test(a.t)&&!(burnNote&&/^🔥 Burnout \(/.test(a.t)))mn.push(a)});
+    stressList().forEach(function(a){if(!/Rent of/.test(a.t)&&!(burnNote&&/^🔥 Burnout \(/.test(a.t))&&!(naked()&&/out of clothes|nothing to wear/i.test(a.t)))mn.push(a)});
     var seenMorning={};mn=mn.filter(function(x){var key=x.t.replace(/\s+/g,' ').trim();if(seenMorning[key])return false;seenMorning[key]=1;return true});
     S.morning=mn.length?mn:null;
     loc=S.hosp&&S.hosp.inWard?'hosp':S.home;view=null;
@@ -6336,7 +6355,7 @@ body[data-screen=town] #center{padding:0}body[data-screen=town] #overview,body[d
     return {icon:lk.ic,tag:'Decision',title:lk.t,text:c[0],choice:true,y:c[1],n:c[2],done:false,fx:[],tone:''};
   }
   function macroRunning(){return S.trends.some(function(t){return t.macro&&t.left>0})}
-  function quietCard(){return {icon:'🌙',tag:'Quiet night',title:'Nothing happens',text:'A quiet evening. Nothing in the news or around town needs your attention.',done:true,tone:'',fx:[]}}
+  function quietCard(){return {icon:'🌙',tag:'Quiet night',title:'Rest until morning',text:'No news or decisions tonight.',done:true,tone:'',fx:[]}}
   /* one daily event from the weighted list; null means no event today */
   function dailyPick(){
     /* the morning already decided whether tonight is news (planNews); a save from before that has no plan and rolls as before */
@@ -6396,9 +6415,8 @@ body[data-screen=town] #center{padding:0}body[data-screen=town] #overview,body[d
     S.lowE=(S.lowE||[]).filter(function(d){return S.day-d<IL.lowWindow});
     S.restBonus=Math.round(sleepGain(S.ap)*share);
     S.restHap=Math.round(sleepHap(S.ap)*share);S.slept=Math.round(sleepHealth(S.ap)*share);S.sickSleep=home&&S.ill?1:0;if(home)S.restHrs=(S.restHrs||0)+S.ap/60;
-    var bed=home&&HOUSE[S.home].hap?', +'+HOUSE[S.home].hap+' happiness for the bed':'',drop=' The nightly change is '+nightTxt()+', so you wake up '+sg(S.restBonus+SL.nightEnergy)+'% energy and '+sg(S.restHap+(home?HOUSE[S.home].hap:0)+SL.nightHappiness)+' happiness before meals and other overnight effects.';
-    log((home?'You went to bed at home with '+hm(S.ap)+' left. Sleep gives +'+S.restBonus+'% energy and +'+S.restHap+' happiness ('+SL.happinessPerHour+' for every full hour of rest'+bed+'), and +'+S.slept+' health tonight.':(S.homeless?'You have no home, so you slept rough.':'You ended the day away from home and dozed off where you were.')+' Sleep gives only +'+S.restBonus+'% energy, +'+S.restHap+' happiness and +'+S.slept+' health (a night in a home of your own would give +'+sleepGain(S.ap)+'%, +'+sleepHap(S.ap)+' and +'+sleepHealth(S.ap)+').')+drop);
-    if(!S.fed&&S.slept>0)log('You have not eaten today, so the '+sg(CONFIG.health.nightly.skippedMeal)+' health penalty will eat into the +'+S.slept+' you get from sleep. Eat something first to recover health.','warn');
+    log((home?'You slept at home':'You bunked outside')+' with '+hm(S.ap)+' left: +'+S.restBonus+'% energy, +'+S.restHap+' happiness and +'+S.slept+' health. Nightly change: '+nightTxt()+'.');
+    if(!S.fed)log('No meal today: '+sg(CONFIG.health.nightly.skippedMeal)+' health overnight.','warn');
     snd('day');
     var cards=pickNight();if(!cards.length)cards=[quietCard()];
     S.pending={rested:home,ev:cards[0],q:cards.slice(1)};  /* any way of going to bed at home counts (the top-bar button too), so the Bungalow's bed bonus applies */
@@ -7156,7 +7174,7 @@ body[data-screen=town] #center{padding:0}body[data-screen=town] #overview,body[d
     $('homeName').textContent=S.homeless?'No home':NAME[S.home];$('homeName').title=$('homeName').textContent;
     var be=bestEdu();
     $('edu').textContent=be?TRACKS[be].n+' '+TRACKS[be].lv[lvl(be)-1]:'High School';$('edu').title=$('edu').textContent;
-    $('eduSub').textContent=Object.keys(TRACKS).filter(function(t){return S.edu[t]}).map(function(t){return TRACKS[t].n.split(' ')[0]+' '+S.edu[t]+'/'+totMods(t)+' modules'}).join(' · ')||'No courses yet';
+    $('eduSub').className='education-paths';$('eduSub').innerHTML=Object.keys(TRACKS).map(function(t){var n=lvl(t);return '<span>'+TRACKS[t].n+'<b>'+(n?TRACKS[t].lv[n-1]:'None completed')+'</b></span>'}).join('');
     var rw=nextRentWeek(), left=rw-S.day;
     $('rent').textContent=S.homeless?'None (no home)':S.rentPaid===rw?'Paid ✓ (day '+rw+')':money(H.rent)+(left===0?' due today':' in '+left+' day'+(left>1?'s':''));$('rent').title=S.homeless?'No rent while you have no home':'Due at the end of day '+rw;
     var pxs=Math.round(S.px*100), ws=Math.round(payIdx()*100);
@@ -7186,7 +7204,7 @@ body[data-screen=town] #center{padding:0}body[data-screen=town] #overview,body[d
       $('cpMsg').textContent=(opens.length?'New jobs open to you: '+opens.join(', ')+'. ':'')+(close.length?'Closer to: '+close.slice(0,4).join(', ')+' (they also need other qualifications). ':'')+(nxT?'Next up: the '+TT.lv[C.l]+' (tuition '+money(nxF)+', paid when you enrol).':'You have completed the whole pathway!');
       var cn=$('cpNext');cn.hidden=!nxT;if(nxT){cn.textContent='Enrol in the '+TT.lv[C.l]+' · '+money(nxF);cn.disabled=S.cash<nxF||S.expelled>0}
       cp.classList.add('show')}else cp.classList.remove('show');
-    var mo=$('morning');if(S.morning&&!S.over&&!S.pending&&!S.cert){$('mnT').textContent='☀️ Day '+S.day+(maxDays()!==Infinity?' of '+maxDays():'');$('mnSub').textContent='Before you start, a few things need your attention:';$('mnList').innerHTML=S.morning.map(function(x){var cg=x.rv!=null&&S.mode==='rivals'&&S.rivals&&S.rivals[x.rv];return '<li class="'+x.l+'">'+x.t+(cg?' '+(S.cong&&S.cong.d===S.day&&S.cong[x.rv]?'<small>✓ Congratulated</small>':'<button type="button" class="mini" data-cg="'+x.rv+'">🎉 Congratulate · '+hm(CONFIG.rivals.social.congratulate.minutes)+'</button>'+((S.rivals[x.rv].rel||0)<0?' <small>⚠️ on bad terms: an argument costs '+sg(CONFIG.rivals.social.argument.happiness)+' happiness</small>':'')):'')+'</li>'}).join('');mo.classList.add('show')}else mo.classList.remove('show');
+    var mo=$('morning');if(S.morning&&!S.over&&!S.pending&&!S.cert){$('mnT').textContent='☀️ Day '+S.day+(maxDays()!==Infinity?' of '+maxDays():'');$('mnSub').textContent='Overnight changes and reminders';$('mnList').innerHTML=S.morning.map(function(x){var cg=x.rv!=null&&S.mode==='rivals'&&S.rivals&&S.rivals[x.rv];return '<li class="'+x.l+'">'+x.t+(cg?' '+(S.cong&&S.cong.d===S.day&&S.cong[x.rv]?'<small>✓ Congratulated</small>':'<button type="button" class="mini" data-cg="'+x.rv+'">🎉 Congratulate · '+hm(CONFIG.rivals.social.congratulate.minutes)+'</button>'+((S.rivals[x.rv].rel||0)<0?' <small>⚠️ on bad terms: an argument costs '+sg(CONFIG.rivals.social.argument.happiness)+' happiness</small>':'')):'')+'</li>'}).join('');mo.classList.add('show')}else mo.classList.remove('show');
   }
   /* the top bar: net worth, cash, investments, score, buttons and current pay, plus the Rules text that depends on difficulty */
   function renderHud(){
@@ -7701,7 +7719,7 @@ body[data-screen=town] #center{padding:0}body[data-screen=town] #overview,body[d
       (function(){var E=CONFIG.events,I=CONFIG.industry,last=function(L){return CONFIG.time.gameDays-L.daysBeforeEnd};
         if($('cfgStory'))$('cfgStory').textContent='each game has one global storyline (an oil crisis, a pandemic…), starting between day '+E.storyline.fromDay+' and day '+last(E.storyline)+', that moves prices, pay and interest for everyone; and one industry-specific storyline (a chip shortage, banks going all-in on AI…), starting between day '+I.fromDay+' and day '+last(I)+', that moves pay for particular jobs by '+Math.round(I.paySwing[0]*100)+'% to '+Math.round(I.paySwing[1]*100)+'% up or down, freezes or opens up hiring, and can lay you off or suspend your workplace. The Employment Office shows a rumour '+(I.rumourDays===1?'the day':I.rumourDays+' days')+' before it starts and its effects while it runs. The two may overlap; shorter macro shocks never come within '+E.storylineGap+' days of either.'})();
       (function(){var Mk=CONFIG.market,R=Mk.returns,O=CONFIG.bank.offers;
-        if($('cfgBank'))$('cfgBank').textContent='savings pay about '+Mk.rateBase+'% a day (the rate moves with the news), a fixed deposit '+R.fdOverSavings+'× that, and the ETF, hedge fund and crypto expect about '+R.etf.base+'%, '+R.hf.base+'% and '+R.cry.base+'% a day in a steady market, with bigger swings the more they pay. With a phone or tablet (📱 Phone on the Overview), or a computer at home (💻 Computer in your home), the Bank app does all this without the walk (loans still need a visit), and the Jobs app shows the Employment Office job board, where you can apply online (1h, as in person). '+(O&&O.chance>0?'Some mornings from day '+O.fromDay+' the Bank has a one-day offer: a promo deposit at '+O.rate[0]+'–'+O.rate[1]+'% a day for '+dayN(O.days)+'. ':'')+'Overnight gains appear in the morning summary; today’s rates and available products are shown at the Bank.'})();
+        if($('cfgBank'))$('cfgBank').textContent='savings pay about '+Mk.rateBase+'% a day (the rate moves with the news), a fixed deposit '+R.fdOverSavings+'× that, and the ETF, hedge fund and crypto expect about '+R.etf.base+'%, '+R.hf.base+'% and '+R.cry.base+'% a day in a steady market, with bigger swings the more they pay. With a phone or tablet (📱 Phone / tablet apps on the town map), or a computer at home (💻 Computer in your home), the Bank app does all this without the walk (loans still need a visit), and the Jobs app shows the Employment Office job board, where you can apply online (1h, as in person). '+(O&&O.chance>0?'Some mornings from day '+O.fromDay+' the Bank has a one-day offer: a promo deposit at '+O.rate[0]+'–'+O.rate[1]+'% a day for '+dayN(O.days)+'. ':'')+'Overnight gains appear in the morning summary; today’s rates and available products are shown at the Bank.'})();
       (function(){var C=CONFIG.community,f=function(c){return hm(c.minutes)+(c.cost?', $'+c.cost:'')+(c.energy?', '+sg(c.energy)+'% energy':'')+', '+sg(c.happiness)+' happiness'+(c.knowledge?', '+sg(c.knowledge)+' knowledge':'')};
         if($('cfgComm'))$('cfgComm').textContent='once a day each: a night out with friends ('+f(C.nightOut)+'), karaoke ('+f(C.karaoke)+') or volunteering ('+f(C.volunteer)+'). A night out ('+pctTxt(C.nightOut.tipChance)+') or volunteering ('+pctTxt(C.volunteer.tipChance)+') can get you a friend’s job tip: for '+dayN(C.tip.days)+' your next interview is '+Math.round(C.tip.passBonus*100)+'% more likely to pass and never fails for “no openings”.'})();
       (function(){var R=CONFIG.rivals,T=CONFIG.time.gameDays,due=TIERS.filter(function(r){return r.d}).map(function(r){return Math.min(Math.round(r.d*R.gameDays/T),R.gameDays)});
@@ -8191,6 +8209,9 @@ body[data-screen=town] #center{padding:0}body[data-screen=town] #overview,body[d
     var vp=document.createElement('div');vp.id='townViewport';vp.setAttribute('aria-label','Town map with sixteen destinations.');
     vp.innerHTML='<div class="town-caption"><b>Your neighbourhood</b><span>Choose a pin or a destination below</span></div><div id="townCanvas" class="town-canvas"></div>';
     $('board').insertBefore(vp,$('board').firstChild);
+    var phone=document.createElement('div');phone.className='town-device';phone.innerHTML='<button type="button" class="btn" id="townDevice" data-dg-device="phone">Phone / tablet apps</button><small id="townDeviceNote"></small>';vp.appendChild(phone);
+    vp.querySelector('.town-caption').insertAdjacentHTML('beforeend','<div class="town-legend">📍 You · 💼 Work · 🏠 Home · 🔒 Closed</div>');
+    var shade=document.createElement('div');shade.id='dayShade';shade.setAttribute('aria-hidden','true');document.body.appendChild(shade);
     document.querySelectorAll('.tile').forEach(function(tile){
       var k=tile.dataset.loc,i=SCENE_KEYS.indexOf(k),p=TOWN_POINTS[i];tile.style.left=p[0]+'%';tile.style.top=p[1]+'%';tile.style.removeProperty('--w');
       tile.innerHTML='<span class="scene"><span class="pin" aria-hidden="true"><span>'+(i+1)+'</span></span><span class="tags"></span><span class="cost"></span></span><b class="lab">'+modernEsc(NAME[k])+'</b>';
@@ -8198,6 +8219,7 @@ body[data-screen=town] #center{padding:0}body[data-screen=town] #overview,body[d
     });
     var directory=document.createElement('section');directory.id='townDirectory';directory.hidden=true;directory.setAttribute('aria-label','Destinations');$('center').appendChild(directory);
     var heading=document.createElement('div');heading.id='screenHeading';heading.className='screen-heading';$('overview').insertBefore(heading,$('overview').firstChild);
+    var progress=document.createElement('div');progress.id='dailyProgress';progress.className='daily-progress';progress.setAttribute('aria-live','polite');$('appTop').appendChild(progress);
     var quick=document.createElement('div');quick.id='todayQuick';quick.className='quick-grid';$('overview').querySelector('.top').after(quick);
     var focus=document.createElement('div');focus.id='todayFocus';focus.className='daily-focus';quick.after(focus);
     var guide=document.createElement('details');guide.className='guide-disclosure';guide.innerHTML='<summary>First-week checklist</summary>';$('goals').before(guide);guide.appendChild($('goals'));
@@ -8231,10 +8253,10 @@ body[data-screen=town] #center{padding:0}body[data-screen=town] #overview,body[d
   function modernMapFit(){var v=$('townViewport'),c=$('townCanvas');if(v&&c&&v.clientWidth&&v.clientHeight)c.style.width=Math.min(v.clientWidth,v.clientHeight*1.5)+'px'}
   function modernFilterPlaces(){var term=modernSearch.trim().toLowerCase(),count=0;$('townDirectory').querySelectorAll('[data-dg-go]').forEach(function(b){b.hidden=!!term&&!b.textContent.toLowerCase().includes(term);if(!b.hidden)count++});var empty=$('destinationEmpty');if(empty)empty.hidden=!!count}
   function modernPaintPlaces(){
-    var el=$('townDirectory'),key=loc+'|'+S.day+'|'+S.ap+'|'+S.home+'|'+S.homeless;
+    var currentWork=myJob();var el=$('townDirectory'),key=loc+'|'+S.day+'|'+S.ap+'|'+S.home+'|'+S.homeless;
     if(el.dataset.key===key)return;el.dataset.key=key;
     var rows=LOCS.slice().sort(function(a,b){return dist(loc,a[0])-dist(loc,b[0])});
-    el.innerHTML='<div class="town-directory-top"><h2>Where to next?</h2><span class="sub">16 places</span></div><input id="destinationSearch" class="destination-search" type="search" placeholder="Find a place…" aria-label="Find a destination" value="'+modernEsc(modernSearch)+'"><div class="destinations">'+rows.map(function(l){var here=l[0]===loc,closed=shutLeft(l[0]);return '<button type="button" class="destination'+(here?' current':'')+'" data-dg-go="'+l[0]+'"><span aria-hidden="true">'+modernIcon({jobs:'work',school:'study',bank:'bank',fast:'food',resto:'food',hosp:'health',apt:'life',bung:'life',park:'tree',gym:'gym',elec:'device',comm:'rivals'}[l[0]]||'shop')+'</span><div><b>'+modernEsc(l[2])+'</b><small>'+(here?'You are here':hm(dist(loc,l[0])*WALK)+' walk')+(closed?' · Closed':'')+'</small></div></button>'}).join('')+'</div><p id="destinationEmpty" class="dest-empty" hidden>No places match your search.</p>';modernFilterPlaces();
+    el.innerHTML='<div class="town-directory-top"><h2>Where to next?</h2><span class="sub">16 places</span></div><input id="destinationSearch" class="destination-search" type="search" placeholder="Find a place…" aria-label="Find a destination" value="'+modernEsc(modernSearch)+'"><div class="destinations">'+rows.map(function(l){var here=l[0]===loc,closed=shutLeft(l[0]);return '<button type="button" class="destination'+(here?' current':'')+'" data-dg-go="'+l[0]+'"><span aria-hidden="true">'+modernIcon({jobs:'work',school:'study',bank:'bank',fast:'food',resto:'food',hosp:'health',apt:'life',bung:'life',park:'tree',gym:'gym',elec:'device',comm:'rivals'}[l[0]]||'shop')+'</span><div><b>'+modernEsc(l[2])+'</b><small>'+(here?'You are here':hm(dist(loc,l[0])*WALK)+' walk')+(currentWork&&currentWork.b===l[0]?' · Your work':'')+(l[0]===S.home&&!S.homeless?' · Your '+(S.home==='bung'?'bungalow':'apartment'):'')+(closed?' · Closed':'')+'</small></div></button>'}).join('')+'</div><p id="destinationEmpty" class="dest-empty" hidden>No places match your search.</p>';modernFilterPlaces();
   }
   function modernAmountLimit(c){
     var id=c.dataset.bankId,withdraw=modernBankMode==='withdraw',v=id==='amt'?S.bank:S.inv[id.replace('amt_','')].v;
@@ -8287,6 +8309,21 @@ body[data-screen=town] #center{padding:0}body[data-screen=town] #overview,body[d
     if(S.mode!=='rivals')return;
     $('shopBody').querySelectorAll('.arow-t').forEach(function(t){if(t.querySelector('.rival-face'))return;var r=S.rivals.find(function(r){return t.textContent.indexOf(r.name)>=0});if(r)t.insertAdjacentHTML('afterbegin',rivalFace(r))});
   }
+  function modernLandmarks(){
+    var j=myJob(),work=j&&j.b,closed=work&&shutLeft(work)>0;
+    document.querySelectorAll('.tile').forEach(function(t){var k=t.dataset.loc,you=k===loc,home=k===S.home&&!S.homeless,job=k===work;
+      t.classList.toggle('workplace',job);t.classList.toggle('work-closed',job&&closed);t.classList.toggle('homeplace',home);
+      var tags=(you?'<span class="tag you">📍 You are here</span>':'')+(job?'<span class="tag '+(closed?'closed':'job')+'">'+(closed?'🔒 Work closed':'💼 Your work')+'</span>':'')+(home?'<span class="tag home">🏠 Your '+(k==='bung'?'bungalow':'apartment')+'</span>':'');t.querySelector('.tags').innerHTML=tags;
+      t.setAttribute('aria-label',NAME[k]+(you?', you are here':'')+(home?', your home':'')+(job?', your workplace'+(closed?', closed today':''):'')+', '+hm(dist(loc,k)*WALK)+' walk');
+    });
+  }
+  function modernRivalCharts(){
+    if(S.mode!=='rivals'||!S.rivals.length)return;
+    var people=lifeScore(),wealthMax=Math.max(1,...people.map(function(p){return Math.max(0,p.worth)})),careerMax=Math.max(1,...people.map(function(p){return p.best?p.best.pay:0}));
+    var rows=$('rivList').querySelectorAll('details');people.forEach(function(p,i){var row=rows[i];if(!row)return;var pay=p.best?p.best.pay:0,chart=document.createElement('div');chart.className='rival-chart';chart.setAttribute('role','img');chart.setAttribute('aria-label',p.name+': net worth '+money(p.worth)+', best career '+money(pay)+' per shift');
+      chart.innerHTML='<span>Net worth</span><span class="chart-track"><i style="width:'+(Math.max(0,p.worth)/wealthMax*100)+'%"></i></span><b>'+money(p.worth)+'</b><span>Career</span><span class="chart-track career-bar"><i style="width:'+(pay/careerMax*100)+'%"></i></span><b>'+money(pay)+'/shift</b><span class="chart-note">Best career pay · relative to this town</span>';row.querySelector('summary').appendChild(chart);
+    });
+  }
   function modernPaint(){
     if(modernState!==S){modernState=S;modernDay=S.day;modernScreen='today';modernBank='amt';modernBankMode='deposit'}
     if(modernDay!==S.day){modernDay=S.day;if(!view)modernScreen='today'}
@@ -8297,6 +8334,11 @@ body[data-screen=town] #center{padding:0}body[data-screen=town] #overview,body[d
     [['energy',S.energy],['happy',S.happy],['health',S.health],['know',S.know]].forEach(function(p){$(p[0]).style.color=p[1]<30?'var(--red)':p[1]<60?'#9a6c19':'var(--teal)'});
     $('saveSt').textContent=$('saveSt').textContent.replace('💾 ','');$('meal').textContent=$('meal').textContent.replace(/^[^A-Za-z]+/,'');
     $('appDay').textContent=S.day+(maxDays()===Infinity?'':' / '+maxDays());$('appTime').textContent=hm(S.ap);$('appCash').textContent=window.innerWidth<=640?kMoney(S.cash):money(S.cash);$('appCash').title=money(S.cash);$('appEnergy').textContent=Math.round(S.energy)+'%';
+    $('appTime').className=S.ap<180?'time-urgent':S.ap<480?'time-warning':'';
+    $('dailyProgress').innerHTML='<span class="'+(S.fed?'eaten':'not-eaten')+'">'+(S.fed?'✓ Eaten today':'! No meal yet')+'</span><span>Work: '+hm(S.workMin||0)+'</span><span>Study: '+hm(S.studyMin||0)+'</span>';
+    $('townDevice').disabled=!handheld()||!!S.over||!!S.pending;$('townDevice').textContent=owns('tablet')&&!owns('phone')?'Tablet apps':'Phone / tablet apps';$('townDeviceNote').textContent=handheld()?'Bank · Jobs'+(S.mode==='rivals'?' · Calls · Messages':''):'Buy a phone or tablet to use apps';
+    var shadeLevel=S.over?0:Math.max(0,1-S.ap/MAX_AP);document.documentElement.style.setProperty('--day-shade',(shadeLevel*.13).toFixed(3));$('board').style.setProperty('--map-dusk',(shadeLevel*.35).toFixed(3));
+    modernLandmarks();modernRivalCharts();
     var blocked=!!S.over||!!S.pending||!S.flags.diff;
     $('appNav').querySelectorAll('[data-dg-screen]').forEach(function(b){b.disabled=blocked;if(b.dataset.dgScreen===modernScreen)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
     var badge=$('rivalBadge'),unread=S.mode==='rivals'?newMsgs():0;badge.hidden=!unread;badge.textContent=unread;
@@ -8305,12 +8347,12 @@ body[data-screen=town] #center{padding:0}body[data-screen=town] #overview,body[d
     var j=myJob(),track=Object.keys(TRACKS).find(function(t){return inProgress(t)}),device=handheld()||pcHere();
     $('todayQuick').innerHTML=modernQuick('💼',j?'Go to work':'Find your first job',j?j.rk.r+' · '+money(payInfo().v)+'/shift':'Explore the Employment Office','data-dg-go="'+(j?j.b:'jobs')+'"',false,true)+modernQuick('📚',track?'Continue your course':'Build your skills',track?TRACKS[track].n:'Explore learning pathways','data-dg-go="school"')+modernQuick('🍽',S.fed?'Plan your next meal':'Time for a meal',S.fed?'You have eaten today':'Visit Fast Food or the Supermarket','data-dg-go="fast"')+modernQuick('🏠','Head home',S.homeless?'Find somewhere to live':'Rest, cook and recharge','data-dg-go="'+S.home+'"');
     var goal=Math.max(0,nextGoal()-worth());$('todayFocus').innerHTML='<div><b>'+(goal?money(goal)+' to your next rank':'You reached the top rank')+'</b><span>'+(S.fed?'Meal sorted. Make time to recharge.':'Remember to eat before ending your day.')+'</span></div><span aria-hidden="true">↗</span>';
-    $('lifeShortcuts').innerHTML=modernQuick('📱',handheld()?'Open your phone':pcHere()?'Open your computer':'Your devices',device?'Banking, jobs and messages':'Buy a phone, tablet or computer first','data-dg-device="'+(handheld()?'phone':'pc')+'"',!device,true)+modernQuick('🏦','Manage your money',device?'Savings and investments':'Visit the Bank in town',device?'data-dg-app="bankapp"':'data-dg-go="bank"');
+    $('lifeShortcuts').innerHTML=modernQuick('🏦','Manage your money',device?'Savings and investments':'Visit the Bank in town',device?'data-dg-app="bankapp"':'data-dg-go="bank"');
     $('rivalIntro').textContent=S.mode==='rivals'?'Open a profile to see personality, relationships and remembered favours.':'You are playing a solo game. Start a game with AI rivals to meet your neighbours.';
     var guide=$('goals').parentNode;guide.hidden=$('goals').hidden;
     if(view){$('shopTitle').innerHTML=modernIcon({jobs:'work',school:'study',bank:'bank',bankapp:'bank',jobsapp:'work',phone:'device',pc:'device',msgsapp:'rivals',callsapp:'rivals',fast:'food',resto:'food',hosp:'health',apt:'life',bung:'life',park:'tree',gym:'gym',elec:'device',comm:'rivals'}[view]||'shop')+' '+modernEsc(NAME[view]);var base=view==='bankapp'?'bank':view==='jobsapp'?'jobs':APPS.indexOf(view)>=0?loc:view,i=Math.max(0,SCENE_KEYS.indexOf(base)),hero=$('interiorHero');hero.style.setProperty('--scene-x',(i%4*100/3)+'%');hero.style.setProperty('--scene-y',(Math.floor(i/4)*100/3)+'%');hero.setAttribute('aria-label',NAME[base]+' illustrated background');hero.querySelector('.interior-caption').textContent=APPS.indexOf(view)>=0?'On your '+(appFrom==='pc'?'computer':'phone'):'Welcome to '+NAME[base];modernPaintBank();modernDecorateRivals()}
     var key=screen+'|'+view;if($('center').dataset.modernKey!==key){$('center').dataset.modernKey=key;$('center').scrollTop=0}
-    $('hudLeave').setAttribute('aria-label','Back to '+modernScreen);var endLabel=$('hudEnd').textContent;$('hudEnd').setAttribute('aria-label',endLabel);$('hudEnd').title=endLabel;$('hudEnd').textContent=atHome()?'Sleep':'End day';
+    $('hudLeave').setAttribute('aria-label','Back to '+modernScreen);var endLabel=$('hudEnd').textContent;$('hudEnd').setAttribute('aria-label',endLabel);$('hudEnd').title=endLabel;$('hudEnd').textContent=atHome()?'Sleep':'Bunk outside';$('hudEnd').setAttribute('aria-label',$('hudEnd').textContent);
   }
   modernSetup();
   /* Keep the panel in one app viewport on every device; it never moves below the map. */

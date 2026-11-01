@@ -97,6 +97,7 @@
       if(!visible(el)||el.closest('[hidden]'))return;var r=el.getBoundingClientRect();
       if(r.right>W+1||r.left<-1)note('OVERFLOW',where,'"'+(el.textContent||'').trim().slice(0,40)+'" goes off the screen');
       var box=el.closest('.pbox,.grp,.card,.cert,.evcard');if(box&&box!==el){var b=box.getBoundingClientRect();if(r.right>b.right+1||r.left<b.left-1)note('OVERFLOW',where,'"'+(el.textContent||'').trim().slice(0,40)+'" sticks out of its card')}
+      if(el.tagName==='BUTTON'&&!el.disabled&&!el.classList.contains('tile')&&document.getElementById('appTop')){var probe=document.createElement('span');probe.style.background='var(--teal)';document.body.appendChild(probe);var teal=getComputedStyle(probe).backgroundColor;probe.remove();if(getComputedStyle(el).backgroundColor!==teal)note('BUTTON COLOR',where,'clickable button is not teal: '+el.textContent.trim().slice(0,40))}
       if(el.tagName==='BUTTON'&&el.scrollWidth>el.clientWidth+2&&getComputedStyle(el).overflow!=='visible')note('CLIPPED',where,'button "'+el.textContent.trim().slice(0,40)+'"');
     });
     [].forEach.call(root.querySelectorAll('.arow'),function(row){

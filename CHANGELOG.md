@@ -1556,3 +1556,15 @@ The second half of the last rivals step (batch 4b). Everything here is light and
 - Adapted the UI check to visit every bank product and transaction mode. Updated the personality check to expect the current save version and open the Rivals screen before checking profiles.
 - Targeted checks passed for all four navigation screens, desktop/phone banking transactions and rival portraits. All 22 bet/rent/scoring regression checks and all 19 personality/memory checks passed.
 - Full UI check passed at 1280×800 and 390×844: 16 buildings, 34 situations, 821 presses and 202 layout checks per viewport, plus save/reload, recovery, difficulties, trait, Town mood and Rules checks. Zero issues. Final rival-row polish also passed the repeated personality/profile checks. [UI report](docs/QA_UI_2026-11-01_illustrated-reference.md).
+
+
+## 96. Daily activity, map landmarks and clearer actions
+
+- Made clickable controls teal with contrasting labels and distinct selected outlines. Added a button-colour audit to the full UI check.
+- Moved phone/tablet access to a visible map control, including on mobile Town; removed the device shortcut from Life.
+- Added a persistent meal/work/study strip to the header, larger desktop vitals, progressive daylight dimming, orange time below eight hours and red below three. Outside sleep is labelled “Bunk outside”.
+- Added current-location, workplace, closed-workplace and apartment/bungalow markers, plus directory labels.
+- Added visible net-worth and best-career-pay comparison bars for every character, and the highest completed qualification for every education pathway.
+- Removed the unchanged market briefing from morning notes, shortened sleep and quiet-night copy, and suppressed the repeated no-clothes warning. Actual gains, offers and actionable reminders remain.
+- Rank checkpoints continue automatically with log/map feedback; focused checks verify Comfortable, Wealthy and Tycoon do not open the ending modal or stop play. The normal day limit and other endings remain in place.
+- Validation: full UI check passed with zero issues on desktop and phone (16 buildings, 34 situations, 821 presses and 202 layout checks each), including enabled-button colour checks. Save/reload checks passed; 21 focused daily-play checks passed at each width, and all 22 bet/rent/scoring regressions passed. [UI report](docs/QA_UI_2026-11-01_daily-play.md).

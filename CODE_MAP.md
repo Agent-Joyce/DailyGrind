@@ -79,3 +79,6 @@ Targeted feature checks: node tools/qa/check-personalities.js <folder outside th
 
 
 **Illustrated app shell:** CSS overrides (including embedded town, interiors and portraits) follow the existing styles. The `modern*` presentation helpers immediately before section 12 create Today/Town/Life/Rivals navigation, the split desktop layout, phone views, destination search, product tabs and bank amount controls. They wrap rendering and delegate transactions to the existing actions. Game state, CONFIG and save migrations remain authoritative. The older HUD stays in the DOM as a rendering target; its action bar moves into `appTop`.
+
+
+**Daily-play presentation:** `modernPaint()` fills the persistent `dailyProgress` header strip, time warnings and `dayShade`; the map has `townDevice` for phone/tablet apps. `modernLandmarks()` marks home, workplace/closure and current location; `modernRivalCharts()` puts comparison charts inside profile summaries so they remain visible when profiles are collapsed. `renderStats()` fills every education pathway with `lvl()`’s highest completed qualification. `check-daily-ui.js <outside folder>` checks desktop and phone daily indicators, thresholds, devices, charts, colours and all rank milestones.
