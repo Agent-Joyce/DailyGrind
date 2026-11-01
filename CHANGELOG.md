@@ -1,5 +1,15 @@
 # Daily Grind: Changelog
 
+## 2026-11-01 — Targeted bug fixes and rival gameplay changes (draft PR #11)
+
+- Relationship changes from `relAdd()` and `relGain()` now report the **actual** delta after the −100/+100 clamp, rather than an unclamped requested amount.
+- Burglary uses `burglaryRisk(S.home)` directly as the probability threshold instead of treating its return as a Boolean and separately applying the default chance.
+- Sabotage targeting: Medium rivals choose the nearest eligible competitor ahead in Life Score; Expert rivals choose the highest-scoring eligible competitor. Easy behaviour is unchanged.
+- Flatmate shared activities (`flatDo`) can be declined when the flatmate is home. New `CONFIG.rivals.together.flat.refuseChance = 0.2` and `refuseRel = -1`; refusal costs no time or money and logs the actual relationship change. Applies to cooking, hanging out, chores and clearing the air.
+- Rival career targeting (`rivalTarget`) applies a small, deterministic personality-and-career multiplier to its projected-earnings score. This encourages variety but does **not** guarantee different careers or qualifications.
+- This work is on `review-fixes-2026-11-01` / draft PR #11, not yet merged. Browser/UI checks and simulations have **not** been run; no QA results are claimed.
+
+
 Changes made in this project. The game is the single file `index.html`. (`Daily Grind v42.html`, an identical copy kept earlier, has been removed from the repo.)
 
 Everything adjustable lives in the `CONFIG` block near the top of the script: `CONFIG.time`, `CONFIG.food`, `CONFIG.burnout`, `CONFIG.loan`, `CONFIG.bankrupt`, `CONFIG.market`, `CONFIG.sleep`, `CONFIG.health`.

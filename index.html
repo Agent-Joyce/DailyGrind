@@ -1350,7 +1350,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
           leaveAt:-15,                                        // they move out on their own at this relationship or below
           skip:{easy:0.25, medium:0.1, expert:0.03}, skipEnemyMod:0.1, skipRel:-8, skipHappiness:-3,  // a rent day they don't pay their half (+skipEnemyMod below 0): you pay it all
           nightHappiness:{friend:2, friendly:1, neutral:0, bad:-3}, nightRel:1,  // each night together, for both of you; the relationship drifts up while it's 0 or more
-          homeChance:0.6,                                     // the chance they're home when you are, rolled once a day
+          homeChance:0.6, refuseChance:0.2, refuseRel:-1,   // chance a flatmate declines a shared activity; refusal costs no time or cash
           cook:{minutes:45, happiness:2, rel:4},              // a basic meal cooked together (you pay half), plus this
           hangout:{minutes:60, happiness:4, rel:3}, chores:{minutes:30, health:1, rel:2}, clearAir:{minutes:30, rel:6, below:15}},
         /* a study group: a lesson in a pathway a friendly rival is also studying */
@@ -3875,6 +3875,10 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       var h=0;(rk.q||[]).forEach(function(q){var T=TRACKS[q[0]],end=T.c[q[1]-1];for(var m=r.edu[q[0]]||0;m<end;m++)h+=rivalModHours(q[0],m)});
       if(h>daysLeft*perDay)return;if(kreq(rk)>r.know+h*0.9+6)return;
       var pay=rivalSkill(r).usesOutlook?rolePay(c,i):rk.pay,v=pay*Math.max(0,daysLeft-Math.ceil(h/perDay)-1);
+      /* Stable personality-based career preference; avoids every planner choosing the same top-paying route. */
+      var bias=({generous:0.04,vindictive:0.02,ambitious:0.07,cautious:0.05}[r.personality]||0.035);
+      var key=String(r.personality)+'|'+c,hash=0;for(var z=0;z<key.length;z++)hash=(hash*31+key.charCodeAt(z))>>>0;
+      v*=1+bias*((hash%201)-100)/100;
       if(!best||v>best.v)best={c:c,i:i,v:v};
     })});
     return best;
@@ -4027,7 +4031,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     return v;
   }
   function pick(o,k,d){return o&&o[k]!=null?o[k]:d}  /* a per-level number, where 0 is a real value */
-  function relAdd(r,d){r.rel=Math.max(-100,Math.min(100,(r.rel||0)+d));return {d:d,backfire:false}}  /* a straight change, no tension */
+  function relAdd(r,d){var old=r.rel||0;r.rel=Math.max(-100,Math.min(100,old+d));return {d:r.rel-old,backfire:false}}  /* a straight change, no tension */
   function rloan(i,dir){return (S.rloans||[]).filter(function(l){return l.i===i&&l.dir===dir})[0]}
   function rbet(i){return (S.bets||[]).filter(function(b){return b.i===i})[0]}
   function rivalSpare(r,amt){return r.cash+r.bank-amt>=HOUSE.apt.rent+MX().loan.askBuffer}
@@ -4393,7 +4397,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         /* at another rival: the one just ahead (easy: anyone) */
         var others=S.rivals.map(function(o,oi){return oi}).filter(function(oi){var o=S.rivals[oi];return oi!==ri&&!o.out&&!(rivalPactOf(ri)&&(rivalPactOf(ri).a===oi||rivalPactOf(ri).b===oi))&&!(o.hitBy&&o.hitBy.d===today&&o.hitBy.n>=Z.rivalHitsPerDay)&&wants(r,oi)});
         if(!others.length||rrand()>=base(r))return;
-        if(r.diff!=='easy')others.sort(function(x,y){return pts[x]-pts[y]});
+        if(r.diff!=='easy')others.sort(function(x,y){return r.diff==='expert'?pts[y]-pts[x]:pts[x]-pts[y]});
         var ti=r.diff==='easy'?others[Math.floor(rrand()*others.length)]:others[0],t=S.rivals[ti],ks2=sabMovesFor(t,r),k2=ks2[Math.floor(rrand()*ks2.length)],ch2=sabCatch(pick(R.caught,r.diff,0.3),r.sabUsed);
         r.sabUsed=(r.sabUsed||0)+1;t.hitBy={d:today,n:(t.hitBy&&t.hitBy.d===today?t.hitBy.n:0)+1};
         if(rrand()<ch2){repAdd(r,C.rep);S.notes.push({l:'rem',t:'🕵️ '+r.ic+' '+r.name+' was caught trying to '+sabTry(k2,t.ic+' '+t.name,t.name+'’s')+' (reputation '+sg(C.rep)+').'})}
@@ -4419,7 +4423,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         S.notes.push({l:'bad',t:'💸 '+money(amt)+' ('+pct(amt,c0)+') went missing overnight. It was either taken by your flatmate or a burglar: there’s no way to tell which. Your happiness '+sg(TH.small.happiness)+'.'+tip})}
       return;
     }
-    if(S.homeless||!burglaryRisk(S.home)||rrand()>=B.chance)return;
+    if(S.homeless||rrand()>=burglaryRisk(S.home))return;
     var big2=rrand()<B.bigChance,c1=S.cash,amt2=Math.max(1,Math.floor(c1*share(big2?TH.big:TH.small)));S.cash-=amt2;
     if(big2){S.happy=clamp(S.happy+B.happiness);S.notes.push({l:'bad',t:'🚨 A burglar broke into your apartment overnight and took '+money(amt2)+' ('+pct(amt2,c1)+'). Your happiness '+sg(B.happiness)+'.'+tip})}
     else{S.happy=clamp(S.happy+TH.small.happiness);S.incidents.push({id:(S.incN=(S.incN||0)+1),kind:'theft',by:'burglar',flatI:fi,day:S.day,amt:amt2,done:false});
@@ -4571,6 +4575,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(flatDid(k))return refuse('You have already done that together today.');
     if(k==='clearAir'&&(r.rel||0)>=c.below)return refuse('There is nothing to clear up with '+r.name+'.');
     if(k==='cook'&&homeFull())return refuse('You are full: '+numWord(FD.homeMealsPerDay)+' home meal'+(FD.homeMealsPerDay===1?'':'s')+' a day is plenty.');
+    if(rrand()<(F.refuseChance||0)){var no=relAdd(r,F.refuseRel==null?-1:F.refuseRel);log('🏠 '+r.name+' is busy and declined '+({cook:'cooking',hangout:'hanging out',chores:'doing chores',clearAir:'talking'}[k]||'the activity')+' today: '+relTxt(r,no)+'.','warn');done();return}
     if(!spendMin(c.minutes,k==='cook'?cookCost():0))return;
     var v0=vitSnap(),g=GROC.basic;
     if(!S.flat.did||S.flat.did.d!==S.day)S.flat.did={d:S.day};S.flat.did[k]=1;
@@ -4703,7 +4708,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var T=CONFIG.rivals.social.tension,rel=r.rel||0,backfire=false;
     if(gain>0&&rel<0&&rrand()<Math.min(T.max,-rel*T.per*personality(r).tensionMult)){gain=-Math.max(1,gain);backfire=true}
     r.rel=Math.max(-100,Math.min(100,rel+gain));
-    return {d:gain,backfire:backfire};
+    return {d:r.rel-rel,backfire:backfire};
   }
   /* an argument with a rival (a call's −1, or tension) costs you happiness (CONFIG.rivals.social.argument) */
   function argue(){S.happy=clamp(S.happy+(CONFIG.rivals.social.argument.happiness||0))}

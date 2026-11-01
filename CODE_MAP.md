@@ -70,3 +70,10 @@ Where things are in `index.html`, and how to make the common changes safely. Lin
 **Rival personalities and memories (section 6):** CONFIG.rivals.personalities defines generous, ambitious, reckless and vindictive modifiers and dialogue. makeRivals uses only rival dice to deal distinct personalities. prepareRival migrates old records deterministically without drawing either random stream. rivalChance applies bounded lending/repayment/bet modifiers; relGain scales tension; rivalTick applies personality-specific job races and friend tips. RIVAL_MEMORIES defines safe, fixed memory text; remember records bounded trust, pending favour credits and recent deeds in r.favours. favourTick can spend one credit on a later job introduction, while there is no active tip and the rival is on speaking terms. Loan replies/expiry, repayment/default and five help cards feed the ledger. memoryProfile renders the Overview history; encounterCard and Messages show personality context. Never award credits for repeatable chats or calls.
 
 Targeted feature checks: node tools/qa/check-personalities.js <folder outside the repo>. DG_BROWSER_CHANNEL=msedge can select installed Edge; by default it uses Playwright Chromium. check-regressions.js still checks the preceding bet, rent and scoring fixes.
+
+### 2026-11-01 targeted changes (draft PR #11)
+
+- **Section 1 — CONFIG:** `CONFIG.rivals.together.flat.refuseChance` (default 0.2) and `refuseRel` (default -1) control shared-activity refusals.
+- **Section 6 — AI rivals:** `rivalTarget()` includes deterministic personality/career preference in its projected-earnings comparison; `sabTick()` targets nearest-ahead on Medium and highest eligible Life Score on Expert; `theftTick()` uses `burglaryRisk(S.home)` as its roll threshold.
+- **Section 6 — relationships and flatmates:** `relAdd()` / `relGain()` return actual clamped relationship deltas; `flatDo()` checks for refusal before spending time or money, and logs the relationship penalty.
+- No new save fields, UI panels, actions or buttons were introduced. These changes have not yet been browser-tested.
