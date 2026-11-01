@@ -21,8 +21,8 @@
           BAD TEXT      "NaN", "undefined", "null" or "[object" shown to the player
      5. Situations the main game does not have (SITUATIONS): sick (cold/flu with medical bills, dengue, sick at home),
         rent arrears, a loan to repay, a pawned item to redeem, an industry-specific storyline (its peak, your own job hit,
-        the rumour), out of clothes (buying used ones, a job's shift disabled), bank offers, the phone home screen, the Bank app and the Jobs app, a friend's job tip, a rival's job race, meeting and calling rivals, the Messages app, a flatmate (home, out, none yet), a study group, a friend to make a pact with, a pact on its last day, a pact offer. Each checks its buttons are there (MISSING) and presses them.
-     6. Flows: ending the day (end-of-day cards, morning card), a night with a rival card (its fx line against the real change), a betrayal morning, the action preview, a certificate and its bonus toast,
+        the rumour), out of clothes (buying used ones, a job's shift disabled), bank offers, the phone home screen, the Bank app and the Jobs app, a friend's job tip, a rival's job race, meeting and calling rivals, the Messages app, a flatmate (home, out, none yet), a study group, a friend to make a pact with, a pact on its last day, a pact offer, Town talk (sabotage), a rumour online, "Who did it?" (accusing), a flatmate on bad terms. Each checks its buttons are there (MISSING) and presses them.
+     6. Flows: ending the day (end-of-day cards, morning card), a night with a rival card (its fx line against the real change), a betrayal morning, a burglary morning, the action preview, a certificate and its bonus toast,
         the Belongings list on the status page, and the town leaderboard of a game with AI rivals.
    Results: window.__UI_RESULTS, an on-page report, the browser console, and a message to the parent page
    (so a harness page can collect the desktop and phone runs). Settings: window.__UICHECK = {autorun, seed}. */
@@ -233,6 +233,15 @@
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.townMood='cutthroat';S.rep=60;S.rpacts=[];S.asked=null;S.pact={i:2,since:S.day-4,until:S.day,pot:210}}},
     {name:'a pact offer from a rival (Messages)',bld:'msgsapp',need:['msg'],
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.townMood='competitive';S.pact=null;S.rpacts=[];S.cash=Math.max(S.cash,400);S.msgs=[{id:7,i:2,k:'pact',day:S.day,until:S.day+1,amt:100,back:0,st:null}];S.msgN=7}},
+    {name:'Town talk at the Community Centre (sabotage moves)',bld:'comm',need:['sab'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.townMood='competitive';S.items.phone=1;delete S.broken.phone;S.sabMine=[];S.sabUsed=1;S.cash=Math.max(S.cash,200)}},
+    {name:'social media in the Messages app (a rumour online)',bld:'msgsapp',need:['sab'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.townMood='cutthroat';S.items.phone=1;delete S.broken.phone;S.sabMine=[];S.sabUsed=0}},
+    {name:'"Who did it?": an unsolved setback and an unsolved theft',bld:'comm',need:['accuse'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.townMood='competitive';S.flat={i:0,since:S.day-2,hd:S.day,here:false};
+        S.sabOn=[{k:'rumour',from:S.day,until:S.day+1,id:91,by:2}];S.incidents=[{id:91,kind:'sab',k:'rumour',by:2,day:S.day,eid:91,done:false},{id:92,kind:'theft',by:'burglar',flatI:0,day:S.day,amt:60,done:false}];S.incN=92}},
+    {name:'a flatmate on bad terms (theft warning, break-in chip)',bld:'apt',need:['unflat'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.townMood='competitive';S.home='apt';S.homeless=0;S.flat={i:0,since:S.day-2,hd:S.day,here:false,did:null}}},
     {name:'out of clothes, buying used ones',bld:'thrift',need:['ubuy'],
       mod:function(S){S.clothes={casual:0,smart:0,suit:0}}},
     {name:'out of clothes with a job (shift disabled, "No clothes" chip)',bld:'fast',need:[],
@@ -295,6 +304,20 @@
       errs.slice(e0).forEach(function(e){note('JS-ERROR','betrayal morning',e)});
     }finally{var o=JSON.parse(b0);Object.keys(o).forEach(function(k){B[k]=o[k]});base=keep}
   }
+  /* a night in the apartment with a big burglary forced: the 🚨 note and the 🔒 reminder are in the morning card, and only cash was taken */
+  async function burglaryMorning(){
+    var keep=base,S0=JSON.parse(base);S0.mode='rivals';S0.rivals=uiRivals();S0.townMood='competitive';S0.home='apt';S0.homeless=0;S0.flat=null;S0.pact=null;S0.cash=Math.max(S0.cash,300);base=JSON.stringify(S0);
+    var B=G.CONFIG.rivals.politics.theft.burglary,b0=[B.chance,B.bigChance];B.chance=1;B.bigChance=1;
+    try{
+      restore(G.S.home);var e0=errs.length,bank0=G.S.bank;$('hudEnd').click();await y();
+      for(var i=0;i<8&&G.S.pending;i++){var bb=document.querySelector('#event [data-act]:not(:disabled)');if(!bb)break;bb.click();await y()}
+      var mn=$('mnList'),txt=mn?mn.textContent:'';
+      if(!/🚨/.test(txt)||!/🔒/.test(txt))note('MISSING','burglary morning','no 🚨 burglary note with the 🔒 reminder in the morning card');
+      else{popupFits('burglary morning');await shot('burglary')}
+      if(G.S.morning){var m=$('mnGo');if(m)m.click();await y()}
+      errs.slice(e0).forEach(function(e){note('JS-ERROR','burglary morning',e)});
+    }finally{B.chance=b0[0];B.bigChance=b0[1];base=keep}
+  }
   async function preview(){
     restore('gym');var pb=$('previewBtn');if(pb&&/off/i.test(pb.textContent))pb.click();await y();
     var b=shopButtons().filter(function(x){return x.dataset.act==='gym'})[0];
@@ -346,7 +369,7 @@
     var blds=[].map.call(document.querySelectorAll('.tile[data-loc]'),function(t){return t.dataset.loc});
     for(var i=0;i<blds.length;i++){box('UI check at '+innerWidth+'px: '+blds[i]+' ('+(i+1)+' of '+blds.length+')…');try{await building(blds[i])}catch(e){note('JS-ERROR',blds[i],'check crashed: '+(e&&e.message||e))}}
     for(var j=0;j<SITUATIONS.length;j++){box('UI check at '+innerWidth+'px: '+SITUATIONS[j].name+'…');try{stats.situations=(stats.situations||0)+1;await situation(SITUATIONS[j])}catch(e){note('JS-ERROR',SITUATIONS[j].name,'check crashed: '+(e&&e.message||e))}}
-    for(var f of [statusPage,preview,certificate,endOfDay,rivalCardNight,betrayalMorning]){try{await f()}catch(e){note('JS-ERROR',f.name,'check crashed: '+(e&&e.message||e))}}
+    for(var f of [statusPage,preview,certificate,endOfDay,rivalCardNight,betrayalMorning,burglaryMorning]){try{await f()}catch(e){note('JS-ERROR',f.name,'check crashed: '+(e&&e.message||e))}}
     var res={viewport:VP(),width:innerWidth,height:innerHeight,ms:Date.now()-t0,stats:stats,issues:issues};
     window.__UI_RESULTS=res;console.log('Daily Grind UI check',res);
     try{if(window.parent!==window)window.parent.postMessage({type:'dg-uicheck',res:res},'*')}catch(e){}

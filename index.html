@@ -1375,7 +1375,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       /* Town politics (rival games only): pacts, betrayals and reputation. The Town mood is chosen on the welcome screen.
         Chances are per night unless said otherwise; dollar amounts are scaled by G(). */
       politics:{
-        moods:{friendly:{name:'Friendly',icon:'😊',betray:0}, competitive:{name:'Competitive',icon:'⚖️',betray:1}, cutthroat:{name:'Cutthroat',icon:'🔪',betray:1.6}},  // betray: x the betrayal chance (0 = none, by anyone)
+        moods:{friendly:{name:'Friendly',icon:'😊',betray:0,sabotage:0}, competitive:{name:'Competitive',icon:'⚖️',betray:1,sabotage:1}, cutthroat:{name:'Cutthroat',icon:'🔪',betray:1.6,sabotage:1.6}},  // betray / sabotage: x those chances (0 = none, by anyone; also no flatmate theft)
         defaultMood:'competitive',
         /* reputation: 0-100 for everyone, from start; acceptPer = change in a rival's chance to accept your pact or loan request per point
           above or below start; interviewPer = the same for interview chances (yours and the rivals') */
@@ -1389,7 +1389,26 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         betray:{chance:{easy:0.08, medium:0.04, expert:0.02}, lateDays:5, lateMult:3, personality:{reckless:1.5, vindictive:1.3, generous:0.4},
           relTo:-80, othersRel:-10, happiness:-5, closeDays:2, leakDays:3, leakRace:0.2},
         rivalPacts:{chance:0.1, applyBonus:0.05},   // two rivals without allies form a pact; during it their job applications get this bonus
-        drift:{min:-2, max:2}},                     // each night every rival's relationship with you moves by a random whole number in this range
+        drift:{min:-2, max:2},                      // each night every rival's relationship with you moves by a random whole number in this range
+        /* sabotage: small, temporary setbacks (never a job, home or health lost). Every move costs time. caught = the base chance of being
+          caught; each earlier sabotage by the same player adds perUse (up to maxCaught). days = how long the lasting effects last. */
+        sabotage:{hitsOnYouPerDay:2, yourHitsPerRivalPerDay:2, rivalHitsPerDay:1, maxPerGame:8, days:2, gotAwayDays:3, gotAwayHappiness:2, perUse:0.05, maxCaught:0.9,
+          moves:{
+            rumour:  {name:'Spread a rumour', ic:'🗣️', minutes:60, interview:-0.15, caught:0.3},       // in person, at the Community Centre
+            online:  {name:'Spread a rumour online', ic:'📱', minutes:30, interview:-0.15, caught:0.35}, // social media: phone, tablet or your computer
+            badmouth:{name:'Bad-mouth them around town', ic:'💬', minutes:30, rep:-5, caught:0.25},
+            cls:     {name:'Grab their class', ic:'📚', minutes:15, cost:15, caught:0.1},                // no lesson for them the next day
+            boss:    {name:'Talk them down to the boss', ic:'👔', minutes:30, pay:0.9, caught:0.4},     // same workplace only
+            snag:    {name:'Snag their opening', ic:'📝', minutes:60, caught:0.25},                    // the role they are after is closed to them
+            prank:   {name:'Late-night prank calls', ic:'📞', minutes:15, energy:-15, caught:0.2}},     // needs a phone or tablet
+          caught:{rep:-15, rel:-20, happiness:-3, grudgeDays:5, grudgeMult:3, vindictiveGrudge:5},
+          rival:{chance:{easy:0.03, medium:0.04, expert:0.03}, caught:{easy:0.5, medium:0.3, expert:0.15}, enemyMult:2, personality:{vindictive:1.5, ambitious:1.2, generous:0.3}, expertLastDays:10},
+          accuse:{minutes:30, rightRep:-10, rightRel:-10, rightHappiness:2, wrongRel:-20, wrongHappiness:-5, days:5}},  // days: an unsolved incident can be accused for this many days
+        /* cash going missing overnight: a flatmate on bad terms (not in a Friendly town) or a burglar (only in the homes listed).
+          small: some cash goes and you are not told who; big: most of it goes and you are told who (a flatmate moves out). Bank money is safe. */
+        theft:{small:{min:0.1, max:0.5, happiness:-3}, big:{min:0.5, max:0.8},
+          flatmate:{below:-10, chance:0.15, personality:{vindictive:1.5, reckless:1.3, generous:0.3}, bigChance:0.4, rel:-60, rep:-25, happiness:-10},
+          burglary:{chance:0.1, homes:['apt'], bigChance:0.35, happiness:-8}}},
     },
     leisure:{
       /* Free things to do for fun. minutes = time taken; energy in %.
@@ -2022,7 +2041,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
      3. STATE AND SAVES
      blank() is the full shape of S. fresh() starts a game; save() and load() keep it in localStorage; finish() ends it.
      ================================================================== */
-  function blank(){return {fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,ind:null,indNext:0,indId:'',macroLast:0,bankOffer:null,promo:null,comm:null,tip:null,mode:'single',rivals:[],rivalSeed:0,indLeft:0,life:null,raced:{},jobRaces:0,enc:null,rcalled:null,cong:null,msgs:[],rloans:[],bets:[],msgN:0,asked:null,flat:null,flatSkip:0,townMood:'competitive',rep:60,pact:null,leak:null,blocked:null,rpacts:[],rentPaidAmt:0,rcards:{},lastRCard:0,lastRace:'',deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:CONFIG.market.rateBase,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
+  function blank(){return {fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,ind:null,indNext:0,indId:'',macroLast:0,bankOffer:null,promo:null,comm:null,tip:null,mode:'single',rivals:[],rivalSeed:0,indLeft:0,life:null,raced:{},jobRaces:0,enc:null,rcalled:null,cong:null,msgs:[],rloans:[],bets:[],msgN:0,asked:null,flat:null,flatSkip:0,townMood:'competitive',rep:60,pact:null,leak:null,blocked:null,rpacts:[],sabOn:[],sabMine:[],sabUsed:0,incidents:[],incN:0,rentPaidAmt:0,rcards:{},lastRCard:0,lastRace:'',deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:CONFIG.market.rateBase,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
     S=blank();T0();PREV=null;applyPayVar();S.certVar={};Object.keys(TRACKS).forEach(function(t){S.certVar[t]=1+(Math.random()*2-1)*CONFIG.education.certVariance});
     S.sagaNext=sagaDay();S.indNext=indDay();S.indId=INDUSTRY[Math.floor(Math.random()*INDUSTRY.length)].id;
@@ -2069,7 +2088,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     Most steps are un-versioned and safe to run on any save (they only act when an old field is there).
     To change the save format: add a step at the right place in the list, keep old saves loadable, and if the
     change is version-specific, raise SAVE_VERSION and the ver value in blank(). */
-  var SAVE_VERSION=6;
+  var SAVE_VERSION=7;
   var MIGRATIONS=[
     ['time left counted in minutes', function(s){if(!s.tmin){s.ap=MAX_AP;s.tmin=1}}],
     ['enrolment record (enr) from qualification progress', function(s){
@@ -2110,6 +2129,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       if(Object.keys(s.items||{}).some(function(k){return s.items[k]}))s.flags.buy=1}],
     ['rival personalities and favour memories (stable for old saves, without rolling dice)', function(s){(s.rivals||[]).forEach(function(r,i){prepareRival(r,i,s.rivalSeed)});s.ver=Math.max(s.ver||0,5)}],
     ['v5 to v6: reputation for rivals in games saved before town politics (no dice rolled)', function(s){(s.rivals||[]).forEach(function(r){if(!Number.isFinite(r.rep))r.rep=CONFIG.rivals.politics.rep.start;if(r.drift==null)r.drift=0});if(!CONFIG.rivals.politics.moods[s.townMood])s.townMood=CONFIG.rivals.politics.defaultMood;s.ver=Math.max(s.ver||0,6)}],
+    ['v6 to v7: sabotage records for rivals in games saved before sabotage (no dice rolled)', function(s){(s.rivals||[]).forEach(function(r){if(!Array.isArray(r.sabOn))r.sabOn=[];if(!Number.isFinite(r.sabUsed))r.sabUsed=0;if(!Number.isFinite(r.grudge))r.grudge=0});s.ver=Math.max(s.ver||0,7)}],
     ['new investments, qualifications and outfits added to the nested lists', function(s,b){['inv','edu','clothes'].forEach(function(k){Object.keys(b[k]).forEach(function(q){if(s[k][q]===undefined)s[k][q]=b[k][q]})})}]
   ];
   /* brings stored data up to date in place; returns what the player should be told about */
@@ -2292,6 +2312,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(S.ill){m*=.85;rs.push('illness')}
     if(S.burn>0){m*=CONFIG.burnout.pay;rs.push('burnout')}
     if(S.health<CONFIG.health.poorBelow){m*=CONFIG.health.poorPay;rs.push('poor health')}
+    if(S.mode==='rivals'&&sabHas(S,'boss',S.day)){m*=CONFIG.rivals.politics.sabotage.moves.boss.pay;rs.push('someone talked you down to your boss')}
     return {m:m,rs:rs};
   }
   /* what a shift really pays now: base pay x wage/price index x knowledge bonus x any penalty, plus gloves */
@@ -2332,11 +2353,11 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var tip=tipOn();if(tip)S.tip=null;  /* a friend's tip (Community Centre) is used up by this interview */
     if(S.closed[id]&&!tip&&S.raced&&S.raced[id]){log(S.raced[id]+' got there first. No openings for '+rk.r+' at the '+who+' today. The 1h interview slot was wasted.','warn');return done()}
     if(S.closed[id]&&!tip){log('No openings now for '+rk.r+' at the '+who+'. The 1h interview slot was wasted. Try another day.','warn');return done()}
-    var pp=0.82-0.05*i+S.know/400+(S.happy-50)/300-(rk.dress&&!hasDress(rk.dress)?0.25:0)-(S.energy<30?0.1:0)+(S.mode==='rivals'?repInterview(S.rep):0);  /* the town talks: reputation */
+    var pp=0.82-0.05*i+S.know/400+(S.happy-50)/300-(rk.dress&&!hasDress(rk.dress)?0.25:0)-(S.energy<30?0.1:0)+(S.mode==='rivals'?repInterview(S.rep)+sabInterview(S,S.day):0);  /* the town talks: reputation, and any rumour about you */
     if(tip)pp+=CONFIG.community.tip.passBonus;
     pp=Math.max(0.2,Math.min(0.95,pp));
     if(Math.random()>pp){
-      var why=rk.dress&&!hasDress(rk.dress)?'You turned up without the right clothes.':S.energy<30?'You looked exhausted.':S.happy<35?'Your low mood showed.':['Another candidate had more experience.','You fumbled a tricky question.','The manager wanted someone with more confidence.','You arrived a little late.','They went with an internal hire.'][Math.floor(Math.random()*5)];
+      var why=S.mode==='rivals'&&sabInterview(S,S.day)?'Word of a rumour about you had got around.':rk.dress&&!hasDress(rk.dress)?'You turned up without the right clothes.':S.energy<30?'You looked exhausted.':S.happy<35?'Your low mood showed.':['Another candidate had more experience.','You fumbled a tricky question.','The manager wanted someone with more confidence.','You arrived a little late.','They went with an internal hire.'][Math.floor(Math.random()*5)];
       log('Didn’t pass the interview for '+rk.r+' at the '+who+'. '+why+' (1h spent)','bad');return done();
     }
     var old=myJob();
@@ -2382,6 +2403,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(S.expelled>0)return refuse('You were expelled. You can re-enrol in '+S.expelled+' day'+(S.expelled>1?'s':'')+'.');
     if(S.energy<15)return refuse('You’re too tired to study. Eat or rest first.');
     if(!inProgress(t))return refuse('Enrol in the '+T.n+' '+T.lv[levelOf(t,n)]+' first.');
+    if(S.mode==='rivals'&&sabClass(S,S.day))return refuse('Someone booked the last seat in your class today. You can study again tomorrow.');
     var h=lesHours(t,n),cost=0,nl=lesCount(t,n),k=lesDone(t);
     if(!spendMin(h*60,0))return;
     if(!S.les)S.les={};
@@ -3842,7 +3864,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     for(var i=0;i<n;i++){var d=level==='mixed'?lv[i%3]:level,edu={};Object.keys(TRACKS).forEach(function(t){edu[t]=0});
       out.push({personality:types[i%types.length],favours:{trust:0,owed:0,entries:[]},name:R.names[i],ic:R.icons[i],diff:d,cash:cash,bank:0,etf:0,energy:CONFIG.start.energy,happy:70,health:CONFIG.health.start,know:10,edu:edu,
         job:null,best:null,study:null,target:null,clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},shiftsAt:{},shut:0,
-        out:null,tier:-1,lowH:0,lowE:0,broke:0,hungry:0,hist:[],log:[],y:cash,life:blankLife(),rankDay:{},bestJob:null,rel:0,rep:CONFIG.rivals.politics.rep.start,drift:0,places:[]})}
+        out:null,tier:-1,lowH:0,lowE:0,broke:0,hungry:0,hist:[],log:[],y:cash,life:blankLife(),rankDay:{},bestJob:null,rel:0,rep:CONFIG.rivals.politics.rep.start,drift:0,sabOn:[],sabUsed:0,grudge:0,places:[]})}
     return out;
   }
   /* the job worth aiming for: the best pay x days it could be worked, among jobs whose missing qualifications fit in the days left */
@@ -3891,12 +3913,12 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       var val=function(c,i){return (K.usesOutlook?rolePay(c,i):CAREERS[c].ranks[i].pay)+(r.target&&bOf(c)===bOf(r.target.c)?20:0)},cp0=j?val(j.c,j.i):0,best=null;  /* the target's workplace is worth a little extra (work experience) */
       Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk,i){
         if(j&&j.c===c&&j.i>=i)return;if(!rivalMeets(r,rk)||kreq(rk)>Math.floor(r.know))return;
-        if(S.closed[c+'_'+i]||shutLeft(bOf(c))>0)return;if(needsExp(rk)&&(r.shiftsAt[bOf(c)]||0)<CONFIG.jobs.experience.shifts)return;
+        if(S.closed[c+'_'+i]||shutLeft(bOf(c))>0||sabSnagged(r,c+'_'+i,day))return;if(needsExp(rk)&&(r.shiftsAt[bOf(c)]||0)<CONFIG.jobs.experience.shifts)return;
         if(rk.dress&&!dressed(rk.dress))return;var g=val(c,i)-cp0;
         if(g>0&&(!best||g>best.g))best={c:c,i:i,g:g};
       })});
       if(!best)break;used+=60;
-      var pp=Math.max(0.2,Math.min(0.95,0.82-0.05*best.i+r.know/400+(r.happy-50)/300-(r.energy<30?0.1:0)+repInterview(repOf(r))+(rivalPactOf(S.rivals.indexOf(r))?PX().rivalPacts.applyBonus:0)));
+      var pp=Math.max(0.2,Math.min(0.95,0.82-0.05*best.i+r.know/400+(r.happy-50)/300-(r.energy<30?0.1:0)+repInterview(repOf(r))+(rivalPactOf(S.rivals.indexOf(r))?PX().rivalPacts.applyBonus:0)+sabInterview(r,day)));
       if(rrand()<pp){var was=j;r.job={c:best.c,i:best.i};r.took=best.c+'_'+best.i;j=rivalJob(r);rivalNote(r,2,(was&&was.c===best.c?'was promoted to ':'got a new job: ')+j.rk.r+' at the '+NAME[j.b]+'.');
         if(!r.bestJob||j.rk.pay>r.bestJob.pay)r.bestJob={r:j.rk.r,pay:j.rk.pay};break}
     }
@@ -3907,7 +3929,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     if(r.shut>0)r.shut--;
     else for(var s=0;s<shifts&&j;s++){
       var ef=effort(j.rk.pay);if(r.energy-ef.en<25||load+ef.min>CONFIG.time.maxWorkMinutes||!dressed(j.rk.dress||'casual'))break;
-      var pm=(r.happy<20?.6:r.happy<25?.75:r.happy<40?.9:1)*(r.energy<30?.85:1)*(r.health<CONFIG.health.poorBelow?CONFIG.health.poorPay:1);
+      var pm=(r.happy<20?.6:r.happy<25?.75:r.happy<40?.9:1)*(r.energy<30?.85:1)*(r.health<CONFIG.health.poorBelow?CONFIG.health.poorPay:1)*(sabHas(r,'boss',day)?SBX().moves.boss.pay:1);
       var pay=Math.round(Math.round(rolePay(j.c,j.i)*payIdx()*(1+r.know/400))*pm);
       r.cash+=pay;r.energy=clamp100(r.energy-ef.en);r.happy=clamp100(r.happy-workHap(ef.en));r.health=clamp100(r.health+workHp(ef.min));
       r.shiftsAt[j.b]=(r.shiftsAt[j.b]||0)+1;load+=ef.min;used+=ef.min;
@@ -3915,7 +3937,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     /* study towards the target (or anything, for easy rivals now and then) */
     var tg=r.target&&CAREERS[r.target.c]&&CAREERS[r.target.c].ranks[r.target.i],need=tg?(tg.q||[]).filter(function(q){return rivalLv(r,q[0])<q[1]}):[];
     if(!K.plans&&!r.study&&rrand()<K.studyChance){var ts=Object.keys(TRACKS).filter(function(t){return (r.edu[t]||0)<totMods(t)});if(ts.length)need=[[ts[Math.floor(rrand()*ts.length)],9]]}
-    if(!r.ill&&mistake!=='study'&&(need.length||r.study)&&rrand()<K.studyChance){
+    if(!r.ill&&mistake!=='study'&&!sabClass(r,day)&&(need.length||r.study)&&rrand()<K.studyChance){
       var t=r.study?r.study.t:need[0][0];
       if(!r.study){var n0=r.edu[t]||0,fee=qualFee(t,n0),keep=HOUSE.apt.rent+80;if(r.cash-fee<keep&&r.bank>0){var w2=Math.min(r.bank,keep+fee-r.cash);r.bank-=w2;r.cash+=w2}
         if(r.cash-fee>=keep){r.cash-=fee;r.study={t:t,lv:levelOf(t,n0),h:0}}}
@@ -4164,7 +4186,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var open=(S.rloans||[]).filter(function(l){return l.dir==='in'}).map(function(l){var r=S.rivals[l.i];return arow(r.ic+' '+r.name+' owes you '+money(l.owe),chip('','Due day '+l.due+(l.late?' (late)':''),l.late?'warn':''),'')}).join('')+
       (S.bets||[]).map(function(b){var r=S.rivals[b.i];return arow('🎲 Bet with '+r.ic+' '+r.name+': '+money(b.stake)+' each',chip('','Settled on the morning of day '+(b.until+1)),'')}).join('');
     if(open)h+=psec('mopen','Open loans and bets','','')+open;
-    h+=pactRows();
+    h+=pactRows()+sabRows('online');
     h+=psec('people','People remember','','Personalities affect loans, repayment, bets, job tips and tension. Helping with a loan or a personal favour is remembered; a later job introduction can repay it. Refusals and unpaid loans also affect how willing they are to lend. Open a rival on the Overview for their history.');
     h+=psec('mask','💬 Ask a rival','','Ask a rival to lend you money (they need to be at least 🙂 friendly, able to spare it, and willing: experts lend carefully). A no costs '+Math.abs(L.askedNoRel)+' relationship. Pay back '+Math.round(L.interest*100)+'% more on the morning '+L.days+' days later, from your cash or bank; if it isn’t paid in full then: '+defaultTxt({name:'the lender'})+', once. Or offer a bet of '+money(st)+' each. One ask of each kind per rival a day.');
     S.rivals.forEach(function(r,i){if(r.out)return;var owe=rloan(i,'out'),asked=askedToday('l'+i),due=S.day+L.days,amts=[1,2,4,6].map(function(x){return G(L.step*x)}).filter(function(v){return v<=G(L.maxBorrow)});
@@ -4289,6 +4311,164 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     S.rpacts.push({a:ai,b:bi,since:S.day,until:S.day+P.days-1,pot:pot*2});
     S.notes.push({l:'rem',t:'🤝 '+nm(a)+' and '+nm(b)+' formed a pact'+(pot?' with a '+money(pot*2)+' pot':'')+'.'});
   }
+  /* ---------- sabotage and theft (CONFIG.rivals.politics.sabotage, .theft) ----------
+    Effects sit on the target as sabOn entries {k, until | day, key, by (−1 you, or a rival's index), id, done}. A rival's checks use the day just
+    played (S.day−1, in rivalDay); yours use today. S.sabMine: your moves {id, i, k, day, caught, paid}. S.incidents: unsolved setbacks and
+    thefts you can accuse someone of {id, kind 'sab'|'theft', k, by, flatI, day, amt, eid, done}. */
+  function SBX(){return CONFIG.rivals.politics.sabotage}
+  function canSabotage(){return S.mode==='rivals'&&moodX().sabotage>0}
+  function sabHas(t,k,day){return (t.sabOn||[]).some(function(e){return e.k===k&&!e.cancel&&e.until!=null&&day<=e.until&&day>=(e.from||0)})}
+  function sabInterview(t,day){var M=SBX().moves;return sabHas(t,'rumour',day)||sabHas(t,'online',day)?Math.min(M.rumour.interview,M.online.interview):0}
+  function sabClass(t,day){return (t.sabOn||[]).some(function(e){return e.k==='cls'&&!e.cancel&&e.day===day})}
+  function sabSnagged(t,key,day){return (t.sabOn||[]).some(function(e){return e.k==='snag'&&!e.cancel&&e.key===key&&day<=e.until})}
+  function sabCatch(base,used){var Z=SBX();return Math.min(Z.maxCaught,base+Z.perUse*(used||0))}
+  function burglaryRisk(h){var B=CONFIG.rivals.politics.theft.burglary;return S.mode==='rivals'&&B.homes.indexOf(h)>=0?B.chance:0}
+  function myHitsOn(i){return (S.sabMine||[]).filter(function(m){return m.i===i&&m.day===S.day}).length}
+  /* what a move did, and what an attempt was: n = the target ("Leo", "you"), q = their possessive ("Leo’s", "your") */
+  function sabDid(k,n,q){return {rumour:'spread a rumour about '+n,online:'posted rumours about '+n+' online',badmouth:'bad-mouthed '+n+' around town',cls:'took the last seat in '+q+' class',boss:'talked '+n+' down to '+(q==='your'?'your':'their')+' boss',snag:'snagged '+q+' opening',prank:'kept '+n+' up with late-night prank calls'}[k]}
+  function sabTry(k,n,q){return {rumour:'spread a rumour about '+n,online:'post rumours about '+n+' online',badmouth:'bad-mouth '+n+' around town',cls:'take the last seat in '+q+' class',boss:'talk '+n+' down to '+(q==='your'?'your':'their')+' boss',snag:'snag '+q+' opening',prank:'prank-call '+n}[k]}
+  /* the moves that fit a target: by you (t is a rival) or at you (t === S) */
+  function sabMovesFor(t,from){
+    var ks=['rumour','online','badmouth'],you=t===S;
+    if(you?Object.keys(TRACKS).some(inProgress):!!t.study)ks.push('cls');
+    var tj=you?myJob():rivalJob(t),fj=from===S?myJob():rivalJob(from);if(tj&&fj&&tj.b===fj.b)ks.push('boss');
+    if(you?sabNextKey():t.target)ks.push('snag');
+    if(from!==S||handheld())ks.push('prank');
+    return ks;
+  }
+  function sabNextKey(){var j=myJob();return j&&CAREERS[j.c].ranks[S.career[j.c]+1]?j.c+'_'+(S.career[j.c]+1):null}
+  /* put a move's effect on target t; `night` = it is being rolled overnight (S.day is already the new day) */
+  function sabLand(t,k,by,night){
+    var Z=SBX(),M=Z.moves,you=t===S,id=(S.incN=(S.incN||0)+1),e={k:k,by:by,id:id};
+    var start=night?(you?S.day:S.day-1+1):S.day;  /* the first day it counts on the target's own clock */
+    if(k==='rumour'||k==='online'||k==='boss'){e.from=you?S.day:start;e.until=(you?S.day:start)+Z.days-1}
+    else if(k==='cls')e.day=night?S.day:S.day+1;
+    else if(k==='snag'){e.key=you?sabNextKey():t.target.c+'_'+t.target.i;e.until=(you?S.day:start)+Z.days-1;if(you&&e.key)S.closed[e.key]=1}
+    else if(k==='badmouth'){repAdd(t,M.badmouth.rep);e.done=1}
+    else if(k==='prank'){if(night){if(you)S.energy=clamp(S.energy+M.prank.energy);else t.energy=Math.max(0,Math.min(100,t.energy+M.prank.energy));e.done=1}else e.pending=1}
+    if(!t.sabOn)t.sabOn=[];t.sabOn.push(e);return e;
+  }
+  /* you sabotage a rival: sab 'k|i' */
+  function sabotage(arg){
+    var a=String(arg).split('|'),k=a[0],i=+a[1],r=S.rivals&&S.rivals[i],Z=SBX(),m=Z.moves[k],C=Z.caught;
+    if(!m||!r||r.out)return refuse('That rival is out of the race.');
+    if(!canSabotage())return refuse('Nobody sabotages anyone in a friendly town.');
+    if(myHitsOn(i)>=Z.yourHitsPerRivalPerDay)return refuse('You have already gone after '+r.name+' '+Z.yourHitsPerRivalPerDay+' times today.');
+    if((S.sabUsed||0)>=Z.maxPerGame)return refuse('You have used up your '+Z.maxPerGame+' schemes for this game.');
+    if(sabMovesFor(r,S).indexOf(k)<0)return refuse(k==='boss'?'You need to work at the same place as '+r.name+'.':k==='cls'?r.name+' isn’t enrolled at School.':k==='snag'?r.name+' isn’t after a job right now.':k==='prank'?'You need a phone or tablet.':'You can’t do that to '+r.name+' right now.');
+    if(k==='online'&&!(handheld()||pcHere()))return refuse('You need a phone, tablet or your computer at home to post online.');
+    if(!spendMin(m.minutes,m.cost?G(m.cost):0))return;
+    var v0=vitSnap(),ch=sabCatch(m.caught,S.sabUsed);S.sabUsed=(S.sabUsed||0)+1;
+    var mine={id:0,i:i,k:k,day:S.day,caught:false,paid:false};S.sabMine.push(mine);
+    if(rrand()<ch){mine.caught=true;repAdd(S,C.rep);var res=relAdd(r,C.rel);S.happy=clamp(S.happy+C.happiness);r.grudge=S.day+C.grudgeDays-1;
+      log('🕵️ You were caught trying to '+sabTry(k,r.name,r.name+'’s')+vitPar(v0)+': it didn’t work, reputation '+sg(C.rep)+', '+relTxt(r,res)+'. They may strike back.','bad')}
+    else{var e=sabLand(r,k,-1,false);mine.id=e.id;
+      log('🗯️ You '+sabDid(k,r.name,r.name+'’s')+vitPar(v0)+'. Nobody saw you. '+({rumour:'Their interview chances drop until day '+e.until+'.',online:'Their interview chances drop until day '+e.until+'.',badmouth:'Their reputation '+sg(Z.moves.badmouth.rep)+'.',cls:'They miss their lesson tomorrow.',boss:'Their shifts pay less until day '+e.until+'.',snag:'That opening is closed to them until day '+e.until+'.',prank:'They’ll wake up '+(-Z.moves.prank.energy)+'% short on energy.'}[k]),'good')}
+    done();
+  }
+  /* overnight: your pranks land, rivals sabotage you and each other, effects wear off, getting away with it */
+  function sabTick(){
+    var Z=SBX(),R=Z.rival,M=Z.moves,C=Z.caught,today=S.day;
+    S.rivals.forEach(function(r){(r.sabOn||[]).forEach(function(e){if(e.k==='prank'&&e.pending&&!e.cancel){r.energy=Math.max(0,Math.min(100,r.energy+M.prank.energy));e.pending=0;e.done=1}})});
+    (S.sabOn||[]).forEach(function(e){if(e.k==='snag'&&e.key&&!e.cancel&&today<=e.until)S.closed[e.key]=1});  /* rollOpenings clears S.closed each morning */
+    /* getting away with it */
+    (S.sabMine||[]).forEach(function(m){if(!m.caught&&!m.paid&&today>=m.day+Z.gotAwayDays){m.paid=true;S.happy=clamp(S.happy+Z.gotAwayHappiness);var r=S.rivals[m.i];
+      S.notes.push({l:'good',t:'😏 '+numWord(Z.gotAwayDays).replace(/^./,function(c){return c.toUpperCase()})+' days on, nobody has found out that you '+sabDid(m.k,r?r.name:'a rival',(r?r.name:'a rival')+'’s')+': '+sg(Z.gotAwayHappiness)+' happiness.'})}});
+    if(canSabotage()){
+      var P=lifeScore(),pts={};P.forEach(function(p){pts[p.me?-1:S.rivals.indexOf(p.r)]=p.pts});
+      var late=gameLen()-(today-1)<=R.expertLastDays,hitsOnYou=0;
+      var wants=function(r,ti){var ahead=pts[ti]>pts[S.rivals.indexOf(r)];return r.diff==='easy'||(r.diff==='medium'&&ahead)||(r.diff==='expert'&&ahead&&late)};
+      var base=function(r){return pick(R.chance,r.diff,0.03)*moodX().sabotage*(R.personality[r.personality]||1)};
+      S.rivals.forEach(function(r,ri){
+        if(r.out||(r.sabUsed||0)>=Z.maxPerGame)return;
+        /* at you */
+        if(hitsOnYou<Z.hitsOnYouPerDay&&wants(r,-1)&&ally()!==r&&(r.rel||0)<CONFIG.rivals.social.friendAt){
+          var g=r.grudge&&today<=r.grudge+1?(r.personality==='vindictive'?C.vindictiveGrudge:C.grudgeMult):1;
+          if(rrand()<base(r)*((r.rel||0)<0?R.enemyMult:1)*g){var ks=sabMovesFor(S,r),k=ks[Math.floor(rrand()*ks.length)],ch=sabCatch(pick(R.caught,r.diff,0.3),r.sabUsed);r.sabUsed=(r.sabUsed||0)+1;hitsOnYou++;
+            if(rrand()<ch){repAdd(r,C.rep);relAdd(r,C.rel);S.notes.push({l:'warn',t:'🕵️ '+r.ic+' '+r.name+' was caught trying to '+sabTry(k,'you','your')+'. It didn’t work. Their reputation '+sg(C.rep)+', your relationship with them '+sg(C.rel)+'.'})}
+            else{var e=sabLand(S,k,ri,true);var inc={id:e.id,kind:'sab',k:k,by:ri,day:today,eid:e.id,done:false};S.incidents.push(inc);
+              S.notes.push({l:'bad',t:'📉 '+({rumour:'Someone has been spreading a rumour about you: interview chances '+Math.round(M.rumour.interview*100)+' points until the end of day '+e.until+'.',online:'Someone has been posting rumours about you online: interview chances '+Math.round(M.online.interview*100)+' points until the end of day '+e.until+'.',badmouth:'Someone has been bad-mouthing you around town: reputation '+sg(M.badmouth.rep)+'.',cls:'Someone booked the last seat in your class: no lesson for you today.',boss:'Someone has been talking you down to your boss: your shifts pay '+Math.round((1-M.boss.pay)*100)+'% less until the end of day '+e.until+'.',snag:'Someone had a word with the hiring manager: no openings for your next rank until the end of day '+e.until+'.',prank:'Prank calls kept you up half the night: energy '+sg(M.prank.energy)+'%.'}[k])+' You weren’t told who. Accuse someone at the Community Centre if you think you know.'})}
+            return}
+        }
+        /* at another rival: the one just ahead (easy: anyone) */
+        var others=S.rivals.map(function(o,oi){return oi}).filter(function(oi){var o=S.rivals[oi];return oi!==ri&&!o.out&&!(rivalPactOf(ri)&&(rivalPactOf(ri).a===oi||rivalPactOf(ri).b===oi))&&!(o.hitBy&&o.hitBy.d===today&&o.hitBy.n>=Z.rivalHitsPerDay)&&wants(r,oi)});
+        if(!others.length||rrand()>=base(r))return;
+        if(r.diff!=='easy')others.sort(function(x,y){return pts[x]-pts[y]});
+        var ti=r.diff==='easy'?others[Math.floor(rrand()*others.length)]:others[0],t=S.rivals[ti],ks2=sabMovesFor(t,r),k2=ks2[Math.floor(rrand()*ks2.length)],ch2=sabCatch(pick(R.caught,r.diff,0.3),r.sabUsed);
+        r.sabUsed=(r.sabUsed||0)+1;t.hitBy={d:today,n:(t.hitBy&&t.hitBy.d===today?t.hitBy.n:0)+1};
+        if(rrand()<ch2){repAdd(r,C.rep);S.notes.push({l:'rem',t:'🕵️ '+r.ic+' '+r.name+' was caught trying to '+sabTry(k2,t.ic+' '+t.name,t.name+'’s')+' (reputation '+sg(C.rep)+').'})}
+        else sabLand(t,k2,ri,true);
+      });
+    }
+    /* wear off; unsolved incidents lapse after accuse.days */
+    S.incidents=(S.incidents||[]).filter(function(x){return !x.done&&x.day>today-Z.accuse.days});
+    var keep=function(e){return !e.done&&!e.cancel&&(e.until!=null?e.until>=today-1:e.day!=null?e.day>=today-1:!!e.pending)};
+    S.sabOn=(S.sabOn||[]).filter(function(e){return !e.done&&!e.cancel&&(e.until!=null?e.until>=today:e.day!=null?e.day>=today:false)});
+    S.rivals.forEach(function(r){r.sabOn=(r.sabOn||[]).filter(keep)});
+  }
+  /* cash going missing overnight: a flatmate on bad terms first, then a burglar */
+  function theftTick(){
+    var TH=PX().theft,F=TH.flatmate,B=TH.burglary,fm=flatmate(),fi=fm?S.flat.i:null,tip=' 🔒 Keep your money in the bank (thieves can’t reach it), or move to the Classy Bungalow for better security.';
+    if(S.cash<=0)return;
+    var share=function(o){return o.min+rrand()*(o.max-o.min)},pct=function(a,c){return Math.round(a/c*100)+'% of your cash'};
+    if(fm&&moodX().sabotage>0&&(fm.rel||0)<F.below&&rrand()<F.chance*moodX().sabotage*(F.personality[fm.personality]||1)){
+      var big=rrand()<F.bigChance,c0=S.cash,amt=Math.max(1,Math.floor(c0*share(big?TH.big:TH.small)));S.cash-=amt;fm.cash+=amt;
+      if(big){S.flat=null;var d0=fm.rel||0;relAdd(fm,F.rel);repAdd(fm,F.rep);S.happy=clamp(S.happy+F.happiness);
+        S.notes.push({l:'bad',t:'🏠💸 '+fm.ic+' '+fm.name+' moved out overnight and took '+money(amt)+' ('+pct(amt,c0)+'). Relationship '+sg((fm.rel||0)-d0)+' (now '+sg(fm.rel)+'), their reputation '+sg(F.rep)+', your happiness '+sg(F.happiness)+'.'+tip})}
+      else{S.happy=clamp(S.happy+TH.small.happiness);S.incidents.push({id:(S.incN=(S.incN||0)+1),kind:'theft',by:fi,flatI:fi,day:S.day,amt:amt,done:false});
+        S.notes.push({l:'bad',t:'💸 '+money(amt)+' ('+pct(amt,c0)+') went missing overnight. It was either taken by your flatmate or a burglar: there’s no way to tell which. Your happiness '+sg(TH.small.happiness)+'.'+tip})}
+      return;
+    }
+    if(S.homeless||!burglaryRisk(S.home)||rrand()>=B.chance)return;
+    var big2=rrand()<B.bigChance,c1=S.cash,amt2=Math.max(1,Math.floor(c1*share(big2?TH.big:TH.small)));S.cash-=amt2;
+    if(big2){S.happy=clamp(S.happy+B.happiness);S.notes.push({l:'bad',t:'🚨 A burglar broke into your apartment overnight and took '+money(amt2)+' ('+pct(amt2,c1)+'). Your happiness '+sg(B.happiness)+'.'+tip})}
+    else{S.happy=clamp(S.happy+TH.small.happiness);S.incidents.push({id:(S.incN=(S.incN||0)+1),kind:'theft',by:'burglar',flatI:fi,day:S.day,amt:amt2,done:false});
+      S.notes.push({l:'bad',t:'💸 '+money(amt2)+' ('+pct(amt2,c1)+') went missing overnight. It was '+(fi!=null?'either taken by your flatmate or a burglar: there’s no way to tell which':'taken by a burglar, or someone with a key')+'. Your happiness '+sg(TH.small.happiness)+'.'+tip})}
+  }
+  /* accusing someone of an unsolved setback or theft: accuse 'id|suspect' (a rival's index, or 'burglar') */
+  function accuse(arg){
+    var a=String(arg).split('|'),id=+a[0],who=a[1],A=SBX().accuse,inc=(S.incidents||[]).filter(function(x){return x.id===id})[0];
+    if(!inc||inc.done)return refuse('That has already been settled.');
+    var sus=who==='burglar'?null:S.rivals[+who];if(who!=='burglar'&&(!sus||sus.out))return refuse('That rival is out of the race.');
+    if(!spendMin(A.minutes,0))return;
+    var v0=vitSnap(),right=String(inc.by)===String(who);inc.done=true;
+    if(right&&sus){repAdd(sus,A.rightRep);var res=relAdd(sus,A.rightRel);S.happy=clamp(S.happy+A.rightHappiness);var back=0;
+      if(inc.kind==='sab')(S.sabOn||[]).forEach(function(e){if(e.id===inc.eid)e.cancel=1});
+      else{back=Math.max(0,Math.min(inc.amt,sus.cash));sus.cash-=back;S.cash+=back}
+      log('🔎 You were right: it was '+sus.name+vitPar(v0)+'. '+(inc.kind==='sab'?'The setback ends now. ':back?'They gave back '+money(back)+'. ':'')+'Their reputation '+sg(A.rightRep)+', '+relTxt(sus,res)+'.','good')}
+    else if(right){S.happy=clamp(S.happy+A.rightHappiness);log('🔎 You reported the break-in'+vitPar(v0)+'. It was a burglar, as you thought, but the money is gone.','good')}
+    else if(sus){var res2=relAdd(sus,A.wrongRel);S.happy=clamp(S.happy+A.wrongHappiness);log('🔎 You accused '+sus.name+', but it wasn’t them'+vitPar(v0)+': '+relTxt(sus,res2)+'. The real culprit stays unknown.','bad')}
+    else{S.happy=clamp(S.happy+A.wrongHappiness);log('🔎 You blamed a burglar, but that wasn’t it'+vitPar(v0)+'. The real culprit stays unknown.','bad')}
+    done();
+  }
+  /* the Community Centre's "Who did it?" card */
+  function whoRows(){
+    if(S.mode!=='rivals')return '';var A=SBX().accuse,open=(S.incidents||[]).filter(function(x){return !x.done});if(!open.length)return '';
+    var h=psec('who','🔎 Who did it?',chip('',open.length+' unsolved','warn'),'You weren’t told who was behind these. Accuse someone ('+hm(A.minutes)+', one guess each, within '+A.days+' days). Right: a rival loses '+(-A.rightRep)+' reputation and '+(-A.rightRel)+' relationship, you gain '+A.rightHappiness+' happiness, and a setback ends early (or a flatmate gives the cash back). Wrong: your relationship with the one you accused drops '+(-A.wrongRel)+' and you lose '+(-A.wrongHappiness)+' happiness.');
+    open.forEach(function(x){
+      var title=x.kind==='theft'?'💸 Day '+x.day+': '+money(x.amt)+' went missing':'📉 Day '+x.day+': someone '+sabDid(x.k,'you','your'),sus=[];
+      if(x.kind==='theft'){if(x.flatI!=null&&S.rivals[x.flatI]&&!S.rivals[x.flatI].out)sus.push([String(x.flatI),S.rivals[x.flatI].name]);sus.push(['burglar','A burglar'])}
+      else S.rivals.forEach(function(r,i){if(!r.out)sus.push([String(i),r.name])});
+      h+=arow(title,chip('time',hm(A.minutes))+chip('','Right: 🎖️ '+sg(A.rightRep)+', relationship '+sg(A.rightRel)+', '+sg(A.rightHappiness)+' 😊')+chip('','Wrong: relationship '+sg(A.wrongRel)+', '+sg(A.wrongHappiness)+' 😊','warn'),
+        '<div class="btnrow">'+sus.map(function(s){return btn('accuse',x.id+'|'+s[0],s[1],1)}).join('')+'</div>','','chance');
+    });
+    return h;
+  }
+  /* sabotage rows: 'comm' (in person, the Community Centre) or 'online' (social media, in the Messages app) */
+  function sabRows(where){
+    if(!canSabotage())return '';var Z=SBX(),C=Z.caught,M=Z.moves,used=S.sabUsed||0,left=Z.maxPerGame-used,h='';
+    h+=where==='comm'?psec('sab','🗯️ Town talk',chip('','Schemes left '+Math.max(0,left)+'/'+Z.maxPerGame,left>0?'':'warn'),'Small, temporary setbacks for a rival. Every move takes time, and each one you have already done this game adds '+pctTxt(Z.perUse)+' to the chance of being caught (up to '+pctTxt(Z.maxCaught)+'). Caught: the move fails, reputation '+sg(C.rep)+', relationship '+sg(C.rel)+', '+sg(C.happiness)+' happiness, and they may strike back. Not caught after '+Z.gotAwayDays+' days: '+sg(Z.gotAwayHappiness)+' happiness. Each rival at most '+Z.yourHitsPerRivalPerDay+' times a day.')
+      :psec('social','📱 Social media',chip('','Schemes left '+Math.max(0,left)+'/'+Z.maxPerGame,left>0?'':'warn'),'Post a rumour about a rival online: quicker than in person, but easier to trace. It counts towards the same limits as the Town talk moves at the Community Centre.');
+    var ks=where==='comm'?['rumour','badmouth','cls','boss','snag','prank']:['online'];
+    S.rivals.forEach(function(r,i){if(r.out)return;var hits=myHitsOn(i),full=hits>=Z.yourHitsPerRivalPerDay||left<=0,fits=sabMovesFor(r,S);
+      ks.forEach(function(k){if(fits.indexOf(k)<0)return;var m=M[k],ch=sabCatch(m.caught,used);
+        var eff={rumour:'Interview '+Math.round(m.interview*100)+' pts for '+Z.days+'d',online:'Interview '+Math.round(m.interview*100)+' pts for '+Z.days+'d',badmouth:'Their 🎖️ '+sg(m.rep),cls:'No lesson tomorrow',boss:'Their pay −'+Math.round((1-m.pay)*100)+'% for '+Z.days+'d',snag:'Their target job closed '+Z.days+'d',prank:'Their energy '+sg(m.energy)+'%'}[k];
+        h+=arow(m.ic+' '+m.name+': '+r.ic+' '+r.name,chip('time',hm(m.minutes))+(m.cost?chip('cash','−'+money(G(m.cost))):'')+chip('',eff)+chip('','Caught '+pctTxt(ch)+(used?' (+'+Math.round(Z.perUse*used*100)+' from your last '+used+')':''),'warn')+chip('','If caught: 🎖️ '+sg(C.rep)+', relationship '+sg(C.rel)+', '+sg(C.happiness)+' 😊','warn')+chip('','Hits today '+hits+'/'+Z.yourHitsPerRivalPerDay,full?'warn':''),
+          btn('sab',k+'|'+i,'Do it',1,full),'','chance')})});
+    return h;
+  }
+  /* profile lines: active setbacks */
+  function sabLis(t,day){var M=SBX().moves,you=t===S;return (t.sabOn||[]).filter(function(e){return !e.cancel&&!e.done&&(e.until!=null?e.until>=day-(you?0:1):e.day!=null)}).map(function(e){return '<li>📉 '+M[e.k].name.replace(/^Spread a /,'').replace(/^Talk them down to the boss$/,'talked down to the boss').replace(/^Grab their class$/,'class taken').replace(/^Snag their opening$/,'opening snagged')+(e.until!=null?' until day '+e.until:e.day!=null?' on day '+e.day:'')+(e.by===-1?' (you)':'')+'</li>'}).join('')}
   /* the Messages app's pact card */
   function pactRows(){
     var P=PX().pact,B=PX().betray,Rp=PX().rep,r=ally(),h='',st=potStake();
@@ -4311,11 +4491,11 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   /* the Overview profile lines: reputation, pacts (you: i = −1) */
   function politicsLis(i){
     if(S.mode!=='rivals')return '';var h='';
-    if(i<0){h+='<li>🎖️ Your reputation '+Math.round(repOf(S))+'</li>';if(ally())h+='<li>🤝 Allied with '+ally().name+' until the end of day '+S.pact.until+(S.pact.pot?' · pot '+money(S.pact.pot):'')+'</li>';if(S.leak&&S.day<=S.leak.until)h+='<li>📣 Your plans leaked: rivals race you harder until day '+S.leak.until+'</li>';return h}
+    if(i<0){h+='<li>🎖️ Your reputation '+Math.round(repOf(S))+'</li>';if(ally())h+='<li>🤝 Allied with '+ally().name+' until the end of day '+S.pact.until+(S.pact.pot?' · pot '+money(S.pact.pot):'')+'</li>';if(S.leak&&S.day<=S.leak.until)h+='<li>📣 Your plans leaked: rivals race you harder until day '+S.leak.until+'</li>';return h+sabLis(S,S.day)}
     var r=S.rivals[i];if(!r)return '';h+='<li>🎖️ Reputation '+Math.round(repOf(r))+'</li>';
     if(S.pact&&S.pact.i===i)h+='<li>🤝 Your ally until the end of day '+S.pact.until+'</li>';
     var q=rivalPactOf(i);if(q)h+='<li>🤝 In a pact with '+S.rivals[q.a===i?q.b:q.a].name+' until day '+q.until+'</li>';
-    return h;
+    return h+sabLis(r,S.day);
   }
   /* ---------- living, studying and getting through things together (CONFIG.rivals.together) ---------- */
   function TG(){return CONFIG.rivals.together}
@@ -4345,6 +4525,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function flatDid(k){var d=S.flat&&S.flat.did;return d&&d.d===S.day&&d[k]}
   function cookCost(){return Math.round(G(GROC.basic.cost)/2)}
   function flatRows(){
+    var h0w;
     if(S.homeless||!atHome()||view!==S.home)return '';
     var F=TG().flat,X=CONFIG.rivals.social,r=flatmate(),h='';
     if(!r){
@@ -4353,7 +4534,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       return h;
     }
     var here=flatHere(),g=GROC.basic,tense=(r.rel||0)<0,am=function(k){return tense?argueChip():''},cls=tense?'chance':'';
+    var TF=PX().theft.flatmate;if((r.rel||0)<0&&moodX().sabotage>0)h0w='<p class="bad arow-n">⚠️ On bad terms: a flatmate below '+TF.below+' may steal cash from you overnight. Keep your money in the bank.</p>';else h0w='';
     h+=psec('flat','🏠 '+r.ic+' '+r.name+(here?' is home':' is out today'),chip('',relLabel(r.rel||0)),'Your flatmate pays half the rent. Each night together: '+sg(F.nightHappiness.friend)+' happiness for both if you are friends, '+sg(F.nightHappiness.friendly)+' if friendly, '+sg(F.nightHappiness.bad)+' on bad terms; the relationship grows '+sg(F.nightRel)+' a night while it is 0 or more. At '+F.leaveAt+' they move out. They are home on about '+pctTxt(F.homeChance)+' of days: then you can spend time together (each once a day).');
+    h+=h0w;
     if(here){
       var off=function(k){return !!flatDid(k)},done1=function(k){return flatDid(k)?chip('','✓ Done today','ok'):''};
       h+=arow('🍳 Cook dinner together',chip('time',hm(F.cook.minutes))+chip('cash','−'+money(cookCost()))+chip('energy','+'+g.en+'%')+chip('happy',sg(g.hap+F.cook.happiness))+chip('health',sg(g.hp))+chip('','Relationship '+sg(F.cook.rel))+am()+done1('cook'),btn('fdo','cook','Cook',0,off('cook')||homeFull()),homeFull()?'You have had enough meals at home today.':'Counts as a meal.',cls);
@@ -4614,6 +4797,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       S.tip={until:S.day+CONFIG.community.tip.days-1};S.notes.push({l:'good',t:'🤝 '+r.ic+' '+r.name+' tipped you off about an opening: your next job interview is easier (until the end of day '+S.tip.until+').'})});
     driftTick();pactTick();rivalPactsTick();  /* moods drift; pacts: pots, tips, betrayals and endings (yours, then rival pairs) */
     settleMoney(true);rivalMsgTick();  /* loans due this morning, then tonight's message; bets settle after both sides' overnight effects */
+    sabTick();  /* sabotage: rivals at you and at each other, effects landing and wearing off */
+    theftTick();  /* cash going missing: a flatmate on bad terms, or a burglar */
     flatTick();  /* a flatmate: the night together, and moving out */
     favourTick();  /* a remembered deed can become a later job introduction */
   }
@@ -6325,7 +6510,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function house(h){
     var H=HOUSE[h], cur=S.home===h&&!S.homeless, f=homeFee(h), SL=CONFIG.sleep, rr0=restRate();
     var about=(h==='apt'?'Cheap and cramped.':'Quiet street, big garden, soft bed.')+' Rent is '+money(H.rent)+' '+everyDays(RENT_EVERY)+'. Resting here restores '+H.rate+'% energy an hour and a night’s sleep '+(CONFIG.sleep.perHour[h]||H.rate)+'% for each hour left in the day, '+pctTxt(CONFIG.sleep.comfortBonus)+' more for each comfort item at home (TV, console, fridge, coffee machine, computer)'+(H.hap?'. The bed adds +'+H.hap+' happiness each night you sleep here':'')+'.'+(h==='bung'?' The agent only lets to people with a steady job.':'');
-    var head=psec('about',(cur?'🏠 Your home':'🏠 To rent'),chip('cash',(cur&&flatmate()?money(myRent())+' (your half)':money(H.rent))+' / '+RENT_EVERY+' days')+chip('energy',H.rate+'%/h rest')+chip('energy',(CONFIG.sleep.perHour[h]||H.rate)+'%/h sleep'),about);
+    var bz=burglaryRisk(h),head=psec('about',(cur?'🏠 Your home':'🏠 To rent'),chip('cash',(cur&&flatmate()?money(myRent())+' (your half)':money(H.rent))+' / '+RENT_EVERY+' days')+chip('energy',H.rate+'%/h rest')+chip('energy',(CONFIG.sleep.perHour[h]||H.rate)+'%/h sleep')+(bz?chip('','🔓 Break-ins: '+pctTxt(bz)+' a night','warn'):''),about+(bz?' Break-ins happen here: on about '+pctTxt(bz)+' of nights a burglar may take some of the cash you keep at home (never your bank savings). The Bungalow is secure.':''));
     if(!cur)return boxed((S.homeless?'<p class="bad arow-n">🏚️ <b>No home.</b> You lost the '+NAME[S.home]+' in the housing bubble. Apply here to move back in.</p>':'')+head+arow(S.homeless?'Apply to rent':'Move in',(f?chip('cash',money(f)+(h==='apt'&&S.homeless?' deposit':'')):chip('','No move-in fee'))+(S.homeless?chip('time',hm(CONFIG.housing.applyMinutes)):''),btn('home',h,S.homeless?'Apply':'Move in')));
     var F=S.food,cnt=function(t,test){return F.filter(function(p){return p.t===t&&(!test||test(p))}).length};
     var nb=cnt('basic',function(p){return !p.sp}),np=cnt('prem',function(p){return !p.sp}),nw=cnt('cook',function(p){return !p.sp&&!p.cold}),ncold=cnt('cook',function(p){return !p.sp&&p.cold});
@@ -6559,7 +6744,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       var C=CONFIG.community,row=function(k,ic,title,btnTxt){var c=C[k],cost=G(c.cost||0),dn=commToday(k)>=c.perDay;
         return arow(ic+' '+title+(cost?' · '+money(cost):''),chip('time',hm(c.minutes))+(c.energy?chip('energy',sg(c.energy)+'%'):'')+chip('happy',sg(c.happiness))+(c.knowledge?chip('know',sg(c.knowledge)):'')+(c.tipChance?chip('','🤝 '+pctTxt(c.tipChance)+' job tip'):'')+(dn?chip('','✓ Done today','ok'):''),btn('comm',k,btnTxt,0,dn||S.cash<cost))};
       return boxed(psec('comm','🤝 Tonight at the centre',tipOn()?chip('','🤝 Job tip until day '+S.tip.until,'ok'):chip('','Once a day each'),'Time with other people lifts your mood more than time alone. Each activity can be done once a day. A night out or volunteering can also get you a job tip from a friend: your next interview (here in town or in the Jobs app) is '+Math.round(C.tip.passBonus*100)+'% more likely to pass and never fails for “no openings”, for up to '+dayN(C.tip.days)+'. The tip is used up by that interview.')+
-        row('nightOut','🍻','Night out with friends','Go out')+row('karaoke','🎤','Karaoke night','Sing')+row('volunteer','🧡','Volunteer at the centre','Volunteer'))
+        row('nightOut','🍻','Night out with friends','Go out')+row('karaoke','🎤','Karaoke night','Sing')+row('volunteer','🧡','Volunteer at the centre','Volunteer')+whoRows()+sabRows('comm'))
     },
     gym:function(){
       var staff=isGymStaff(),n=gymCount();
@@ -7290,6 +7475,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     prenew:   {run:function(){renewPact()},       kind:'fun'},
     pend:     {run:function(){endPact()},         kind:'fun'},
     pbetray:  {run:function(){betrayPact()},      kind:'fun'},
+    sab:      {run:function(g){sabotage(g)},      kind:'fun'},
+    accuse:   {run:function(g){accuse(g)},        kind:'fun'},
     device:   {run:function(g){openDevice(g)},     ui:true},  /* ← Phone / ← Computer: back to the device's home screen */
     divest:   {run:function(g){divest(g)}},
     borrow:   {run:function(){borrow()}},
@@ -7426,7 +7613,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       (function(){var C=CONFIG.community,f=function(c){return hm(c.minutes)+(c.cost?', $'+c.cost:'')+(c.energy?', '+sg(c.energy)+'% energy':'')+', '+sg(c.happiness)+' happiness'+(c.knowledge?', '+sg(c.knowledge)+' knowledge':'')};
         if($('cfgComm'))$('cfgComm').textContent='once a day each: a night out with friends ('+f(C.nightOut)+'), karaoke ('+f(C.karaoke)+') or volunteering ('+f(C.volunteer)+'). A night out ('+pctTxt(C.nightOut.tipChance)+') or volunteering ('+pctTxt(C.volunteer.tipChance)+') can get you a friend’s job tip: for '+dayN(C.tip.days)+' your next interview is '+Math.round(C.tip.passBonus*100)+'% more likely to pass and never fails for “no openings”.'})();
       (function(){var R=CONFIG.rivals,T=CONFIG.time.gameDays,due=TIERS.filter(function(r){return r.d}).map(function(r){return Math.min(Math.round(r.d*R.gameDays/T),R.gameDays)});
-        if($('cfgRivals'))$('cfgRivals').textContent='choose “With AI rivals” on the welcome screen: 1 to 3 computer players (easy, medium, expert or mixed) live the same '+R.gameDays+' days in the same town, under the same prices, pay, storylines, layoffs and job openings. A rival game lasts '+R.gameDays+' days (a single game '+T+'), has '+R.industryStorylines+' industry-specific storylines, and its rank target days stretch to day '+due.join(', ')+'. Reaching '+TIERS[TIERS.length-1].n+' does not end a rival game: everyone plays all '+R.gameDays+' days. The game is won on the Life Score: in each category everyone gets a place, worth '+R.scoring.placePoints.join('/')+' points (1st/2nd/…) × the category weight: '+Object.keys(R.scoring.categories).filter(function(k){return R.scoring.categories[k].on&&LIFE_CATS[k]}).map(function(k){return LIFE_CATS[k].n.toLowerCase()+' ×'+R.scoring.categories[k].weight}).join(', ')+'. Happiness counts as the average over the game, health as unwell nights (ill, or health under '+CONFIG.health.poorBelow+'), stability counts crisis days (no meal, rent arrears, an overdue loan, illness, no clothes), career is your best-paid job, and first to the line rewards reaching each rank earliest. '+'Personalities: '+Object.keys(R.personalities).map(function(k){var p=R.personalities[k];return p.name.toLowerCase()+' ('+p.about+')'}).join('; ')+'. Meaningful help and refusals are remembered (up to '+R.memory.maxEntries+' recent memories). Remembered trust changes lending by '+pctTxt(R.memory.lendPerTrust)+' per point, capped at '+R.memory.maxTrust+' points either way. Rivals can owe up to '+R.memory.maxOwed+' favours; each can become one job introduction on a later morning while you are on speaking terms. Open their Overview profile for their memories. '+(R.jobRace&&R.jobRace.chance>0?'When a '+R.jobRace.levels.join(' or ')+' rival gets a job, it may have taken the last opening: that role has no openings for you the next day (up to '+R.jobRace.maxPerGame+' times a game). ':'')+(function(){var X=R.social;return X?'Each rival has a relationship with you, from enemy to friend. Building it costs time: chat ('+hm(X.chat.minutes)+') or say hello ('+hm(X.hello.minutes)+') when you meet them around town, call them (from home, or by phone anywhere, one or a group; usually +1 or +2, sometimes an argument), or congratulate them on their news ('+hm(X.congratulate.minutes)+'). On bad terms, an interaction may turn tense and make things worse ('+pctTxt(X.tension.per*20)+' base chance at −20, up to '+pctTxt(X.tension.max)+'; personality also affects tension)' +(X.argument&&X.argument.happiness?'; an argument (a call that goes wrong, or tension) also costs you '+Math.abs(X.argument.happiness)+' happiness':'')+'. Friends sometimes tip you off about openings; enemies race you harder for them. ':''})()+(function(){var M=R.money;if(!M)return '';var L=M.loan,B=M.bet;return 'In the 💬 Messages app (phone or computer), rivals may ask to borrow money or offer a bet, and you can ask them. Loans run '+L.days+' days at '+Math.round(L.interest*100)+'%: you get a reminder the morning before yours is due, and if it isn’t paid in full on the due morning your relationship with the lender drops '+Math.abs(L.defaultRel)+', with every other rival '+Math.abs(L.defaultOthersRel)+', and you lose '+Math.abs(L.defaultHappiness)+' happiness. A rival who turns down your request drops '+Math.abs(L.askedNoRel)+'. A bet ('+money(S?G(B.stake):B.stake)+' each) goes to whoever grows their net worth more over '+B.days+' days. '})()+(function(){var T=R.together;if(!T)return '';var F=T.flat,Z=T.study;return 'At home you can invite a friendly rival to be your flatmate: rent is split in half, living together lifts or drags both your moods each night ('+sg(F.nightHappiness.friend)+' as friends, '+sg(F.nightHappiness.bad)+' on bad terms), some rent days they skip their share ('+sg(F.skipRel)+' relationship, '+sg(F.skipHappiness)+' happiness, and you pay it all), and they move out at '+F.leaveAt+'. When they are home you can cook, hang out, do chores or clear the air together. A lesson in a pathway a friendly rival is also studying is a study group: +'+Z.groupKnowledge+' knowledge, '+sg(Z.groupHappiness)+' happiness and '+sg(Z.groupRel)+' relationship. Some nights bring a decision involving a rival (a lift, a birthday, a rumour, covering a shift…). '})()+(function(){var Pp=R.politics;if(!Pp)return '';var Q=Pp.pact,Bt=Pp.betray,Rp=Pp.rep,mo=Pp.moods;return 'Town mood (welcome screen): '+Object.keys(mo).map(function(k){return mo[k].icon+' '+mo[k].name.toLowerCase()+(mo[k].betray?' (betrayals ×'+mo[k].betray+')':' (no betrayals)')}).join(', ')+'. Everyone has a reputation from 0 to 100 (start '+Rp.start+'): keeping a pact '+sg(Rp.keepPact)+', repaying a rival on time '+sg(Rp.repay)+', not paying back '+sg(Rp.defaulted)+', helping a rival '+sg(Rp.help)+', a betrayal '+sg(Rp.betray)+'; it shifts interview chances ('+pctTxt(Rp.interviewPer*10)+' per 10 points) and whether rivals accept your pacts and loans, and it is a Life Score category. With a 🤝 friend ('+Q.need+'+) you can make a '+Q.days+'-day pact in Messages, plain or with a shared pot ('+money(S?G(Q.pot):Q.pot)+' each, earning the savings rate +'+Q.potBonusRate+' point a day): an ally may pass you job tips and never takes the last opening from you; a pact kept to the end splits the pot ('+sg(Q.keepRel)+' relationship). An ally can betray you ('+Object.keys(Bt.chance).map(function(k){return k+' '+pctTxt(Bt.chance[k])}).join(', ')+' a night, experts ×'+Bt.lateMult+' in the last '+Bt.lateDays+' days): taking the pot, not repaying a loan, taking the job you are after, or leaking your plans; the betrayer drops to '+Bt.relTo+' with the victim and loses reputation. You can betray an ally too. Rivals make and break pacts with each other. Each night every rival’s relationship with you drifts by '+sg(Pp.drift.min)+' to '+sg(Pp.drift.max)+'. '})()+'The Overview shows the running leaderboard, the morning news tells you what your rivals did, and the end screen shows every category.'})();
+        if($('cfgRivals'))$('cfgRivals').textContent='choose “With AI rivals” on the welcome screen: 1 to 3 computer players (easy, medium, expert or mixed) live the same '+R.gameDays+' days in the same town, under the same prices, pay, storylines, layoffs and job openings. A rival game lasts '+R.gameDays+' days (a single game '+T+'), has '+R.industryStorylines+' industry-specific storylines, and its rank target days stretch to day '+due.join(', ')+'. Reaching '+TIERS[TIERS.length-1].n+' does not end a rival game: everyone plays all '+R.gameDays+' days. The game is won on the Life Score: in each category everyone gets a place, worth '+R.scoring.placePoints.join('/')+' points (1st/2nd/…) × the category weight: '+Object.keys(R.scoring.categories).filter(function(k){return R.scoring.categories[k].on&&LIFE_CATS[k]}).map(function(k){return LIFE_CATS[k].n.toLowerCase()+' ×'+R.scoring.categories[k].weight}).join(', ')+'. Happiness counts as the average over the game, health as unwell nights (ill, or health under '+CONFIG.health.poorBelow+'), stability counts crisis days (no meal, rent arrears, an overdue loan, illness, no clothes), career is your best-paid job, and first to the line rewards reaching each rank earliest. '+'Personalities: '+Object.keys(R.personalities).map(function(k){var p=R.personalities[k];return p.name.toLowerCase()+' ('+p.about+')'}).join('; ')+'. Meaningful help and refusals are remembered (up to '+R.memory.maxEntries+' recent memories). Remembered trust changes lending by '+pctTxt(R.memory.lendPerTrust)+' per point, capped at '+R.memory.maxTrust+' points either way. Rivals can owe up to '+R.memory.maxOwed+' favours; each can become one job introduction on a later morning while you are on speaking terms. Open their Overview profile for their memories. '+(R.jobRace&&R.jobRace.chance>0?'When a '+R.jobRace.levels.join(' or ')+' rival gets a job, it may have taken the last opening: that role has no openings for you the next day (up to '+R.jobRace.maxPerGame+' times a game). ':'')+(function(){var X=R.social;return X?'Each rival has a relationship with you, from enemy to friend. Building it costs time: chat ('+hm(X.chat.minutes)+') or say hello ('+hm(X.hello.minutes)+') when you meet them around town, call them (from home, or by phone anywhere, one or a group; usually +1 or +2, sometimes an argument), or congratulate them on their news ('+hm(X.congratulate.minutes)+'). On bad terms, an interaction may turn tense and make things worse ('+pctTxt(X.tension.per*20)+' base chance at −20, up to '+pctTxt(X.tension.max)+'; personality also affects tension)' +(X.argument&&X.argument.happiness?'; an argument (a call that goes wrong, or tension) also costs you '+Math.abs(X.argument.happiness)+' happiness':'')+'. Friends sometimes tip you off about openings; enemies race you harder for them. ':''})()+(function(){var M=R.money;if(!M)return '';var L=M.loan,B=M.bet;return 'In the 💬 Messages app (phone or computer), rivals may ask to borrow money or offer a bet, and you can ask them. Loans run '+L.days+' days at '+Math.round(L.interest*100)+'%: you get a reminder the morning before yours is due, and if it isn’t paid in full on the due morning your relationship with the lender drops '+Math.abs(L.defaultRel)+', with every other rival '+Math.abs(L.defaultOthersRel)+', and you lose '+Math.abs(L.defaultHappiness)+' happiness. A rival who turns down your request drops '+Math.abs(L.askedNoRel)+'. A bet ('+money(S?G(B.stake):B.stake)+' each) goes to whoever grows their net worth more over '+B.days+' days. '})()+(function(){var T=R.together;if(!T)return '';var F=T.flat,Z=T.study;return 'At home you can invite a friendly rival to be your flatmate: rent is split in half, living together lifts or drags both your moods each night ('+sg(F.nightHappiness.friend)+' as friends, '+sg(F.nightHappiness.bad)+' on bad terms), some rent days they skip their share ('+sg(F.skipRel)+' relationship, '+sg(F.skipHappiness)+' happiness, and you pay it all), and they move out at '+F.leaveAt+'. When they are home you can cook, hang out, do chores or clear the air together. A lesson in a pathway a friendly rival is also studying is a study group: +'+Z.groupKnowledge+' knowledge, '+sg(Z.groupHappiness)+' happiness and '+sg(Z.groupRel)+' relationship. Some nights bring a decision involving a rival (a lift, a birthday, a rumour, covering a shift…). '})()+(function(){var Pp=R.politics;if(!Pp)return '';var Q=Pp.pact,Bt=Pp.betray,Rp=Pp.rep,mo=Pp.moods;return 'Town mood (welcome screen): '+Object.keys(mo).map(function(k){return mo[k].icon+' '+mo[k].name.toLowerCase()+(mo[k].betray?' (betrayals ×'+mo[k].betray+')':' (no betrayals)')}).join(', ')+'. Everyone has a reputation from 0 to 100 (start '+Rp.start+'): keeping a pact '+sg(Rp.keepPact)+', repaying a rival on time '+sg(Rp.repay)+', not paying back '+sg(Rp.defaulted)+', helping a rival '+sg(Rp.help)+', a betrayal '+sg(Rp.betray)+'; it shifts interview chances ('+pctTxt(Rp.interviewPer*10)+' per 10 points) and whether rivals accept your pacts and loans, and it is a Life Score category. With a 🤝 friend ('+Q.need+'+) you can make a '+Q.days+'-day pact in Messages, plain or with a shared pot ('+money(S?G(Q.pot):Q.pot)+' each, earning the savings rate +'+Q.potBonusRate+' point a day): an ally may pass you job tips and never takes the last opening from you; a pact kept to the end splits the pot ('+sg(Q.keepRel)+' relationship). An ally can betray you ('+Object.keys(Bt.chance).map(function(k){return k+' '+pctTxt(Bt.chance[k])}).join(', ')+' a night, experts ×'+Bt.lateMult+' in the last '+Bt.lateDays+' days): taking the pot, not repaying a loan, taking the job you are after, or leaking your plans; the betrayer drops to '+Bt.relTo+' with the victim and loses reputation. You can betray an ally too. Rivals make and break pacts with each other. Each night every rival’s relationship with you drifts by '+sg(Pp.drift.min)+' to '+sg(Pp.drift.max)+'. '})()+(function(){var Pp=R.politics,Z=Pp&&Pp.sabotage,TH=Pp&&Pp.theft;if(!Z||!TH)return '';var mv=Z.moves,mo=Pp.moods;return 'Sabotage ('+Object.keys(mo).filter(function(k){return mo[k].sabotage}).map(function(k){return mo[k].name.toLowerCase()}).join(' and ')+' towns; every move costs time): '+Object.keys(mv).map(function(k){var m=mv[k];return m.name.toLowerCase()+' ('+hm(m.minutes)+', caught '+pctTxt(m.caught)+')'}).join(', ')+'. Each earlier sabotage adds '+pctTxt(Z.perUse)+' to the chance of being caught, up to '+pctTxt(Z.maxCaught)+'. Caught: reputation '+sg(Z.caught.rep)+', relationship '+sg(Z.caught.rel)+', '+sg(Z.caught.happiness)+' happiness, and they may strike back; not caught after '+Z.gotAwayDays+' days: '+sg(Z.gotAwayHappiness)+' happiness. You can hit each rival '+Z.yourHitsPerRivalPerDay+' times a day and be hit '+Z.hitsOnYouPerDay+' times a night. Rivals sabotage you and each other; when you are not told who, accuse someone at the Community Centre (right: they lose reputation; wrong: relationship '+sg(Z.accuse.wrongRel)+' with the one you blamed and '+sg(Z.accuse.wrongHappiness)+' happiness). Cash can go missing overnight: a flatmate below '+TH.flatmate.below+' may steal, and burglars break in ('+pctTxt(TH.burglary.chance)+' a night) in the '+TH.burglary.homes.map(function(h){return NAME[h]||h}).join(', ')+'. A small theft ('+pctTxt(TH.small.min)+'–'+pctTxt(TH.small.max)+' of your cash) does not say who; a big one ('+pctTxt(TH.big.min)+'–'+pctTxt(TH.big.max)+') does, and a flatmate who takes it moves out. Money in the bank is never taken. '})()+'The Overview shows the running leaderboard, the morning news tells you what your rivals did, and the end screen shows every category.'})();
       $('cfgRent').textContent=everyDays(RENT_EVERY);
       $('apOf').textContent=' of '+hm(MAX_AP);
       $('cfgDebt').textContent=pctTxt(CONFIG.hospital.billInterest);

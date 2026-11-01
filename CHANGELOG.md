@@ -1473,3 +1473,61 @@ The first half of the last rivals step (batch 4a): relationships become strategy
   - reputation from loans (+2 each way, −8 for a default) and in the Life Score;
   - 20 real cutthroat days with no script errors.
 - **UI check:** new situations for a friend to make a pact with, a pact on its last day (renew, end, betray) and a pact offer, plus a betrayal-morning flow. New reload checks cover a Town mood game, an old rival save loading with the defaults, and the Rules text. Run against the previous build, they caught all three problems. 0 issues on desktop and phone.
+
+## 92. AI rivals: sabotage, accusations, thefts and burglaries
+
+The second half of the last rivals step (batch 4b). Everything here is light and temporary: nobody loses a job, home or health outright. Sabotage and flatmate theft don't happen in a 😊 Friendly town.
+- **🗯️ Seven sabotage moves,** each costing time. Base catch chances are in brackets:
+
+  | Move | Where | Time | Effect | Caught |
+  |---|---|---|---|---|
+  | 🗣️ Spread a rumour | Community Centre | 1h | Interview −15 points for 2 days | 30% |
+  | 📱 Spread a rumour online | Messages app | 30 min | Interview −15 points for 2 days | 35% |
+  | 💬 Bad-mouth them | Community Centre | 30 min | Their reputation −5 | 25% |
+  | 📚 Grab their class | Community Centre | 15 min, $15 | No lesson for them the next day | 10% |
+  | 👔 Talk them down to the boss | Community Centre | 30 min | Their pay −10% for 2 days (same workplace only) | 40% |
+  | 📝 Snag their opening | Community Centre | 1h | The role they're after is closed to them for 2 days | 25% |
+  | 📞 Late-night prank calls | Community Centre | 15 min | Their energy −15 the next morning (needs a phone or tablet) | 20% |
+
+  - **Doing it often gets you caught:** each sabotage you've already done this game adds 5 points to the catch chance, up to 90%, and the row shows the real figure.
+  - **Limits:** at most 8 schemes a game. You can hit each rival twice a day.
+  - **Caught:** it fails, with reputation −15, relationship −20, −3 happiness, and for 5 days they're three times as likely to strike back (five times if vindictive).
+  - **Getting away with it:** 3 days after a move, if you were never caught for it, you gain +2 happiness.
+- **📉 Rivals sabotage you and each other,** with the same moves and rules.
+  - **The nightly chance:** easy 3%, medium 4%, expert 3%. That's × the mood, ×2 if they're on bad terms with you, × personality (vindictive ×1.5, ambitious ×1.2, generous ×0.3), and more with a grudge.
+  - **Who's left alone:** friends and your ally never sabotage you.
+  - **Strategy:** medium rivals only go after someone ahead of them, and experts only when you're ahead and in the last 10 days.
+  - **The limit:** you can be hit at most twice a night.
+  - **Getting caught:** easy 50%, medium 30%, expert 15%. When caught, they're named in the morning news and lose 15 reputation.
+  - **Not caught:** you get a hint ("Someone has been talking you down to your boss…") with no name.
+  - **The effects on you:** the interview chance drops, the pay drop shows on shift chips and in the Productivity reasons, a lesson is refused ("Someone booked the last seat"), an opening is closed, and energy or reputation is lost.
+- **🔎 Who did it?** At the Community Centre you can accuse a suspect for any setback or theft you weren't told about (30 min, one guess each, within 5 days).
+  - **Right:** they lose 10 reputation and 10 relationship, and you gain +2 happiness. The setback ends early, or a flatmate gives the cash back.
+  - **Wrong:** your relationship with the one you accused drops 20 (double) and you lose 5 happiness. Wrongly blaming a burglar costs only the happiness.
+- **💸 Cash going missing overnight.** Only cash is taken; the bank is never touched.
+  - **A flatmate below −10** may steal (15% a night, × mood and personality).
+  - **A burglar** breaks in 10% of nights, but only in the Low-End Apartment.
+  - **A small theft** (10–50% of your cash) doesn't say who: "either your flatmate or a burglar", or "a burglar, or someone with a key" when you have no flatmate. It costs −3 happiness and you can accuse someone.
+  - **A big theft** (50–80%) says who. Either "🚨 A burglar broke into your apartment…" (−8 happiness), or the flatmate moved out overnight with the money: −60 relationship, −25 reputation, −10 happiness, and the next rent is all yours.
+  - **Every theft** reminds you to keep money in the bank or move to the Classy Bungalow.
+  - **Warnings ahead of time:** the apartment shows a "🔓 Break-ins: 10% a night" chip, and a flatmate on bad terms shows a theft warning.
+- **Overview:** each player's profile lists active setbacks ("📉 rumour until day 9"), marking your own.
+- **Rules:** the AI rivals sentence now covers sabotage, accusations, flatmate theft and burglaries.
+- **Config:** new `CONFIG.rivals.politics.sabotage` and `.theft`, and a `sabotage` factor on each Town mood.
+  - **`sabotage`:** {hitsOnYouPerDay, yourHitsPerRivalPerDay, rivalHitsPerDay, maxPerGame, days, gotAwayDays, gotAwayHappiness, perUse, maxCaught, moves {rumour, online, badmouth, cls, boss, snag, prank}, caught, rival, accuse}.
+  - **`theft`:** {small, big, flatmate, burglary}.
+- **Saves:** version 7. `S` gains `sabOn`, `sabMine`, `sabUsed`, `incidents` and `incN`. Each rival gains `sabOn`, `sabUsed` and `grudge`.
+- **Single games:** a seeded 15-day single game is identical to the previous build. Burglary is part of rival games only.
+- **Checked:**
+  - all seven moves, with their time and cost, and each effect on the rival's own nights (two days for lasting effects, the next day for a class);
+  - getting caught (−15/−20/−3 and a grudge);
+  - the climbing catch chip, the 2-a-day cap per rival, and no sabotage in Friendly;
+  - the +2 for getting away with it after 3 days (not for a caught move);
+  - rivals landing at most 2 moves on you a night, friends never, medium rivals only when you're ahead, and caught rivals named;
+  - the setbacks on you (pay, lesson, timing);
+  - accusing right and wrong, for a setback and a theft;
+  - every theft scenario, with the bank untouched, none in the Bungalow, none at −10 or in Friendly;
+  - burglary at 9.98% over 4,000 nights, and both warnings;
+  - 20 real cutthroat days with no script errors.
+  - **One change after the real-days run:** unsolved incidents now lapse after 5 days, after 7 had piled up on the "Who did it?" card.
+- **UI check:** new situations for Town talk, a rumour online, "Who did it?" and a flatmate on bad terms, plus a burglary-morning flow. 0 issues on desktop and phone.
