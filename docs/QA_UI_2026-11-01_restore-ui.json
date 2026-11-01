@@ -1,0 +1,64 @@
+[
+ {
+  "viewport": "desktop",
+  "width": 1280,
+  "height": 800,
+  "ms": 61175,
+  "stats": {
+   "buttons": 611,
+   "clicks": 611,
+   "buildings": 16,
+   "checks": 112,
+   "popups": [
+    "apt: Sleep at Apartment",
+    "apt: Sleep at Apartment",
+    "apt: Sleep at Apartment",
+    "apt: Sleep at Apartment",
+    "apt: Sleep at Apartment",
+    "apt: Sleep at Apartment",
+    "apt: Sleep at Apartment",
+    "apt: Sleep at Apartment"
+   ],
+   "situations": 34
+  },
+  "issues": []
+ },
+ {
+  "viewport": "phone",
+  "width": 390,
+  "height": 844,
+  "ms": 63126,
+  "stats": {
+   "buttons": 611,
+   "clicks": 611,
+   "buildings": 16,
+   "checks": 112,
+   "popups": [
+    "apt: Sleep at Apartment",
+    "apt: Sleep at Apartment",
+    "apt: Sleep at Apartment",
+    "apt: Sleep at Apartment",
+    "apt: Sleep at Apartment",
+    "apt: Sleep at Apartment",
+    "apt: Sleep at Apartment",
+    "apt: Sleep at Apartment"
+   ],
+   "situations": 34
+  },
+  "issues": []
+ },
+ {
+  "viewport": "reload checks",
+  "width": 1280,
+  "height": 800,
+  "ms": 9084,
+  "stats": {
+   "buildings": 0,
+   "situations": 0,
+   "clicks": 0,
+   "checks": 8,
+   "popups": []
+  },
+  "issues": []
+ }
+]

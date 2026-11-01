@@ -1540,3 +1540,10 @@ The second half of the last rivals step (batch 4b). Everything here is light and
 - The Overview shows the highest completed qualification for every pathway. The rival leaderboard adds wealth and career-pay comparison bars. At midgame, rivals on the same job and study path pivot toward a feasible alternate career and qualification, retaining that preference for the rest of the game.
 - Clickable buttons use the teal palette. The morning card drops the unchanged daily rates briefing, collapses exact duplicate notices and uses a shorter heading. Quiet-night text varies across days, and the sleep recap is shorter.
 - Targeted DOM/game checks passed for the new action outcomes, milestones, day indicators, education, map tags, bars and rival pivot. The standard desktop/phone visual runner could not start: its Chromium binary was absent, and the browser download produced an invalid archive. Visual layout remains to be checked in a browser.
+
+
+## 94. Restore the earlier UI appearance
+
+- Restored the presentation from `ed9e8e0`: button colors, Overview phone placement, compact education and rival summaries, map tags, sleep labels and detailed recaps. Removed the added daily HUD indicators and comparison bars.
+- Kept latest-main gameplay: flatmate refusals, rival career diversification and rank progression without an ending popup. Kept duplicate morning-notice filtering and accurate flatmate rules.
+- Targeted checks: static HTML/CSS matches `ed9e8e0`; five affected gameplay functions match latest main exactly; JavaScript syntax passes; rival Overview renders at 1280px and 390px with correct phone placement, no added UI remnants, no horizontal overflow and no script errors. Full desktop/phone UI check passed: 16 buildings, 34 situations, 611 button presses and 112 layout checks per viewport; reload, save recovery, difficulty, trait, Town mood and Rules checks also passed. Zero issues. Simulations were not requested. [UI report](docs/QA_UI_2026-11-01_restore-ui.md).

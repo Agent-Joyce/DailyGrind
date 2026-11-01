@@ -106,7 +106,7 @@ p{margin:0 0 10px}
 input{font:inherit;width:110px;padding:8px;border:3px solid var(--ink);border-radius:8px;background:var(--bg);color:var(--ink)}
 
 .btn{font:inherit;font-weight:800;background:var(--teal);color:var(--teal-ink);border:3px solid var(--ink);border-radius:10px;box-shadow:0 5px 0 var(--ink);padding:9px 16px;min-height:44px;cursor:pointer}
-.btn.alt{background:var(--teal);color:var(--teal-ink)}
+.btn.alt{background:var(--surface);color:var(--ink)}
 .btn:active:not(:disabled){transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
 .btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:0 2px 0 var(--ink)}
 .btn:focus-visible,.tile:focus-visible,input:focus-visible{outline:4px solid var(--gold);outline-offset:2px}
@@ -185,7 +185,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 #econ span.up{color:var(--red)}#econ span.dn{color:var(--green)}
 .modes .btn[aria-pressed="true"]{outline:3px solid var(--gold);outline-offset:1px}
 .rivopts{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin:6px 0 2px;font-size:.85rem}.rivopts>div{display:flex;gap:6px;align-items:center}
-.rseg{display:inline-flex;border:2px solid var(--line);border-radius:10px;overflow:hidden}.rseg button{border:0;background:var(--teal);color:var(--teal-ink);padding:5px 10px;font:inherit;cursor:pointer}.rseg button.on{background:var(--teal);color:var(--teal-ink);font-weight:800;outline:2px solid var(--gold);outline-offset:-2px}
+.rseg{display:inline-flex;border:2px solid var(--line);border-radius:10px;overflow:hidden}.rseg button{border:0;background:var(--surface);color:var(--ink);padding:5px 10px;font:inherit;cursor:pointer}.rseg button.on{background:var(--teal,#2a9d8f);color:#fff;font-weight:700}
 .g-riv .rivrow{display:flex;gap:8px;align-items:baseline;font-size:.82rem;padding:3px 0;border-top:1px dashed var(--line)}.g-riv .rivrow:first-child{border-top:0}
 .g-riv .rivrow .rn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}.g-riv .rivrow b{white-space:nowrap}.g-riv .rivrow .rd{font-size:.7rem;white-space:nowrap}
 .g-riv .me{font-weight:700}.g-riv details summary{cursor:pointer;list-style:none}.g-riv details summary::-webkit-details-marker{display:none}.g-riv details ul{margin:2px 0 4px 18px;padding:0;font-size:.72rem;color:var(--muted,#667)}
@@ -208,7 +208,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 .goals{margin:5px 0 0;padding:4px 10px 6px;border:2px dashed var(--teal);border-radius:12px;background:color-mix(in srgb,var(--teal) 7%,var(--surface))}
 .goals .gh{display:flex;align-items:center;gap:8px;color:var(--teal);margin-bottom:2px}.goals .gh span{color:var(--muted)}
 .goal{font-size:.78rem;padding:1px 0}.pips{display:flex;gap:4px;margin:2px 0 3px}.pips i{flex:1;height:5px;border-radius:3px;background:var(--line)}.pips i.on{background:var(--teal)}.goal.done{color:var(--muted);text-decoration:line-through}
-.linkbtn{margin-left:auto;font:inherit;font-size:.72rem;background:var(--teal);border:0;border-radius:6px;color:var(--teal-ink);cursor:pointer;padding:2px 6px}
+.linkbtn{margin-left:auto;font:inherit;font-size:.72rem;background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;padding:2px 4px}
 .sumcard{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;margin:6px 0 0;padding:5px 10px;border-radius:12px;border:2px solid var(--line);background:var(--surface);font-size:.76rem}
 .sumcard .st{font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:.68rem;color:var(--muted)}.sumcard .up{color:var(--green)}.sumcard .dn{color:var(--red)}
 .sumcard .hits{flex-basis:100%;color:var(--red);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -219,7 +219,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 .diffs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:6px}.diffs .btn{display:flex;flex-direction:column;gap:3px;text-align:left;padding:8px 10px}.diffs small{font-weight:600;font-size:.72rem;opacity:.85}
 @media (max-width:640px){.diffs{grid-template-columns:1fr}}
 .mute.reset{font-size:.72rem;font-weight:800;padding:1px 8px;color:var(--red);border-color:color-mix(in srgb,var(--red) 45%,var(--line))}
-.mute{font:inherit;font-size:.9rem;background:var(--teal);color:var(--teal-ink);border:2px solid var(--line);border-radius:8px;padding:0 6px;margin-left:6px;cursor:pointer;vertical-align:middle}
+.mute{font:inherit;font-size:.9rem;background:none;border:2px solid var(--line);border-radius:8px;padding:0 6px;margin-left:6px;cursor:pointer;vertical-align:middle}
 .floater{position:absolute;z-index:1500;transform:translate(-50%,0);pointer-events:none;font-weight:800;font-size:.95rem;padding:1px 8px;border-radius:99px;background:rgba(255,255,255,.92);box-shadow:0 2px 6px rgba(0,0,0,.25);animation:floatup 1.4s ease-out forwards;white-space:nowrap}
 .ic{display:inline-block;width:1.15em;height:1.15em;vertical-align:-.22em;margin-right:3px;flex:none}
 .opt small .ic{width:1.25em;height:1.25em;margin:0 2px 0 4px}.opt small .ic:first-child{margin-left:0}
@@ -238,12 +238,12 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 @media (prefers-reduced-motion:reduce){.floater{animation:none}}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (hover:hover){.btn[data-k]{position:relative}.btn[data-k]::after{content:attr(data-k);position:absolute;top:-8px;right:-8px;min-width:16px;height:16px;padding:0 3px;border-radius:8px;background:var(--ink);color:var(--surface);font-size:.62rem;line-height:16px;text-align:center;box-shadow:none}}
-.btn.work{background:var(--teal);color:var(--teal-ink)}.btn.work::before{content:'🛠️ '}
+.btn.work{background:#e0a526;color:#16222e}.btn.work::before{content:'🛠️ '}
 .thing.groc{width:104px}.thing.groc em{font-style:normal;font-size:.6rem;font-weight:800;margin-top:2px;padding:1px 4px;border-radius:6px}
 .thing.groc.cold em,.life.cold{background:#dbeefe;color:#1d5f99}.thing.groc.warm em,.life.warm{background:#fde8d4;color:#9a4b12}
 .shelf{margin:8px 0 2px}.shelf h5{margin:0 0 3px;font-size:.8rem;font-weight:800}.shelf h5 small{font-weight:600;color:var(--muted);margin-left:4px}
 .thing.groc.pick{border-color:#1d5f99}.thing small b{font-weight:800}
-.mini{margin-top:4px;font:inherit;font-size:.72rem;font-weight:800;padding:2px 6px;border:2px solid var(--ink);border-radius:7px;background:var(--teal);color:var(--teal-ink);cursor:pointer}.thing .mini{font-size:.62rem}
+.thing .mini{margin-top:4px;font:inherit;font-size:.62rem;font-weight:800;padding:2px 6px;border:2px solid var(--ink);border-radius:7px;background:var(--bg);color:var(--ink);cursor:pointer}
 .life{display:inline-block;margin-top:4px;padding:2px 8px;border-radius:8px;font-size:.8rem;font-weight:700}
 .tleft{display:flex;align-items:center;gap:10px}.donut{width:46px;height:46px;flex:none}.donut circle{transition:stroke-dasharray .4s ease,stroke .4s}
 .worksec{margin:4px 0 6px;padding:2px 10px;border-radius:12px;background:color-mix(in srgb,#e0a526 14%,var(--surface));border:2px solid color-mix(in srgb,#e0a526 55%,var(--line))}.worksec.none{padding:6px 10px;background:var(--surface);border-style:dashed}
@@ -302,14 +302,6 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 .invline{display:inline-block;margin-right:12px;margin-top:4px;font-size:.78rem;color:var(--muted)}.invline b{color:var(--ink)}.invline .up{color:var(--green)}.invline .dn{color:var(--red)}
 .kb i{background:#8a5cc2}
 .meal{margin-top:5px;font-size:.78rem;font-weight:700}.meal.ok{color:var(--green)}.meal.no{color:var(--red)}
-.day-status{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.day-status span{border:2px solid rgba(255,255,255,.35);border-radius:8px;padding:2px 8px;font-size:.82rem;font-weight:800}.day-status .unfed{background:#8a2929;color:#fff}.day-status .fed{background:#146347;color:#fff}
-.board-phone{position:absolute;top:12px;right:12px;z-index:1200;background:var(--surface);border:2px solid var(--ink);border-radius:12px;padding:7px;max-width:185px;box-shadow:0 4px 12px #16222e55}.board-phone .btn{width:100%;min-height:38px}.board-phone small{display:block;font-size:.67rem;line-height:1.2;color:var(--ink);margin-top:3px}
-.tile .tag.job{background:var(--teal);color:var(--teal-ink)}.tile .tag.closed{background:var(--red);color:#fff}.tile .tag.home{background:#fff0a8}.tile .tag.you{background:var(--gold)}.tile .tags .tag{max-width:105px;white-space:normal;line-height:1.1}
-.board:has(.center.ovl) .board-phone{z-index:900}
-.rival-bars{display:grid;grid-template-columns:48px 1fr auto;align-items:center;gap:2px 7px;margin:4px 0 7px;font-size:.69rem}.rival-bars i{display:block;height:7px;min-width:2px;background:var(--teal);border-radius:7px}.rival-bars .track{height:7px;background:var(--line);border-radius:7px;overflow:hidden}.rival-bars b{font-size:.68rem}
-.edu-paths{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:3px 10px;width:100%}.edu-paths span{white-space:normal}.time-warn{color:#ffad42!important}.time-urgent{color:#ff6565!important}
-@media (min-width:641px){.hud .tcell b{font-size:1.12rem}.tcell.pay .g-vit.inpay{padding:10px;border:2px solid var(--teal);border-radius:12px;background:color-mix(in srgb,var(--teal) 8%,var(--surface))}.g-vit.inpay .mrow b{font-size:1.08rem}}
-@media (max-width:640px){.board-phone{top:6px;right:6px;max-width:130px;padding:4px}.board-phone .btn{font-size:.75rem;min-height:34px;padding:3px}.board-phone small{font-size:.56rem}.day-status{flex:1 1 100%;justify-content:center}.day-status span{font-size:.72rem}.rival-bars{grid-template-columns:42px 1fr auto}}
 .alerts{display:flex;flex-direction:column;gap:3px;margin:6px 0 0}.al{padding:3px 10px;border-radius:9px;font-size:.78rem;font-weight:700;border:2px solid var(--gold);background:color-mix(in srgb,var(--gold) 16%,var(--surface))}.al.bad{border-color:var(--red);background:color-mix(in srgb,var(--red) 13%,var(--surface))}.al.more{border:0;background:none;color:var(--muted);padding:0 4px}
 .rules{text-align:left;max-width:560px;max-height:92vh;overflow-y:auto}.rules h3{margin:12px 0 4px;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em}.rules ul{margin:0;padding-left:18px;font-size:.88rem}.rules li{margin:3px 0}.rules .win{color:var(--green)}.rules .lose{color:var(--red)}
 .warnbar{margin:6px 0 0;padding:6px 10px;border-radius:10px;background:color-mix(in srgb,var(--red) 14%,var(--surface));border:2px solid var(--red);font-size:.82rem;font-weight:700}
@@ -570,13 +562,11 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     <div class="tcell sc" data-tip="score" tabindex="0"><span class="l"><span class="sclbl">Score </span><i class="hinfo" aria-label="How the score is worked out">i</i></span><b id="hScore">0</b><small id="hBest"></small></div>
   </div>
   <div class="actbar" id="actbar"><button class="btn alt" id="hudLeave">← Leave</button><button class="btn alt places-btn" id="hudPlaces" title="List of places">📍 Places</button><button class="btn alt" id="hudOv" hidden title="Show the overview window">📋 Overview</button><button class="btn" id="hudEnd">Sleep in Apartment ☾</button></div>
-  <div class="day-status" aria-live="polite"><span id="dayMeal">🍽 No meal yet</span><span id="dayWork">💼 Worked 0h</span><span id="dayStudy">📚 Studied 0h</span></div>
   <div class="daybar" id="daybar" aria-hidden="true"></div>
 </header>
 <main class="board" id="board">
   <svg id="map" class="map" aria-hidden="true"></svg>
   <div class="cloud"></div><div class="cloud b"></div>
-  <div class="board-phone"><button type="button" class="btn" id="phoneBtn">📱 Phone apps</button><small id="phoneNote"></small></div>
   <section class="center" id="center" aria-label="Game panel">
     <div id="sr" class="sr" aria-live="polite" aria-atomic="true"></div>
     <div id="overview">
@@ -623,6 +613,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
           <div id="billsRow" hidden><span class="dot d5"></span>Bills<b id="billsv" class="owe">$0</b></div>
         </div>
         <div class="invline" id="invline" hidden></div>
+        <p class="bankapp"><button type="button" class="btn alt" id="phoneBtn">📱 Phone</button> <small id="phoneNote"></small></p>
         <div class="invline" id="debtline" hidden></div>
       </div>
       <div class="grp g-riv" id="rivBox" hidden>
@@ -2780,10 +2771,12 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   }
   /* the morning money briefing: what your money made overnight, today's rates and the best return open to you */
   function moneyBrief(interest,moved){
-    var a=[],o=offerToday();
+    var a=[],o=offerToday(),O=CONFIG.bank.offers;
     if(interest||Math.abs(moved)>=0.5)a.push({l:interest+moved>=0?'good':'warn',t:'💰 Your money made '+sm(interest+moved)+' overnight ('+[interest?'savings +'+money(interest):'',Math.abs(moved)>=0.5?'investments '+sm(moved):''].filter(Boolean).join(', ')+').'});
     if(o)a.push({l:'good',t:'🎁 Bank offer, today only: a promo deposit at '+o.rate.toFixed(1)+'% a day for '+o.days+' days ('+money(o.min)+' to '+money(o.max)+'). It is paid back with interest when it matures.'});
-    /* The Economy strip and Bank already show today's rates; repeating them every morning obscures actual changes. */
+    var mood=S.mkt>0.5?'buoyant':S.mkt<-0.5?'weak':'steady',best={n:'savings',e:S.rate};
+    INVK.forEach(function(k){var P=INV[k];if(S.know<P.know||(P.dev&&!P.dev.split('|').some(owns)))return;var e=expRet(k);if(e>best.e)best={n:P.n.toLowerCase(),e:e}});
+    a.push({l:'rem',t:'📈 Today: savings '+S.rate.toFixed(1)+'% a day, fixed deposit '+expRet('fd').toFixed(1)+'%, market '+mood+' (ETF about '+pctS(expRet('etf'))+' a day). Best expected return open to you: '+best.n+' ('+pctS(best.e)+' a day'+(best.n==='savings'||best.n==='fixed deposit'?'':', with swings')+'). '+(handheld()?'Open the Bank app on your phone to act on it.':owns('computer')?'Use the Bank app on your computer at home, or visit the Bank.':'Visit the Bank to act on it (a phone, tablet or computer gives you the Bank app).')});
     return a;
   }
   /* the 📱 Bank app: savings, investments and offers from anywhere, with a phone, tablet or computer (loans need a visit) */
@@ -6268,7 +6261,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     return {icon:lk.ic,tag:'Decision',title:lk.t,text:c[0],choice:true,y:c[1],n:c[2],done:false,fx:[],tone:''};
   }
   function macroRunning(){return S.trends.some(function(t){return t.macro&&t.left>0})}
-  function quietCard(){var lines=['You get an uneventful evening to rest.','The town settles down early tonight.','No new surprises tonight.','A calm evening passes.'];return {icon:'🌙',tag:'Quiet night',title:'A calm night',text:lines[(S.day-1)%lines.length],done:true,tone:'',fx:[]}}
+  function quietCard(){return {icon:'🌙',tag:'Quiet night',title:'Nothing happens',text:'A quiet evening. Nothing in the news or around town needs your attention.',done:true,tone:'',fx:[]}}
   /* one daily event from the weighted list; null means no event today */
   function dailyPick(){
     /* the morning already decided whether tonight is news (planNews); a save from before that has no plan and rolls as before */
@@ -6328,7 +6321,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     S.lowE=(S.lowE||[]).filter(function(d){return S.day-d<IL.lowWindow});
     S.restBonus=Math.round(sleepGain(S.ap)*share);
     S.restHap=Math.round(sleepHap(S.ap)*share);S.slept=Math.round(sleepHealth(S.ap)*share);S.sickSleep=home&&S.ill?1:0;if(home)S.restHrs=(S.restHrs||0)+S.ap/60;
-    log((home?'You slept at home':'You bunked out')+' with '+hm(S.ap)+' left: +'+S.restBonus+'% energy, +'+S.restHap+' happiness, +'+S.slept+' health. Nightly change: '+nightTxt()+'.');
+    var bed=home&&HOUSE[S.home].hap?', +'+HOUSE[S.home].hap+' happiness for the bed':'',drop=' The nightly change is '+nightTxt()+', so you wake up '+sg(S.restBonus+SL.nightEnergy)+'% energy and '+sg(S.restHap+(home?HOUSE[S.home].hap:0)+SL.nightHappiness)+' happiness before meals and other overnight effects.';
+    log((home?'You went to bed at home with '+hm(S.ap)+' left. Sleep gives +'+S.restBonus+'% energy and +'+S.restHap+' happiness ('+SL.happinessPerHour+' for every full hour of rest'+bed+'), and +'+S.slept+' health tonight.':(S.homeless?'You have no home, so you slept rough.':'You ended the day away from home and dozed off where you were.')+' Sleep gives only +'+S.restBonus+'% energy, +'+S.restHap+' happiness and +'+S.slept+' health (a night in a home of your own would give +'+sleepGain(S.ap)+'%, +'+sleepHap(S.ap)+' and +'+sleepHealth(S.ap)+').')+drop);
     if(!S.fed&&S.slept>0)log('You have not eaten today, so the '+sg(CONFIG.health.nightly.skippedMeal)+' health penalty will eat into the +'+S.slept+' you get from sleep. Eat something first to recover health.','warn');
     snd('day');
     var cards=pickNight();if(!cards.length)cards=[quietCard()];
@@ -7087,7 +7081,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     $('homeName').textContent=S.homeless?'No home':NAME[S.home];$('homeName').title=$('homeName').textContent;
     var be=bestEdu();
     $('edu').textContent=be?TRACKS[be].n+' '+TRACKS[be].lv[lvl(be)-1]:'High School';$('edu').title=$('edu').textContent;
-    $('eduSub').className='edu-paths';$('eduSub').innerHTML=Object.keys(TRACKS).map(function(t){var l=lvl(t),T=TRACKS[t];return '<span title="'+(S.edu[t]||0)+'/'+totMods(t)+' modules">'+T.n+': <b>'+(l?T.lv[l-1]:'None completed')+'</b></span>'}).join('');
+    $('eduSub').textContent=Object.keys(TRACKS).filter(function(t){return S.edu[t]}).map(function(t){return TRACKS[t].n.split(' ')[0]+' '+S.edu[t]+'/'+totMods(t)+' modules'}).join(' · ')||'No courses yet';
     var rw=nextRentWeek(), left=rw-S.day;
     $('rent').textContent=S.homeless?'None (no home)':S.rentPaid===rw?'Paid ✓ (day '+rw+')':money(H.rent)+(left===0?' due today':' in '+left+' day'+(left>1?'s':''));$('rent').title=S.homeless?'No rent while you have no home':'Due at the end of day '+rw;
     var pxs=Math.round(S.px*100), ws=Math.round(payIdx()*100);
@@ -7101,9 +7095,6 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var iv=invTotal();$('invv').textContent=money(iv);
     $('know').textContent=Math.floor(S.know);$('knBar').style.width=S.know+'%';
     $('meal').className='meal '+(S.fed?'ok':'no');$('meal').textContent=S.fed?'🍽 Ate today ✓':'🍽 No meal yet today';
-    $('dayMeal').className=S.fed?'fed':'unfed';$('dayMeal').textContent=S.fed?'🍽 Ate today ✓':'🍽 No meal yet';
-    $('dayWork').textContent='💼 Worked '+hm(S.workMin||0);$('dayStudy').textContent='📚 Studied '+hm(S.studyMin||0);
-    $('ap').className=S.ap<180?'time-urgent':S.ap<480?'time-warn':'';
     var nIt=Object.keys(S.items).filter(function(k){return S.items[k]}).length,FF=S.food.filter(function(p){return !p.sp}),nSp=S.food.length-FF.length;
     $('belong').textContent=nIt+' item'+(nIt!==1?'s':'')+(FF.length?' · 🍽 '+FF.length+' meal'+(FF.length>1?'s':'')+' ('+Math.min.apply(null,FF.map(function(p){return foodLeft(p)}))+'d left)':'')+(nSp?' · 🤢'+nSp:'')+(S.chips?' · 🥔'+S.chips:'');
     if((S.tickets||[]).length)$('belong').textContent+=' · 🎟️'+S.tickets.length;
@@ -7120,7 +7111,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       $('cpMsg').textContent=(opens.length?'New jobs open to you: '+opens.join(', ')+'. ':'')+(close.length?'Closer to: '+close.slice(0,4).join(', ')+' (they also need other qualifications). ':'')+(nxT?'Next up: the '+TT.lv[C.l]+' (tuition '+money(nxF)+', paid when you enrol).':'You have completed the whole pathway!');
       var cn=$('cpNext');cn.hidden=!nxT;if(nxT){cn.textContent='Enrol in the '+TT.lv[C.l]+' · '+money(nxF);cn.disabled=S.cash<nxF||S.expelled>0}
       cp.classList.add('show')}else cp.classList.remove('show');
-    var mo=$('morning');if(S.morning&&!S.over&&!S.pending&&!S.cert){$('mnT').textContent='☀️ Day '+S.day+(maxDays()!==Infinity?' of '+maxDays():'');$('mnSub').textContent='Overnight changes and what matters today';$('mnList').innerHTML=S.morning.map(function(x){var cg=x.rv!=null&&S.mode==='rivals'&&S.rivals&&S.rivals[x.rv];return '<li class="'+x.l+'">'+x.t+(cg?' '+(S.cong&&S.cong.d===S.day&&S.cong[x.rv]?'<small>✓ Congratulated</small>':'<button type="button" class="mini" data-cg="'+x.rv+'">🎉 Congratulate · '+hm(CONFIG.rivals.social.congratulate.minutes)+'</button>'+((S.rivals[x.rv].rel||0)<0?' <small>⚠️ on bad terms: an argument costs '+sg(CONFIG.rivals.social.argument.happiness)+' happiness</small>':'')):'')+'</li>'}).join('');mo.classList.add('show')}else mo.classList.remove('show');
+    var mo=$('morning');if(S.morning&&!S.over&&!S.pending&&!S.cert){$('mnT').textContent='☀️ Day '+S.day+(maxDays()!==Infinity?' of '+maxDays():'');$('mnSub').textContent='Before you start, a few things need your attention:';$('mnList').innerHTML=S.morning.map(function(x){var cg=x.rv!=null&&S.mode==='rivals'&&S.rivals&&S.rivals[x.rv];return '<li class="'+x.l+'">'+x.t+(cg?' '+(S.cong&&S.cong.d===S.day&&S.cong[x.rv]?'<small>✓ Congratulated</small>':'<button type="button" class="mini" data-cg="'+x.rv+'">🎉 Congratulate · '+hm(CONFIG.rivals.social.congratulate.minutes)+'</button>'+((S.rivals[x.rv].rel||0)<0?' <small>⚠️ on bad terms: an argument costs '+sg(CONFIG.rivals.social.argument.happiness)+' happiness</small>':'')):'')+'</li>'}).join('');mo.classList.add('show')}else mo.classList.remove('show');
   }
   /* the top bar: net worth, cash, investments, score, buttons and current pay, plus the Rules text that depends on difficulty */
   function renderHud(){
@@ -7128,8 +7119,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     $('hEn').style.color=S.energy<30?'#ef7d72':'';$('hHp').style.color=S.happy<30?'#ef7d72':'';$('hCash').style.color=S.cash<0?'#ef7d72':'';
     var hiv=invTotal();$('hInvC').hidden=!anyInv();if(anyInv()){var pl0=hiv-invSum('c');$('hInv').textContent=money(hiv);$('hInvPL').textContent=sm(pl0)+' ('+(pl0>=0?'+':'−')+Math.abs(invSum('c')?pl0/invSum('c')*100:0).toFixed(1)+'%)';$('hInvPL').style.color=pl0>=0?'#7fe0a6':'#ef7d72'}
     $('hScore').textContent=score().toLocaleString();var bs0=bestScore();$('hBest').textContent=bs0?'best '+bs0.toLocaleString():'';
-    $('hudLeave').hidden=!view||!!S.pending;$('hudEnd').disabled=!!S.over||!!S.pending;$('hudEnd').textContent=atHome()?(S.mode==='rivals'?'Sleep ☾':sleepLabel()+' ☾'):S.mode==='rivals'?'Bunk Out ☾':'Sleep outside ☾';
-    $('hudEnd').title=(atHome()?'At home':'Outside')+': +'+Math.round(sleepGain(S.ap)*(atHome()?1:CONFIG.sleep.awayShare))+'% energy, +'+Math.round(sleepHap(S.ap)*(atHome()?1:CONFIG.sleep.awayShare))+' happiness, +'+Math.round(sleepHealth(S.ap)*(atHome()?1:CONFIG.sleep.awayShare))+' health';
+    $('hudLeave').hidden=!view||!!S.pending;$('hudEnd').disabled=!!S.over||!!S.pending;$('hudEnd').textContent=atHome()?sleepLabel()+' ☾':'Sleep outside ☾';
     var pi=payInfo(),pm0=prod().m;$('pay').textContent=money(pi.v)+(pi.n?'/shift':'');$('payRole').textContent=pi.txt+(pi.n&&pm0<1?' · ×'+Math.round(pm0*100)+'% today':'');
     $('dayMax').textContent=maxDays()===Infinity?'':' / '+maxDays();$('diffTag').textContent=Df().n;
     $('rlWin').textContent=maxDays()===Infinity?' (no time limit on Easy)':', within '+maxDays()+' days';$('rlTime').textContent=maxDays()===Infinity?'Not on Easy: there is no day limit.':'Day '+maxDays()+' passes and you are still under '+money(GOAL)+'.';
@@ -7138,22 +7128,21 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   /* the town leaderboard (rival games): you and your rivals by net worth, with their job and today's change */
   function rivalBoard(){
     var box=$('rivBox');if(!box)return;var on=S.mode==='rivals'&&S.rivals&&S.rivals.length;box.hidden=!on;if(!on)return;
-    var P=lifeScore(),maxWorth=Math.max(1,...P.map(function(p){return Math.max(0,p.worth)})),maxCareer=Math.max(1,...P.map(function(p){return p.best?p.best.pay:0}));
+    var P=lifeScore();
     $('rivSub').textContent='· Life Score · day '+Math.min(S.day,maxDays())+' of '+maxDays()+' · '+moodX().icon+' '+moodX().name;
     $('rivList').innerHTML=P.map(function(p){
       var job=p.me?(myJob()?myJob().rk.r:'No job'):p.out?'Out: '+p.out.why+' (day '+p.out.day+')':(rivalJob(p.r)?rivalJob(p.r).rk.r:'No job');
       var d=p.r?rivalWorth(p.r)-p.r.y:0;
       var line='<span>'+ordinal(p.place)+'</span><span class="rn">'+p.ic+' '+p.name+(p.r?' <small>('+p.r.diff+' · '+personality(p.r).name+' · '+relLabel(p.r.rel||0)+')</small>':'')+' <small>🎖️ '+Math.round(p.rep)+'</small>'+((p.r&&ally()===p.r)||(p.me&&ally())?' <small>🤝 '+(p.me?'allied with '+ally().name:'your ally')+'</small>':'')+' · <small>'+job+' · '+money(p.worth)+(d?' <span class="'+(d>0?'up':'dn')+'">'+(d>0?'▲':'▼')+money(Math.abs(d))+'</span>':'')+'</small></span><b>'+p.pts+' pts</b>';
       var cats=Object.keys(p.cats).map(function(k){var x=p.cats[k];return LIFE_CATS[k].ic+' '+ordinal(x.place)+' ('+x.txt+')'}).join(' · ');
-      var bars='<div class="rival-bars" aria-label="'+p.name+' net worth '+money(p.worth)+'; career pay '+money(p.best?p.best.pay:0)+' per shift"><span>Wealth</span><span class="track"><i style="width:'+Math.max(0,p.worth)/maxWorth*100+'%"></i></span><b>'+money(p.worth)+'</b><span>Career</span><span class="track"><i style="width:'+(p.best?p.best.pay:0)/maxCareer*100+'%"></i></span><b>'+money(p.best?p.best.pay:0)+'/shift</b></div>';
-      return '<details><summary class="rivrow'+(p.me?' me':'')+'">'+line+'</summary>'+bars+'<ul>'+(p.me?politicsLis(-1):'')+(p.r?memoryProfile(p.r)+'<li>Relationship '+sg(p.r.rel||0)+' ('+relLabel(p.r.rel||0)+')'+(p.r.drift?' · overnight '+sg(p.r.drift):'')+'</li>'+politicsLis(S.rivals.indexOf(p.r))+moneyLis(S.rivals.indexOf(p.r))+(flatmate()===p.r?'<li>🏠 Your flatmate'+(S.flat.hd===S.day?(S.flat.here?' · home today':' · out today'):'')+'</li>':'')+(studyPartners(S.lastTrack).indexOf(p.r)>=0?'<li>📚 Studying the same pathway as you</li>':''):'')+'<li>'+cats+'</li>'+(p.r?(p.r.log.length?p.r.log.map(function(l){return '<li>'+l+'</li>'}).join(''):'<li>Nothing to report yet.</li>'):'')+'</ul></details>';
+      return '<details><summary class="rivrow'+(p.me?' me':'')+'">'+line+'</summary><ul>'+(p.me?politicsLis(-1):'')+(p.r?memoryProfile(p.r)+'<li>Relationship '+sg(p.r.rel||0)+' ('+relLabel(p.r.rel||0)+')'+(p.r.drift?' · overnight '+sg(p.r.drift):'')+'</li>'+politicsLis(S.rivals.indexOf(p.r))+moneyLis(S.rivals.indexOf(p.r))+(flatmate()===p.r?'<li>🏠 Your flatmate'+(S.flat.hd===S.day?(S.flat.here?' · home today':' · out today'):'')+'</li>':'')+(studyPartners(S.lastTrack).indexOf(p.r)>=0?'<li>📚 Studying the same pathway as you</li>':''):'')+'<li>'+cats+'</li>'+(p.r?(p.r.log.length?p.r.log.map(function(l){return '<li>'+l+'</li>'}).join(''):'<li>Nothing to report yet.</li>'):'')+'</ul></details>';
     }).join('');
   }
   function moneyLis(i){return (S.rloans||[]).filter(function(l){return l.i===i}).map(function(l){return '<li>💬 '+(l.dir==='in'?'Owes you '+money(l.owe):'You owe '+money(l.owe))+' (due day '+l.due+')</li>'}).join('')+(S.bets||[]).filter(function(b){return b.i===i}).map(function(b){return '<li>🎲 Bet of '+money(b.stake)+' each until day '+b.until+'</li>'}).join('')}
   function renderOverviewCards(){
     rivalBoard();
     (function(){var d=handheld(),o=offerToday();$('phoneBtn').disabled=!d||!!S.over;
-      $('phoneNote').textContent=!d?'Buy a phone or tablet to unlock':'Bank, Jobs'+(S.mode==='rivals'?', Calls, Messages':'')+(o&&!S.promo?' · 🎁 offer':'')+(S.mode==='rivals'&&newMsgs()?' · 💬 '+newMsgs()+' new':'')})();
+      $('phoneNote').textContent=!d?'Needs a phone or tablet'+(owns('computer')?' (your computer at home has the apps)':''):'Bank and Jobs apps'+(o&&!S.promo?' · 🎁 bank offer today':'')+(S.mode==='rivals'&&newMsgs()?' · 💬 '+newMsgs()+' new':'')+(S.mode==='rivals'&&dueTomorrow().length?' · 💬 due tomorrow':'')})();
     var as=assets(),nw=worth(),tot=Math.max(nextGoal(),nw),iv=invTotal();  /* the same values renderStats() shows */
     var sm2=S.summary,sc=$('sumcard');sc.hidden=!sm2;
     if(sm2){var sg=function(v,suf){return '<b class="'+(v>0?'up':v<0?'dn':'')+'">'+(v>0?'+':v<0?'−':'±')+(suf==='$'?money(Math.abs(Math.round(v))):Math.abs(Math.round(v))+(suf||''))+'</b>'};
@@ -7181,14 +7170,13 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     /* evening: the town darkens as the day runs out (CONFIG.ui.evening); the morning resets S.ap, so it lights up again */
     var EV=CONFIG.ui.evening||{},evF=EV.fromMinutes||0,dusk=evF&&!S.over&&S.ap<evF?(EV.darkest||0)*(0.5+0.5*(1-S.ap/evF)):0;
     $('board').style.setProperty('--dusk',dusk.toFixed(3));$('board').classList.toggle('evening',dusk>0);
-    var job=myJob(),jobPlace=job&&job.b,closed=jobPlace&&shutLeft(jobPlace)>0;
     document.querySelectorAll('.tile').forEach(function(t){
       var k=t.dataset.loc;
       t.classList.toggle('here',k===loc);
       t.classList.toggle('open',k===view);
       t.querySelector('.cost').textContent=k===loc?'':hm(dist(loc,k)*WALK);
-      t.setAttribute('aria-label',NAME[k]+(k===loc?', you are here':', '+hm(dist(loc,k)*WALK)+' walk')+(k===S.home&&!S.homeless?', your '+NAME[S.home]+' home':'')+(k===jobPlace?', your workplace'+(closed?', closed today':''):''));
-      t.querySelector('.tags').innerHTML=(k===S.home&&!S.homeless?'<span class="tag home">🏠 Your '+(S.home==='bung'?'bungalow':'apartment')+'</span>':'')+(k===jobPlace?'<span class="tag '+(closed?'closed':'job')+'">'+(closed?'🔒 Work closed':'💼 Your work')+'</span>':'')+(k===loc?'<span class="tag you">📍 You are here</span>':'');
+      t.setAttribute('aria-label',NAME[k]+(k===loc?', you are here':', '+hm(dist(loc,k)*WALK)+' walk')+(k===S.home&&!S.homeless?', your home':''));
+      t.querySelector('.tags').innerHTML=(k===S.home&&!S.homeless?'<span class="tag">Home</span>':'')+(k===loc?'<span class="tag you">You</span>':'');
     });
   }
   /* which windows show (overview, building panel, end-of-day card) and the end-of-day card itself */
@@ -7638,7 +7626,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       (function(){var E=CONFIG.events,I=CONFIG.industry,last=function(L){return CONFIG.time.gameDays-L.daysBeforeEnd};
         if($('cfgStory'))$('cfgStory').textContent='each game has one global storyline (an oil crisis, a pandemic…), starting between day '+E.storyline.fromDay+' and day '+last(E.storyline)+', that moves prices, pay and interest for everyone; and one industry-specific storyline (a chip shortage, banks going all-in on AI…), starting between day '+I.fromDay+' and day '+last(I)+', that moves pay for particular jobs by '+Math.round(I.paySwing[0]*100)+'% to '+Math.round(I.paySwing[1]*100)+'% up or down, freezes or opens up hiring, and can lay you off or suspend your workplace. The Employment Office shows a rumour '+(I.rumourDays===1?'the day':I.rumourDays+' days')+' before it starts and its effects while it runs. The two may overlap; shorter macro shocks never come within '+E.storylineGap+' days of either.'})();
       (function(){var Mk=CONFIG.market,R=Mk.returns,O=CONFIG.bank.offers;
-        if($('cfgBank'))$('cfgBank').textContent='savings pay about '+Mk.rateBase+'% a day (the rate moves with the news), a fixed deposit '+R.fdOverSavings+'× that, and the ETF, hedge fund and crypto expect about '+R.etf.base+'%, '+R.hf.base+'% and '+R.cry.base+'% a day in a steady market, with bigger swings the more they pay. With a phone or tablet (📱 Phone apps on the map), or a computer at home (💻 Computer in your home), the Bank app does all this without the walk (loans still need a visit), and the Jobs app shows the Employment Office job board, where you can apply online (1h, as in person). '+(O&&O.chance>0?'Some mornings from day '+O.fromDay+' the Bank has a one-day offer: a promo deposit at '+O.rate[0]+'–'+O.rate[1]+'% a day for '+dayN(O.days)+'. ':'')+'Overnight gains appear in the morning summary; today’s rates and available products are shown at the Bank.'})();
+        if($('cfgBank'))$('cfgBank').textContent='savings pay about '+Mk.rateBase+'% a day (the rate moves with the news), a fixed deposit '+R.fdOverSavings+'× that, and the ETF, hedge fund and crypto expect about '+R.etf.base+'%, '+R.hf.base+'% and '+R.cry.base+'% a day in a steady market, with bigger swings the more they pay. With a phone or tablet (📱 Phone on the Overview), or a computer at home (💻 Computer in your home), the Bank app does all this without the walk (loans still need a visit), and the Jobs app shows the Employment Office job board, where you can apply online (1h, as in person). '+(O&&O.chance>0?'Some mornings from day '+O.fromDay+' the Bank has a one-day offer: a promo deposit at '+O.rate[0]+'–'+O.rate[1]+'% a day for '+dayN(O.days)+'. ':'')+'Overnight gains appear in the morning summary; today’s rates and available products are shown at the Bank.'})();
       (function(){var C=CONFIG.community,f=function(c){return hm(c.minutes)+(c.cost?', $'+c.cost:'')+(c.energy?', '+sg(c.energy)+'% energy':'')+', '+sg(c.happiness)+' happiness'+(c.knowledge?', '+sg(c.knowledge)+' knowledge':'')};
         if($('cfgComm'))$('cfgComm').textContent='once a day each: a night out with friends ('+f(C.nightOut)+'), karaoke ('+f(C.karaoke)+') or volunteering ('+f(C.volunteer)+'). A night out ('+pctTxt(C.nightOut.tipChance)+') or volunteering ('+pctTxt(C.volunteer.tipChance)+') can get you a friend’s job tip: for '+dayN(C.tip.days)+' your next interview is '+Math.round(C.tip.passBonus*100)+'% more likely to pass and never fails for “no openings”.'})();
       (function(){var R=CONFIG.rivals,T=CONFIG.time.gameDays,due=TIERS.filter(function(r){return r.d}).map(function(r){return Math.min(Math.round(r.d*R.gameDays/T),R.gameDays)});

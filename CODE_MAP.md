@@ -71,7 +71,7 @@ Where things are in `index.html`, and how to make the common changes safely. Lin
 
 Targeted feature checks: node tools/qa/check-personalities.js <folder outside the repo>. DG_BROWSER_CHANNEL=msedge can select installed Edge; by default it uses Playwright Chromium. check-regressions.js still checks the preceding bet, rent and scoring fixes.
 
-**Daily HUD and map:** `renderStats()` fills `dayMeal`, `dayWork`, `dayStudy` and marks the remaining time below eight/three hours; `renderMap()` tags your home, location and workplace (including a closure). The map contains the phone app button. `rivalBoard()` adds comparable wealth and career bars.
+**Daily HUD and map:** Presentation restored to `ed9e8e0`: phone apps live in the Overview, map tags show Home/You, education shows course progress, and rival details use the compact list without comparison bars. Latest rank progression, flatmate refusals and rival path diversity remain.
 
 **Rival path diversity:** `diversifyRivals()` runs at the start of `rivalTick()` from the halfway day onward. It records `avoidCareer` and `avoidTrack` for later rivals on identical paths; `rivalTarget()` prefers the best feasible different career and missing qualification, while job applications prefer an eligible alternative. These fields are optional on older saves.
 
