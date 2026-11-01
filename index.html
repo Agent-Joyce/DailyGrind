@@ -625,6 +625,26 @@ button:not(.tile) small,button:not(.tile) .quick-icon,button:not(.tile) .quick-i
 #appTop .daily-progress{grid-row:2;flex-wrap:nowrap}#appTop .daily-progress span{flex:0 1 190px}
 .g-riv summary.rivrow{display:grid;grid-template-columns:auto 46px minmax(0,1fr) auto;gap:10px}.rival-chart{grid-column:1/-1;width:100%;padding:2px 0 6px;cursor:pointer}
 @media(max-width:640px){#appTop .daily-progress{grid-row:3;flex-wrap:nowrap}#appTop .daily-progress span{flex:1 1 0;min-width:0}.g-riv summary.rivrow{grid-template-columns:auto 40px minmax(0,1fr) auto;gap:8px}.rivrow>.rival-face{width:40px;height:40px}}
+
+/* Dusk neighbourhood: rich surfaces, brass details, readable teal actions. */
+:root,:root[data-theme],:root:not([data-theme]){--bg:#102b30;--surface:#193a40;--ink:#e8f4ee;--muted:#aec7c0;--line:#395e60;--teal:#197f78;--teal-ink:#f4fff8;--gold:#e6b661;--red:#ff9a8b;--green:#83d6ae;--head:156px;color-scheme:dark}
+body{background:radial-gradient(ellipse at top left,#244c49,transparent 65%),repeating-linear-gradient(35deg,transparent 0 18px,#86a49b04 18px 19px),var(--bg)}
+#appTop{height:var(--head);background:linear-gradient(120deg,#14343c,#21483f);border-bottom:1px solid #b6904c88;grid-template-columns:175px minmax(0,1fr) auto;grid-template-rows:44px 30px 26px;gap:6px 14px;padding:12px 24px;box-shadow:0 8px 26px #071e2266}
+.app-brand{color:#edf7e8;font-size:20px}.brand-mark{background:#286254!important;color:#ebc67e!important;border:1px solid #cba46188}.app-brand small{font-size:8px;color:#d4bd90}.app-status{gap:14px}.app-status b{font-size:17px}.app-status .status-energy,.app-status .status-health,.app-status .status-happy{color:#9ce3ce}
+#hudContext{grid-row:3;grid-column:1/-1;display:flex;gap:16px;align-items:center;min-width:0;font-size:11px;color:#c4d8cc}#hudRank{color:#f2cf89}#hudLocation{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}#hudAlert{font-size:10px;min-height:24px;padding:2px 8px}
+#appTop .daily-progress span{background:#214d48;border-color:#527a65;color:#d4f0da}#appTop .daily-progress .not-eaten{background:#57442c;border-color:#8e6c3e;color:#ffda9b}#appTop .daily-progress .eaten{background:#23543f;color:#c0f1d1}
+#hudTools{position:relative;font-size:11px}#hudTools>summary{list-style:none;min-height:40px;display:flex;align-items:center;padding:8px 11px;background:var(--teal);color:var(--teal-ink);border:1px solid #6caa9366;border-radius:10px;cursor:pointer;font-weight:700}#hudTools>summary::-webkit-details-marker{display:none}.hud-toolbar{position:absolute;right:0;top:calc(100% + 10px);width:240px;padding:12px;background:#193a40;border:1px solid #b49050;border-radius:14px;box-shadow:0 14px 38px #03191fc0;display:grid;gap:8px}.hud-toolbar button{margin:0;min-height:40px;font-size:12px;padding:8px;text-align:left}.hud-toolbar #resetBtn{margin-top:8px;border-top:3px solid #e6b661!important}
+#logDrawer{position:fixed;right:20px;top:calc(var(--head) + 12px);bottom:calc(var(--foot) + 8px);width:min(480px,calc(100vw - 32px));padding:18px;border:1px solid #b49050;border-radius:16px;background:#193a40;z-index:4800;box-shadow:0 18px 65px #041b22b0;display:flex;flex-direction:column;gap:12px}.drawer-heading{display:flex;justify-content:space-between;align-items:center}.drawer-heading h2{margin:0}#logDrawer #log{display:block!important;flex:1;height:auto!important;min-height:0;resize:none;background:#112f35!important;color:#d0e2d6;border:1px solid #476764}#logDrawer #log .good{color:#94dfb1}#logDrawer #log .bad{color:#ffb1a1}
+.center,.center.wide,.center.ovl,.over .card,.evcard,#townDirectory{background:linear-gradient(150deg,#21474b,#18383e)!important;color:var(--ink);border-color:#52716b!important}.center{box-shadow:0 12px 45px #001a2244}.grp,.stat,.pbox,.bk-card,.loanb,.bcard,.bk-cmp-w,.destination-search,.bk-amt input,.loanb input,.belpop,.cert,.opt,.arow,.jb2,.psec,.warnbar,.sumcard{background:#21464a!important;color:var(--ink)!important;border-color:#456866!important}.top .tcell.pay{background:linear-gradient(130deg,#28534e,#1b4146)!important;border-color:#729276!important}.top .tcell.pay>.l{color:#d5c79e}.mrow b{color:#b9ecdb!important}.g-vit .bar,.chart-track{background:#41645d!important}.g-vit .bar i{background:#7dc6ad}.daily-focus{background:#51472d;color:#ffdfa0;border:1px solid #a9864844}.screen-heading .eyebrow,.gh{color:#d8bf89}.screen-heading p,.destination small,.kv>span,.bk-h span,.bk-tab,.bk-v,.sub,.saved,.amount-hint{color:#b7d1c7}.g-home .hgrid,.hgrid .kv,.education-paths>span{background:transparent!important}.education-paths>span{border-color:#5a7870}.education-paths b{color:#e3f2d9}.over{background:#061b27ac}.over h2,.evcard .evtitle{color:#f3d69b}.evcard .say,.say.slim{background:#234a49!important;color:#e4f0e4}.al{background:#514a2d!important;color:#ffdfa6;border-color:#a78b4e}.al.bad{background:#583b39!important;color:#ffd6c9;border-color:#a76c5c}.toast{background:#254b49;color:#edf4e6;border-color:#739485}.bk-mode,.bk-presets,.bk-ten,.bk-grid,.chipl,.bk-cmp,.phead,.psec>summary{background:transparent!important}.bk-cmp th,.bk-cmp td{color:#d0e6da;border-color:#53716b}.bk-cmp th{background:#2a514d}.bk-mode button,.bk-presets button{color:#e8fff1}.rival-chart .chart-note,.rivrow .rn small{color:#bad1c7}#appNav{background:#173940f5;border:1px solid #9d824b88;box-shadow:0 5px 24px #041a2377}.town-device{background:#1a3d41eF;border-color:#68806a}.town-device small{color:#bdd4c3}.town-caption{background:#173a40ed;border:1px solid #b39b6180;color:#f5dfaa}.town-caption span,.town-legend{color:#c1d5bd}
+#townViewport{background:#153e3f;border:1px solid #678273;border-radius:22px;box-shadow:inset 0 0 80px #021c2b55}.town-canvas{background-image:none!important;isolation:isolate}.neighbourhood-art{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.tile{width:12%;max-width:130px;min-width:0;transform:translate(-50%,-50%);padding:0;gap:0}.tile .scene{display:block;position:relative;width:100%}.tile .scene>svg{display:block;width:100%;height:auto;overflow:visible;filter:drop-shadow(0 6px 4px #071e2b99);animation:none}.tile .pin{position:absolute;top:4%;left:0;width:19px;height:19px;font-size:9px;border-width:1px;z-index:3}.tile .pin span{font-size:9px}.tile .lab{font-size:9px;max-width:135%;width:max-content;padding:3px 5px;position:relative;z-index:4}.tile .cost{position:absolute;top:3%;right:-4%;font-size:9px}.tile .tags{position:relative;max-width:160%;order:3}.tile .tag{font-size:10px;border:2px solid #cfa750;padding:3px 6px;font-weight:800;box-shadow:0 3px 8px #06212a99;line-height:1.15}.tile .tag.home{border-color:#b6a0e3;background:#3f365b;color:#f0e3ff}.tile .tag.you{background:#6a4e21;color:#fff0ba;border-color:#f2c26d}.tile .tag.job{background:#1d5952;color:#d6fff2;border-color:#6dd8c1}.tile .tag.closed{background:#693733;color:#ffe1d5;border-color:#f0957e}
+.tile{--place-glow:transparent;--work-glow:transparent;--home-glow:transparent}.tile.here{--place-glow:#ffcf70}.tile.workplace{--work-glow:#52e0cf}.tile.homeplace{--home-glow:#c2a0ff}.tile.here .scene>svg,.tile.workplace .scene>svg,.tile.homeplace .scene>svg{filter:drop-shadow(0 0 2px var(--place-glow)) drop-shadow(0 0 5px var(--place-glow)) drop-shadow(0 0 2px var(--work-glow)) drop-shadow(0 0 6px var(--work-glow)) drop-shadow(0 0 3px var(--home-glow)) drop-shadow(0 0 9px var(--home-glow));animation:none}.tile.work-closed{--work-glow:#f18d76}.tile.here .pin,.tile.homeplace .lab,.tile.workplace .pin{outline:none;box-shadow:none;border:1px solid #d6bb7f}.tile.open .lab{background:#1a5f58;color:#f6ffe8}.street-lamp{opacity:calc(.25 + var(--map-dusk,0)*2)}
+@media(max-width:1099px) and (min-width:641px){#appTop{grid-template-columns:130px minmax(0,1fr) auto;padding:12px 16px;gap:6px 8px}.app-brand{font-size:17px}.app-status{gap:8px}.app-status b{font-size:13px}.app-status .status-energy{display:flex}}
+@media(max-width:640px){:root{--head:200px}#appTop{padding:8px 14px;grid-template-columns:1fr auto;grid-template-rows:44px 56px 26px 22px;gap:4px 8px}.app-brand{font-size:18px}.app-status{display:flex;flex-wrap:wrap;gap:2px 8px;grid-row:2;grid-column:1/-1;padding:4px 0;border-color:#526e66}.app-status>span{flex:1 0 28%;justify-content:center;font-size:10px}.app-status>span b{font-size:13px}.app-status small{display:inline!important;font-size:9px}.app-status .status-energy small{display:inline!important}.actbar{grid-row:1;grid-column:2;gap:5px}.actbar .btn,#hudTools>summary{font-size:10px;padding:6px 7px;min-height:38px}#appTop .daily-progress{grid-row:3}#hudContext{grid-row:4;font-size:9px;gap:7px}#hudLocation{display:none}#hudRank{flex:1}#hudAlert{min-height:22px;font-size:9px}.hud-toolbar{width:220px;right:0}.tile{width:13%;min-width:40px;max-width:none;min-height:44px;justify-content:center}.tile .scene>svg{min-height:35px}.tile .pin{width:14px;height:14px;top:3%;left:-3px}.tile .pin span{font-size:7px}.tile .tags{position:absolute;top:85%;left:50%;transform:translateX(-50%);width:76px;max-width:none}.tile .tag{font-size:7px;border-width:1px;padding:1px 3px;max-width:76px}.tile .lab{display:none}.town-caption{display:none}.town-device{top:3px;right:3px}.town-device .btn{font-size:9px;min-height:30px}#logDrawer{top:calc(var(--head) + 6px);right:8px;width:calc(100vw - 16px);padding:12px}.rival-chart{font-size:10px}.tile .cost{display:none}}
+/* Anchor illustrations independently of their landmark labels. */
+.tile .tags{position:absolute;top:calc(100% + 18px);left:50%;transform:translateX(-50%);width:max-content;max-width:150px}.tile .lab{position:absolute;left:50%;bottom:-15px;transform:translateX(-50%);white-space:nowrap;max-width:160px}.tile .tag{white-space:nowrap}.tile .scene{height:auto}.tile .scene>svg{aspect-ratio:auto}
+#hudRank{padding:4px 8px;border-radius:6px;background:linear-gradient(90deg,#a9863c33 var(--rank-progress,0%),transparent var(--rank-progress,0%));border-bottom:2px solid #a9863c99}#appInbox{font-size:10px;min-height:24px;padding:3px 7px}
+@media(max-width:640px){:root,:root[data-theme],:root:not([data-theme]){--head:200px}.tile .tags{top:90%;width:76px;max-width:76px}.tile .tag{white-space:normal}.tile .lab{display:none}#hudRank{padding:2px 4px}#appInbox{font-size:9px;min-height:22px;padding:2px 5px}}
+.hud-sky{color:#f1c36d;font-size:17px;line-height:1}.evening .tile svg rect[fill="url(#glass)"]{fill:#ffe1a0;filter:drop-shadow(0 0 2px #ffc56688)}
 </style>
 </head>
 <body>
@@ -735,7 +755,7 @@ button:not(.tile) small,button:not(.tile) .quick-icon,button:not(.tile) .quick-i
   <h2 id="wlT">Welcome to Daily Grind</h2>
   <p style="color:var(--ink)">Build a life from scratch. Reach <b><span id="cfgGoal">$1,000</span> net worth</b> without going broke, burning out or skipping meals.</p>
   <div class="wtiles">
-    <div><b>⏱ 24 hours a day</b><span>Walking: <span id="cfgWalk">5 minutes</span> and <span id="cfgWalkE">1%</span> energy per building</span></div>
+    <div><b>⏱ 24 hours a day</b><span>Walking: <span id="cfgWalk">5 minutes</span> and <span id="cfgWalkE">1%</span> energy per distance step. Destination labels show the total walk.</span></div>
     <div><b>🍽 Eat once a day</b><span>Low energy makes you ill</span></div>
     <div><b>🏠 Rent <span id="cfgRent">every 5 days</span></b><span>Short of cash? It goes on a plan</span></div>
     <div><b>👕 Clothes last <span id="cfgClothes">5 days</span></b><span>Replace them at the Clothes Mall</span></div>
@@ -1779,6 +1799,9 @@ button:not(.tile) small,button:not(.tile) .quick-icon,button:not(.tile) .quick-i
   var LOCS=[['jobs','💼','Employment Office'],['school','🎓','School'],['bank','🏦','Bank'],['market','🛒','Supermarket'],
     ['fast','🍔','Fast Food'],['resto','🍝','Restaurant'],['elec','💻','Electronics Store'],['mall','🛍️','Clothes Mall'],
     ['apt','🏢','Low-End Apartment'],['hosp','🏥','Hospital'],['factory','🏭','Factory'],['thrift','👕','Thrift Store'],['comm','🤝','Community Centre'],['bung','🏡','Classy Bungalow'],['gym','🏋️','Gym'],['park','🌳','Park']];
+  /* Shared illustrated map geometry (3:2 aspect); travel uses these same positions. */
+  var TOWN_LAYOUT={jobs:[23,24],school:[53,15],bank:[72,27],market:[88,46],fast:[35,42],resto:[60,48],elec:[18,65],mall:[50,68],apt:[14,44],hosp:[80,67],factory:[87,85],thrift:[33,83],comm:[39,23],bung:[70,88],gym:[62,70],park:[11,87]};
+  var TOWN_DIAMETER=Math.max(...Object.values(TOWN_LAYOUT).flatMap(function(a){return Object.values(TOWN_LAYOUT).map(function(b){return Math.hypot((a[0]-b[0])*1.5,a[1]-b[1])})}));
   var NAME={},ICON={};
   LOCS.forEach(function(l){ICON[l[0]]=l[1];NAME[l[0]]=l[2]});
   /* screens, not places: a device's home screen and its two apps (opened from the Overview's 📱 Phone button, or the 💻 Computer at home) */
@@ -6871,8 +6894,8 @@ button:not(.tile) small,button:not(.tile) .quick-icon,button:not(.tile) .quick-i
 
   var ORDER=['school','jobs','bung','bank','fast','hosp','resto','mall','apt','gym','elec','comm','thrift','factory','market'];
   function ring(a,b){var d=Math.abs(ORDER.indexOf(a)-ORDER.indexOf(b));return Math.min(d,ORDER.length-d)}
-  /* the Park is a pocket off the road between the Apartment and the Clothes Mall: one step from either, other walks unchanged */
-  function dist(a,b){if(a===b)return 0;if(a==='park'||b==='park'){var o=a==='park'?b:a;return Math.min(ring('apt',o),ring('mall',o))+1}return ring(a,b)}
+  /* Walking follows physical map distance, quantised to the existing walkMinutes step. */
+  function dist(a,b){if(a===b)return 0;var p=TOWN_LAYOUT[a],q=TOWN_LAYOUT[b];if(!p||!q)return ring(a,b);return Math.max(1,Math.round(Math.hypot((p[0]-q[0])*1.5,p[1]-q[1])/TOWN_DIAMETER*Math.ceil(ORDER.length/2)))}
 
   /* ---- tiny 3D drawing kit: oblique projection, light from the upper left ---- */
   var E=' stroke="rgba(0,0,0,.3)" stroke-width=".6" stroke-linejoin="round"';
@@ -7616,12 +7639,8 @@ button:not(.tile) small,button:not(.tile) .quick-icon,button:not(.tile) .quick-i
   $('again').addEventListener('click',function(){clearSave();fresh()});
   $('keep').addEventListener('click',function(){$('over').classList.remove('show')});
   /* Daily log: Expand shows many more lines (the log can also be dragged taller by its corner) */
-  $('logBig').addEventListener('click',function(){
-    var lg=$('log'),big=!lg.classList.contains('big');lg.classList.toggle('big',big);lg.style.height='';
-    this.textContent=big?'Collapse log':'Expand log';this.setAttribute('aria-expanded',String(big));
-    if(big)setTimeout(function(){lg.scrollIntoView({block:'nearest',behavior:'smooth'})},30);
-  });
-  function muteUI(){$('muteBtn').textContent=MUTE?'🔇':'🔊';$('muteBtn').setAttribute('aria-pressed',String(MUTE));$('muteBtn').setAttribute('aria-label',MUTE?'Sound off. Turn sound on':'Sound on. Turn sound off')}
+  $('logBig').addEventListener('click',function(){modernLog($('logDrawer').hidden)});
+  function muteUI(){$('muteBtn').textContent=MUTE?'🔇 Sound off':'🔊 Sound on';$('muteBtn').setAttribute('aria-pressed',String(MUTE));$('muteBtn').setAttribute('aria-label',MUTE?'Sound off. Turn sound on':'Sound on. Turn sound off')}
   muteUI();
   /* Reset takes a second click instead of window.confirm(), which some embedded browsers block silently */
   var resetArmed=0;
@@ -7642,7 +7661,7 @@ button:not(.tile) small,button:not(.tile) .quick-icon,button:not(.tile) .quick-i
   /* ...and with no building open, it hides the overview window so the map is clear (the Overview button brings it back) */
   document.addEventListener('click',function(e){
     if(S.over||S.pending||document.querySelector('.over.show'))return;
-    if(!e.target.closest||!document.contains(e.target)||e.target.closest('#center,.tile,.over,#hud,button,a,input,select,textarea,label'))return;
+    if(!e.target.closest||!document.contains(e.target)||e.target.closest('#center,.tile,.over,#hud,#appTop,#appNav,#logDrawer,button,a,input,select,textarea,label'))return;
     if(view){view=null;render()}
     else if(!ovHidden&&window.innerWidth>640){ovHidden=true;render()}
   });
@@ -8193,7 +8212,7 @@ button:not(.tile) small,button:not(.tile) .quick-icon,button:not(.tile) .quick-i
   /* ---------- Illustrated app shell: presentation state only (never game rules) ---------- */
   var modernScreen='today',modernState=null,modernDay=0,modernBank='amt',modernBankMode='deposit',modernSearch='';
   var SCENE_KEYS=['jobs','school','bank','market','fast','resto','elec','mall','apt','hosp','factory','thrift','comm','bung','gym','park'];
-  var TOWN_POINTS=[[14,19],[39,17],[61,20],[84,23],[15,39],[39,37],[62,40],[87,44],[14,63],[40,62],[65,64],[88,67],[18,84],[42,84],[65,85],[86,88]];
+  var TOWN_POINTS=SCENE_KEYS.map(function(k){return TOWN_LAYOUT[k]});
   function modernEsc(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function modernIcon(k){var p={today:'<rect x="3" y="4" width="18" height="17" rx="4"/><path d="M8 2v4m8-4v4M3 10h18m-13 5h3m3 0h2"/>',town:'<path d="m3 7 6-3 6 3 6-3v16l-6 3-6-3-6 3V7Zm6-3v16m6-13v16"/>',life:'<path d="m3 11 9-8 9 8v10H3V11Zm6 10v-8h6v8"/>',rivals:'<circle cx="9" cy="8" r="4"/><path d="M2 21v-3a7 7 0 0 1 14 0v3m1-17a4 4 0 0 1 0 8m2 4a6 6 0 0 1 3 5"/>',brand:'<path d="M4 21V7l8-4 8 4v14M9 21v-6h6v6M8 9h1m6 0h1M8 12h1m6 0h1"/>',work:'<rect x="3" y="7" width="18" height="14" rx="3"/><path d="M8 7V4h8v3M3 12h18m-10 0v3h2v-3"/>',study:'<path d="M12 5C8 2 4 3 2 4v16c4-2 7-1 10 1 3-2 6-3 10-1V4c-4-2-7-1-10 1Zm0 0v16"/>',food:'<path d="M6 3v6m-3-6v4a3 3 0 0 0 6 0V3M6 10v11m12-18c-4 3-4 8 0 9V3Zm0 9v9"/>',bank:'<path d="m2 8 10-6 10 6H2Zm2 3v7m5-7v7m6-7v7m5-7v7M2 21h20"/>',shop:'<path d="M3 8h18l-2-5H5L3 8Zm1 0v13h16V8M9 21v-7h6v7M3 8v2c0 3 4 3 5 0 1 3 5 3 6 0 1 3 7 3 7 0V8"/>',device:'<rect x="6" y="2" width="12" height="20" rx="3"/><path d="M10 18h4"/>',health:'<path d="M8 3h8v5h5v8h-5v5H8v-5H3V8h5V3Z"/>',tree:'<path d="m12 2-7 9h4l-5 6h7v5m1-20 7 9h-4l5 6h-8"/>',gym:'<path d="M3 7v10m4-13v16m10-16v16m4-13v10M7 12h10"/>'};return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p[k]+'</svg>'}
   function rivalFace(r,extra){var i=r?S.rivals.indexOf(r):-1;return i<0?'<span class="rival-face you-face '+(extra||'')+'" aria-hidden="true">You</span>':'<span class="rival-face '+(extra||'')+'" role="img" aria-label="'+modernEsc(r.name)+' portrait" style="--face-x:'+(Math.max(0,i)%4*100/3)+'%"></span>'}
@@ -8204,7 +8223,7 @@ button:not(.tile) small,button:not(.tile) .quick-icon,button:not(.tile) .quick-i
   }
   function modernSetup(){
     var top=document.createElement('header');top.id='appTop';top.setAttribute('aria-label','Daily Grind status');
-    top.innerHTML='<div class="app-brand"><span class="brand-mark">'+modernIcon('brand')+'</span><div>Daily Grind<small>Your town. Your next chapter.</small></div></div><div class="app-status"><span><small>DAY</small><b id="appDay"></b></span><span><b id="appTime"></b><small>left</small></span><span><small>CASH</small><b id="appCash"></b></span><span class="status-energy"><small>ENERGY</small><b id="appEnergy"></b></span></div>';
+    top.innerHTML='<div class="app-brand"><span class="brand-mark">'+modernIcon('brand')+'</span><div>Daily Grind<small>Your town. Your next chapter.</small></div></div><div class="app-status"><span><small>DAY</small><b id="appDay"></b></span><span><span class="hud-sky" id="appSky" aria-hidden="true">☀</span><b id="appTime"></b><small>left</small></span><span><small>CASH</small><b id="appCash"></b></span><span class="status-energy"><small>ENERGY</small><b id="appEnergy"></b></span></div>';
     document.body.appendChild(top);top.appendChild($('actbar'));
     var vp=document.createElement('div');vp.id='townViewport';vp.setAttribute('aria-label','Town map with sixteen destinations.');
     vp.innerHTML='<div class="town-caption"><b>Your neighbourhood</b><span>Choose a pin or a destination below</span></div><div id="townCanvas" class="town-canvas"></div>';
@@ -8214,9 +8233,10 @@ button:not(.tile) small,button:not(.tile) .quick-icon,button:not(.tile) .quick-i
     var shade=document.createElement('div');shade.id='dayShade';shade.setAttribute('aria-hidden','true');document.body.appendChild(shade);
     document.querySelectorAll('.tile').forEach(function(tile){
       var k=tile.dataset.loc,i=SCENE_KEYS.indexOf(k),p=TOWN_POINTS[i];tile.style.left=p[0]+'%';tile.style.top=p[1]+'%';tile.style.removeProperty('--w');
-      tile.innerHTML='<span class="scene"><span class="pin" aria-hidden="true"><span>'+(i+1)+'</span></span><span class="tags"></span><span class="cost"></span></span><b class="lab">'+modernEsc(NAME[k])+'</b>';
+      tile.innerHTML='<span class="scene">'+art(k)+'<span class="pin" aria-hidden="true"><span>'+(i+1)+'</span></span><span class="tags"></span><span class="cost"></span></span><b class="lab">'+modernEsc(NAME[k])+'</b>';
       $('townCanvas').appendChild(tile);
     });
+    modernDrawTown();
     var directory=document.createElement('section');directory.id='townDirectory';directory.hidden=true;directory.setAttribute('aria-label','Destinations');$('center').appendChild(directory);
     var heading=document.createElement('div');heading.id='screenHeading';heading.className='screen-heading';$('overview').insertBefore(heading,$('overview').firstChild);
     var progress=document.createElement('div');progress.id='dailyProgress';progress.className='daily-progress';progress.setAttribute('aria-live','polite');$('appTop').appendChild(progress);
@@ -8225,8 +8245,15 @@ button:not(.tile) small,button:not(.tile) .quick-icon,button:not(.tile) .quick-i
     var guide=document.createElement('details');guide.className='guide-disclosure';guide.innerHTML='<summary>First-week checklist</summary>';$('goals').before(guide);guide.appendChild($('goals'));
     var life=document.createElement('div');life.id='lifeShortcuts';life.className='quick-grid';heading.after(life);
     var intro=document.createElement('p');intro.id='rivalIntro';intro.className='sub';heading.after(intro);
-    var settings=document.createElement('div');settings.className='settings-row';settings.setAttribute('aria-label','Game settings');$('overview').appendChild(settings);
-    ['muteBtn','previewBtn','rulesBtn','resetBtn'].forEach(function(id){settings.appendChild($(id))});
+    var tools=document.createElement('details');tools.id='hudTools';tools.innerHTML='<summary>⚙ Controls</summary><div class="hud-toolbar"></div>';$('actbar').prepend(tools);
+    ['muteBtn','previewBtn','rulesBtn','logBig','resetBtn'].forEach(function(id){tools.querySelector('.hud-toolbar').appendChild($(id))});
+    var drawer=document.createElement('section');drawer.id='logDrawer';drawer.hidden=true;drawer.setAttribute('role','dialog');drawer.setAttribute('aria-label','Daily log');drawer.innerHTML='<div class="drawer-heading"><h2>Daily log</h2><button type="button" class="btn" id="closeLog">Close ✕</button></div>';drawer.appendChild($('log'));document.body.appendChild(drawer);$('closeLog').addEventListener('click',function(){modernLog(false);$('logBig').focus()});$('logBig').setAttribute('aria-controls','logDrawer');
+    var oldHead=$('overview').querySelector('.loghead');if(oldHead)oldHead.remove();
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'&&(!drawer.hidden||tools.open)){e.preventDefault();e.stopImmediatePropagation();modernLog(false);tools.open=false}},true);
+    document.addEventListener('click',function(e){if(!tools.contains(e.target))tools.open=false});
+    var context=document.createElement('div');context.id='hudContext';context.innerHTML='<span id="hudRank"></span><span id="hudLocation"></span><button type="button" class="btn" id="appInbox" data-dg-app="msgsapp" hidden></button><button type="button" class="btn" id="hudAlert" hidden></button>';$('appTop').appendChild(context);
+    $('hudAlert').addEventListener('click',function(){modernSelect('today');$('warn').scrollIntoView({block:'nearest'});});
+    document.querySelector('.app-status').insertAdjacentHTML('beforeend','<span class="status-health"><small>HEALTH</small><b id="appHealth"></b></span><span class="status-happy"><small>MOOD</small><b id="appHappy"></b></span>');
     var economy=$('econ').parentNode;economy.className='grp g-econ';economy.querySelector('.l').className='gh';$('overview').querySelector('.g-home').before(economy);
     var hero=document.createElement('div');hero.id='interiorHero';hero.className='interior-hero';hero.setAttribute('role','img');hero.innerHTML='<span class="interior-caption"></span>';$('shop').insertBefore(hero,$('shop').firstChild);
     var nav=document.createElement('nav');nav.id='appNav';nav.setAttribute('aria-label','Main navigation');
@@ -8309,6 +8336,15 @@ button:not(.tile) small,button:not(.tile) .quick-icon,button:not(.tile) .quick-i
     if(S.mode!=='rivals')return;
     $('shopBody').querySelectorAll('.arow-t').forEach(function(t){if(t.querySelector('.rival-face'))return;var r=S.rivals.find(function(r){return t.textContent.indexOf(r.name)>=0});if(r)t.insertAdjacentHTML('afterbegin',rivalFace(r))});
   }
+  function modernLog(open){var d=$('logDrawer');if(!d)return;d.hidden=!open;$('logBig').textContent=open?'Close log':'Expand log';$('logBig').setAttribute('aria-expanded',String(open));if(open){$('log').classList.add('big');$('log').style.height='';$('hudTools').open=false;$('closeLog').focus()}}
+  function modernDrawTown(){
+    var canvas=$('townCanvas'),svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 1000 666.667');svg.classList.add('neighbourhood-art');svg.setAttribute('aria-hidden','true');
+    var foot=function(k){var p=TOWN_LAYOUT[k];return [p[0]*10,p[1]*6.6667+25]},loop=['apt','jobs','school','bank','market','hosp','factory','bung','thrift','park'].map(foot),road=loopPath(loop),h='<defs><radialGradient id="townGround"><stop stop-color="#315b50"/><stop offset="1" stop-color="#183c3b"/></radialGradient><pattern id="townGrain" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M3 8h2m17 13h2" stroke="#86ac8433"/></pattern></defs><rect width="1000" height="667" fill="url(#townGround)"/><rect width="1000" height="667" fill="url(#townGrain)"/><path d="M970 -20 Q900 140 968 290 T960 700" fill="none" stroke="#29606b" stroke-width="65"/><path d="M970 -20 Q900 140 968 290 T960 700" fill="none" stroke="#558391" stroke-width="2" opacity=".45"/>';
+    var paths=[road];[['jobs','comm','fast','mall','thrift'],['school','resto','gym','bung'],['apt','elec','park'],['fast','resto','market']].forEach(function(keys){var p=keys.map(foot);paths.push('M'+p[0].join(',')+p.slice(1).map(function(v,i){var a=p[i];return ' Q'+[(a[0]+v[0])/2+14,(a[1]+v[1])/2-8].join(',')+' '+v.join(',')}).join(''))});
+    paths.forEach(function(d){h+='<path d="'+d+'" fill="none" stroke="#697b71" stroke-width="31" stroke-linecap="round" stroke-linejoin="round"/><path d="'+d+'" fill="none" stroke="#34484a" stroke-width="22" stroke-linecap="round"/><path d="'+d+'" fill="none" stroke="#bdac7155" stroke-width="1.4" stroke-dasharray="10 13"/>'});
+    var rand=rng(81);for(var i=0;i<85;i++){var x=rand()*925+20,y=rand()*610+35;var near=Object.values(TOWN_LAYOUT).some(function(p){return Math.hypot(x-p[0]*10,(y-p[1]*6.6667)*1.2)<65});if(!near)h+='<g><ellipse cx="'+x+'" cy="'+(y+7)+'" rx="14" ry="6" fill="#102e31"/><circle cx="'+x+'" cy="'+(y-4)+'" r="13" fill="'+(i%2?'#49795b':'#386950')+'"/><circle cx="'+(x-4)+'" cy="'+(y-8)+'" r="7" fill="#679263" opacity=".6"/></g>'}
+    Object.keys(TOWN_LAYOUT).forEach(function(k){var p=foot(k);h+='<g class="street-lamp"><circle cx="'+(p[0]+42)+'" cy="'+(p[1]-5)+'" r="14" fill="#ffd591" opacity=".10"/><circle cx="'+(p[0]+42)+'" cy="'+(p[1]-5)+'" r="3" fill="#ffd591"/></g>'});svg.innerHTML=h;canvas.prepend(svg);
+  }
   function modernLandmarks(){
     var j=myJob(),work=j&&j.b,closed=work&&shutLeft(work)>0;
     document.querySelectorAll('.tile').forEach(function(t){var k=t.dataset.loc,you=k===loc,home=k===S.home&&!S.homeless,job=k===work;
@@ -8331,9 +8367,17 @@ button:not(.tile) small,button:not(.tile) .quick-icon,button:not(.tile) .quick-i
     $('center').hidden=false;$('townDirectory').hidden=screen!=='town';
     if(screen==='town'){$('overview').hidden=true;$('shop').hidden=true;modernPaintPlaces()}
     $('toasts').style.top='';modernMapFit();
-    [['energy',S.energy],['happy',S.happy],['health',S.health],['know',S.know]].forEach(function(p){$(p[0]).style.color=p[1]<30?'var(--red)':p[1]<60?'#9a6c19':'var(--teal)'});
+    [['energy',S.energy],['happy',S.happy],['health',S.health],['know',S.know]].forEach(function(p){$(p[0]).style.color=p[1]<30?'var(--red)':p[1]<60?'#f0c579':'#9ce3ce'});
     $('saveSt').textContent=$('saveSt').textContent.replace('💾 ','');$('meal').textContent=$('meal').textContent.replace(/^[^A-Za-z]+/,'');
     $('appDay').textContent=S.day+(maxDays()===Infinity?'':' / '+maxDays());$('appTime').textContent=hm(S.ap);$('appCash').textContent=window.innerWidth<=640?kMoney(S.cash):money(S.cash);$('appCash').title=money(S.cash);$('appEnergy').textContent=Math.round(S.energy)+'%';
+    $('appSky').textContent=S.ap>960?'☀':S.ap>480?'◐':'☾';
+    $('appHealth').textContent=Math.round(S.health)+'%';$('appHappy').textContent=Math.round(S.happy)+'%';
+    [['appHealth',S.health<CONFIG.health.poorBelow],['appHappy',S.happy<25],['appEnergy',S.energy<30]].forEach(function(p){$(p[0]).style.color=p[1]?'var(--red)':'#9ce3ce'});
+    var next=Math.max(0,nextGoal()-worth()),warns=stressList();$('hudRank').textContent=money(worth())+' net worth'+(next?' · '+money(next)+' to '+TIERS[Math.min(TIERS.length-1,S.tier+1)].n:' · Top rank');
+    var job=myJob();$('hudLocation').textContent=NAME[loc]+(job?' · '+job.rk.r+' '+money(payInfo().v)+'/shift'+(shutLeft(job.b)>0?' · Work closed':''):'');
+    $('hudRank').style.setProperty('--rank-progress',Math.max(0,Math.min(100,worth()/Math.max(1,nextGoal())*100))+'%');
+    $('appInbox').hidden=S.mode!=='rivals'||!newMsgs()||!handheld();$('appInbox').textContent=(S.mode==='rivals'?newMsgs():0)+' messages';
+    $('hudAlert').hidden=!warns.length;$('hudAlert').textContent=warns.length+' alert'+(warns.length===1?'':'s');$('hudAlert').title=warns.map(function(w){return w.t.replace(/<[^>]*>/g,'')}).join(' / ');
     $('appTime').className=S.ap<180?'time-urgent':S.ap<480?'time-warning':'';
     $('dailyProgress').innerHTML='<span class="'+(S.fed?'eaten':'not-eaten')+'">'+(S.fed?'✓ Eaten today':'! No meal yet')+'</span><span>Work: '+hm(S.workMin||0)+'</span><span>Study: '+hm(S.studyMin||0)+'</span>';
     $('townDevice').disabled=!handheld()||!!S.over||!!S.pending;$('townDevice').textContent=owns('tablet')&&!owns('phone')?'Tablet apps':'Phone / tablet apps';$('townDeviceNote').textContent=handheld()?'Bank · Jobs'+(S.mode==='rivals'?' · Calls · Messages':''):'Buy a phone or tablet to use apps';

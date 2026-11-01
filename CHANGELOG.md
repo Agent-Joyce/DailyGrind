@@ -1568,3 +1568,13 @@ The second half of the last rivals step (batch 4b). Everything here is light and
 - Removed the unchanged market briefing from morning notes, shortened sleep and quiet-night copy, and suppressed the repeated no-clothes warning. Actual gains, offers and actionable reminders remain.
 - Rank checkpoints continue automatically with log/map feedback; focused checks verify Comfortable, Wealthy and Tycoon do not open the ending modal or stop play. The normal day limit and other endings remain in place.
 - Validation: full UI check passed with zero issues on desktop and phone (16 buildings, 34 situations, 821 presses and 202 layout checks each), including enabled-button colour checks. Save/reload checks passed; 21 focused daily-play checks passed at each width, and all 22 bet/rent/scoring regressions passed. [UI report](docs/QA_UI_2026-11-01_daily-play.md).
+
+
+## 97. Dusk neighbourhood and HUD controls
+
+- Moved Reset, Preview, How it ends, Sound and Expand log into a HUD Controls menu. The log opens in a closeable drawer from any screen; reading it or pressing Escape does not leave the current building. Reset retains its second-click confirmation.
+- Added persistent HUD health/mood values, low-vital highlighting, current location/job/pay, net-worth/rank progress, relevant alert counts and unread messages. The time display uses a sun-to-moon accent.
+- Applied a rich blue-green dusk palette to the app, interiors, notices and popups, with brass details and light text. Clickable action buttons remain teal.
+- Rebuilt the town as an irregular illustrated neighbourhood using existing building SVGs, curved roads, trees, a river and streetlights. Current location glows gold, work turquoise (coral when closed) and home lavender; combined meanings remain visible. Desktop landmark bubbles are thicker.
+- Building positions and travel now share `TOWN_LAYOUT`. Walks remain 15–120 minutes in the default configuration; the average across all 240 ordered routes is 58.375 minutes versus 60.5 previously (about 3.5% lower). Longer physical routes cannot have shorter walk times, apart from equal rounded times. Existing saves keep their location and game state.
+- Validation: full desktop and phone UI checks passed with zero issues (821 presses, 202 layout checks each, plus save/reload flows). Final focused checks passed 34 assertions per viewport, including real walking, HUD controls and drawer interactions; 22 gameplay regressions and 19 personality/memory checks passed. Optional simulations were not run. [UI report](docs/QA_UI_2026-11-01_dusk-neighbourhood.md).
