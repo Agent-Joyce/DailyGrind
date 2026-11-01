@@ -60,7 +60,8 @@ Where things are in `index.html`, and how to make the common changes safely. Lin
 ## Checking a change
 
 - `node tools/qa/run-uicheck.js <folder outside the repo>`: presses every button at desktop and phone width, the pop-ups, extra situations, and the reload checks (difficulties, a trait, save and reload, a damaged save).
-- Simulations (`tools/qa/sim.js`): 30 seeded games; ask before running them (CLAUDE.md).
+- Existing simulations (`tools/qa/sim.js`, launched by `tools/qa/run-sims.js`): default 20 careful + 10 random seeded games; ask before running them (CLAUDE.md).
+- Planned 50-game suite: [Simulation Guide](docs/Simulation_Guide.md) owns the exact scenario manifest, device/strategy allocation, seeds, architecture, validation and report schema. It is not yet implemented. Future manifest/runner/adapter/strategy/validator/report entry points must be added here when created. Add scenarios, strategies or validators by updating the manifest/schema and coverage rules together; preserve the 50-case totals unless the user changes the plan.
 - For a change that must not alter behaviour (a refactor), compare against the version before it: the same seeded sim results, the same panel HTML for a seeded game, and the same content tables.
 
 **Bet settlements and rent bills:** settleMoney(true) handles loans during rivalTick; settleBets runs after the player’s overnight interest, investments, rent and arrears, before sampleNight. finish also settles due bets on an early-ending night. settleBets snapshots every bet’s net-worth growth before any bet payout or refund. Calling settleMoney() without deferral still settles both for targeted callers. Accepted bet messages store betUntil; older messages use their active bet’s until, or omit an unknown date. Rent reminders use myRent for the upcoming bill. myRent(day) prices a specific rent bill; omitted day means nextRentWeek(), while overnight collection passes S.day-1. A skipped share affects that bill only.
@@ -71,7 +72,7 @@ Where things are in `index.html`, and how to make the common changes safely. Lin
 
 Targeted feature checks: node tools/qa/check-personalities.js <folder outside the repo>. DG_BROWSER_CHANNEL=msedge can select installed Edge; by default it uses Playwright Chromium. check-regressions.js still checks the preceding bet, rent and scoring fixes.
 
-**Daily HUD and map:** `renderStats()` and `renderMap()` retain the existing state-to-DOM updates. The illustrated app shell creates the visible status header and numbered town pins, with Today/Town/Life/Rivals views; phone apps are accessed from Life. Latest rank progression, flatmate refusals and rival path diversity remain.
+**Daily HUD and map:** `renderStats()` and `renderMap()` retain the existing state-to-DOM updates. The illustrated app shell creates the visible status header and numbered town pins, with Today/Town/Life/Rivals views; phone/tablet apps are accessed from the Town map shortcut (`townDevice`) when a working device is owned. Latest rank progression, flatmate refusals and rival path diversity remain.
 
 **Rival path diversity:** `diversifyRivals()` runs at the start of `rivalTick()` from the halfway day onward. It records `avoidCareer` and `avoidTrack` for later rivals on identical paths; `rivalTarget()` prefers the best feasible different career and missing qualification, while job applications prefer an eligible alternative. These fields are optional on older saves.
 

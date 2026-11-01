@@ -4,13 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository
 
-The project is the GitHub repo **`Agent-Joyce/DailyGrind`**. Work happens in a clone of it, on `main`. Throwaway files (hooked test copies, scripts, simulation and UI-check output, screenshots) go in a folder outside the repo, such as the session scratchpad, and are never committed.
+The project is the GitHub repo **`Agent-Joyce/DailyGrind`**. Work happens in a clone of it, on `main`. Reusable QA tools belong in `tools/qa/`. Throwaway files (hooked test copies, scratch scripts, browser profiles, debugging output and screenshots) go in a folder outside the repo, such as the session scratchpad, and are never committed. Final simulation reports and their raw results belong in `docs/`, as described below.
 
 ## What this is
 
 Daily Grind is a browser life-sim game that lives in **one file: `index.html`** (~6,400 lines: CSS, markup, then a single `<script>` wrapped in one IIFE). There is no build step, package manager, linter or unit-test suite. `CHANGELOG.md` is the running record of every gameplay change (no README). `docs/` holds the `CONFIG` guide (`Daily Grind Config Guide.docx`, keep it in step when `CONFIG` changes), the simulation reports (`QA_Sim_*`) and an older snapshot QA report (`QA_Report.html`). `tools/qa/` holds the QA scripts: `sim.js` with its launcher `run-sims.js` (simulation runs) and `uicheck.js` with its launcher `run-uicheck.js` (the UI check). The `.ps1` files there are older Windows launchers and are not used. **`CODE_MAP.md` says where everything is in `index.html` (twelve numbered sections) and how to add an action, building, event, CONFIG value or save change; keep it current when you move or add a section.**
 
 ## Running and checking changes
+
+The existing runner below remains available. The planned 50-game suite is specified in [docs/Simulation_Guide.md](docs/Simulation_Guide.md): exact scenario IDs, 30 desktop / 20 mobile assignments, four bot strategies, seeds, ten reload cases, proposed architecture, validation and reporting. It is documentation only until implemented; do not describe the suite as runnable or tested. Do not duplicate its full manifest here. Its future tested invocation must be added to the guide when available. Desktop/mobile emulation is distinct from physical-device testing. Preserve original failures and report not-exercised features; commit only final report artifacts, not hooked game copies.
 
 - Test in headless Chromium with Playwright (installed in the cloud environment), against a throwaway copy of `index.html` with a test hook injected just before the line `  if(!load())fresh();`. The hook assigns `window.__G` to expose the closure's internals (`S`, `CONFIG`, `fresh`, `enter`, `render`, `worth`, ...); everything is private to the IIFE, so nothing can be driven from outside without it. Keep that marker line unique and intact. Do not commit the copy.
 - Game state autosaves to `localStorage` (`dailyGrind.save.v1`), so clear it when testing a fresh start.
