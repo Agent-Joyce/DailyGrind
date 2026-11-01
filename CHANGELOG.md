@@ -105,6 +105,8 @@ Everything adjustable lives in the `CONFIG` block near the top of the script: `C
 97. [Dusk neighbourhood and HUD controls](#97-dusk-neighbourhood-and-hud-controls)
 98. [Document the planned 50-game simulation suite](#98-document-the-planned-50-game-simulation-suite)
 99. [Softer illustrated buildings and character portrait moments](#99-softer-illustrated-buildings-and-character-portrait-moments)
+100. [Neutral page background](#100-neutral-page-background)
+101. [Implement and run the 50-game simulation suite](#101-implement-and-run-the-50-game-simulation-suite)
 
 ---
 
@@ -1666,6 +1668,7 @@ The second half of the last rivals step (batch 4b). Everything here is light and
 - Documentation only: the 50-game suite is not implemented or run by this change. No game rules, CONFIG, historical reports or simulation results were changed. Validation: checked manifest totals/unique IDs, per-device and strategy counts, reload assignments and local Markdown document/heading links.
 
 
+
 ## 99. Softer illustrated buildings and character portrait moments
 
 - Replaced the map’s small vector buildings with a simplified warm isometric illustration set modelled on the supplied reference: sixteen recognisable buildings/park assets, broader shapes and rounded trees. Retained the rich UI palette, existing interior scenes and shared map/travel geometry.
@@ -1679,3 +1682,14 @@ The second half of the last rivals step (batch 4b). Everything here is light and
 
 - Replaced the overall teal page, HUD, navigation and panel backgrounds with warm neutral stone and charcoal surfaces. Kept teal action buttons, map artwork and semantic building highlights. No gameplay changes.
 - Validation: 43 existing focused checks passed separately at desktop and phone widths; visual review confirmed the neutral page/HUD/panel surfaces and retained teal actions.
+
+
+## 101. Implement and run the 50-game simulation suite
+
+- Added the manifest-driven browser runner and [Simulation Guide](docs/Simulation_Guide.md): 50 fixed cases, 30 desktop / 20 mobile, four bot policies, seeded game/bot streams, actual visible clicks/taps, isolated contexts and ten save/reload cases. Legacy simulation tools remain unchanged.
+- Added incremental checkpoints, preserved retry attempts, dynamic bank-control handling, eligibility checks, longer input waits, independent net-worth/Life Score checks and lossless JSON evidence dictionaries. Markdown and CSV reports can be regenerated from the saved JSON.
+- Tested game commit `efaa56198e63564f61b3d2da4a4d1695da78bb5f`; the two later illustration/portrait/background commits were not included. Publishing these tools preserves those newer changes. No gameplay source or CONFIG changes were made by this QA work.
+- Results: 50/50 cases completed (30 desktop, 20 mobile), all ten reload checks passed, zero page errors and zero invariant failures. Outcomes: 23 Tycoon, 8 Wealthy, 17 Hospitalised and 2 Bankrupt. Legitimate early endings count as completed games.
+- Findings remain open in the tested build: all three expert rivals retained identical jobs/completed qualifications in six full-length games despite diversification flags; a mobile notification intercepted the phone shortcut. Two legacy phone-purchase text/effect flags were reviewed as periodic-benefit parser false positives. All 28 observed shared-action refusals preserved time/cash (126 total attempts); exact relationship deltas were not independently captured.
+- Evidence retains 24 earlier failed/interrupted automation attempts instead of presenting 50 clean first attempts. Banking-selector issues were corrected in the harness; longer waits allow natural notification expiry without hiding the UI finding. Final evidence decoding and CSV regeneration were verified against all 50 completed checkpoints.
+- Reports: [readable findings](docs/QA_Sim_2026-11-01_50-run-suite.md), [raw JSON evidence](docs/QA_Sim_2026-11-01_50-run-suite.json), [CSV summary](docs/QA_Sim_2026-11-01_50-run-suite.csv).

@@ -1,8 +1,8 @@
 # Daily Grind simulation guide
 
-Status: specification only, 1 November 2026 (Singapore). The 50-run suite is not implemented or executed by this documentation change. Existing runners retain their current behaviour. This guide is the authoritative plan; do not treat its proposed interfaces or checks as available features.
+Status: implemented on 1 November 2026 (Singapore). The manifest-driven suite reuses the existing careful/random planner through an asserted adapter. The legacy runner retains its behaviour. This guide records the scenario specification and actual implementation limits; dated QA reports record execution results.
 
-## Existing tools and commands
+## Commands
 
 The current launcher builds a temporary hooked HTML copy and loads `tools/qa/sim.js`. It supports careful (`survive`) and random players, rival level/count flags and JSON results. From the repository root, the existing default command is:
 
@@ -16,18 +16,30 @@ It defaults to 20 careful games from seed 1 and 10 random games from seed 101. E
 node tools/qa/run-sims.js <folder-outside-repo> 20 10 1 101 --rivals=mixed --rival-count=3
 ```
 
-Neither command implements the matrix below. A future manifest-driven entry point must be documented with its tested command when implemented. Keep the existing runner compatible.
+The two legacy commands above do not implement the matrix below. Use the new suite from the repository root:
 
-## Planned architecture
+```sh
+node tools/qa/run-suite.js --validate
+node tools/qa/run-suite.js <folder-outside-repo> --workers=3 --commit=<game-commit-sha>
+node tools/qa/report-suite.js <folder-outside-repo> docs/QA_Sim_<date>_50-run-suite
+# Regenerate summaries from the saved JSON evidence:
+node tools/qa/report-suite.js docs/QA_Sim_<date>_50-run-suite.json <new-report-prefix>
+```
+
+Install Playwright and its Chromium browser in the execution environment first. `DG_BROWSER_EXECUTABLE` can select an installed Chromium-compatible executable. In the managed runtime, Playwright can also be found through `CODEX_PRIMARY_RUNTIME_NODE_MODULES`. No runtime dependencies or browser binaries are committed. The launcher records actual browser/Playwright versions.
+
+`--workers=1..4` controls isolated contexts (default 3). `--action-ms` defaults to 20000 and `--game-ms` to 600000. `--resume` skips recorded completed/failed attempts and refuses changed build, manifest or harness hashes. It does not automatically retry a failure. `--recover-harness` explicitly permits a changed harness on the same game build/manifest/browser and records both execution phases; it does not silently discard an old result. Reports can be generated from partial checkpoint files without rerunning games. For an authorized retry, preserve the prior case JSON in `attempts/case-<id>-attempt-<n>.json`, preserve metadata/screenshots there, and use the same case ID; the runner increments its attempt number. Never delete the original failure.
+
+## Architecture
 
 | Component | Responsibility |
 |---|---|
-| Scenario manifest | Machine-readable equivalent of all 50 rows below; validate totals and unique IDs before launch |
-| Runner | Isolated browser context per game, explicit welcome selections, per-game timeout and incremental checkpointing |
-| Game adapter | Inject the existing `window.__G` hook into a throwaway copy; read state and drive actual visible controls |
-| Player strategies | Choose legal actions according to the four policies below, using a separate bot random stream |
-| Validator/recorder | Observe action and overnight effects, record daily snapshots, errors, eligibility counts and feature coverage |
-| Report generator | Produce Markdown, detailed JSON and per-game CSV from the recorded evidence |
+| `tools/qa/suite-manifest.json` | Machine-readable equivalent of all 50 rows below; validate totals and unique IDs before launch |
+| `tools/qa/run-suite.js` | Isolated browser context per game, explicit welcome selections, per-game timeout and incremental checkpointing |
+| `run-suite.js` / `build-suite-player.js` | Inject `window.__G` into the temporary HTTP-served copy; assert legacy-source anchors; drive visible controls using Playwright |
+| `sim.js` / `suite-player.js` | Reuse careful/random policies, put study first for career, add a social routine; use a separate bot random stream |
+| `suite-player.js` / `run-suite.js` | Observe actions and overnight effects; record snapshots, errors, physical attempts, feature coverage and PRNG states |
+| `tools/qa/report-suite.js` / `suite-evidence.js` | Produce Markdown, lossless dictionary-encoded JSON and per-game CSV; decode saved evidence to regenerate summaries |
 
 Reusable QA source belongs in `tools/qa/`. Temporary hooked copies, scratch scripts, browser profiles and debugging screenshots stay outside the repository. Final simulation reports belong in `docs/`; historical reports remain unchanged.
 
@@ -117,7 +129,7 @@ Game/bot seeds are distinct columns. Reload means the planned day-10 check descr
 
 Totals: 30 desktop / 20 mobile; 10 single / 9 easy / 9 medium / 9 expert / 13 mixed. Rival towns: 14 Friendly / 13 Competitive / 13 Cutthroat. Each homogeneous rival group has 5 desktop and 4 mobile cases; mixed has 9 desktop and 4 mobile; single has 6 desktop and 4 mobile.
 
-## Planned validation and coverage
+## Validation specification and implementation limits
 
 | Area | Evidence/check |
 |---|---|
@@ -142,7 +154,7 @@ A legitimate game-over before the time limit is a completed simulation. A crash,
 
 Checkpoint each game's result immediately. Use bounded per-action/per-day guards and a configurable per-game timeout; record the configured limits. Keep the last valid state, current day, error/stack, action trace and failure screenshot location. Stop loops without changing state to manufacture completion.
 
-The primary batch has 50 planned attempts. A retry keeps the original run ID and gets a separate attempt number; it must not erase the first failure or count as a 51st distinct scenario. A replay/retry is additional execution and requires authorization unless already included in the user's execution instruction.
+The primary batch has 50 planned attempts. A retry keeps the original run ID and gets a separate attempt number; it must not erase the first failure or count as a 51st distinct scenario. A replay/retry is additional execution and requires authorization unless already included in the user's execution instruction. Recovery from harness failures while fulfilling an instruction to run the suite must retain original attempts and be disclosed in the report; it must not be presented as 50 clean first attempts.
 
 Record game commit, index.html SHA-256, harness revision, manifest checksum, browser/Playwright versions, actual settings and start/end timestamps (include Singapore time). Reproduction requires the same build, settings and random streams; seeds alone do not guarantee identical results across code changes.
 
@@ -178,3 +190,19 @@ Results compare different scenarios, not matched desktop/mobile pairs. Difficult
 - No game changes, artificial benefits or forced social outcomes are introduced by the harness.
 - Raw evidence can regenerate the Markdown and CSV summaries.
 - Validate implementation with targeted harness checks before an explicitly authorized 50-game execution. Implementation approval alone does not imply execution approval.
+
+
+
+## Current implementation limits
+
+- Previews are disabled through the saved UI preference in all strategies. Random action selection therefore does not exercise preview cancellation.
+- Chromium is launched with GPU disabled after a packaged headless build encountered software-GPU input timeouts. Games still render and physical input remains subject to Playwright actionability checks.
+- Normal policies are inherited from the legacy planner. The social routine calls the best-related active rival, attempts eligible flatmate/shared activities, buys a phone when affordable, answers messages, proposes/renews pacts and occasionally offers a bet. It does not force relationships or events.
+- Independent checks currently cover player/rival net-worth components, Life Score aggregation/placement, state/memory bounds, Friendly sabotage state and the meal indicator. Legacy log/effect mismatches are candidates needing review. The harness does not independently validate every rent/loan/bet formula, all work/study display text or the feasibility of every career pivot. Report these limits rather than claiming the entire validation specification passed.
+- Reload compares saved state except the expected Welcome back log. Unsaved pre-reload fields are recorded separately. Random state is restored after page initialization; matched replay equivalence is not established.
+- The report JSON includes the exact manifest, per-case attempts, daily rival career/education snapshots, action traces and earlier failed/interrupted attempts. Screenshots remain external debugging artifacts; JSON records their filenames.
+- Natural events that do not occur remain not exercised. Full UI checks, forced-state cases and physical-device tests are separate.
+
+The JSON evidence uses lossless per-case log and observation dictionaries to avoid storing repeated messages on every action. `tools/qa/suite-evidence.js` decodes observations back to their original values; report-suite.js accepts either checkpoints or the saved JSON. Reviewed parser false positives remain in raw evidence with a separate assessment.
+
+Bank amount controls are selected by stable input/delta prefixes because current min/max values change on render. Product selection and deposit/withdraw modes use actual controls. When opening an inactive product reveals that a choice is disabled, the harness records it as skipped, rather than forcing the button. The longer default input timeout permits normal notification expiry; notification overlap remains a separately reported UI finding.
