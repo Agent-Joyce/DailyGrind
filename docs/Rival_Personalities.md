@@ -32,3 +32,11 @@ For example, bringing soup to an ill rival leaves a memory and one credit. On a 
 `CONFIG.rivals.personalities` holds the four personalities, dialogue, additive probability adjustments, job-tip/tension multipliers, grudge multiplier and favour-return chance. `CONFIG.rivals.memory` holds history, trust and credit limits and the trust changes for deeds. Loans retain their existing amounts, interest and due dates.
 
 Save version 5 stores `personality` and `favours` on each rival. Existing saves receive stable personalities and empty memories without rerolling the game's random streams. New games deal distinct personalities using the rivals' own random stream. Single-player games are unaffected.
+
+## Career preferences and interactions — draft PR #11 (2026-11-01)
+
+`rivalTarget()` now applies a deterministic, small personality/career-specific multiplier to projected career earnings. The current multiplier is stronger for Ambitious rivals (up to ±7%), smaller for Generous (up to ±4%) and Vindictive (up to ±2%), and defaults to ±3.5% for other personality keys (including Reckless). The multiplier does not guarantee unique careers, and no simulation results have been established.
+
+Medium rivals choose the closest eligible opponent ahead for sabotage; Expert rivals choose the highest-scoring eligible opponent. Relationship messages use the actual delta after clamping to −100/+100.
+
+When a flatmate is home, each shared activity (cook, hangout, chores or clearAir) has a configurable chance of refusal (`CONFIG.rivals.together.flat.refuseChance`, default 20%). A refusal changes the relationship by `CONFIG.rivals.together.flat.refuseRel` (default −1) without spending time or money. This applies only to the draft PR until merged.
