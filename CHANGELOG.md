@@ -1413,3 +1413,63 @@ Rivals now come into your home, your lessons and your nights.
 - **Rent reminders:** quote myRent for the upcoming bill and compare cash against that amount, so a flatmate’s half share does not trigger a false full-rent warning.
 - **Bet messages:** save the accepted bet’s deadline instead of recalculating it from the current day. Existing accepted messages use the active bet’s deadline; old messages with no recoverable deadline omit the date. No CONFIG changes or save-version bump is needed.
 - **Validation:** all 22 targeted regression checks passed using a temporary jsdom adapter running the actual game script, DOM clicks, overnight pipeline and save/reload logic. Added nine checks covering bank interest, fixed deposits, deferred settlement, stable/legacy/saved deadlines and shared/solo rent reminders. Game and QA JavaScript syntax and git diff checks passed. Chromium could not be installed because browser downloads returned invalid archives; headless browser, visual/layout checks and full-game simulations have not run for this change.
+
+## 91. AI rivals: Town mood, reputation, alliances and betrayals
+
+The first half of the last rivals step (batch 4a): relationships become strategy. Sabotage follows as batch 4b.
+- **🌡️ Town mood:** a new row on the welcome screen's rival options.
+  - **😊 Friendly:** nobody can betray anyone.
+  - **⚖️ Competitive** (the default): betrayals at the normal rate.
+  - **🔪 Cutthroat:** betrayals 1.6× as likely.
+
+  The mood shows on the leaderboard and in the game-start log. Rival games saved earlier load as Competitive.
+- **🎖️ Reputation:** everyone starts at 60, on a scale of 0–100.
+  - **What moves it:** keeping a pact +5 (both sides), repaying a rival on time +2, not paying back −8, helping on a rival card +1, a betrayal −25.
+  - **What it changes:** whether rivals accept your pacts (±0.5 points per point away from 60), and interview chances (±0.25 points per point, for you and for the rivals).
+  - **Life Score:** it's a new category, 🎖️ Reputation (×1).
+- **🤝 Pacts:** with a 🤝 friend (40+), propose a 5-day pact in the 💬 Messages app (10 min), plain or with a shared pot ($100 each).
+  - **Who accepts:** easy 90%, medium 70%, expert 60%, generous +10, ambitious −10, plus your reputation. The row shows the chance.
+  - **Rival offers:** rivals also offer pacts by message (25% a night for each eligible rival). Declining or ignoring one costs 2 relationship.
+  - **What an ally gives you:** a job tip some mornings (50%), and they never take the last opening from you.
+  - **The pot:** it earns the savings rate +1 point a day. Each side's half counts in their net worth.
+  - **Kept to the end:** the pot is split, +5 relationship, +5 reputation each.
+  - **On the last day** you can renew. You can also end it early, honourably (pot split, −5 relationship, no reputation loss).
+- **💔 Betrayals** (Competitive and Cutthroat):
+  - **The chance:** your ally may betray you each night: easy 8%, medium 4%, expert 2%, × the mood, × personality (reckless ×1.5, vindictive ×1.3 once their trust is negative, generous ×0.4). Experts are ×3 in the last 5 days.
+  - **What they do, in order:**
+    - take the pot;
+    - stop repaying a loan they owe you;
+    - take the job you're after (no openings for your next rank for 2 days);
+    - leak your plans (the other rivals race you harder for 3 days, and −10 with them).
+  - **The cost to them:** their relationship with you crashes to −80, and their reputation drops 25. You lose 5 happiness.
+  - **Betraying your ally:** you can take the pot and walk out. You then drop to −80 with them, −25 reputation, and −10 with everyone else, and they remember it.
+- **Rival pairs:** rivals make pacts with each other (10% a night), with a pot when they can afford it and a small boost to their job applications while it lasts. They keep them or betray each other, and all of it is in the morning news.
+- **🎲 Overnight drift:** each night every rival's relationship with you moves by a random −2 to +2. The last night's drift shows in their Overview profile.
+- **Overview:** each row shows reputation (🎖️), and your ally. The profiles list pacts, leaks and drift.
+- **Fixed: the AI rivals Rules text** never filled in on a fresh page load. The bet stake (CHANGELOG 86) was priced before any game existed, which skipped the rest of that Rules block. Amounts now show unscaled until a game starts. The reload checks now report any Rules line that fails to fill in.
+- **Config:** new `CONFIG.rivals.politics`:
+  - `moods`, `defaultMood`;
+  - `rep` {start, keepPact, repay, defaulted, help, betray, acceptPer, interviewPer};
+  - `pact` {need, days, minutes, accept, acceptPersonality, offerChance, pot, potBonusRate, tipChance, keepRel, endRel, declineRel};
+  - `betray` {chance, lateDays, lateMult, personality, relTo, othersRel, happiness, closeDays, leakDays, leakRace};
+  - `rivalPacts` {chance, applyBonus};
+  - `drift` {min, max}.
+
+  Also a `rep` entry in `CONFIG.rivals.scoring.categories`.
+- **Saves:** version 6. `S` gains `townMood`, `rep`, `pact`, `leak`, `blocked` and `rpacts`, and each rival gains `rep` and `drift`. A migration gives older rival games reputation 60 and Competitive, without rolling dice.
+- **Single games:** a seeded 15-day single game is identical to the previous build.
+- **Checked:**
+  - Town mood from the welcome screen;
+  - proposing (refused and accepted with a pot, with net worth unchanged as the money moves);
+  - reputation moving the accept chance (90% at 100, 50% at 20);
+  - pot interest, an ally's tip, a pact kept (pot split, +5/+5), renewing, ending early;
+  - betraying your ally (−80, −10 with the others, −25 reputation, remembered);
+  - Friendly blocking every betrayal;
+  - each of the four rival betrayals, with a closed role still closed the next night;
+  - the expert late multiplier (2% → 6%) and the personality multipliers;
+  - a rival's pact offer, declined (−2) and accepted;
+  - rival pairs forming, kept and betrayed, with money balanced;
+  - drift over 1,000 rival-nights (only −2…+2, all five values, none for a rival out of the race);
+  - reputation from loans (+2 each way, −8 for a default) and in the Life Score;
+  - 20 real cutthroat days with no script errors.
+- **UI check:** new situations for a friend to make a pact with, a pact on its last day (renew, end, betray) and a pact offer, plus a betrayal-morning flow. New reload checks cover a Town mood game, an old rival save loading with the defaults, and the Rules text. Run against the previous build, they caught all three problems. 0 issues on desktop and phone.

@@ -21,8 +21,8 @@
           BAD TEXT      "NaN", "undefined", "null" or "[object" shown to the player
      5. Situations the main game does not have (SITUATIONS): sick (cold/flu with medical bills, dengue, sick at home),
         rent arrears, a loan to repay, a pawned item to redeem, an industry-specific storyline (its peak, your own job hit,
-        the rumour), out of clothes (buying used ones, a job's shift disabled), bank offers, the phone home screen, the Bank app and the Jobs app, a friend's job tip, a rival's job race, meeting and calling rivals, the Messages app, a flatmate (home, out, none yet), a study group. Each checks its buttons are there (MISSING) and presses them.
-     6. Flows: ending the day (end-of-day cards, morning card), a night with a rival card (its fx line against the real change), the action preview, a certificate and its bonus toast,
+        the rumour), out of clothes (buying used ones, a job's shift disabled), bank offers, the phone home screen, the Bank app and the Jobs app, a friend's job tip, a rival's job race, meeting and calling rivals, the Messages app, a flatmate (home, out, none yet), a study group, a friend to make a pact with, a pact on its last day, a pact offer. Each checks its buttons are there (MISSING) and presses them.
+     6. Flows: ending the day (end-of-day cards, morning card), a night with a rival card (its fx line against the real change), a betrayal morning, the action preview, a certificate and its bonus toast,
         the Belongings list on the status page, and the town leaderboard of a game with AI rivals.
    Results: window.__UI_RESULTS, an on-page report, the browser console, and a message to the parent page
    (so a harness page can collect the desktop and phone runs). Settings: window.__UICHECK = {autorun, seed}. */
@@ -227,6 +227,12 @@
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.home='apt';S.homeless=0;S.flat=null}},
     {name:'a study group at School (a friendly rival on the same pathway)',bld:'school',need:['class'],
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();var t=Object.keys(S.enr||{})[0]||'sal';S.rivals[1].study={t:t,lv:0,h:0};S.rivals[1].rel=20}},
+    {name:'a friend to make a pact with (Messages)',bld:'msgsapp',need:['pact'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.townMood='competitive';S.rep=60;S.pact=null;S.rpacts=[];S.asked=null;S.cash=Math.max(S.cash,400)}},
+    {name:'a pact with a pot on its last day (renew, end, betray)',bld:'msgsapp',need:['prenew','pend','pbetray'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.townMood='cutthroat';S.rep=60;S.rpacts=[];S.asked=null;S.pact={i:2,since:S.day-4,until:S.day,pot:210}}},
+    {name:'a pact offer from a rival (Messages)',bld:'msgsapp',need:['msg'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.townMood='competitive';S.pact=null;S.rpacts=[];S.cash=Math.max(S.cash,400);S.msgs=[{id:7,i:2,k:'pact',day:S.day,until:S.day+1,amt:100,back:0,st:null}];S.msgN=7}},
     {name:'out of clothes, buying used ones',bld:'thrift',need:['ubuy'],
       mod:function(S){S.clothes={casual:0,smart:0,suit:0}}},
     {name:'out of clothes with a job (shift disabled, "No clothes" chip)',bld:'fast',need:[],
@@ -272,6 +278,22 @@
       if(G.S.morning){var m=$('mnGo');if(m)m.click();await y()}
       errs.slice(e0).forEach(function(e){note('JS-ERROR','rival card night',e)});
     }finally{C.chance=c0;base=keep}
+  }
+  /* a night in a cutthroat rival game where your ally betrays you: the 💔 note is in the morning card, which fits the screen */
+  async function betrayalMorning(){
+    var keep=base,S0=JSON.parse(base);S0.mode='rivals';S0.rivals=uiRivals();S0.rivals.forEach(function(r){r.personality='ambitious'});S0.townMood='cutthroat';S0.rep=60;S0.rpacts=[];
+    S0.pact={i:1,since:S0.day,until:S0.day+4,pot:200};base=JSON.stringify(S0);
+    var B=G.CONFIG.rivals.politics.betray.chance,b0=JSON.stringify(B);B.easy=B.medium=B.expert=1;
+    try{
+      restore(G.S.home);var e0=errs.length;$('hudEnd').click();await y();
+      for(var i=0;i<8&&G.S.pending;i++){var bb=document.querySelector('#event [data-act]:not(:disabled)');if(!bb)break;bb.click();await y()}
+      if(G.S.pact)note('MISSING','betrayal morning','the ally did not betray you with the chance at 100%');
+      var mn=$('mnList'),txt=mn?mn.textContent:'';
+      if(!/💔/.test(txt))note('MISSING','betrayal morning','no 💔 note in the morning card');
+      else{popupFits('betrayal morning');layout('betrayal morning',mn.closest('.over')||document.body);await shot('betrayal')}
+      if(G.S.morning){var m=$('mnGo');if(m)m.click();await y()}
+      errs.slice(e0).forEach(function(e){note('JS-ERROR','betrayal morning',e)});
+    }finally{var o=JSON.parse(b0);Object.keys(o).forEach(function(k){B[k]=o[k]});base=keep}
   }
   async function preview(){
     restore('gym');var pb=$('previewBtn');if(pb&&/off/i.test(pb.textContent))pb.click();await y();
@@ -324,7 +346,7 @@
     var blds=[].map.call(document.querySelectorAll('.tile[data-loc]'),function(t){return t.dataset.loc});
     for(var i=0;i<blds.length;i++){box('UI check at '+innerWidth+'px: '+blds[i]+' ('+(i+1)+' of '+blds.length+')…');try{await building(blds[i])}catch(e){note('JS-ERROR',blds[i],'check crashed: '+(e&&e.message||e))}}
     for(var j=0;j<SITUATIONS.length;j++){box('UI check at '+innerWidth+'px: '+SITUATIONS[j].name+'…');try{stats.situations=(stats.situations||0)+1;await situation(SITUATIONS[j])}catch(e){note('JS-ERROR',SITUATIONS[j].name,'check crashed: '+(e&&e.message||e))}}
-    for(var f of [statusPage,preview,certificate,endOfDay,rivalCardNight]){try{await f()}catch(e){note('JS-ERROR',f.name,'check crashed: '+(e&&e.message||e))}}
+    for(var f of [statusPage,preview,certificate,endOfDay,rivalCardNight,betrayalMorning]){try{await f()}catch(e){note('JS-ERROR',f.name,'check crashed: '+(e&&e.message||e))}}
     var res={viewport:VP(),width:innerWidth,height:innerHeight,ms:Date.now()-t0,stats:stats,issues:issues};
     window.__UI_RESULTS=res;console.log('Daily Grind UI check',res);
     try{if(window.parent!==window)window.parent.postMessage({type:'dg-uicheck',res:res},'*')}catch(e){}

@@ -59,6 +59,7 @@ async function flows(br){
   const t0=Date.now(),issues=[],note=(kind,where,msg)=>issues.push({kind,where,msg});let checks=0;
   const ctx=await br.newContext({viewport:{width:1280,height:800}}),pg=await ctx.newPage(),errs=[];
   pg.on('pageerror',e=>errs.push(String(e.message||e)));
+  const ruleWarns=[];pg.on('console',m=>{if(m.type()==='warning'&&/Rules text/.test(m.text()))ruleWarns.push(m.text().split('\n')[0])});  /* a Rules line that could not be filled in */
   await pg.route(/^https?:\/\//,r=>r.abort());
   const url='file://'+path.join(out,'flows.html');
   const open=async(clear)=>{await pg.goto(url);if(clear){await pg.evaluate(()=>localStorage.clear());await pg.reload()}await pg.waitForTimeout(250)};
@@ -92,10 +93,23 @@ async function flows(br){
   checks++;await pg.evaluate(()=>localStorage.setItem('dailyGrind.save.v1','{"S":{"day":3,'));await open(false);
   const r4=await pg.evaluate(()=>({day:__G.S.day,welcome:document.getElementById('welcome').classList.contains('show'),kept:localStorage.getItem('dailyGrind.save.v1.broken')}));
   if(r4.day!==1||!r4.welcome||r4.kept!=='{"S":{"day":3,')note('SAVE','damaged save','expected a new game and the old save kept as .broken: '+JSON.stringify(r4));
+  /* 5. a rival game with a Town mood picked on the welcome screen */
+  checks++;await open(true);
+  await pg.evaluate(()=>{document.querySelector('[data-mode="rivals"]').click();const b=document.querySelector('[data-rm="cutthroat"]');if(b)b.click()});
+  await pg.click('#welcomeGo');await pg.waitForTimeout(150);
+  const r5=await pg.evaluate(()=>({mode:__G.S.mode,mood:__G.S.townMood,rep:__G.S.rep,reps:(__G.S.rivals||[]).map(r=>r.rep)}));
+  if(r5.mode!=='rivals'||r5.mood!=='cutthroat'||r5.rep!==60||r5.reps.some(v=>v!==60))note('START','Town mood','a cutthroat rival game did not start properly: '+JSON.stringify(r5));
+  /* 6. a rival game saved before town politics (no reputation, no mood) loads with the defaults */
+  checks++;
+  await pg.evaluate(()=>{const d=JSON.parse(localStorage.getItem('dailyGrind.save.v1'));delete d.S.townMood;delete d.S.rep;delete d.S.pact;(d.S.rivals||[]).forEach(r=>{delete r.rep;delete r.drift});d.S.ver=5;localStorage.setItem('dailyGrind.save.v1',JSON.stringify(d))});
+  await open(false);
+  const r6=await pg.evaluate(()=>({mood:__G.S.townMood,rep:__G.S.rep,reps:(__G.S.rivals||[]).map(r=>r.rep),welcome:document.getElementById('welcome').classList.contains('show')}));
+  if(r6.welcome||r6.mood!=='competitive'||r6.rep!==60||r6.reps.some(v=>v!==60))note('SAVE','old rival save','a save from before town politics did not load with the defaults: '+JSON.stringify(r6));
   errs.forEach(e=>note('JS-ERROR','reload checks',e));
+  [...new Set(ruleWarns)].forEach(w=>note('BAD TEXT','Rules',w));
   await ctx.close();
   const r={viewport:'reload checks',width:1280,height:800,ms:Date.now()-t0,stats:{buildings:0,situations:0,clicks:0,checks:checks,popups:[]},issues};
-  console.log(`\nreload checks: ${diffs.length} difficulties, a trait, save and reload, a damaged save: ${issues.length} issue(s), ${Math.round(r.ms/1000)}s`);
+  console.log(`\nreload checks: ${diffs.length} difficulties, a trait, save and reload, a damaged save, a Town mood, an old rival save, the Rules text: ${issues.length} issue(s), ${Math.round(r.ms/1000)}s`);
   issues.forEach(i=>console.log(`  ${i.kind.padEnd(13)} ${i.where}: ${i.msg}`));
   return r;
 }
