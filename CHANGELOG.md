@@ -104,6 +104,7 @@ Everything adjustable lives in the `CONFIG` block near the top of the script: `C
 96. [Daily activity, map landmarks and clearer actions](#96-daily-activity-map-landmarks-and-clearer-actions)
 97. [Dusk neighbourhood and HUD controls](#97-dusk-neighbourhood-and-hud-controls)
 98. [Document the planned 50-game simulation suite](#98-document-the-planned-50-game-simulation-suite)
+99. [Softer illustrated buildings and character portrait moments](#99-softer-illustrated-buildings-and-character-portrait-moments)
 
 ---
 
@@ -1663,3 +1664,12 @@ The second half of the last rivals step (batch 4b). Everything here is light and
 - Documented the proposed manifest-driven architecture, actual-control interaction requirements, validation coverage, failure/retry accounting and Markdown/JSON/CSV report schemas. Distinguished mobile Chromium emulation from physical iPhone testing and marked unexercised features separately from passes.
 - Updated CLAUDE.md and CODE_MAP.md to link the plan while retaining current 30-game runner instructions. Clarified reusable QA tools versus temporary files and final reports; corrected the stale Life-tab phone-access description and refreshed this contents list.
 - Documentation only: the 50-game suite is not implemented or run by this change. No game rules, CONFIG, historical reports or simulation results were changed. Validation: checked manifest totals/unique IDs, per-device and strategy counts, reload assignments and local Markdown document/heading links.
+
+
+## 99. Softer illustrated buildings and character portrait moments
+
+- Replaced the map’s small vector buildings with a simplified warm isometric illustration set modelled on the supplied reference: sixteen recognisable buildings/park assets, broader shapes and rounded trees. Retained the rich UI palette, existing interior scenes and shared map/travel geometry.
+- New artwork is saved in `assets/illustrated-town-v2`, with prompts/source notes, and embedded into index.html so the game remains standalone and works offline.
+- Rival portraits can now be opened by click, Enter or Space. The pop-up shows the matching portrait, personality and relationship, with close/Escape controls. It spends no time and does not change game state.
+- Portraits also appear automatically on encounters and successful individual calls, congratulations and message interactions. Automatic cards dismiss after a short interval; ending/night/certificate panels take priority. The portraits reuse the existing reference-style character artwork.
+- Validation: zero issues in full desktop and mobile UI checks (821 presses and 202 layout checks each, plus reload/save flows). Final focused checks passed 43 assertions per viewport, including loaded assets, portrait clicks/keyboard/dismissal, no state changes, encounters, and successful/refused calls. All 22 gameplay regressions and 19 personality/memory checks passed. No simulations. [UI report](docs/QA_UI_2026-11-01_soft-illustrations.md).
