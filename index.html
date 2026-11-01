@@ -2123,7 +2123,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   }
   function nextRentWeek(){return Math.ceil(S.day/RENT_EVERY)*RENT_EVERY}
   function finish(title,text){
-    if(nightRun)sampleNight(nightFed);  /* include an early-ending night before drawing the final score */
+    if(nightRun){settleBets();sampleNight(nightFed)}  /* settle due bets and include an early-ending night before the final score */
     var lost=!/rank/.test(title)&&title.indexOf(TIERS[TIERS.length-1].n)<0;
     if(lost)snd('lose');
     S.over=true;S.endDay=nightRun?S.day-1:S.day;  /* the last day actually played */
@@ -3280,6 +3280,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       }
     }
     arrearsTick();
+    settleBets();  /* both sides' interest, investments and rent have now been applied */
     sampleNight(wasFed);  /* completed overnight effects, once per player and night */
     T0();var t=S.today;
     var dnw=worth()-t.nw,best=false;
@@ -3288,7 +3289,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     S.today=null;T0();
     lottoDraw();
     planNews();
-    var mn=(S.notes||[]).slice(),rw2=nextRentWeek(),H2=HOUSE[S.home];S.notes=[];
+    var mn=(S.notes||[]).slice(),rw2=nextRentWeek(),rentNext=myRent(rw2);S.notes=[];
     mn.push.apply(mn,moneyBrief(i,invMoved));
     if(tipOn())mn.push({l:'good',t:'🤝 A friend’s job tip is still good until the end of day '+S.tip.until+': your next interview is easier and never fails for “no openings”.'});
     if(naked())mn.unshift({l:'bad',t:'👕 You are out of clothes. You can’t work any shift until you buy some (new at the Clothes Mall, or used at the Thrift Store)'+(nakedHap?', and the shame cost you '+Math.abs(nakedHap)+' happiness overnight. It happens again every morning you wake up with nothing to wear.':'.')});
@@ -3300,8 +3301,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     S.trends.forEach(function(t){if(t.left>0&&(t.term||t.lay||t.r))mn.push({l:'rem',t:'🌐 '+t.n+' continues'+(t.last?' (latest: '+t.last+')':'')+' · '+t.left+' day'+(t.left>1?'s':'')+' left: '+trendNow(t)+'.'})});
     if(S.inv.fd.v>0.5&&S.inv.fd.lock-S.day===1)mn.push({l:'rem',t:'🏦 Your fixed deposit matures tomorrow morning ('+money(Math.round(S.inv.fd.v))+' so far).'});
     if(junkCount()>=CONFIG.illness.junkMeals)mn.push({l:'warn',t:'🍟 You have had junk food '+junkCount()+' times in 5 days. Your chance of falling ill is higher.'});
-    if(!S.homeless&&rw2-S.day===1&&S.rentPaid!==rw2)mn.push({l:'rem',t:'🏠 Reminder: rent of '+money(H2.rent)+' is due at the end of tomorrow (day '+rw2+'). Keep it in cash, or pay early at home.'});
-    if(!S.homeless&&rw2-S.day===0&&S.rentPaid!==rw2)mn.push({l:S.cash<H2.rent?'bad':'rem',t:'🏠 Rent of '+money(H2.rent)+' is due tonight. You have '+money(S.cash)+' in cash.'});
+    if(!S.homeless&&rw2-S.day===1&&S.rentPaid!==rw2)mn.push({l:'rem',t:'🏠 Reminder: rent of '+money(rentNext)+' is due at the end of tomorrow (day '+rw2+'). Keep it in cash, or pay early at home.'});
+    if(!S.homeless&&rw2-S.day===0&&S.rentPaid!==rw2)mn.push({l:S.cash<rentNext?'bad':'rem',t:'🏠 Rent of '+money(rentNext)+' is due tonight. You have '+money(S.cash)+' in cash.'});
     [['casual',WEAR.casual.n],['smart',WEAR.smart.n],['suit',WEAR.suit.n]].forEach(function(c){if(S.clothes[c[0]]>0&&S.clothes[c[0]]<=CONFIG.clothes.wearPerDay)mn.push({l:'rem',t:'👕 Reminder: your '+c[1]+' wear out tonight. Buy new ones at the Clothes Mall to keep meeting dress codes.'})});
     var burnNote=mn.some(function(a){return /BURNOUT!/.test(a.t)});
     stressList().forEach(function(a){if(!/Rent of/.test(a.t)&&!(burnNote&&/^🔥 Burnout \(/.test(a.t)))mn.push(a)});
@@ -3995,9 +3996,9 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
   function dueTomorrow(){return (S.rloans||[]).filter(function(l){return l.dir==='out'&&!l.def&&l.due===S.day+1})}
   function newMsgs(){return (S.msgs||[]).filter(function(m){return !m.st}).length}
   function startBet(i,stake){var r=S.rivals[i],B=MX().bet;S.cash-=stake;r.cash-=stake;var b={i:i,stake:stake,until:S.day+B.days-1,y0:0,r0:0};S.bets.push(b);b.y0=worth();b.r0=rivalWorth(r);return b}
-  /* the morning: loans and bets that fall due (in rivalTick, on the rivals' dice) */
-  function settleMoney(){
-    var L=MX().loan,B=MX().bet,X=CONFIG.rivals.social,today=S.day;
+  /* Loans settle in rivalTick. Defer bets during rollover until both sides have their overnight returns and bills. */
+  function settleMoney(deferBets){
+    var L=MX().loan,X=CONFIG.rivals.social,today=S.day;
     S.rloans=(S.rloans||[]).filter(function(l){
       var r=S.rivals[l.i];if(!r)return false;
       if(l.dir==='in'){  /* a rival owes you */
@@ -4020,6 +4021,11 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
       return true;
     });
     dueTomorrow().forEach(function(l){S.notes.push({l:'warn',t:dueTxt(l)})});
+    if(!deferBets)settleBets();
+  }
+  function settleBets(){
+    if(S.mode!=='rivals')return;
+    var B=MX().bet,X=CONFIG.rivals.social,today=S.day;
     /* Snapshot growth before any refunds or winnings change a wallet. */
     var betGrowth=(S.bets||[]).map(function(b){var r=S.rivals[b.i];return {me:worth()-b.y0,them:r?rivalWorth(r)-b.r0:0}});
     S.bets=(S.bets||[]).filter(function(b,bi){
@@ -4066,7 +4072,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         log('💬 You lent '+r.name+' '+money(m.amt)+vitPar(v0)+'. They’ll pay back '+money(m.back)+' on the morning of day '+(S.day+L.days)+'. '+(res.backfire?'It still turned into an argument: ':'')+relTxt(r,res)+'.',res.d<0?'warn':'good')}
       else{remember(r,'refused',CONFIG.rivals.memory.refuseTrust,false);res=relAdd(r,L.refuseRel);log('💬 You told '+r.name+' you can’t lend them '+money(m.amt)+vitPar(v0)+': '+relTxt(r,res)+'.','warn')}
     }else{
-      if(yes){var b=startBet(m.i,m.amt);log('🎲 You took '+r.name+'’s bet: '+money(m.amt)+' each, settled on the morning of day '+(b.until+1)+vitPar(v0)+'.','good')}
+      if(yes){var b=startBet(m.i,m.amt);m.betUntil=b.until;log('🎲 You took '+r.name+'’s bet: '+money(m.amt)+' each, settled on the morning of day '+(b.until+1)+vitPar(v0)+'.','good')}
       else log('🎲 You turned down '+r.name+'’s bet'+vitPar(v0)+'.','');
     }
     done();
@@ -4112,7 +4118,8 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
         if(m.st){h+=arow(t,chip('',m.st==='yes'?'✓ You lent it':'✗ You said no',m.st==='yes'?'ok':''),'');return}
         h+=arow(t,chip('time',hm(M.replyMinutes))+chip('cash','−'+money(m.amt))+chip('','💬 Back '+money(m.back)+' on day '+due)+chip('','Relationship '+sg(L.lendRel))+(tense?argueChip():'')+chip('','Answer by day '+m.until),btn('msg',m.id+'|yes','Lend '+money(m.amt),0,S.cash<m.amt),'',tense?'chance':'');
         h+=arow('↩️ Say no to '+r.name,chip('time',hm(M.noMinutes))+chip('','Relationship '+sg(L.refuseRel),'warn'),btn('msg',m.id+'|no','Say no',1));
-      }else{var t2=r.ic+' '+r.name+': “Bet you '+money(m.amt)+' I grow my net worth more than you by day '+(S.day+B.days-1)+'.”';
+      }else{var activeBet=m.st==='yes'?rbet(m.i):null,until=m.st?(m.betUntil!=null?m.betUntil:activeBet?activeBet.until:null):S.day+B.days-1;
+        var t2=r.ic+' '+r.name+': “Bet you '+money(m.amt)+' I grow my net worth more than you'+(until!=null?' by day '+until:'')+'.”';
         if(m.st){h+=arow(t2,chip('',m.st==='yes'?'✓ You took the bet':'✗ You turned it down',m.st==='yes'?'ok':''),'');return}
         h+=arow(t2,chip('time',hm(M.replyMinutes))+chip('cash','−'+money(m.amt)+' stake')+chip('','🎲 Win: +'+money(m.amt)+', '+sg(B.winHappiness)+' 😊')+chip('','Lose: '+sg(B.loseHappiness)+' 😊')+chip('','Answer by day '+m.until),btn('msg',m.id+'|yes','Take the bet',0,S.cash<m.amt||!!rbet(m.i)));
         h+=arow('↩️ Turn down '+r.name+'’s bet',chip('time',hm(M.noMinutes)),btn('msg',m.id+'|no','Decline',1));
@@ -4422,7 +4429,7 @@ details.tbox .traits{padding:0 10px 10px;display:grid;grid-template-columns:repe
     var XS=CONFIG.rivals.social;
     S.rivals.forEach(function(r){if(r.out||(r.rel||0)<XS.friendAt||tipOn()||rrand()>=XS.friendTipChance*personality(r).tipMult)return;
       S.tip={until:S.day+CONFIG.community.tip.days-1};S.notes.push({l:'good',t:'🤝 '+r.ic+' '+r.name+' tipped you off about an opening: your next job interview is easier (until the end of day '+S.tip.until+').'})});
-    settleMoney();rivalMsgTick();  /* loans and bets due this morning, then tonight's message */
+    settleMoney(true);rivalMsgTick();  /* loans due this morning, then tonight's message; bets settle after both sides' overnight effects */
     flatTick();  /* a flatmate: the night together, and moving out */
     favourTick();  /* a remembered deed can become a later job introduction */
   }
