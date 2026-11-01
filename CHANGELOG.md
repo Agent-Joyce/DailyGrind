@@ -1673,3 +1673,9 @@ The second half of the last rivals step (batch 4b). Everything here is light and
 - Rival portraits can now be opened by click, Enter or Space. The pop-up shows the matching portrait, personality and relationship, with close/Escape controls. It spends no time and does not change game state.
 - Portraits also appear automatically on encounters and successful individual calls, congratulations and message interactions. Automatic cards dismiss after a short interval; ending/night/certificate panels take priority. The portraits reuse the existing reference-style character artwork.
 - Validation: zero issues in full desktop and mobile UI checks (821 presses and 202 layout checks each, plus reload/save flows). Final focused checks passed 43 assertions per viewport, including loaded assets, portrait clicks/keyboard/dismissal, no state changes, encounters, and successful/refused calls. All 22 gameplay regressions and 19 personality/memory checks passed. No simulations. [UI report](docs/QA_UI_2026-11-01_soft-illustrations.md).
+
+
+## 100. Neutral page background
+
+- Replaced the overall teal page, HUD, navigation and panel backgrounds with warm neutral stone and charcoal surfaces. Kept teal action buttons, map artwork and semantic building highlights. No gameplay changes.
+- Validation: 43 existing focused checks passed separately at desktop and phone widths; visual review confirmed the neutral page/HUD/panel surfaces and retained teal actions.
