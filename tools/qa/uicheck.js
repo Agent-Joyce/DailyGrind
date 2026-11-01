@@ -58,9 +58,10 @@
     base=JSON.stringify(G.S);baseLoc=G.loc;
   }
   function closeOver(){[].forEach.call(document.querySelectorAll('.over.show'),function(o){o.classList.remove('show')})}
+  var bankChoice=null;
   function restore(where){
     G.S=JSON.parse(base);S=G.S;G.loc=where&&['phone','pc','bankapp','jobsapp','callsapp','msgsapp'].indexOf(where)<0?where:baseLoc;G.view=where||null;  /* device and app screens are not places */
-    closeOver();$('toasts').innerHTML='';G.render();$('toasts').innerHTML='';
+    closeOver();$('toasts').innerHTML='';G.render();if(bankChoice&&(where==='bank'||where==='bankapp')){var tab=document.querySelector('[data-dg-product="'+bankChoice.id+'"]');if(tab)tab.click();var mode=document.querySelector('.bk-card:not([hidden]) [data-dg-mode="'+bankChoice.mode+'"]');if(mode)mode.click()}$('toasts').innerHTML='';
   }
 
   /* ---------- reading numbers off the page ---------- */
@@ -162,6 +163,15 @@
   }
   /* layout of a panel, then press each of its enabled buttons in turn */
   async function pressAll(bld,label){
+    restore(bld);
+    var products=[].map.call(document.querySelectorAll('#shop [data-dg-product]'),function(b){return b.dataset.dgProduct});
+    if(!products.length)return pressVisible(bld,label);
+    var all=[];
+    try{for(var p of products){for(var mode of ['deposit','withdraw']){bankChoice={id:p,mode:mode};all=all.concat(await pressVisible(bld,label+' '+p+' '+mode))}}}
+    finally{bankChoice=null}
+    return all;
+  }
+  async function pressVisible(bld,label){
     restore(bld);layout(label+' panel',$('center'));layout(label+' (whole page)',document.body);await shot(label.replace(/\W+/g,'_'));
     var list=shopButtons().map(key),count={};
     for(var i=0;i<list.length;i++){var k=list[i];count[k]=(count[k]||0);stats.buttons++;

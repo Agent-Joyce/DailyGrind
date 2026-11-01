@@ -71,8 +71,11 @@ Where things are in `index.html`, and how to make the common changes safely. Lin
 
 Targeted feature checks: node tools/qa/check-personalities.js <folder outside the repo>. DG_BROWSER_CHANNEL=msedge can select installed Edge; by default it uses Playwright Chromium. check-regressions.js still checks the preceding bet, rent and scoring fixes.
 
-**Daily HUD and map:** Presentation restored to `ed9e8e0`: phone apps live in the Overview, map tags show Home/You, education shows course progress, and rival details use the compact list without comparison bars. Latest rank progression, flatmate refusals and rival path diversity remain.
+**Daily HUD and map:** `renderStats()` and `renderMap()` retain the existing state-to-DOM updates. The illustrated app shell creates the visible status header and numbered town pins, with Today/Town/Life/Rivals views; phone apps are accessed from Life. Latest rank progression, flatmate refusals and rival path diversity remain.
 
 **Rival path diversity:** `diversifyRivals()` runs at the start of `rivalTick()` from the halfway day onward. It records `avoidCareer` and `avoidTrack` for later rivals on identical paths; `rivalTarget()` prefers the best feasible different career and missing qualification, while job applications prefer an eligible alternative. These fields are optional on older saves.
 
 **Rank milestones:** `checkWin()` records ranks and score bonuses but does not show a modal or finish immediately at the top rank; the normal day limit or other endings still finish the game.
+
+
+**Illustrated app shell:** CSS overrides (including embedded town, interiors and portraits) follow the existing styles. The `modern*` presentation helpers immediately before section 12 create Today/Town/Life/Rivals navigation, the split desktop layout, phone views, destination search, product tabs and bank amount controls. They wrap rendering and delegate transactions to the existing actions. Game state, CONFIG and save migrations remain authoritative. The older HUD stays in the DOM as a rendering target; its action bar moves into `appTop`.

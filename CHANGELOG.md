@@ -1547,3 +1547,12 @@ The second half of the last rivals step (batch 4b). Everything here is light and
 - Restored the presentation from `ed9e8e0`: button colors, Overview phone placement, compact education and rival summaries, map tags, sleep labels and detailed recaps. Removed the added daily HUD indicators and comparison bars.
 - Kept latest-main gameplay: flatmate refusals, rival career diversification and rank progression without an ending popup. Kept duplicate morning-notice filtering and accurate flatmate rules.
 - Targeted checks: static HTML/CSS matches `ed9e8e0`; five affected gameplay functions match latest main exactly; JavaScript syntax passes; rival Overview renders at 1280px and 390px with correct phone placement, no added UI remnants, no horizontal overflow and no script errors. Full desktop/phone UI check passed: 16 buildings, 34 situations, 611 button presses and 112 layout checks per viewport; reload, save recovery, difficulty, trait, Town mood and Rules checks also passed. Zero issues. Simulations were not requested. [UI report](docs/QA_UI_2026-11-01_restore-ui.md).
+
+
+## 95. Match the supplied illustrated UI reference
+
+- Replaced the prior UI restoration with the illustrated design from the supplied `Life on the Floor 2026 - UI.html`: town artwork, numbered destinations, interior illustrations, rival portraits, soft cards, status header and Today/Town/Life/Rivals navigation. Desktop uses a map alongside the panel; phones use compact navigation and a searchable town directory.
+- Added bank product tabs/selectors, deposit/withdraw modes, editable amounts and presets, delegating all transactions to existing game actions. Retained current CONFIG, game rules, save version/migrations, pacts, sabotage, theft, rival diversification and flatmate refusals.
+- Adapted the UI check to visit every bank product and transaction mode. Updated the personality check to expect the current save version and open the Rivals screen before checking profiles.
+- Targeted checks passed for all four navigation screens, desktop/phone banking transactions and rival portraits. All 22 bet/rent/scoring regression checks and all 19 personality/memory checks passed.
+- Full UI check passed at 1280×800 and 390×844: 16 buildings, 34 situations, 821 presses and 202 layout checks per viewport, plus save/reload, recovery, difficulties, trait, Town mood and Rules checks. Zero issues. Final rival-row polish also passed the repeated personality/profile checks. [UI report](docs/QA_UI_2026-11-01_illustrated-reference.md).
