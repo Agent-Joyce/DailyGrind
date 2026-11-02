@@ -110,6 +110,8 @@ Everything adjustable lives in the `CONFIG` block near the top of the script: `C
 
 ---
 
+103. [Housing money and social contracts local update](#103-housing-money-and-social-contracts-local-update)
+
 ## 1. Jobs: School and Bank
 
 - Removed all School jobs: School (Janitor, Lab Assistant, Tutor, Lecturer) and School (Staff) (Library Assistant, Admin Clerk, Careers Counsellor). The School building stays for lessons.
@@ -1699,3 +1701,18 @@ The second half of the last rivals step (batch 4b). Everything here is light and
 - Rivals pursuing an alternative career now pause unrelated study without losing paid module progress, reserve work capacity and energy for needed lessons, and may take a feasible step into their target career despite a modest initial pay cut. Existing salary and qualification constraints still apply; a distinct ending is not forced when no feasible alternative exists.
 - Mobile toasts sit to the left of the town phone shortcut and no longer intercept taps. They expire automatically instead of dismissing on tap.
 - The historical 50-game report remains evidence for its original build. These changes require a new browser simulation and mobile interaction check before the findings can be marked verified closed.
+
+
+## 103. Housing money and social contracts local update
+
+- Baseline: main `0863aa6b3e5d20f75c809c5b4efc45f0eb329b9a`. Implemented on `feature/social-finance-local`; the user subsequently authorized publication directly to `main`.
+- Friendly AI apartment invitations can replace a housemate. Messages preview new/former friendship effects; home chance is 40%, busy refusal remains configurable at 20%/−1. Bungalows are single occupancy and require explicit housemate removal first, retaining its time/friendship effects.
+- Stakes scale to lower net worth, minimums, maximums and both participants’ cash reserves. Accepted stakes are fixed; duplicate acceptance is blocked. Snapshot settlement and early-ending cancellation preserve money through ties, dropouts, withdrawals and pot refunds.
+- Added typed Study Buddies, Roommate Loyalty, Wealth Challenge, Emergency Support and Roommate Royalty contracts within the existing pact model: accepted terms, obligations, progress, deadlines, decisions and consequences. Wealth stakes default to 30% of lower net worth; reminders appear in final-three-day comparison statistics. Spending and lending remain available.
+- More frequent/cooldown-controlled loan requests, especially in financial distress; lending happiness, existing friendship/default effects, principal/terms/outstanding balance and repayment-history display.
+- Career planning now includes personality, relevant education, remaining study time, experience, industry pay and opportunities. Midgame rechecks retain an earning-utility floor; diversity no longer justifies a lower raw-paying application. Shared objectives/cheap qualifying pathways explain convergence; outcome diversity still needs simulation evidence.
+- Broken commitments and cancelled sessions offer forgiveness/challenge/affordable compensation/termination. Occasional hidden rumours damage player and AI-pair trust; trusted friends can leak plans. Sources remain unknown until evidence. Discovered betrayal supports confrontation, forgiveness and reconciliation.
+- Automatic portrait greetings minimize after three seconds, preserving focused controls/manual profiles; message feedback is not timed away. Added reopen control, final teal/disabled/focus styling and label wrapping. Fixed bank presets accumulate; 25% presses retain their original balance base and round after accumulation. Savings/fixed-deposit projections show daily game rate, tenure and proceeds.
+- All new probabilities, stakes, durations, relationship effects and event frequencies live in CONFIG. Removed obsolete fixed `money.bet.stake`, `politics.pact.pot` and `money.loan.easyAskChance`; saved amounts remain intact. Save v8 preserves active old money records; an old shared bungalow is restored with its housemate at the apartment, with an explanatory note.
+- Updated CODE_MAP, the Word configuration guide and the [configuration supplement](docs/Configuration_Social_Update.md), plus the [test guide](docs/Social_Update_Test_Guide.md).
+- Validation: 49 isolated Node code regression checks passed; inline JavaScript parses and whitespace checks pass. No browser simulations or desktop/mobile UI checks were run, per user instruction. Layout, browser integration, balance and long-run diversity remain unverified. Historical QA reports are unchanged.

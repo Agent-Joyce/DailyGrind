@@ -206,3 +206,8 @@ Results compare different scenarios, not matched desktop/mobile pairs. Difficult
 The JSON evidence uses lossless per-case log and observation dictionaries to avoid storing repeated messages on every action. `tools/qa/suite-evidence.js` decodes observations back to their original values; report-suite.js accepts either checkpoints or the saved JSON. Reviewed parser false positives remain in raw evidence with a separate assessment.
 
 Bank amount controls are selected by stable input/delta prefixes because current min/max values change on render. Product selection and deposit/withdraw modes use actual controls. When opening an inactive product reveals that a choice is disabled, the harness records it as skipped, rather than forcing the button. The longer default input timeout permits normal notification expiry; notification overlap remains a separately reported UI finding.
+
+
+## Local social update verification status
+
+CHANGELOG section 103 adds housing invitations, typed contracts, hidden social events, dynamic stakes and banking changes. This update has **not** been run through this simulation suite or desktop/mobile UI checks, per user instruction. The previous suite results remain historical evidence for their stated base commit. The 49 isolated Node tests are described in [Social Update Test Guide](Social_Update_Test_Guide.md); they are not simulations and do not prove browser integration, career outcome diversity or balance. Add the new contract/message decisions to bot policies and browser fixtures before claiming coverage, then obtain simulation authorization.

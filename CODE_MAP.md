@@ -51,7 +51,7 @@ Where things are in `index.html`, and how to make the common changes safely. Lin
 
 **Add an industry-specific storyline**: add an entry to `INDUSTRY` (section 6): `id`, `ic`, `n`, `term`, a rumour (`rum`), who it affects (`hit`) and four phases. Each phase lists its effects with `ie(group, label, pay, hire, cut)` (groups of roles are in `IW`: add one there if needed) and two or more chapters. Pay is a share of the game's swing (`CONFIG.industry.paySwing`), so −1 means down by the full swing. No other code changes are needed.
 
-**Add or change a CONFIG value**: put it in `CONFIG`, use it from there, update the matching `cfg…` Rules text (in `timeText`), the Config Guide (`docs/Daily Grind Config Guide.docx`) and `CHANGELOG.md`.
+**Add or change a CONFIG value**: put it in `CONFIG`, use it from there, update the matching `cfg…` Rules text (in `timeText`), the Config Guide (`docs/Daily Grind Config Guide.docx`) and [social configuration supplement](docs/Configuration_Social_Update.md) and `CHANGELOG.md`.
 
 **Change the save format**: add a step to `MIGRATIONS` at the right place (they run in order), keep old saves loadable, and raise `SAVE_VERSION` for a version-specific change.
 
@@ -92,3 +92,26 @@ Targeted feature checks: node tools/qa/check-personalities.js <folder outside th
 
 
 **Soft illustrated assets and portraits:** `TOWN_SPRITES` embeds the sixteen WebP map assets from `assets/illustrated-town-v2`; tile positions and distance calculations still use `TOWN_LAYOUT`. `rivalFace()` makes rival portraits focusable triggers. `modernPortraitSetup()`, `modernPortrait()`, `modernPortraitBeat()` and `modernPortraitClose()` manage the nonmodal character card, pure presentation state, automatic encounter/action feedback, dismissal and focus restoration. No RNG or gameplay values are changed by portrait viewing.
+
+
+## Housing money and social contracts
+
+The new helpers remain inside section 6 before the AI-rivals block; no external runtime module is required. Tuning remains in section 1 CONFIG.
+
+| Concern | Entry points and state |
+|---|---|
+| Housing invitations | `houseOfferMsg`, `houseOfferRow`, `replyHouse`; `S.msgs` kind `house`; `moveHome`/`inviteFlat` enforce single-occupancy bungalows |
+| Stake sizing | `participantWorth`, `scaledStake`, `canStake`; per-participant `betStake(i)`/`potStake(i)`; `startBet`/`startPact` guard acceptance |
+| Settlement | `settleBets` snapshots growth, records final-night wealth progress and resolves due contracts; `closeSocialMoney` refunds remaining stakes/pots before final scoring |
+| Typed pacts | `contractTerms`, `contractOffers`, `proposeContract`, `contractTick`, `contractRows`, `contractDo`, `settleContract`; `S.pact.kind`, immutable accepted `terms`, `progress`, `missed`, `session`, `next` |
+| Wealth and notice | `wealthProgress`, `wealthReminder`, `loyaltyAllows`; `done` records daytime target arrival; `politicsLis` and `rivalBoard` display reminders |
+| Broken promises | `promiseProblem`, `promiseRows`, `resolvePromise`; `S.pact.problem` and response expiry |
+| Loans and trust | `loanRecord`, `loanReliability`; `r.loanHistory`; active principal/terms/outstanding balance in Messages |
+| Hidden events | `addSocialEvent`, `socialTick`, `socialRows`, `socialDecision`; `S.socialEvents`, `socialN`, `socialLast`, `rivalRelations`; evidence gates source disclosure |
+| Career utility | `careerPreference`, `rivalTarget`, `diversifyRivals`, application selection in `rivalDay`; feasibility/utility floor and no diversity-driven raw pay cut |
+| Bank and portraits | `bankPresetAmount`/`bankQuick`, `interestProjection`; `modernPortraitMinimize`/`modernPortrait` and `characterReopen` |
+| Compatibility | SAVE_VERSION 8 migration adds missing social/residence/history defaults without RNG; legacy money amounts remain; shared-bungalow saves move together to apartment |
+
+Actions `contract`, `cdo`, `promise` and `social` use the existing ACTIONS dispatcher. New social functions use `rrand` only in rival mode; render-only terms, previews and summaries do not draw RNG. Accepted typed contracts use the existing single-player-pact restriction, rather than a second parallel alliance system.
+
+The [test guide](docs/Social_Update_Test_Guide.md) distinguishes the 49 isolated Node checks (`node tools/qa/check-social-rules.js`) from deferred browser integration, UI and simulation work. No browser was launched for these checks.
