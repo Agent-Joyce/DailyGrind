@@ -640,6 +640,9 @@ body{background:radial-gradient(ellipse at top left,#c7bfb2,transparent 65%),rep
 .tile{--place-glow:transparent;--work-glow:transparent;--home-glow:transparent}.tile.here{--place-glow:#ffcf70}.tile.workplace{--work-glow:#52e0cf}.tile.homeplace{--home-glow:#c2a0ff}.tile.here .scene>svg,.tile.workplace .scene>svg,.tile.homeplace .scene>svg{filter:drop-shadow(0 0 2px var(--place-glow)) drop-shadow(0 0 5px var(--place-glow)) drop-shadow(0 0 2px var(--work-glow)) drop-shadow(0 0 6px var(--work-glow)) drop-shadow(0 0 3px var(--home-glow)) drop-shadow(0 0 9px var(--home-glow));animation:none}.tile.work-closed{--work-glow:#f18d76}.tile.here .pin,.tile.homeplace .lab,.tile.workplace .pin{outline:none;box-shadow:none;border:1px solid #d6bb7f}.tile.open .lab{background:#1a5f58;color:#f6ffe8}.street-lamp{opacity:calc(.25 + var(--map-dusk,0)*2)}
 @media(max-width:1099px) and (min-width:641px){#appTop{grid-template-columns:130px minmax(0,1fr) auto;padding:12px 16px;gap:6px 8px}.app-brand{font-size:17px}.app-status{gap:8px}.app-status b{font-size:13px}.app-status .status-energy{display:flex}}
 @media(max-width:640px){:root{--head:200px}#appTop{padding:8px 14px;grid-template-columns:1fr auto;grid-template-rows:44px 56px 26px 22px;gap:4px 8px}.app-brand{font-size:18px}.app-status{display:flex;flex-wrap:wrap;gap:2px 8px;grid-row:2;grid-column:1/-1;padding:4px 0;border-color:#6d6253}.app-status>span{flex:1 0 28%;justify-content:center;font-size:10px}.app-status>span b{font-size:13px}.app-status small{display:inline!important;font-size:9px}.app-status .status-energy small{display:inline!important}.actbar{grid-row:1;grid-column:2;gap:5px}.actbar .btn,#hudTools>summary{font-size:10px;padding:6px 7px;min-height:38px}#appTop .daily-progress{grid-row:3}#hudContext{grid-row:4;font-size:9px;gap:7px}#hudLocation{display:none}#hudRank{flex:1}#hudAlert{min-height:22px;font-size:9px}.hud-toolbar{width:220px;right:0}.tile{width:13%;min-width:40px;max-width:none;min-height:44px;justify-content:center}.tile .scene>svg{min-height:35px}.tile .pin{width:14px;height:14px;top:3%;left:-3px}.tile .pin span{font-size:7px}.tile .tags{position:absolute;top:85%;left:50%;transform:translateX(-50%);width:76px;max-width:none}.tile .tag{font-size:7px;border-width:1px;padding:1px 3px;max-width:76px}.tile .lab{display:none}.town-caption{display:none}.town-device{top:3px;right:3px}.town-device .btn{font-size:9px;min-height:30px}#logDrawer{top:calc(var(--head) + 6px);right:8px;width:calc(100vw - 16px);padding:12px}.rival-chart{font-size:10px}.tile .cost{display:none}}
+/* Notifications cannot block town controls, including the mobile phone shortcut. */
+#toasts .toast{pointer-events:none}
+@media(max-width:640px){#toasts{left:8px;right:auto;width:min(210px,calc(100vw - 164px))}}
 /* Anchor illustrations independently of their landmark labels. */
 .tile .tags{position:absolute;top:calc(100% + 18px);left:50%;transform:translateX(-50%);width:max-content;max-width:150px}.tile .lab{position:absolute;left:50%;bottom:-15px;transform:translateX(-50%);white-space:nowrap;max-width:160px}.tile .tag{white-space:nowrap}.tile .scene{height:auto}.tile .scene>svg{aspect-ratio:auto}
 #hudRank{padding:4px 8px;border-radius:6px;background:linear-gradient(90deg,#a9863c33 var(--rank-progress,0%),transparent var(--rank-progress,0%));border-bottom:2px solid #a9863c99}#appInbox{font-size:10px;min-height:24px;padding:3px 7px}
@@ -4058,7 +4061,9 @@ body{background:radial-gradient(ellipse at top left,#c7bfb2,transparent 65%),rep
         if(S.closed[c+'_'+i]||shutLeft(bOf(c))>0||sabSnagged(r,c+'_'+i,day))return;if(needsExp(rk)&&(r.shiftsAt[bOf(c)]||0)<CONFIG.jobs.experience.shifts)return;
         if(rk.dress&&!dressed(rk.dress))return;var g=val(c,i)-cp0;
         if(g>0&&(!best||g>best.g))best={c:c,i:i,g:g};
-        if(g>0&&c!==r.avoidCareer&&!(r.avoidCareers||[]).includes(c)&&(!alternative||g>alternative.g))alternative={c:c,i:i,g:g};
+        /* A feasible step into the chosen alternative may pay less at first. Do not accept an
+           arbitrary pay cut or abandon a better current role for a different career. */
+        if(r.avoidCareer&&r.target&&c===r.target.c&&c!==r.avoidCareer&&g>=-Math.max(20,cp0*.2)&&(!alternative||g>alternative.g))alternative={c:c,i:i,g:g};
       })});
       if(r.avoidCareer&&alternative)best=alternative;
       if(!best)break;used+=60;
@@ -4070,9 +4075,12 @@ body{background:radial-gradient(ellipse at top left,#c7bfb2,transparent 65%),rep
     if(r.ill){var IL=ILL[r.ill.k],fee=G(IL.cost||Math.round((IL.lo+IL.hi)/2));if(K.bank!=='none'&&r.cash+r.bank>fee+HOUSE.apt.rent){var wf=Math.max(0,fee-r.cash);r.bank-=wf;r.cash+=wf-fee;r.ill.d=0;used+=120;rivalNote(r,0,'paid '+money(fee)+' to be treated for '+illShort(IL)+'.')}}
     /* work */
     var shifts=Math.floor(K.shifts)+(rrand()<K.shifts%1?1:0)-(mistake==='lazy'?1:0)-(r.ill?99:0),load=0;  /* 2.5 = a third shift on about half of days */
+    var targetRank=r.target&&CAREERS[r.target.c]&&CAREERS[r.target.c].ranks[r.target.i];
+    var missing=targetRank&&(targetRank.q||[]).some(function(q){return rivalLv(r,q[0])<q[1]});
+    var studyReserve=K.plans&&missing&&mistake!=='study'?Math.min(K.studyHours,CONFIG.burnout.loadMinutes/60)*60:0;
     if(r.shut>0)r.shut--;
     else for(var s=0;s<shifts&&j;s++){
-      var ef=effort(j.rk.pay);if(r.energy-ef.en<25||load+ef.min>CONFIG.time.maxWorkMinutes||!dressed(j.rk.dress||'casual'))break;
+      var ef=effort(j.rk.pay);if(r.energy-ef.en<25+(studyReserve?Math.abs(CONFIG.education.lessonEnergyPerHour||5)*studyReserve/60:0)||load+ef.min>CONFIG.time.maxWorkMinutes||(studyReserve&&load+ef.min>CONFIG.burnout.loadMinutes-studyReserve)||!dressed(j.rk.dress||'casual'))break;
       var pm=(r.happy<20?.6:r.happy<25?.75:r.happy<40?.9:1)*(r.energy<30?.85:1)*(r.health<CONFIG.health.poorBelow?CONFIG.health.poorPay:1)*(sabHas(r,'boss',day)?SBX().moves.boss.pay:1);
       var pay=Math.round(Math.round(rolePay(j.c,j.i)*payIdx()*(1+r.know/400))*pm);
       r.cash+=pay;r.energy=clamp100(r.energy-ef.en);r.happy=clamp100(r.happy-workHap(ef.en));r.health=clamp100(r.health+workHp(ef.min));
@@ -4081,6 +4089,8 @@ body{background:radial-gradient(ellipse at top left,#c7bfb2,transparent 65%),rep
     /* study towards the target (or anything, for easy rivals now and then) */
     var tg=r.target&&CAREERS[r.target.c]&&CAREERS[r.target.c].ranks[r.target.i],need=tg?(tg.q||[]).filter(function(q){return rivalLv(r,q[0])<q[1]}):[];
     if(!K.plans&&!r.study&&rrand()<K.studyChance){var ts=Object.keys(TRACKS).filter(function(t){return (r.edu[t]||0)<totMods(t)});if(ts.length)need=[[ts[Math.floor(rrand()*ts.length)],9]]}
+    if(tg&&r.study&&!need.some(function(q){return q[0]===r.study.t})){(r.pausedStudy||(r.pausedStudy={}))[r.study.t]=r.study;r.study=null}
+    if(!r.study&&need.length&&r.pausedStudy&&r.pausedStudy[need[0][0]]){r.study=r.pausedStudy[need[0][0]];delete r.pausedStudy[need[0][0]]}
     if(!r.ill&&mistake!=='study'&&!sabClass(r,day)&&(need.length||r.study)&&rrand()<K.studyChance){
       var t=r.study?r.study.t:need[0][0];
       if(!r.study){var n0=r.edu[t]||0,fee=qualFee(t,n0),keep=HOUSE.apt.rent+80;if(r.cash-fee<keep&&r.bank>0){var w2=Math.min(r.bank,keep+fee-r.cash);r.bank-=w2;r.cash+=w2}
@@ -7916,7 +7926,7 @@ body{background:radial-gradient(ellipse at top left,#c7bfb2,transparent 65%),rep
       if([].some.call(box.children,function(c){return c.dataset.txt===t.txt}))return;  /* already on screen */
       el.className='toast '+t.cls+(t.force?' forced':'');el.innerHTML=t.txt;el.dataset.txt=t.txt;
       if(t.quiet)el.setAttribute('aria-hidden','true');  /* log lines are already read out by the live region */
-      el.addEventListener('click',function(){dismiss(el)});
+      /* Toasts expire automatically and are transparent to taps on controls beneath. */
       box.appendChild(el);
       while(box.children.length>(TS.max||3))dismiss(box.firstChild,true);
       /* longer messages stay up longer (+1s per 60 characters, up to 15s); hovering pauses the countdown */
