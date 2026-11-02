@@ -1693,3 +1693,9 @@ The second half of the last rivals step (batch 4b). Everything here is light and
 - Findings remain open in the tested build: all three expert rivals retained identical jobs/completed qualifications in six full-length games despite diversification flags; a mobile notification intercepted the phone shortcut. Two legacy phone-purchase text/effect flags were reviewed as periodic-benefit parser false positives. All 28 observed shared-action refusals preserved time/cash (126 total attempts); exact relationship deltas were not independently captured.
 - Evidence retains 24 earlier failed/interrupted automation attempts instead of presenting 50 clean first attempts. Banking-selector issues were corrected in the harness; longer waits allow natural notification expiry without hiding the UI finding. Final evidence decoding and CSV regeneration were verified against all 50 completed checkpoints.
 - Reports: [readable findings](docs/QA_Sim_2026-11-01_50-run-suite.md), [raw JSON evidence](docs/QA_Sim_2026-11-01_50-run-suite.json), [CSV summary](docs/QA_Sim_2026-11-01_50-run-suite.csv).
+
+## 102. Address simulation career and mobile notification findings
+
+- Rivals pursuing an alternative career now pause unrelated study without losing paid module progress, reserve work capacity and energy for needed lessons, and may take a feasible step into their target career despite a modest initial pay cut. Existing salary and qualification constraints still apply; a distinct ending is not forced when no feasible alternative exists.
+- Mobile toasts sit to the left of the town phone shortcut and no longer intercept taps. They expire automatically instead of dismissing on tap.
+- The historical 50-game report remains evidence for its original build. These changes require a new browser simulation and mobile interaction check before the findings can be marked verified closed.
