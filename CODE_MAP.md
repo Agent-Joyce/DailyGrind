@@ -3,6 +3,28 @@
 Where things are in `index.html`, and how to make the common changes safely. Line numbers move, so this map uses the
 **numbered section banners** in the script (search for `1. CONFIG`, `7. PANELS`, …) and the names below.
 
+## Where the source is
+
+Edit `src/` and run `node tools/build.js`; `index.html` is generated (see CLAUDE.md, "Source and build").
+
+| File | Holds |
+|---|---|
+| `src/index.html` | The page shell: head, markup, pop-ups. The lines `/*@css*/` and `/*@js*/` are where the build puts the stylesheet and the script. |
+| `src/css/01-base.css` | Colours and themes, base, buttons, the town map |
+| `src/css/02-panels-overview.css` | Panel cards, the notice board, the overview, narrow windows |
+| `src/css/03-popups-bank.css` | End-of-day and morning pop-ups, certificates, the bank |
+| `src/css/04-addons-responsive.css` | Clock, toasts, preview, recap, traits, phones and tablets |
+| `src/css/05-app-shell.css` | The illustrated app shell (header, navigation, interiors) |
+| `src/css/06-dusk-illustrated.css` | Dusk theme, illustrated town, portraits, final overrides |
+| `src/js/00-open.js` | The closure's opening and contents comment |
+| `src/js/01-config.js` … `12-start.js` | Script sections 1 to 12 of the table below, one file each (`02-world`, `03-state-saves`, `04-actions`, `05-health-night`, `06-events-economy`, `07-panels`, `08-art-dialogue`, `09-render`, `10-map-input`, `11-addons`, `12-start`) |
+| `src/img/` | Pictures, written in source as `@img(name)` |
+| `src/pwa/` | `manifest.webmanifest`, `icons/`, `sw.js` (site build only) |
+| `tools/build.js` | The build; `--check` compares `index.html` with what `src/` builds |
+| `tools/make-icons.js` | Redraws the app icons from the brand mark |
+
+Later CSS files win over earlier ones, as later rules did in the single stylesheet.
+
 ## The file
 
 `index.html` has three parts, in this order:

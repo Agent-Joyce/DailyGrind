@@ -10,7 +10,7 @@ Work in this order and keep a running list of findings with `index.html:line`, s
 ## 1. Read the newest code first
 
 - `tail` the CHANGELOG for the latest sections; they name the functions that changed. Sections that say checks were *not* run are the first place to look.
-- Read those functions in `index.html` (use `CODE_MAP.md` to find them). Look for the bug types this game has had:
+- Read those functions in `src/js/` (`CODE_MAP.md` says which file holds which section; `index.html` is generated from `src/`, so fix things in `src/` and run `node tools/build.js`). Look for the bug types this game has had:
   - **Text and logic drifting apart**: Rules text (`cfg*` setters in `timeText`), tooltips, chips and log lines that no longer match the code or `CONFIG`.
   - **A rule that silently locks something out**: a filter that needs a state nothing can create (the rival dress-code lock was this).
   - **Money that appears or vanishes**: stakes, pots, loans and refunds must move between wallets once.

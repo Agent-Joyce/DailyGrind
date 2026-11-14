@@ -113,6 +113,7 @@ Everything adjustable lives in the `CONFIG` block near the top of the script: `C
 103. [Housing money and social contracts local update](#103-housing-money-and-social-contracts-local-update)
 104. [Review fixes: rival dress codes, pact loopholes, Rules text, a clearer morning; QA skills](#104-review-fixes-rival-dress-codes-pact-loopholes-rules-text-a-clearer-morning-qa-skills)
 105. [Modern pathways and jobs; gig delivery, tutoring and the creator path](#105-modern-pathways-and-jobs-gig-delivery-tutoring-and-the-creator-path)
+106. [Source split into src/ with a build; an installable, offline website build](#106-source-split-into-src-with-a-build-an-installable-offline-website-build)
 
 ## 1. Jobs: School and Bank
 
@@ -1810,3 +1811,17 @@ Base: section 104. Approved by the owner before editing (pathway names, levels, 
 
 - New: `tools/qa/check-tables.js` (pathway and job rules from the game's own tables; `--list` prints them all) and `tools/qa/check-modern.js` (11 checks at each of two widths: enrol and finish a module in each new pathway, an older save, applying for all 16 roles, gig fares, lateness, limits, tutoring, followers, sponsors, the rival gig, layout). Both are in `run-all-checks.js`, which now runs eight scripts; all pass.
 - **Not run:** the full UI check and the bot simulations. Balance of the new roles and of the three ways to earn is untested against a playing bot.
+
+
+## 106. Source split into src/ with a build; an installable, offline website build
+
+No gameplay, CONFIG or visual change.
+
+- **`src/` is now the source of truth; `index.html` is generated.** The page shell is `src/index.html`; the stylesheet is six files in `src/css/`; the script is thirteen files in `src/js/`, cut at its twelve numbered sections and still joined into one closure; the nineteen embedded pictures are real files in `src/img/` (the sixteen town pictures are identical to those in `assets/illustrated-town-v2/`).
+- **`node tools/build.js`** (no dependencies) writes the single-file `index.html` and the website build in `dist/` (`index.html`, `app.css`, `app.js`, `img/`, `manifest.webmanifest`, `icons/`, `sw.js`; not committed). `--check` fails when `index.html` is not what `src/` builds.
+- **Proof of no change:** the first rebuild was byte-for-byte identical to the previous `index.html` (`cmp`).
+- **The Google Fonts link is gone.** It loaded Bricolage Grotesque, but a later style rule sets the page font to `Inter` with system fallbacks, so that font was never shown. No font is embedded; the look is unchanged and the game no longer contacts another site. Whether to ship a real brand font is a design decision for the UI phase.
+- **Website build, installable and offline:** a web app manifest, three icons drawn from the brand mark (`tools/make-icons.js`), and a service worker that caches the build's files, answers cache-first, and replaces the cache when a new build is deployed. It is registered only in the website build and only over http(s); the single file is unaffected. Saves stay in `localStorage`. Inside itch.io's frame the offline cache works, but "install as an app" is offered only on your own site.
+- **Sizes:** single file 2,255 KB (as before). Website build: page 24 KB, styles 104 KB, script 791 KB, pictures and icons about 1,000 KB, loaded separately and cached.
+- **QA:** new `tools/qa/check-build.js` (12 checks: the build check, no outside links, and at 1280 and 390 px the site starts a game with no errors or missing files, requests nothing from another site, loads its pictures, has a valid manifest and icons, and reloads with the network off). It is the first of nine scripts in `run-all-checks.js`; all pass. New skill `dg-build`. **Not run:** the full UI check and the bot simulations.
+- **For the owner:** the account-level skills `daily-grind-add-pathway`, `daily-grind-edit-jobs` and `daily-grind-checks` still say to edit `index.html`; they need to say "edit `src/js/01-config.js` and `src/js/02-world.js`, then run `node tools/build.js`".

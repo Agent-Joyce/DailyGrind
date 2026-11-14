@@ -46,6 +46,7 @@ function buildSite(){
   const used=new Set(),files={};
   let css=markers(blocks(parts('css'),'site'),'site',used),js=markers(blocks(parts('js'),'site'),'site',used),html=shell('site');
   used.forEach(f=>{files[f]=fs.readFileSync(path.join(src,f))});
+  if([...used].some(f=>f.indexOf('fonts/')===0)&&fs.existsSync(path.join(src,'fonts/OFL.txt')))files['fonts/OFL.txt']=fs.readFileSync(path.join(src,'fonts/OFL.txt'));  /* the font's licence ships with it */
   const pwa=path.join(src,'pwa');
   if(fs.existsSync(pwa))(function walk(d,rel){fs.readdirSync(d).forEach(f=>{const p=path.join(d,f),r=rel?rel+'/'+f:f;if(fs.statSync(p).isDirectory())walk(p,r);else if(f!=='sw.js')files[r]=fs.readFileSync(p)})})(pwa,'');
   const hash=crypto.createHash('sha256').update(css).update(js).update(html).update(Object.keys(files).sort().map(k=>k+':'+crypto.createHash('sha256').update(files[k]).digest('hex')).join('|')).digest('hex').slice(0,10);

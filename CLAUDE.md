@@ -6,9 +6,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 The project is the GitHub repo **`Agent-Joyce/DailyGrind`**. Work happens in a clone of it, on `main`. Reusable QA tools belong in `tools/qa/`. Throwaway files (hooked test copies, scratch scripts, browser profiles, debugging output and screenshots) go in a folder outside the repo, such as the session scratchpad, and are never committed. Final simulation reports and their raw results belong in `docs/`, as described below.
 
+## Source and build (read this first)
+
+**Edit `src/`, never `index.html`.** Since CHANGELOG 106 the game's source is in `src/`: `src/index.html` (the page shell), `src/css/*.css` (the stylesheet, six files in name order), `src/js/00-open.js` to `src/js/12-start.js` (the script, one file per numbered section, joined in name order into one closure), `src/img/` (the pictures) and `src/pwa/` (manifest, icons, service worker). After any change run:
+
+```bash
+node tools/build.js
+```
+
+It regenerates two things: the root **`index.html`** (one file with everything inlined; committed; every QA tool reads it) and **`dist/`** (the website build with separate files, a manifest and a service worker; not committed; this is what goes to itch.io or a site). `node tools/build.js --check` fails when `index.html` is not what `src/` builds; it is the first check in `run-all-checks.js`, so a hand edit of `index.html` or a forgotten rebuild is caught. Commit `src/` and the regenerated `index.html` together. Where the rest of this file says "in `index.html`", read "in the matching `src/` file"; `CODE_MAP.md` lists which section is in which file. Markers the build understands: `@img(name)` for a picture in `src/img`, site-only and single-only blocks (`@site`, `@single`), and `@BUILD@`. The test-hook marker line `  if(!load())fresh();` is in `src/js/12-start.js` and must stay unique. The script is still one closure: do not convert the parts to modules.
+
+The game uses the system font stack (`Inter` is named first but not shipped); no font is downloaded.
+
 ## What this is
 
-Daily Grind is a browser life-sim game that lives in **one file: `index.html`** (~8,400 lines: CSS, markup, then a single `<script>` wrapped in one IIFE). There is no build step, package manager, linter or unit-test suite. `CHANGELOG.md` is the running record of every gameplay change (no README). `docs/` holds the `CONFIG` guide (`Daily Grind Config Guide.docx`, keep it in step when `CONFIG` changes), the simulation reports (`QA_Sim_*`) and an older snapshot QA report (`QA_Report.html`). `tools/qa/` holds the QA scripts: `sim.js` with its launcher `run-sims.js` (simulation runs) and `uicheck.js` with its launcher `run-uicheck.js` (the UI check). The `.ps1` files there are older Windows launchers and are not used. **`CODE_MAP.md` says where everything is in `index.html` (twelve numbered sections) and how to add an action, building, event, CONFIG value or save change; keep it current when you move or add a section.**
+Daily Grind is a browser life-sim game. Its source is in `src/` and builds into **one file, `index.html`** (~9,000 lines: CSS, markup, then a single `<script>` wrapped in one IIFE) and a website build in `dist/`. The build is one dependency-free Node script (`tools/build.js`); there is no package manager, linter or unit-test suite. `CHANGELOG.md` is the running record of every gameplay change (no README). `docs/` holds the `CONFIG` guide (`Daily Grind Config Guide.docx`, keep it in step when `CONFIG` changes), the simulation reports (`QA_Sim_*`) and an older snapshot QA report (`QA_Report.html`). `tools/qa/` holds the QA scripts: `sim.js` with its launcher `run-sims.js` (simulation runs) and `uicheck.js` with its launcher `run-uicheck.js` (the UI check). The `.ps1` files there are older Windows launchers and are not used. **`CODE_MAP.md` says where everything is in `index.html` (twelve numbered sections) and how to add an action, building, event, CONFIG value or save change; keep it current when you move or add a section.**
 
 ## Running and checking changes
 
