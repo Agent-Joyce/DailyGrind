@@ -152,3 +152,14 @@ The [test guide](docs/Social_Update_Test_Guide.md) distinguishes the 49 isolated
 
 `tools/qa/check-tables.js <folder> --list` prints every pathway and job and checks the table rules; use it before and after changing `TRACKS`, `CAREERS` or `CONFIG.jobs.pick`.
 
+## Interface files added in CHANGELOG 107
+
+| File | Holds |
+|---|---|
+| `src/css/07-compact.css` | Header sizes (`--head`, `--head-row`), the two-row header at each width, the map's name layer |
+| `src/css/08-buttons.css` | The three button levels and their colour tokens (`--btn2-*`, `--danger`, `--warn-bg`) |
+| `src/css/09-welcome-coach.css` | The welcome screen and the first-day guide bar and highlight |
+| `src/css/10-feel-settings.css` | Flashes, coin burst, day sweep, text-size zoom, phone toast position |
+| `src/js/11-feel.js` | `FEEL` settings, `motionOK()`, `buzz()`, `feelSetup()` (settings buttons), `feelPaint()` (count-ups, flashes, sounds), `feelSweep()` |
+
+In `src/js/11-addons.js`: `coachNow()` returns the guide's current step (or null) and `coachPaint()` draws it; both are called from `modernPaint()`, as is `feelPaint()`. To add a guide step, add an entry to the `steps` list in `coachNow()` with `done`, `go` (the place), `far`/`near` text and `sel` (the button to highlight). To give a button a level, use class `alt` (secondary) or `danger` (risky), or add its selector to `08-buttons.css`. A new sound is a line in `snd()` (`src/js/04-actions.js`) plus a pattern in `BUZZ`.

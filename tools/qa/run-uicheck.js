@@ -62,7 +62,8 @@ async function flows(br){
   const ruleWarns=[];pg.on('console',m=>{if(m.type()==='warning'&&/Rules text/.test(m.text()))ruleWarns.push(m.text().split('\n')[0])});  /* a Rules line that could not be filled in */
   await pg.route(/^https?:\/\//,r=>r.abort());
   const url='file://'+path.join(out,'flows.html');
-  const open=async(clear)=>{await pg.goto(url);if(clear){await pg.evaluate(()=>localStorage.clear());await pg.reload()}await pg.waitForTimeout(250)};
+  /* since CHANGELOG 107 the mode, rival and difficulty options sit in the welcome screen's Custom game drawer: open it, and play without the first-day guide (check-ux.js covers the guide) */
+  const open=async(clear)=>{await pg.goto(url);if(clear){await pg.evaluate(()=>localStorage.clear());await pg.reload()}await pg.waitForTimeout(250);await pg.evaluate((()=>{const d=document.getElementById('customGame');if(d)d.open=true;const c=document.getElementById('coachOn');if(c)c.checked=false}))};
   const shut=()=>pg.evaluate(()=>{['mnGo','gpGo','cpGo'].forEach(id=>{const b=document.getElementById(id);if(b&&b.offsetParent)b.click()})});
   /* 1. each difficulty starts a game */
   const diffs=await (async()=>{await open(true);return pg.evaluate(()=>[...document.querySelectorAll('#diffs [data-diff]')].map(b=>b.dataset.diff))})();

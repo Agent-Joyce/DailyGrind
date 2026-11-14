@@ -12,6 +12,7 @@
     o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+dur+0.02);
   }
   function snd(k){
+    buzz(k);  /* vibration is its own setting (11-feel.js) */
     if(MUTE)return;
     try{
       AC=AC||new (window.AudioContext||window.webkitAudioContext)();
@@ -22,6 +23,12 @@
       else if(k==='day'){tone(523,0,.25,'sine',.08);tone(659,.12,.25,'sine',.08);tone(784,.24,.35,'sine',.08)}
       else if(k==='win'){[523,659,784,1047].forEach(function(f,i){tone(f,i*.12,.3,'triangle',.1)})}
       else if(k==='lose'){[392,330,262].forEach(function(f,i){tone(f,i*.18,.35,'triangle',.09)})}
+      else if(k==='tap'){tone(660,0,.035,'sine',.025)}
+      else if(k==='learn'){tone(587,0,.1,'sine',.06);tone(880,.09,.16,'sine',.06)}
+      else if(k==='eat'){tone(330,0,.07,'triangle',.06);tone(392,.08,.07,'triangle',.06);tone(494,.16,.1,'triangle',.06)}
+      else if(k==='night'){[659,523,440,392].forEach(function(f,i){tone(f,i*.2,.45,'sine',.06)})}
+      else if(k==='cert'){[523,659,784,1047,1319].forEach(function(f,i){tone(f,i*.1,.32,'triangle',.09)});tone(1568,.55,.6,'sine',.06)}
+      else if(k==='ping'){tone(1175,0,.08,'sine',.05);tone(1568,.07,.14,'sine',.04)}
     }catch(e){}
   }
   var PREV=null;

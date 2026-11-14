@@ -93,3 +93,10 @@ Morning notes: anything pushed to `S.notes` appears in the morning pop-up, group
 
 Pathways `data`, `media`, `green` and `logi` and job lines `elec4`, `bank2`, `mall3`, `factory3` and `market3` were added without new buildings. A new pathway needs a `CONFIG.education.certFee` entry and a `blank()` `edu` key as well as its `TRACKS` line. `CONFIG.side` holds gig delivery (📦 Gigs app), tutoring (School) and the creator path (🎬 Creator app); their pay goes through `sidePay()`, they count as work for the daily limit and burnout, and they roll `Math.random` only when used (the creator's nightly sponsors only once there are followers). Run `node tools/qa/check-tables.js <folder outside the repo> --list` when changing pathways or jobs; the Principal Engineer over Project Lead break is known and left by the owner.
 
+## Interface rules (CHANGELOG 107)
+
+- **Buttons have three levels:** main actions solid teal (the default), secondary `class="alt"` outlined, risky `class="danger"` (or listed in `src/css/08-buttons.css`). Do not bring back a blanket rule that colours every button.
+- **Header:** two rows; sizes are the `--head*` variables in `src/css/07-compact.css`. Anything new in the header must fit a 390px-wide phone without overlapping (`check-ux.js` tests this).
+- **Welcome screen:** `#welcomeGo` is the Normal start button and must stay visible; other options live in the `#customGame` drawer. QA launchers open that drawer and untick `#coachOn`.
+- **The first-day guide and game feel are presentation only:** they never change `S` (apart from `S.coach`), spend time or money, or call `Math.random`. Motion is off for reduced-motion devices, the Motion setting, and automated browsers unless `localStorage dailyGrind.forceMotion` is `1`.
+- Phone toasts sit above the navigation and must not take taps (`pointer-events:none`).

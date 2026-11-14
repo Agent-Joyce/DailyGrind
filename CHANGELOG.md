@@ -114,6 +114,7 @@ Everything adjustable lives in the `CONFIG` block near the top of the script: `C
 104. [Review fixes: rival dress codes, pact loopholes, Rules text, a clearer morning; QA skills](#104-review-fixes-rival-dress-codes-pact-loopholes-rules-text-a-clearer-morning-qa-skills)
 105. [Modern pathways and jobs; gig delivery, tutoring and the creator path](#105-modern-pathways-and-jobs-gig-delivery-tutoring-and-the-creator-path)
 106. [Source split into src/ with a build; an installable, offline website build](#106-source-split-into-src-with-a-build-an-installable-offline-website-build)
+107. [Interface: compact header, button levels, a guided first day, game feel and settings](#107-interface-compact-header-button-levels-a-guided-first-day-game-feel-and-settings)
 
 ## 1. Jobs: School and Bank
 
@@ -1825,3 +1826,54 @@ No gameplay, CONFIG or visual change.
 - **Sizes:** single file 2,255 KB (as before). Website build: page 24 KB, styles 104 KB, script 791 KB, pictures and icons about 1,000 KB, loaded separately and cached.
 - **QA:** new `tools/qa/check-build.js` (12 checks: the build check, no outside links, and at 1280 and 390 px the site starts a game with no errors or missing files, requests nothing from another site, loads its pictures, has a valid manifest and icons, and reloads with the network off). It is the first of nine scripts in `run-all-checks.js`; all pass. New skill `dg-build`. **Not run:** the full UI check and the bot simulations.
 - **For the owner:** the account-level skills `daily-grind-add-pathway`, `daily-grind-edit-jobs` and `daily-grind-checks` still say to edit `index.html`; they need to say "edit `src/js/01-config.js` and `src/js/02-world.js`, then run `node tools/build.js`".
+
+
+## 107. Interface: compact header, button levels, a guided first day, game feel and settings
+
+No rule or CONFIG change. Everything here is presentation: it spends no time or money and rolls no dice.
+
+**Compact header**
+
+- Two rows. On a phone about 92px tall (was about 200): day, time left, cash and the buttons; then energy, health and mood with icons, and today's meal, work and study as short chips. On desktop 104px (was 156).
+- Net worth progress towards the next rank is the header's bottom edge. On a phone the net worth line and alert count are not in the header: net worth is on Today and Life, and alerts show as a red badge on the Today tab.
+- On a phone the logo is left off the header, Controls is a ⚙ button, and "Bunk outside" reads "Sleep out" (the full label stays for screen readers).
+- The three vitals moved into their own group (`.app-vitals`).
+
+**Town map**
+
+- Place names are drawn in one layer above every building (`#townLabels`), so a neighbouring picture or pin no longer covers a name. Phones still show names in the list below the map.
+
+**Buttons: three levels**
+
+- Main actions are solid teal. Secondary ones (Back, Decline, small and utility buttons, places, tabs not in use, quick cards other than the suggested one) are outlined. Risky ones (Reset, betray, end a pact, move a flatmate out, sabotage, terminate) use a warning colour, and "Sleep outside" is amber.
+- Removed the two rules that painted every button teal with `!important`, and one that forced header labels on.
+
+**Welcome screen**
+
+- Two large buttons: **Start playing** (Normal) and **Play against AI rivals** (three medium rivals, Competitive town). A ticked box, "Guide me through my first day". Mode, rival options, Easy and Hard and the starting trait are in a **Custom game** drawer; the rules tiles are in **How the game works**.
+- `#welcomeGo` is still the Normal start button and `#diffs`, `#modes`, `#rivCount`, `#rivLevel`, `#rivMood`, `#traitBox` keep their ids.
+
+**Guided first day** (`S.coach = {on, step, did}`; `coachNow()`, `coachPaint()`)
+
+- Four steps, each finished by doing it in the game: get a job, work a shift, eat, sleep at home. A bar at the top of the panel says what to do, offers "Take me there" (an ordinary walk, with its usual time), and highlights the place on the map or the button to press. A step stays done once done. "Skip guide" or the closing message turns it off; the First-week checklist is unchanged.
+
+**Game feel** (`src/js/11-feel.js`)
+
+- Cash, energy, health and mood in the header count up or down and flash green or red when they change. Pay of $10 or more shows a small burst of coins. A short "☀ Day N" sweep plays when the night ends; it cannot block taps.
+- Sounds for what just happened: pay, spending, a meal, a lesson, a qualification or rank, a new day, and a soft tap on buttons. All synthesised; there is no music.
+- Phone vibration on the same events.
+- Motion is off when the device asks for reduced motion, when the setting says so, and in automated browsers (so checks read settled numbers; `localStorage dailyGrind.forceMotion = 1` turns it on for a test).
+
+**Settings** (the Controls menu, now headed Settings; saved in `localStorage dailyGrind.settings`)
+
+- New: Vibration on/off (shown only where the browser supports it), Motion on/reduced, Text size normal/large/larger (panels and pop-ups scale; header and navigation stay put). Sound, action preview, rules, the log and Reset were already there.
+
+**Toasts on a phone** sit above the navigation, two at most, so they no longer cover the header or the guide.
+
+**Not built from this round's scope:** merging several toasts from one action into one, quieter chips, a separate settings sheet, and music. The old hidden header and most older style layers are still there; only the rules this work replaced were removed.
+
+**QA**
+
+- New `tools/qa/check-ux.js` (the welcome screen, both start buttons, the whole guided day by real clicks, skip and reload, header height and overlaps, button levels, settings, count-up and day sweep with motion on and off, phone toasts): 21 checks over two widths. `check-daily-ui.js` updated for the header and button levels. `run-all-checks.js` now runs ten scripts; all pass.
+- `run-uicheck.js`, `run-suite.js` and `sim.js` open the Custom game drawer and untick the guide before starting; the exact clicks they make were verified on the new screen.
+- **Not run:** the full UI check and the bot simulations. No real phone was used; phone results are Chromium at 390×844.

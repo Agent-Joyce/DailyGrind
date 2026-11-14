@@ -286,6 +286,7 @@
     rep={seed:seed,mode:mode,issues:{}};clicks=0;target=null;errs.length=0;MOR={};
     try{localStorage.removeItem('dailyGrind.save.v1')}catch(e){}
     G.fresh();
+    (()=>{const d=document.getElementById('customGame');if(d)d.open=true;const c=document.getElementById('coachOn');if(c)c.checked=false})();  /* the options are in the Custom game drawer (CHANGELOG 107); bots play without the first-day guide */
     if(QA.rivals){  /* a game with AI rivals: QA.rivals = their level, QA.rivalCount = how many */
       await click(document.querySelector('#modes [data-mode="rivals"]'),'mode:rivals');
       await click(document.querySelector('#rivCount [data-rc="'+(QA.rivalCount||3)+'"]'),'rivals:count');

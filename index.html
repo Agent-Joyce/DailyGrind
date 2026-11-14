@@ -646,7 +646,7 @@ body{background:radial-gradient(ellipse at top left,#c7bfb2,transparent 65%),rep
 @media(max-width:640px){:root{--head:200px}#appTop{padding:8px 14px;grid-template-columns:1fr auto;grid-template-rows:44px 56px 26px 22px;gap:4px 8px}.app-brand{font-size:18px}.app-status{display:flex;flex-wrap:wrap;gap:2px 8px;grid-row:2;grid-column:1/-1;padding:4px 0;border-color:#6d6253}.app-status>span{flex:1 0 28%;justify-content:center;font-size:10px}.app-status>span b{font-size:13px}.actbar{grid-row:1;grid-column:2;gap:5px}.actbar .btn,#hudTools>summary{font-size:10px;padding:6px 7px;min-height:38px}#appTop .daily-progress{grid-row:3}#hudContext{grid-row:4;font-size:9px;gap:7px}#hudLocation{display:none}#hudRank{flex:1}#hudAlert{min-height:22px;font-size:9px}.hud-toolbar{width:220px;right:0}.tile{width:13%;min-width:40px;max-width:none;min-height:44px;justify-content:center}.tile .scene>svg{min-height:35px}.tile .pin{width:14px;height:14px;top:3%;left:-3px}.tile .pin span{font-size:7px}.tile .tags{position:absolute;top:85%;left:50%;transform:translateX(-50%);width:76px;max-width:none}.tile .tag{font-size:7px;border-width:1px;padding:1px 3px;max-width:76px}.tile .lab{display:none}.town-caption{display:none}.town-device{top:3px;right:3px}.town-device .btn{font-size:9px;min-height:30px}#logDrawer{top:calc(var(--head) + 6px);right:8px;width:calc(100vw - 16px);padding:12px}.rival-chart{font-size:10px}.tile .cost{display:none}}
 /* Notifications cannot block town controls, including the mobile phone shortcut. */
 #toasts .toast{pointer-events:none}
-@media(max-width:640px){#toasts{left:8px;right:auto;width:min(210px,calc(100vw - 164px))}}
+
 /* Anchor illustrations independently of their landmark labels. */
 .tile .tags{position:absolute;top:calc(100% + 18px);left:50%;transform:translateX(-50%);width:max-content;max-width:150px}.tile .lab{position:absolute;left:50%;bottom:-15px;transform:translateX(-50%);white-space:nowrap;max-width:160px}.tile .tag{white-space:nowrap}.tile .scene{height:auto}.tile .scene>svg{aspect-ratio:auto}
 #hudRank{padding:4px 8px;border-radius:6px;background:linear-gradient(90deg,#a9863c33 var(--rank-progress,0%),transparent var(--rank-progress,0%));border-bottom:2px solid #a9863c99}#appInbox{font-size:10px;min-height:24px;padding:3px 7px}
@@ -758,6 +758,23 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
 @keyframes coachPulse{50%{outline-color:transparent}}
 @keyframes coachGlow{0%,100%{filter:drop-shadow(0 0 3px var(--gold)) drop-shadow(0 0 10px var(--gold))}50%{filter:drop-shadow(0 5px 5px #142f3555)}}
 @media(prefers-reduced-motion:reduce){.coach-target,.tile.coach-target .building-sprite{animation:none}.tile.coach-target .building-sprite{filter:drop-shadow(0 0 3px var(--gold)) drop-shadow(0 0 10px var(--gold))}}
+/* ===== Game feel and settings (CHANGELOG 107) ===== */
+@keyframes chgUp{0%{color:#fff;text-shadow:0 0 10px var(--green)}100%{text-shadow:none}}
+@keyframes chgDn{0%{color:#fff;text-shadow:0 0 10px var(--red)}100%{text-shadow:none}}
+.chg-up b{animation:chgUp .9s ease-out}.chg-dn b{animation:chgDn .9s ease-out}
+.coin-pop{position:fixed;z-index:7000;pointer-events:none;font-style:normal;font-size:13px;color:var(--gold);text-shadow:0 0 4px #0008;transform:translate(-50%,0);opacity:0;animation:coinPop .9s ease-out forwards}
+@keyframes coinPop{0%{opacity:0;transform:translate(-50%,10px) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),-34px) scale(1.1)}}
+#daySweep{position:fixed;inset:0;z-index:7100;display:grid;place-items:center;pointer-events:none;opacity:0;font-size:2rem;font-weight:800;color:#ffe9b8;background:radial-gradient(circle at 50% 45%,#f0b65a55,#1b2a3acc)}
+#daySweep.run{animation:daySweep 1.1s ease-out forwards}
+@keyframes daySweep{0%{opacity:.95}60%{opacity:.8}100%{opacity:0}}
+.hud-toolbar-h{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.hud-toolbar{max-height:calc(100vh - var(--head) - var(--foot) - 16px);overflow:auto}
+/* text size: the panels and pop-ups scale; the header and navigation stay put */
+body[data-text=l] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.12}
+body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
+/* phones: toasts sit above the navigation, two at most, so they never cover the header or the guide */
+@media(max-width:640px){#toasts{top:auto;bottom:calc(var(--foot) + 8px);left:10px;right:10px;width:auto;flex-direction:column-reverse}#toasts .toast:nth-child(n+3){display:none}}
+@media(prefers-reduced-motion:reduce){.chg-up b,.chg-dn b,.coin-pop,#daySweep.run{animation:none}}
 </style>
 </head>
 <body>
@@ -2583,6 +2600,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+dur+0.02);
   }
   function snd(k){
+    buzz(k);  /* vibration is its own setting (11-feel.js) */
     if(MUTE)return;
     try{
       AC=AC||new (window.AudioContext||window.webkitAudioContext)();
@@ -2593,6 +2611,12 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
       else if(k==='day'){tone(523,0,.25,'sine',.08);tone(659,.12,.25,'sine',.08);tone(784,.24,.35,'sine',.08)}
       else if(k==='win'){[523,659,784,1047].forEach(function(f,i){tone(f,i*.12,.3,'triangle',.1)})}
       else if(k==='lose'){[392,330,262].forEach(function(f,i){tone(f,i*.18,.35,'triangle',.09)})}
+      else if(k==='tap'){tone(660,0,.035,'sine',.025)}
+      else if(k==='learn'){tone(587,0,.1,'sine',.06);tone(880,.09,.16,'sine',.06)}
+      else if(k==='eat'){tone(330,0,.07,'triangle',.06);tone(392,.08,.07,'triangle',.06);tone(494,.16,.1,'triangle',.06)}
+      else if(k==='night'){[659,523,440,392].forEach(function(f,i){tone(f,i*.2,.45,'sine',.06)})}
+      else if(k==='cert'){[523,659,784,1047,1319].forEach(function(f,i){tone(f,i*.1,.32,'triangle',.09)});tone(1568,.55,.6,'sine',.06)}
+      else if(k==='ping'){tone(1175,0,.08,'sine',.05);tone(1568,.07,.14,'sine',.04)}
     }catch(e){}
   }
   var PREV=null;
@@ -8875,6 +8899,8 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
       {k:'eat',done:!!S.fed||S.day>1,go:'fast',t:'Eat something',far:'You need one meal a day. Fast Food is the quickest; the Supermarket is cheaper if you cook at home.',near:'Order a meal here. Each row shows what it does to your energy, happiness and health.',sel:'#shop [data-act="treat"]:not([disabled])'},
       {k:'sleep',done:S.day>1,go:S.homeless?'':S.home,t:'Go home and sleep',far:'Head home when you are done for the day. Sleeping at home gives the most rest.',near:'Press Sleep at the top to end the day. Whatever time is left becomes rest.',sel:'#hudEnd'}
     ];
+    /* a step stays done once done, so losing the job overnight does not send the guide back to step 1 */
+    if(!c.did)c.did={};steps.forEach(function(x){if(x.done)c.did[x.k]=1;else if(c.did[x.k])x.done=true});
     var i=0;while(i<steps.length&&steps[i].done)i++;c.step=i;
     if(i>=steps.length)return {end:true,n:steps.length};
     var st=steps[i];st.i=i;st.n=steps.length;st.here=!!st.go&&loc===st.go&&(st.k==='sleep'||view===st.go);return st;
@@ -9082,7 +9108,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     var tb=$('todayBadge');if(tb){tb.hidden=!warns.length;tb.textContent=warns.length;tb.title=warns.length+' alert'+(warns.length===1?'':'s')+' on the Today screen'}
     $('townDevice').disabled=!handheld()||!!S.over||!!S.pending;$('townDevice').textContent=owns('tablet')&&!owns('phone')?'Tablet apps':'Phone / tablet apps';$('townDeviceNote').textContent=handheld()?'Bank · Jobs'+(S.mode==='rivals'?' · Calls · Messages':''):'Buy a phone or tablet to use apps';
     var shadeLevel=S.over?0:Math.max(0,1-S.ap/MAX_AP);document.documentElement.style.setProperty('--day-shade',(shadeLevel*.13).toFixed(3));$('board').style.setProperty('--map-dusk',(shadeLevel*.35).toFixed(3));
-    modernLandmarks();modernRivalCharts();modernPortraitBeat();coachPaint();
+    modernLandmarks();modernRivalCharts();modernPortraitBeat();coachPaint();feelPaint();
     var blocked=!!S.over||!!S.pending||!S.flags.diff;
     $('appNav').querySelectorAll('[data-dg-screen]').forEach(function(b){b.disabled=blocked;if(b.dataset.dgScreen===modernScreen)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
     var badge=$('rivalBadge'),unread=S.mode==='rivals'?newMsgs():0;badge.hidden=!unread;badge.textContent=unread;
@@ -9107,6 +9133,83 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
   var modernRenderBase=render;render=function(){modernRenderBase();modernPaint()};
 
 
+  /* ==================================================================
+     11b. GAME FEEL AND SETTINGS (CHANGELOG 107)
+     Presentation only: nothing here changes S, spends time or rolls dice.
+     - Numbers in the header count up or down and flash when they change; pay shows a small coin burst.
+     - A short "Day N" sweep when the night ends.
+     - Sounds for what just happened (pay, spending, a meal, a lesson, a new day), a soft tap on buttons, phone vibration.
+     - Settings in the Controls menu: vibration, motion, text size (sound, preview, rules, log and reset were already there).
+     Motion is off when the device asks for reduced motion, when the setting says so, and for automated browsers
+     (navigator.webdriver), so tests always read settled numbers; set localStorage dailyGrind.forceMotion = 1 to test motion.
+     ================================================================== */
+  var FEEL={hap:true,motion:'auto',text:'m'},feelPrev=null,feelState=null,feelDay=0;
+  try{var fs0=JSON.parse(localStorage.getItem('dailyGrind.settings')||'{}');if(fs0&&typeof fs0==='object'){if(fs0.hap===false)FEEL.hap=false;if(fs0.motion==='reduce')FEEL.motion='reduce';if(['m','l','xl'].indexOf(fs0.text)>=0)FEEL.text=fs0.text}}catch(e){}
+  function feelSave(){try{localStorage.setItem('dailyGrind.settings',JSON.stringify(FEEL))}catch(e){}}
+  function motionOK(){
+    if(FEEL.motion==='reduce')return false;
+    try{if(navigator.webdriver&&localStorage.getItem('dailyGrind.forceMotion')!=='1')return false}catch(e){}
+    return !(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+  /* vibration patterns by sound name (phones only; ignored where the browser has no vibration) */
+  var BUZZ={tap:8,coin:14,spend:10,eat:12,learn:12,err:[30,40,30],day:[15,60,15],night:[15,60,15],win:[20,40,20,40,60],cert:[20,40,20,40,60],lose:[80,60,80],ping:10};
+  function buzz(k){if(!FEEL.hap||!BUZZ[k]||!navigator.vibrate)return;try{navigator.vibrate(BUZZ[k])}catch(e){}}
+  function feelText(){document.body.dataset.text=FEEL.text}
+  function feelButtons(){
+    var h=$('hapBtn'),m=$('motionBtn'),t=$('textBtn');if(!h)return;
+    h.textContent='📳 Vibration: '+(FEEL.hap?'on':'off');h.setAttribute('aria-pressed',String(FEEL.hap));h.hidden=!navigator.vibrate;
+    m.textContent='✨ Motion: '+(FEEL.motion==='reduce'?'reduced':'on');m.setAttribute('aria-pressed',String(FEEL.motion!=='reduce'));
+    t.textContent='🔠 Text size: '+({m:'normal',l:'large',xl:'larger'})[FEEL.text];
+  }
+  function feelSetup(){
+    var bar=document.querySelector('#hudTools .hud-toolbar');if(!bar||$('hapBtn'))return;
+    var mk=function(id,title){var b=document.createElement('button');b.type='button';b.className='mute';b.id=id;b.title=title;return b};
+    var h=mk('hapBtn','Phone vibration on button presses and events'),m=mk('motionBtn','Number count-ups, flashes and the day sweep'),t=mk('textBtn','Make the text in panels and pop-ups bigger');
+    var first=$('previewBtn')||bar.firstChild;bar.insertBefore(h,first);bar.insertBefore(m,first);bar.insertBefore(t,first);
+    var head=document.createElement('b');head.className='hud-toolbar-h';head.textContent='Settings';bar.insertBefore(head,bar.firstChild);
+    h.addEventListener('click',function(){FEEL.hap=!FEEL.hap;feelSave();feelButtons();buzz('coin')});
+    m.addEventListener('click',function(){FEEL.motion=FEEL.motion==='reduce'?'auto':'reduce';feelSave();feelButtons()});
+    t.addEventListener('click',function(){FEEL.text=({m:'l',l:'xl',xl:'m'})[FEEL.text];feelSave();feelText();feelButtons();render()});
+    var sweep=document.createElement('div');sweep.id='daySweep';sweep.setAttribute('aria-hidden','true');document.body.appendChild(sweep);
+    document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button');if(b&&!b.disabled)snd('tap')},true);
+    feelText();feelButtons();
+  }
+  /* count a number up or down in an element, keeping its format */
+  function feelTween(el,from,to,fmt){
+    if(el._tw)cancelAnimationFrame(el._tw);
+    var t0=null,dur=Math.min(700,260+Math.abs(to-from)*4);
+    var step=function(ts){if(t0==null)t0=ts;var p=Math.min(1,(ts-t0)/dur),e=1-Math.pow(1-p,3);el.textContent=fmt(from+(to-from)*e);if(p<1)el._tw=requestAnimationFrame(step);else{el._tw=0;el.textContent=fmt(to)}};
+    el._tw=requestAnimationFrame(step);
+  }
+  function feelFlash(el,up){if(!el)return;el.classList.remove('chg-up','chg-dn');void el.offsetWidth;el.classList.add(up?'chg-up':'chg-dn');setTimeout(function(){el.classList.remove('chg-up','chg-dn')},900)}
+  function feelCoins(n){
+    var from=$('appCash');if(!from)return;var r=from.getBoundingClientRect();
+    for(var i=0;i<Math.max(3,Math.min(8,n));i++){var c=document.createElement('i');c.className='coin-pop';c.textContent='●';c.setAttribute('aria-hidden','true');
+      c.style.left=(r.left+r.width/2)+'px';c.style.top=(r.bottom+26)+'px';c.style.setProperty('--dx',Math.round((i-(n-1)/2)*9)+'px');c.style.animationDelay=(i*45)+'ms';document.body.appendChild(c);
+      (function(x){setTimeout(function(){if(x.parentNode)x.parentNode.removeChild(x)},1100)})(c)}
+  }
+  function feelSweep(day){var s=$('daySweep');if(!s)return;s.textContent='☀ Day '+day;s.classList.remove('run');void s.offsetWidth;s.classList.add('run')}
+  /* called at the end of every repaint (modernPaint): compare with the last painted numbers */
+  function feelPaint(){
+    feelSetup();
+    var now={cash:S.cash,e:Math.round(S.energy),h:Math.round(S.happy),l:Math.round(S.health),day:S.day,fed:!!S.fed,study:S.studyMin||0,tier:S.tier,certs:Object.keys(S.edu||{}).reduce(function(a,t){return a+lvl(t)},0)};
+    var prev=feelPrev,fresh=feelState!==S||!prev||!S.flags.diff||S.over;feelState=S;feelPrev=now;
+    if(fresh)return;
+    var newDay=now.day!==prev.day,anim=motionOK();
+    if(newDay){if(anim)feelSweep(now.day);snd('day');return}
+    var small=window.innerWidth<=640;
+    [['appCash','cash',function(v){return small?kMoney(Math.round(v)):money(Math.round(v))}],['appEnergy','e',function(v){return Math.round(v)+'%'}],['appHealth','l',function(v){return Math.round(v)+'%'}],['appHappy','h',function(v){return Math.round(v)+'%'}]].forEach(function(x){
+      var el=$(x[0]);if(!el||now[x[1]]===prev[x[1]])return;
+      if(anim){feelTween(el,prev[x[1]],now[x[1]],x[2]);feelFlash(el.parentNode,now[x[1]]>prev[x[1]])}
+    });
+    if(nightRun||S.pending||S.morning)return;   /* the night has its own cards */
+    var d=now.cash-prev.cash;
+    if(now.certs>prev.certs||now.tier>prev.tier)snd('cert');
+    else if(now.study>prev.study)snd('learn');
+    else if(now.fed&&!prev.fed)snd('eat');
+    else if(d>0){snd('coin');if(anim&&d>=10)feelCoins(Math.round(Math.log(d+1)))}
+    else if(d<0)snd('spend');
+  }
   /* ==================================================================
      12. START
      ================================================================== */

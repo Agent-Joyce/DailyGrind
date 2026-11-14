@@ -471,6 +471,8 @@
       {k:'eat',done:!!S.fed||S.day>1,go:'fast',t:'Eat something',far:'You need one meal a day. Fast Food is the quickest; the Supermarket is cheaper if you cook at home.',near:'Order a meal here. Each row shows what it does to your energy, happiness and health.',sel:'#shop [data-act="treat"]:not([disabled])'},
       {k:'sleep',done:S.day>1,go:S.homeless?'':S.home,t:'Go home and sleep',far:'Head home when you are done for the day. Sleeping at home gives the most rest.',near:'Press Sleep at the top to end the day. Whatever time is left becomes rest.',sel:'#hudEnd'}
     ];
+    /* a step stays done once done, so losing the job overnight does not send the guide back to step 1 */
+    if(!c.did)c.did={};steps.forEach(function(x){if(x.done)c.did[x.k]=1;else if(c.did[x.k])x.done=true});
     var i=0;while(i<steps.length&&steps[i].done)i++;c.step=i;
     if(i>=steps.length)return {end:true,n:steps.length};
     var st=steps[i];st.i=i;st.n=steps.length;st.here=!!st.go&&loc===st.go&&(st.k==='sleep'||view===st.go);return st;
@@ -678,7 +680,7 @@
     var tb=$('todayBadge');if(tb){tb.hidden=!warns.length;tb.textContent=warns.length;tb.title=warns.length+' alert'+(warns.length===1?'':'s')+' on the Today screen'}
     $('townDevice').disabled=!handheld()||!!S.over||!!S.pending;$('townDevice').textContent=owns('tablet')&&!owns('phone')?'Tablet apps':'Phone / tablet apps';$('townDeviceNote').textContent=handheld()?'Bank · Jobs'+(S.mode==='rivals'?' · Calls · Messages':''):'Buy a phone or tablet to use apps';
     var shadeLevel=S.over?0:Math.max(0,1-S.ap/MAX_AP);document.documentElement.style.setProperty('--day-shade',(shadeLevel*.13).toFixed(3));$('board').style.setProperty('--map-dusk',(shadeLevel*.35).toFixed(3));
-    modernLandmarks();modernRivalCharts();modernPortraitBeat();coachPaint();
+    modernLandmarks();modernRivalCharts();modernPortraitBeat();coachPaint();feelPaint();
     var blocked=!!S.over||!!S.pending||!S.flags.diff;
     $('appNav').querySelectorAll('[data-dg-screen]').forEach(function(b){b.disabled=blocked;if(b.dataset.dgScreen===modernScreen)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
     var badge=$('rivalBadge'),unread=S.mode==='rivals'?newMsgs():0;badge.hidden=!unread;badge.textContent=unread;
