@@ -77,3 +77,7 @@ Repo skills in `.claude/skills/` wrap the QA tools: `dg-quick-checks` (run `node
 
 Morning notes: anything pushed to `S.notes` appears in the morning pop-up, grouped by `noteMeta()` and de-duplicated by topic in `tidyMorning()`. Give a new note `c` and `k` when the same thing can be reported from two places, and do not repeat in the morning what a night card has just shown. Rivals buy the clothes their next role needs (`rivalDressUp()`); keep that when changing `rivalDay()`.
 
+## Modern pathways and ways to earn
+
+Pathways `data`, `media`, `green` and `logi` and job lines `elec4`, `bank2`, `mall3`, `factory3` and `market3` were added without new buildings. A new pathway needs a `CONFIG.education.certFee` entry and a `blank()` `edu` key as well as its `TRACKS` line. `CONFIG.side` holds gig delivery (📦 Gigs app), tutoring (School) and the creator path (🎬 Creator app); their pay goes through `sidePay()`, they count as work for the daily limit and burnout, and they roll `Math.random` only when used (the creator's nightly sponsors only once there are followers). Run `node tools/qa/check-tables.js <folder outside the repo> --list` when changing pathways or jobs; the Principal Engineer over Project Lead break is known and left by the owner.
+

@@ -124,3 +124,9 @@ The [test guide](docs/Social_Update_Test_Guide.md) distinguishes the 49 isolated
 
 **Checks and skills:** `node tools/qa/run-all-checks.js <folder outside the repo>` runs every fast check. `tools/qa/qa-page.js` is the shared helper for new browser checks (`openGame()`; in the page, `__T.ev(code)` runs code inside the game and `QA.seed/newGame/night/morning` drive it). The Claude skills in `.claude/skills/` (`dg-quick-checks`, `dg-ui-check`, `dg-sim`, `dg-sim-suite`, `dg-rival-audit`, `dg-bug-hunt`) describe when and how to run each.
 
+## Ways to earn outside a job (section 4, before `apply`)
+
+`CONFIG.side` tunes them. `sidePay()` scales a base amount by wages, prices and productivity; `sideBlocked()` gives the shared refusals (illness, no clothes, exhaustion, the daily work limit); `sideWork()` applies time worked, energy, happiness and health. Gig delivery: `gigState()`, `gigFare()`, `gigRun()` (action `gig`), `gigsPanel()` (the `gigsapp` screen). Tutoring: `tutorPay()`, `tutor()` (action `tutor`), drawn at the end of `panels.school`. Creator: `creatorState()`, `creatorBoost()`, `creatorPost()` (action `post`), `creatorPanel()` (the `creatorapp` screen), and `creatorTick()` in `rollover0()` right after `tickInv()`. Rivals do delivery runs in `rivalDay()` when they have no job or their workplace is closed. To add another, follow the same shape: a CONFIG block, a state default in `blank()`, the action, a panel row, an `ACTIONS` line, and a case in `tools/qa/check-modern.js`.
+
+`tools/qa/check-tables.js <folder> --list` prints every pathway and job and checks the table rules; use it before and after changing `TRACKS`, `CAREERS` or `CONFIG.jobs.pick`.
+

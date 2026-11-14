@@ -112,6 +112,7 @@ Everything adjustable lives in the `CONFIG` block near the top of the script: `C
 
 103. [Housing money and social contracts local update](#103-housing-money-and-social-contracts-local-update)
 104. [Review fixes: rival dress codes, pact loopholes, Rules text, a clearer morning; QA skills](#104-review-fixes-rival-dress-codes-pact-loopholes-rules-text-a-clearer-morning-qa-skills)
+105. [Modern pathways and jobs; gig delivery, tutoring and the creator path](#105-modern-pathways-and-jobs-gig-delivery-tutoring-and-the-creator-path)
 
 ## 1. Jobs: School and Bank
 
@@ -1754,3 +1755,58 @@ Base: `2926441`. Found by a code review of the build; no CONFIG keys added or re
 - `check-social-rules.js`: 10 new cases for the fixes above (59 in all); it now loads the clothes table.
 - Claude skills in `.claude/skills/`: `dg-quick-checks`, `dg-ui-check`, `dg-sim`, `dg-sim-suite`, `dg-rival-audit`, `dg-bug-hunt`. `.gitignore` now keeps `.claude/skills/` and ignores the rest of `.claude/`.
 - Validation: `run-all-checks.js` passed (social rules 59, regressions 22, personalities 19, daily UI 43 per width, morning 6 per width, rival careers). **Not run:** the full UI check and the bot simulations. Rival balance after the dress fix is unverified.
+
+
+## 105. Modern pathways and jobs; gig delivery, tutoring and the creator path
+
+Base: section 104. Approved by the owner before editing (pathway names, levels, modules, roles, pay and the three mechanics). No building was added or renamed; the map and its pictures are unchanged.
+
+**Four new School pathways** (house defaults for modules, lessons and hours: Certificate 4h, Degree 16h, Masters 22h of study in all)
+
+| Pathway | Key | Levels | Certificate fee | Modules |
+|---|---|---|---|---|
+| Data & AI | `data` | Certificate, Degree, Masters | $60 | Spreadsheets & SQL, Statistics Basics · Data Analysis, Data Visualisation, Machine Learning Models, Data Engineering · Generative AI, MLOps, AI Ethics & Governance, Data Science Thesis |
+| Creative Media | `media` | Certificate, Degree | $45 | Visual Design Basics, Short-Form Video · Brand & Content Strategy, UX Design, Motion Graphics, Portfolio Project |
+| Green Energy | `green` | Certificate, Degree | $50 | Electrical Safety, Solar Basics · Solar & Storage Systems, EV Charging Systems, Energy Auditing, Green Building Project |
+| Logistics | `logi` | Certificate, Degree | $45 | Warehouse Operations, Delivery Routing · Inventory Planning, Supply Chain Analytics, Customs & Trade, Fleet Management |
+
+- New `CONFIG.education.certFee` entries: `data:60, media:45, green:50, logi:45`. `blank()` `edu` has the four keys; older saves start them at 0 (checked).
+- `CONFIG.rivals.career.preferences` gained one small taste each: generous `green`, ambitious `data`, reckless `media`, vindictive `logi`.
+
+**Sixteen new roles in five new job lines** (new lines only, so no saved job changes position; the proposal listed 15 by miscount, the roles are as proposed)
+
+| Job line | Role | Base pay | Needs | Dress |
+|---|---|---|---|---|
+| Electronics Store (Digital Studio) `elec4` | Data Analyst | $165 | Data & AI Certificate | casual |
+| | Data Scientist | $240 | Data & AI Degree + Technology Certificate | smart |
+| | UX Designer | $245 | Creative Media Degree + Technology Certificate | smart |
+| | Machine Learning Lead | $430 | Data & AI Masters + Technology Degree | suit |
+| Bank (Analytics) `bank2` | Fraud Analyst | $235 | Data & AI Degree + Finance Certificate | smart |
+| Clothes Mall (Studio) `mall3` | Content Assistant | $140 | Creative Media Certificate | casual |
+| | Social Media Manager | $215 | Creative Media Degree | smart |
+| | Brand Director | $320 | Creative Media Degree + Sales Degree | suit |
+| Factory (Green Energy) `factory3` | Solar Installer | $150 | Green Energy Certificate | casual |
+| | EV Charging Technician | $175 | Green Energy Certificate + Engineering Certificate | casual |
+| | Energy Systems Engineer | $260 | Green Energy Degree + Engineering Certificate | smart |
+| | Sustainability Manager | $340 | Green Energy Degree + Engineering Degree + Finance Certificate | suit |
+| Supermarket (Fulfilment) `market3` | Warehouse Picker | $95 | none | casual |
+| | Dispatch Coordinator | $155 | Logistics Certificate | casual |
+| | Supply Chain Planner | $230 | Logistics Degree | smart |
+| | Regional Logistics Manager | $330 | Logistics Degree + Data & AI Certificate + Finance Certificate | suit |
+
+- The game now has 11 pathways and 87 roles. Rivals can study the new pathways and take the new roles (they read the same tables).
+- Table check: no new rule breaks. Two new cross-line warnings of the kind the tables already had: Dispatch Coordinator ($155, 4h study) pays more than Store Supervisor ($140, 9h) at the Supermarket; Machine Learning Lead ($430, 38h) pays more than Sales Director ($350, 48h) at the Electronics Store. The older break (Principal Engineer over Project Lead) is left as it is at the owner's request and listed as KNOWN by the checker.
+
+**Three ways to earn outside a job** (new `CONFIG.side`; pay follows wages, prices and your productivity, with no knowledge bonus)
+
+- **📦 Gigs app** (`CONFIG.side.gig`; a working phone or tablet). A delivery run: 1h, −6% energy, no interview, no dress code beyond having clothes. Fare $16 at 4 stars, +$4 a star (so $20 at 5). Each run on time +0.1 ★ (start 4, top 5, floor 1). Under 35% energy a run has a 35% chance of arriving late: 60% of the fare and −0.4 ★. 20% chance of a $2–6 tip. At most 4 runs a day. Runs count towards the daily work limit and burnout.
+- **🧑‍🏫 Tutoring** at the School (`CONFIG.side.tutor`): 1h30, −5% energy, +1 happiness, once a day, needs a completed qualification. Pay by your highest level: Certificate $30, Degree $50, Honours $65, Masters $80.
+- **🎬 Creator app** (`CONFIG.side.creator`; phone, tablet or the computer at home). A post: 1h30, −6% energy, +20 to 60 followers, +50% for each Creative Media level, 10% chance of going viral (×4); at most 2 posts a day. Each night sponsors pay $0.05 a follower, give or take 50%. A day without a post loses 3% of your followers. The sponsors' line appears in the morning pop-up under Overnight.
+- **Rivals:** a rival with no job, or whose workplace is closed, does delivery runs at the 4-star fare (no dice). Tutoring and the creator path are for the player only in this round.
+- New state: `S.gig {stars, d, runs, total}`, `S.tutorDay`, `S.creator {f, d, posts, last, earned}` (in `blank()`; older saves get the defaults). New actions `gig`, `tutor`, `post`; new app screens `gigsapp`, `creatorapp`.
+- Dice: the new actions roll only when used, and the night rolls for sponsors only once you have followers. A new game now rolls a fee variation for four more pathways and a pay variation for sixteen more roles, so seeded simulations no longer match earlier reports.
+
+**QA**
+
+- New: `tools/qa/check-tables.js` (pathway and job rules from the game's own tables; `--list` prints them all) and `tools/qa/check-modern.js` (11 checks at each of two widths: enrol and finish a module in each new pathway, an older save, applying for all 16 roles, gig fares, lateness, limits, tutoring, followers, sponsors, the rival gig, layout). Both are in `run-all-checks.js`, which now runs eight scripts; all pass.
+- **Not run:** the full UI check and the bot simulations. Balance of the new roles and of the three ways to earn is untested against a playing bot.

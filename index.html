@@ -911,7 +911,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     /* Starting values for a new game. */
     start:{energy:85},
     /* Certificate tuition: the first qualification of each track, before the price index. Each new game moves each track's fee by up to certVariance either way. */
-    education:{certFee:{sal:43,fnb:45,fin:79,tech:52,med:55,cus:95,eng:58},certVariance:0.05,
+    education:{certFee:{sal:43,fnb:45,fin:79,tech:52,med:55,cus:95,eng:58,data:60,media:45,green:50,logi:45},certVariance:0.05,
       lessonEnergyPerHour:-5,      // a school lesson costs this much energy (%) for each hour...
       lessonHappinessPerHour:-5,   // ...and this much happiness
       lessonHealthPerHour:-1,      // ...and this much health (rounded per lesson, a half rounds to a whole point)
@@ -1021,9 +1021,9 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
       /* ---- Hand-picked qualifications (these replace the automatic rule) ----
         Write the role name exactly as the Employment Office shows it, then a list of
         qualifications as '<Track> <Level>'.
-        Tracks: Sales, Food & Beverage, Finance, Technology, Medicine, Engineering, Customer Service.
+        Tracks: Sales, Food & Beverage, Finance, Technology, Medicine, Engineering, Customer Service, Data & AI, Creative Media, Green Energy, Logistics.
         Levels: Certificate, Degree, Honours, Masters
-        (not every track has every level; Customer Service is a Certificate only, Sales and Food & Beverage stop at Degree, Finance and Technology at Masters).
+        (not every track has every level; Customer Service is a Certificate only, Sales, Food & Beverage, Creative Media, Green Energy and Logistics stop at Degree; Finance, Technology and Data & AI go Certificate, Degree, Masters).
         An empty list [] means no qualification is needed.
         One role name is shared (Repair Technician: Thrift Store and Electronics Store); for it, put the
         card name first, e.g. 'Thrift Store (Workshop): Repair Technician'.
@@ -1127,7 +1127,33 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
   // ---- Gym ----
   'Front Desk':          [],                                                                            // $85
   'Gym Instructor':      ['Sales Certificate'],                                                        // $150
-  'Operations Assistant': ['Sales Degree', 'Finance Certificate']                                        // $250
+  'Operations Assistant': ['Sales Degree', 'Finance Certificate'],                                       // $250
+
+  // ---- Electronics Store (Digital Studio) ----
+  'Data Analyst':          ['Data & AI Certificate'],                                                    // $165
+  'Data Scientist':        ['Data & AI Degree', 'Technology Certificate'],                               // $240
+  'UX Designer':           ['Creative Media Degree', 'Technology Certificate'],                          // $245
+  'Machine Learning Lead': ['Data & AI Masters', 'Technology Degree'],                                   // $430
+
+  // ---- Bank (Analytics) ----
+  'Fraud Analyst':         ['Data & AI Degree', 'Finance Certificate'],                                  // $235
+
+  // ---- Clothes Mall (Studio) ----
+  'Content Assistant':     ['Creative Media Certificate'],                                               // $140
+  'Social Media Manager':  ['Creative Media Degree'],                                                    // $215
+  'Brand Director':        ['Creative Media Degree', 'Sales Degree'],                                    // $320
+
+  // ---- Factory (Green Energy) ----
+  'Solar Installer':         ['Green Energy Certificate'],                                               // $150
+  'EV Charging Technician':  ['Green Energy Certificate', 'Engineering Certificate'],                    // $175
+  'Energy Systems Engineer': ['Green Energy Degree', 'Engineering Certificate'],                         // $260
+  'Sustainability Manager':  ['Green Energy Degree', 'Engineering Degree', 'Finance Certificate'],       // $340
+
+  // ---- Supermarket (Fulfilment) ----
+  'Warehouse Picker':           [],                                                                      // $95
+  'Dispatch Coordinator':       ['Logistics Certificate'],                                               // $155
+  'Supply Chain Planner':       ['Logistics Degree'],                                                    // $230
+  'Regional Logistics Manager': ['Logistics Degree', 'Data & AI Certificate', 'Finance Certificate']     // $330
 
       }
     },
@@ -1504,7 +1530,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
         cards:{chance:0.3, gap:2}},  // which illness a rival catches (they share your illness chance and illness data)
       /* Career preferences are small utility adjustments; alternatives must retain at least alternativeFloor of the best earning utility. */
       career:{alternativeFloor:0.9,recheckDays:3,closedWeight:0.75,experienceWeight:0.8,targetBonus:10,
-    preferences:{generous:{med:1.07,cus:1.05},ambitious:{fin:1.08,tech:1.05},reckless:{sal:1.07,fnb:1.04},vindictive:{eng:1.06,tech:1.04}},educationWeight:0.025},
+    preferences:{generous:{med:1.07,cus:1.05,green:1.05},ambitious:{fin:1.08,tech:1.05,data:1.06},reckless:{sal:1.07,fnb:1.04,media:1.07},vindictive:{eng:1.06,tech:1.04,logi:1.05}},educationWeight:0.025},
       /* Accepted terms are snapshotted. Money is scaled by G(); chances are per eligible morning. */
       contracts:{days:6,minutes:10,keepRel:6,missRel:-5,honourRel:2,rewardHappy:3,noticeDays:2,
     wealth:{percent:0.3,min:10,max:2000,reserve:75,growth:0.25,reminderDays:3},
@@ -1629,6 +1655,24 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
       {name:'Tycoon',      netWorth:10000, icon:'👑', byDay:20, bonus:2000}
     ],
     /* ui: clock, trend arrows, toasts, action preview, recap and the evening darkening (see ADD-ONS) */
+    /* Ways to earn outside a job (CHANGELOG 105). Dollar amounts follow wages and prices (payIdx) and your productivity.
+      gig: delivery runs from the 📦 Gigs app (a working phone or tablet; no interview, no dress code beyond having clothes).
+        A run takes `minutes` and `energy`; it pays pay + perStar for each star above baseStars (so 4 stars = pay, 5 stars = pay + perStar).
+        Each run on time adds runStar stars (up to maxStars). Below lateBelowEnergy % energy a run has lateChance of arriving late:
+        it pays latePay of the fare and costs lateStar stars (never under minStars). tipChance of a tip between tip[0] and tip[1].
+        At most maxRuns a day; runs count as work for the daily work limit and burnout. Rivals with no job, or a closed workplace, do runs too.
+      tutor: tutoring a student at the School, at most perDay a day, needs a completed qualification; pay is by your highest
+        level (Certificate, Degree, Honours, Masters).
+      creator: the 🎬 Creator app. A post takes `minutes` and `energy` and gains a number of followers between gain[0] and gain[1],
+        times (1 + mediaBonus for each Creative Media level), times viralX on a viralChance; at most maxPosts a day.
+        Each night sponsors pay followers x perFollower, give or take `swing` (0.5 = from half to one and a half).
+        A day without a post loses `decay` of your followers. */
+    side:{
+      gig:{minutes:60, energy:-6, pay:16, perStar:4, baseStars:4, startStars:4, maxStars:5, minStars:1, runStar:0.1,
+        lateBelowEnergy:35, lateChance:0.35, latePay:0.6, lateStar:-0.4, tipChance:0.2, tip:[2,6], maxRuns:4},
+      tutor:{minutes:90, energy:-5, happiness:1, pay:[30,50,65,80], perDay:1},
+      creator:{minutes:90, energy:-6, gain:[20,60], mediaBonus:0.5, viralChance:0.1, viralX:4, perFollower:0.05, swing:0.5, decay:0.03, maxPosts:2}
+    },
     ui:{
       /* 1. Clock: the day starts at this hour. The HUD shows the time of day and a bar of how the day was spent. */
       clock:{startHour:7, use24h:false},
@@ -1847,8 +1891,8 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
   var NAME={},ICON={};
   LOCS.forEach(function(l){ICON[l[0]]=l[1];NAME[l[0]]=l[2]});
   /* screens, not places: a device's home screen and its two apps (opened from the Overview's 📱 Phone button, or the 💻 Computer at home) */
-  ICON.callsapp='📞';NAME.callsapp='Calls';ICON.msgsapp='💬';NAME.msgsapp='Messages';ICON.phone='📱';NAME.phone='Phone';ICON.pc='💻';NAME.pc='Computer';ICON.bankapp='🏦';NAME.bankapp='Bank app';ICON.jobsapp='💼';NAME.jobsapp='Jobs app';
-  var APPS=['phone','pc','bankapp','jobsapp','callsapp','msgsapp'];
+  ICON.callsapp='📞';NAME.callsapp='Calls';ICON.msgsapp='💬';NAME.msgsapp='Messages';ICON.phone='📱';NAME.phone='Phone';ICON.pc='💻';NAME.pc='Computer';ICON.bankapp='🏦';NAME.bankapp='Bank app';ICON.jobsapp='💼';NAME.jobsapp='Jobs app';ICON.gigsapp='📦';NAME.gigsapp='Gigs app';ICON.creatorapp='🎬';NAME.creatorapp='Creator app';
+  var APPS=['phone','pc','bankapp','jobsapp','callsapp','msgsapp','gigsapp','creatorapp'];
 
   var HOUSE={apt:{rent:150,rest:25,hap:0,fee:0,rate:3},bung:{rent:350,rest:40,hap:10,fee:300,rate:4.5}};
   /* the fixed nightly change in words, leaving out anything that is 0 (CONFIG.sleep, health.nightly.always, selfStudy.nightlyLoss) */
@@ -1912,7 +1956,12 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     med:{n:'Medicine',lv:['Certificate','Degree','Honours','Masters'],L:[['Human Biology','First Aid & Hygiene'],['Anatomy','Pharmacology','Clinical Skills','Pathology'],['Surgery Basics','Internal Medicine','Paediatrics','Medical Ethics'],['Clinical Residency I','Clinical Residency II','Emergency Medicine','Public Health']]},
     eng:{n:'Engineering',lv:['Certificate','Degree','Honours','Masters'],L:[['Mechanics Basics','Workshop Safety'],['Circuits & Electronics','CAD Design','Thermodynamics','Systems Engineering'],['Control Theory','Advanced Design','Project Management','Honours Project'],['Robotics','Structural Analysis','Energy Systems','Masters Project']]},
     /* Customer Service: a single-module Certificate with longer lessons (3 lessons x 3h = 9h) */
-    cus:{n:'Customer Service',lv:['Certificate'],L:[['Customer Care Essentials']],les:{Certificate:3},hrs:{Certificate:3}}
+    cus:{n:'Customer Service',lv:['Certificate'],L:[['Customer Care Essentials']],les:{Certificate:3},hrs:{Certificate:3}},
+    /* modern pathways (CHANGELOG 105) */
+    data:{n:'Data & AI',lv:['Certificate','Degree','Masters'],L:[['Spreadsheets & SQL','Statistics Basics'],['Data Analysis','Data Visualisation','Machine Learning Models','Data Engineering'],['Generative AI','MLOps','AI Ethics & Governance','Data Science Thesis']]},
+    media:{n:'Creative Media',lv:['Certificate','Degree'],L:[['Visual Design Basics','Short-Form Video'],['Brand & Content Strategy','UX Design','Motion Graphics','Portfolio Project']]},
+    green:{n:'Green Energy',lv:['Certificate','Degree'],L:[['Electrical Safety','Solar Basics'],['Solar & Storage Systems','EV Charging Systems','Energy Auditing','Green Building Project']]},
+    logi:{n:'Logistics',lv:['Certificate','Degree'],L:[['Warehouse Operations','Delivery Routing'],['Inventory Planning','Supply Chain Analytics','Customs & Trade','Fleet Management']]}
   };
   /* derived module data: flat list m, cumulative level ends c */
   Object.keys(TRACKS).forEach(function(t){var T=TRACKS[t],c=0;T.m=[];T.c=[];T.L.forEach(function(l){T.m=T.m.concat(l);c+=l.length;T.c.push(c)})});
@@ -2026,7 +2075,29 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     elec3:{n:'Electronics Store (Service)',b:'elec',ranks:[
       {r:'Delivery & Install',pay:95,t:'',l:0,dress:'casual'},
       {r:'Repair Technician',pay:170,t:'eng',l:1,dress:'casual'},
-      {r:'IT Support Lead',pay:240,t:'tech',l:2,dress:'smart'}]}
+      {r:'IT Support Lead',pay:240,t:'tech',l:2,dress:'smart'}]},
+    /* modern job lines (CHANGELOG 105): new lines only, so no saved job changes position */
+    elec4:{n:'Electronics Store (Digital Studio)',b:'elec',ranks:[
+      {r:'Data Analyst',pay:165,t:'data',l:1,dress:'casual'},
+      {r:'Data Scientist',pay:240,t:'data',l:2,dress:'smart'},
+      {r:'UX Designer',pay:245,t:'media',l:2,dress:'smart'},
+      {r:'Machine Learning Lead',pay:430,t:'data',l:3,dress:'suit'}]},
+    bank2:{n:'Bank (Analytics)',b:'bank',ranks:[
+      {r:'Fraud Analyst',pay:235,t:'data',l:2,dress:'smart'}]},
+    mall3:{n:'Clothes Mall (Studio)',b:'mall',ranks:[
+      {r:'Content Assistant',pay:140,t:'media',l:1,dress:'casual'},
+      {r:'Social Media Manager',pay:215,t:'media',l:2,dress:'smart'},
+      {r:'Brand Director',pay:320,t:'media',l:2,dress:'suit'}]},
+    factory3:{n:'Factory (Green Energy)',b:'factory',ranks:[
+      {r:'Solar Installer',pay:150,t:'green',l:1,dress:'casual'},
+      {r:'EV Charging Technician',pay:175,t:'green',l:1,dress:'casual'},
+      {r:'Energy Systems Engineer',pay:260,t:'green',l:2,dress:'smart'},
+      {r:'Sustainability Manager',pay:340,t:'green',l:2,dress:'suit'}]},
+    market3:{n:'Supermarket (Fulfilment)',b:'market',ranks:[
+      {r:'Warehouse Picker',pay:95,t:'',l:0,dress:'casual'},
+      {r:'Dispatch Coordinator',pay:155,t:'logi',l:1,dress:'casual'},
+      {r:'Supply Chain Planner',pay:230,t:'logi',l:2,dress:'smart'},
+      {r:'Regional Logistics Manager',pay:330,t:'logi',l:2,dress:'suit'}]}
   };
   /* dress codes: casual < smart casual < business suit */
   Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk){
@@ -2106,7 +2177,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     function knFor(t,l){var T=TRACKS[t];return T?(J.knowledgeByLevel[T.lv[l-1]]||0):0}
   })();
   var GENLV=['Certificate','Degree','Honours','Masters'];
-  var BOARD=['factory','factory2','fast','fast2','resto','resto2','market','market2','mall','mall2','thrift','thrift2','pawn','pawn2','bank','hosp','hosp2','elec','elec2','elec3','gym'];
+  var BOARD=['factory','factory2','factory3','fast','fast2','resto','resto2','market','market2','market3','mall','mall2','mall3','thrift','thrift2','pawn','pawn2','bank','bank2','hosp','hosp2','elec','elec2','elec3','elec4','gym'];
   function lvl(t){if(t==='any'){var mx=0;Object.keys(TRACKS).forEach(function(k){mx=Math.max(mx,lvl(k))});return mx}var c=TRACKS[t].c,n=S.edu[t],k=0;c.forEach(function(e){if(n>=e)k++});return k}
   function bestEdu(){var b=null;Object.keys(S.edu).forEach(function(t){if(lvl(t)>0&&(!b||lvl(t)>lvl(b)))b=t});return b}
   function cur(c){var r=S.career[c];return r==null?null:CAREERS[c].ranks[r]}
@@ -2203,7 +2274,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
      3. STATE AND SAVES
      blank() is the full shape of S. fresh() starts a game; save() and load() keep it in localStorage; finish() ends it.
      ================================================================== */
-  function blank(){return {socialEvents:[],socialN:0,socialLast:0,rivalRelations:{},fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,ind:null,indNext:0,indId:'',macroLast:0,bankOffer:null,promo:null,comm:null,tip:null,mode:'single',rivals:[],rivalSeed:0,indLeft:0,life:null,raced:{},jobRaces:0,enc:null,rcalled:null,cong:null,msgs:[],rloans:[],bets:[],msgN:0,asked:null,flat:null,flatSkip:0,townMood:'competitive',rep:60,pact:null,leak:null,blocked:null,rpacts:[],sabOn:[],sabMine:[],sabUsed:0,incidents:[],incN:0,rentPaidAmt:0,rcards:{},lastRCard:0,lastRace:'',deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:CONFIG.market.rateBase,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
+  function blank(){return {gig:{stars:CONFIG.side.gig.startStars,d:0,runs:0,total:0},tutorDay:0,creator:{f:0,d:0,posts:0,last:0,earned:0},socialEvents:[],socialN:0,socialLast:0,rivalRelations:{},fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,ind:null,indNext:0,indId:'',macroLast:0,bankOffer:null,promo:null,comm:null,tip:null,mode:'single',rivals:[],rivalSeed:0,indLeft:0,life:null,raced:{},jobRaces:0,enc:null,rcalled:null,cong:null,msgs:[],rloans:[],bets:[],msgN:0,asked:null,flat:null,flatSkip:0,townMood:'competitive',rep:60,pact:null,leak:null,blocked:null,rpacts:[],sabOn:[],sabMine:[],sabUsed:0,incidents:[],incN:0,rentPaidAmt:0,rcards:{},lastRCard:0,lastRace:'',deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0,data:0,media:0,green:0,logi:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:CONFIG.market.rateBase,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
     S=blank();T0();PREV=null;applyPayVar();S.certVar={};Object.keys(TRACKS).forEach(function(t){S.certVar[t]=1+(Math.random()*2-1)*CONFIG.education.certVariance});
     S.sagaNext=sagaDay();S.indNext=indDay();S.indId=INDUSTRY[Math.floor(Math.random()*INDUSTRY.length)].id;
@@ -2498,6 +2569,81 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     if(c){if(!S.shiftsAt)S.shiftsAt={};S.shiftsAt[bOf(k)]=(S.shiftsAt[bOf(k)]||0)+1}  /* work experience per workplace */
     log('You worked a shift as '+j.n+' and earned '+money(pay)+vitPar(v0)+'.'+(low?' Productivity was '+Math.round(pr.m*100)+'% ('+pr.rs.join(', ')+').':''),'good');
     done();
+  }
+  /* ---------- ways to earn outside a job (CONFIG.side): gig delivery, tutoring, the creator path ---------- */
+  function SD(){return CONFIG.side}
+  function gigState(){if(!S.gig)S.gig={stars:SD().gig.startStars,d:0,runs:0,total:0};if(S.gig.d!==S.day){S.gig.d=S.day;S.gig.runs=0}return S.gig}
+  function gigFare(stars){var g=SD().gig;return Math.max(1,g.pay+g.perStar*((stars==null?gigState().stars:stars)-g.baseStars))}
+  function sidePay(base){return Math.max(1,Math.round(Math.round(base*payIdx())*prod().m))}  /* wages, prices and your productivity; no knowledge bonus, no gloves */
+  function sideBlocked(min){
+    if(S.ill)return 'You are sick with '+ILL[S.ill.k].n+' and can’t work. '+illCure();
+    if(naked())return NAKED;
+    if(S.energy<20)return 'You’re too exhausted to work. Eat or rest first.';
+    var capM=CONFIG.time.maxWorkMinutes;
+    if((S.workMin||0)+min>capM)return 'You can work at most '+hm(capM)+' a day. You have already worked '+hm(S.workMin||0)+' today.';
+    return '';
+  }
+  function sideWork(min,en,hap){S.workMin=(S.workMin||0)+min;S.energy=clamp(S.energy+en);S.happy=clamp(S.happy-workHap(-en)+(hap||0));S.health=clamp(S.health+workHp(min));S.flags.worked=1}
+  function gigRun(){
+    var g=SD().gig,st=gigState();
+    if(!handheld())return refuse('Delivery runs come through the Gigs app: you need a working phone or tablet.');
+    if(st.runs>=g.maxRuns)return refuse('The app has no more runs for you today ('+g.maxRuns+' a day). Try again tomorrow.');
+    var why=sideBlocked(g.minutes);if(why)return refuse(why);
+    var tired=S.energy<g.lateBelowEnergy;
+    if(!spendMin(g.minutes,0))return;
+    var v0=vitSnap(),late=tired&&Math.random()<g.lateChance,tip=!late&&Math.random()<g.tipChance?Math.round(G(g.tip[0]+Math.random()*(g.tip[1]-g.tip[0]))):0;
+    var pay=sidePay(gigFare()*(late?g.latePay:1))+tip,s0=st.stars;
+    st.stars=Math.round(Math.max(g.minStars,Math.min(g.maxStars,st.stars+(late?g.lateStar:g.runStar)))*10)/10;st.runs++;st.total++;
+    S.cash+=pay;inc(pay);sideWork(g.minutes,g.energy);
+    log('📦 Delivery run '+(late?'arrived late':'done')+': '+money(pay)+(tip?' (with a '+money(tip)+' tip)':'')+vitPar(v0)+'. Rating '+s0.toFixed(1)+' → '+st.stars.toFixed(1)+' ★'+(late?' (you were too tired to keep to time).':'.'),late?'warn':'good');
+    done();
+  }
+  function tutorPay(){var lv=lvl('any');return lv?SD().tutor.pay[Math.min(lv,SD().tutor.pay.length)-1]:0}
+  function tutor(){
+    var t=SD().tutor;
+    if(!lvl('any'))return refuse('You need a completed qualification before a student will pay you to teach.');
+    if(S.tutorDay===S.day)return refuse('You have already tutored today. Your student comes back tomorrow.');
+    var why=sideBlocked(t.minutes);if(why)return refuse(why);
+    if(!spendMin(t.minutes,0))return;
+    var v0=vitSnap(),pay=sidePay(tutorPay());
+    S.tutorDay=S.day;S.cash+=pay;inc(pay);sideWork(t.minutes,t.energy,t.happiness);
+    log('🧑‍🏫 You tutored a student and earned '+money(pay)+vitPar(v0)+'.','good');
+    done();
+  }
+  function creatorState(){if(!S.creator)S.creator={f:0,d:0,posts:0,last:0,earned:0};if(S.creator.d!==S.day){S.creator.d=S.day;S.creator.posts=0}return S.creator}
+  function creatorBoost(){return 1+SD().creator.mediaBonus*(TRACKS.media?lvl('media'):0)}
+  function creatorPost(){
+    var c=SD().creator,st=creatorState();
+    if(!handheld()&&!pcHere())return refuse('Posting needs a working phone or tablet, or your computer at home.');
+    if(st.posts>=c.maxPosts)return refuse('You have posted '+c.maxPosts+' times today. More would only annoy your followers.');
+    var why=sideBlocked(c.minutes);if(why)return refuse(why);
+    if(!spendMin(c.minutes,0))return;
+    var v0=vitSnap(),viral=Math.random()<c.viralChance,gain=Math.round((c.gain[0]+Math.random()*(c.gain[1]-c.gain[0]))*creatorBoost()*(viral?c.viralX:1));
+    st.f+=gain;st.posts++;st.last=S.day;sideWork(c.minutes,c.energy);
+    log('🎬 You posted a video'+(viral?' and it went viral':'')+': +'+gain+' followers ('+st.f.toLocaleString()+' now)'+vitPar(v0)+'. Sponsors pay each night.',viral?'good':'');
+    done();
+  }
+  /* overnight: sponsors pay for your followers, and a day without a post loses a few (S.day is already the new day) */
+  function creatorTick(){
+    var c=SD().creator,st=S.creator;if(!st||!(st.f>0))return;
+    var pay=Math.round(st.f*c.perFollower*(1-c.swing+2*c.swing*Math.random())*payIdx());
+    if(pay>0){S.cash+=pay;inc(pay);st.earned=(st.earned||0)+pay}
+    var lost=0;if(st.last<S.day-1){lost=Math.max(1,Math.round(st.f*c.decay));st.f=Math.max(0,st.f-lost)}
+    S.notes.push({l:pay>0?'good':'rem',c:'news',k:'creator',t:'🎬 Sponsors paid '+money(pay)+' overnight for your '+(st.f+lost).toLocaleString()+' followers.'+(lost?' You did not post yesterday: −'+lost+' followers.':'')});
+  }
+  function gigsPanel(){
+    var g=SD().gig,st=gigState(),fare=sidePay(gigFare()),left=g.maxRuns-st.runs,why=!handheld()?'Needs a phone or tablet':left<=0?'No runs left today':'';
+    return psec('gigs','📦 Delivery gigs',chip('','★ '+st.stars.toFixed(1))+chip('',left+' of '+g.maxRuns+' runs left',left?'':'warn'),
+        'No interview and no dress code: take a run whenever you have the time. A run pays more the higher your rating: '+money(g.pay)+' at '+g.baseStars+' stars, '+money(g.pay+g.perStar)+' at '+g.maxStars+' (before wages, prices and your productivity). Each run on time adds '+g.runStar+' ★. Under '+g.lateBelowEnergy+'% energy a run has a '+Math.round(g.lateChance*100)+'% chance of arriving late: it pays '+Math.round(g.latePay*100)+'% and costs '+Math.abs(g.lateStar)+' ★. Some customers tip. Runs count towards the daily work limit and burnout.')+
+      arow('🛵 Take a delivery run · about '+money(fare),chip('time',hm(g.minutes))+chip('energy',sg(g.energy)+'%')+chip('happy','−'+workHap(-g.energy))+hpChip(workHp(g.minutes))+(S.energy<g.lateBelowEnergy?chip('','⚠️ Tired: may be late','warn'):'')+(why?chip('',why,'warn'):''),btn('gig','','Take a run',0,!!why),'','chance')+
+      arow('Your record',chip('',st.total+' run'+(st.total===1?'':'s')+' in all')+chip('','Next fare about '+money(fare)),'');
+  }
+  function creatorPanel(){
+    var c=SD().creator,st=creatorState(),left=c.maxPosts-st.posts,lo=Math.round(st.f*c.perFollower*(1-c.swing)*payIdx()),hi=Math.round(st.f*c.perFollower*(1+c.swing)*payIdx()),b=creatorBoost();
+    return psec('creator','🎬 Creator studio',chip('','👥 '+st.f.toLocaleString()+' followers')+chip('',left+' of '+c.maxPosts+' posts left',left?'':'warn'),
+        'Post videos to build a following. A post gains '+c.gain[0]+' to '+c.gain[1]+' followers, more with Creative Media qualifications (+'+Math.round(c.mediaBonus*100)+'% a level), and a '+Math.round(c.viralChance*100)+'% chance of going viral (×'+c.viralX+'). Every night sponsors pay about '+money(Math.round(100*c.perFollower))+' for each 100 followers, give or take '+Math.round(c.swing*100)+'%. A day without a post loses '+Math.round(c.decay*100)+'% of your followers. Posting counts towards the daily work limit and burnout.')+
+      arow('📹 Post a video · +'+Math.round(c.gain[0]*b)+' to '+Math.round(c.gain[1]*b)+' followers',chip('time',hm(c.minutes))+chip('energy',sg(c.energy)+'%')+chip('happy','−'+workHap(-c.energy))+hpChip(workHp(c.minutes))+(b>1?chip('','🎓 Creative Media ×'+b.toFixed(1),'ok'):'')+(left<=0?chip('','Posted enough today','warn'):''),btn('post','','Post',0,left<=0),'','chance')+
+      arow('Tonight’s sponsors',st.f?chip('cash',money(lo)+' to '+money(hi))+chip('','Earned so far '+money(st.earned||0)):chip('','No followers yet'),'',st.f&&st.last<S.day?'Post today to keep your followers.':'');
   }
   function apply(id){
     var m=id.split('_'), c=m[0], i=+m[1], rk=CAREERS[c].ranks[i];
@@ -3511,6 +3657,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     /* second-hand gadgets can break down on their own */
     Object.keys(S.items).forEach(function(k){var it=ITEMS[k];if(S.items[k]&&it&&it.old&&!S.broken[k]&&Math.random()<it.old){S.broken[k]=1;S.notes.push({l:'bad',t:'🔧 Your '+it.n.toLowerCase()+' broke down overnight. Repair it at the Electronics Store (or buy a new one).'});log('Your '+it.n.toLowerCase()+' broke down.','bad')}});
     tickInv();
+    creatorTick();  /* sponsors pay for your followers (only once you have some) */
     /* the Bank's promo offer for today, if any (CONFIG.bank.offers) */
     (function(){var O=CONFIG.bank.offers;S.bankOffer=null;
       if(O&&O.chance>0&&S.day>=O.fromDay&&Math.random()<O.chance)S.bankOffer={day:S.day,rate:Math.round((O.rate[0]+Math.random()*(O.rate[1]-O.rate[0]))*10)/10,days:O.days,min:O.min,max:O.max}})();
@@ -4413,6 +4560,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     var targetRank=r.target&&CAREERS[r.target.c]&&CAREERS[r.target.c].ranks[r.target.i];
     var missing=targetRank&&(targetRank.q||[]).some(function(q){return rivalLv(r,q[0])<q[1]});
     var studyReserve=K.plans&&missing&&mistake!=='study'?Math.min(K.studyHours,CONFIG.burnout.loadMinutes/60)*60:0;
+    var idle=!j||r.shut>0;
     if(r.shut>0)r.shut--;
     else for(var s=0;s<shifts&&j;s++){
       var ef=effort(j.rk.pay);if(r.energy-ef.en<25+(studyReserve?Math.abs(CONFIG.education.lessonEnergyPerHour||5)*studyReserve/60:0)||load+ef.min>CONFIG.time.maxWorkMinutes||(studyReserve&&load+ef.min>CONFIG.burnout.loadMinutes-studyReserve)||!dressed(j.rk.dress||'casual'))break;
@@ -4421,6 +4569,10 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
       r.cash+=pay;r.energy=clamp100(r.energy-ef.en);r.happy=clamp100(r.happy-workHap(ef.en));r.health=clamp100(r.health+workHp(ef.min));
       r.shiftsAt[j.b]=(r.shiftsAt[j.b]||0)+1;load+=ef.min;used+=ef.min;
     }
+    /* no job, or the workplace is closed: delivery runs instead, at the standard 4-star fare (CONFIG.side.gig; no dice) */
+    if(idle&&!r.ill&&mistake!=='lazy'&&dressed('casual')){var GG=CONFIG.side.gig;
+      for(var gi=0;gi<Math.min(GG.maxRuns,Math.ceil(K.shifts)+1)&&r.energy+GG.energy>=25&&load+GG.minutes<=CONFIG.time.maxWorkMinutes;gi++){
+        r.cash+=Math.round(GG.pay*payIdx());r.energy=clamp100(r.energy+GG.energy);r.happy=clamp100(r.happy-workHap(-GG.energy));r.health=clamp100(r.health+workHp(GG.minutes));load+=GG.minutes;used+=GG.minutes;r.gigs=(r.gigs||0)+1}}
     /* study towards the target (or anything, for easy rivals now and then) */
     var tg=r.target&&CAREERS[r.target.c]&&CAREERS[r.target.c].ranks[r.target.i],need=tg?(tg.q||[]).filter(function(q){return rivalLv(r,q[0])<q[1]}):[];
     if(!K.plans&&!r.study&&rrand()<K.studyChance){var ts=Object.keys(TRACKS).filter(function(t){return (r.edu[t]||0)<totMods(t)});if(ts.length)need=[[ts[Math.floor(rrand()*ts.length)],9]]}
@@ -6936,10 +7088,12 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
   /* a device's home screen: the Bank app and the Jobs app */
   function appHome(title){
     var o=offerToday(),ind=S.ind&&S.ind.day>0?indOf(S.ind.id):null,rum=!ind&&S.indNext>0&&S.indNext>=S.day&&S.indNext-S.day<=CONFIG.industry.rumourDays;
-    return boxed(psec('apps',title,chip('',appFrom==='pc'?'At home':'Anywhere'),'Apps save you the walk. The Bank app does savings, investments and offers (loans need a visit to the Bank). The Jobs app shows the same job board as the Employment Office; an online application takes the same 1h as an interview there.')+
+    return boxed(psec('apps',title,chip('',appFrom==='pc'?'At home':'Anywhere'),'Apps save you the walk. The Bank app does savings, investments and offers (loans need a visit to the Bank). The Jobs app shows the same job board as the Employment Office; an online application takes the same 1h as an interview there. The Gigs app offers delivery runs (phone or tablet only) and the Creator app lets you post videos for followers and sponsors.')+
       arow('🏦 Bank app',chip('','Savings '+S.rate.toFixed(1)+'%/day','ok')+(o&&!S.promo?chip('','🎁 Offer today','ok'):''),btn('app','bankapp','Open'))+
       (S.mode==='rivals'&&S.rivals&&S.rivals.length?arow('📞 Calls',chip('','Call a rival or a group'),btn('app','callsapp','Open'))+arow('💬 Messages',chip('',newMsgs()?newMsgs()+' new':'Loans and bets',newMsgs()?'warn':'')+(dueTomorrow().length?chip('','💬 Due tomorrow','warn'):''),btn('app','msgsapp','Open')):'')+
-      arow('💼 Jobs app',(myJob()?chip('','Your job: '+myJob().rk.r):chip('','No job yet','warn'))+(ind?chip('',ind.ic+' '+ind.n,'warn'):rum?chip('','📣 Rumour','warn'):''),btn('app','jobsapp','Open')))
+      arow('💼 Jobs app',(myJob()?chip('','Your job: '+myJob().rk.r):chip('','No job yet','warn'))+(ind?chip('',ind.ic+' '+ind.n,'warn'):rum?chip('','📣 Rumour','warn'):''),btn('app','jobsapp','Open'))+
+      arow('📦 Gigs app',chip('','★ '+gigState().stars.toFixed(1))+chip('','Delivery run about '+money(sidePay(gigFare()))),btn('app','gigsapp','Open'))+
+      arow('🎬 Creator app',chip('','👥 '+creatorState().f.toLocaleString()+' followers'),btn('app','creatorapp','Open')))
   }
   /* Employment Office: the industry-specific storyline's rumour (before it starts) or today's effects (while it runs) */
   function indOutlook(){
@@ -7136,7 +7290,10 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
       return boxed((now?psec('now','📘 Now studying',chip('time',hm(lm)+' / '+loadLimitTxt().replace(' hours','h'),lm>BU.loadMinutes?'warn':'')+(S.burn>0?chip('','Burnt out','warn'):''),
           'Each lesson takes the time shown and costs '+Math.abs(CONFIG.education.lessonEnergyPerHour)+'% energy, '+Math.abs(CONFIG.education.lessonHappinessPerHour)+' happiness and '+Math.abs(CONFIG.education.lessonHealthPerHour)+' health an hour. Attend a lesson at least every few days: '+'3 days without one is a warning, and 5 to 6 days gets you expelled. More than '+loadLimitTxt()+' of work and study a day for '+dayN(BU.daysInARow)+' running causes burnout'+(S.loadStreak?' (streak: '+S.loadStreak+' of '+BU.daysInARow+')':'')+'.')+now:'')+
         psec('tracks','🎓 Pathways',S.expelled>0?chip('','Expelled '+S.expelled+'d','warn'):'','Each pathway is a ladder of qualifications (Certificate → Degree → … → Masters). You pay tuition once when you enrol in a qualification, and earn it by completing all its modules. You can study several pathways at once.')+
-        '<div class="jb2">'+tracks+'</div>')},
+        '<div class="jb2">'+tracks+'</div>'+
+        psec('tutor','🧑‍🏫 Tutoring',chip('',S.tutorDay===S.day?'Done today':'Once a day',S.tutorDay===S.day?'ok':''),'Teach a student for '+hm(SD().tutor.minutes)+', at most '+(SD().tutor.perDay===1?'once':SD().tutor.perDay+' times')+' a day. You need a completed qualification, and the pay follows your highest one: '+['Certificate','Degree','Honours','Masters'].map(function(L,i){return L+' '+money(SD().tutor.pay[i])}).join(', ')+' (before wages, prices and your productivity). It counts towards the daily work limit and burnout.')+
+        (lvl('any')?arow('Tutor a student · '+money(sidePay(tutorPay())),chip('time',hm(SD().tutor.minutes))+chip('energy',sg(SD().tutor.energy)+'%')+chip('happy',sg(SD().tutor.happiness-workHap(-SD().tutor.energy)))+hpChip(workHp(SD().tutor.minutes)),btn('tutor','','Tutor',0,S.tutorDay===S.day))
+          :arow('Tutor a student',chip('','Needs a completed qualification','warn'),btn('tutor','','Tutor',0,true))))},
     bank:function(app){
       /* app=true: the 📱 Bank app (panels.bankapp), the same screen without loans */
       /* one equal-sized card per product: title, risk, value, key numbers as chips, amount box, Deposit/Withdraw; the explanation sits behind ⓘ */
@@ -7199,6 +7356,8 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     callsapp:function(){var X=CONFIG.rivals.social;return appBack()+boxed(psec('calls','📞 Call your rivals',chip('time',hm(X.call.phoneMinutes)+' a call'),'Call one rival, or tick several and make one group call: either way it takes '+hm(X.call.phoneMinutes)+' and gives '+sg(X.call.phoneHappiness)+' happiness. Each rival on the call: usually +1 or +2 relationship, sometimes nothing, sometimes −1 (an argument). With a rival you are on bad terms with, it may get tense and make things worse. Each rival once a day.')+
       callRows(false)+'<p class="appback">'+btn('rcall','group','📞 Call selected (group call)')+'</p>')},
     msgsapp:function(){return appBack()+boxed(msgsPanel())},
+    gigsapp:function(){return appBack()+boxed(gigsPanel())},
+    creatorapp:function(){return appBack()+boxed(creatorPanel())},
     pc:function(){return appHome('💻 Your computer')},
     market:function(){
       /* food sorted by price, cheapest first; the lottery is not food, so it has its own card */
@@ -7486,8 +7645,10 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
   /* ---------- shopkeeper dialogue: several everyday lines per building, plus lines that react to you ---------- */
   var GREET={
     msgsapp:['🔔 Notification',['Loans between friends: pay back on time.','A friendly bet keeps things interesting.']],
+    gigsapp:['🔔 Notification',['Orders are waiting near you.','Keep your rating up: tired riders run late.','Rain is forecast. Fares are steady.']],
+    creatorapp:['🔔 Notification',['Your followers are waiting for the next video.','Post every day to keep your following.','A sponsor viewed your profile.']],
     callsapp:['🔔 Notification',['Keep in touch: a quick call goes a long way.','Missed call from an unknown number.']],
-    phone:['🔔 Notification',['2 apps installed: Bank and Jobs.','Battery full.','No new messages.']],
+    phone:['🔔 Notification',['Apps installed: Bank, Jobs, Gigs and Creator.','Battery full.','No new messages.']],
     pc:['🔔 Notification',['Welcome back.','Your desktop is a mess, but the apps work.','Updates installed.']],
     jobsapp:['🔔 Notification',['New listings are posted every morning.','Openings change daily. Apply early.','Tip: qualifications open better-paid jobs.']],
     bankapp:['🔔 Notification',['Your balance is up to date.','Rates refreshed just now.','Tip: money in savings earns interest every night.','Market news is in the Economy box on the Overview.']],
@@ -7937,6 +8098,9 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     promise:{run:function(g){resolvePromise(g)},kind:'fun'},
     social:{run:function(g){socialDecision(g)},kind:'fun'},
     work:     {run:function(g){work(g)},          kind:'work',   dry:true},
+    gig:      {run:function(){gigRun()},          kind:'work'},
+    tutor:    {run:function(){tutor()},           kind:'work',   dry:true},
+    post:     {run:function(){creatorPost()},     kind:'work'},
     fac:      {run:function(g){factoryDo(g)},     kind:'work'},
     'class':  {run:function(g){study(g)},         kind:'study',  dry:true},
     study:    {run:function(){selfStudy()},       kind:'study',  dry:true},
