@@ -1892,3 +1892,11 @@ Base: `5ac693b` (§107 plus the roadmap). First full UI check and bot simulation
 
 - `tools/qa/check-rival-careers.js` fails when a planning rival goes two mornings running without clothes (32 such mornings on the base build, 0 now).
 - `tools/qa/uicheck.js`: five new situations (a delivery run in the Gigs app, the Creator app with followers, tutoring with a qualification, a Study Buddies contract with a session due and a competing shift, a broken promise). The button-colour rule now accepts the three button levels of §107 (it flagged every secondary and risky button, 3,837 notes) and reads the colour the button settles on, not mid-fade. The Gigs and Creator apps are treated as screens, not places, between presses.
+
+**Results** (reports in `docs/`)
+
+- UI check: [QA_UI_2026-11-14_package-a.md](docs/QA_UI_2026-11-14_package-a.md) ([raw](docs/QA_UI_2026-11-14_package-a.json)). Final run: 0 issues at 1280×800 and 390×844 (916 presses, 39 situations each), reload checks clean. Phone results are Chromium emulation.
+- Rival simulations: [QA_Sim_2026-11-14_package-a-rivals.md](docs/QA_Sim_2026-11-14_package-a-rivals.md) ([raw](docs/QA_Sim_2026-11-14_package-a-rivals.json)): 10 careful games each at medium, expert and mixed, three rivals, on the base and the fixed build. Rivals out of the race: 22 of 90 before, 0 of 90 after.
+- Single-game simulations: [QA_Sim_2026-11-14_package-a-single.md](docs/QA_Sim_2026-11-14_package-a-single.md) ([raw](docs/QA_Sim_2026-11-14_package-a-single.json)): 20 careful + 10 random; careful 20 of 20 reach day 20.
+- Ways to earn (gigs, tutoring, the creator path) compared with jobs by pay an hour: gigs $16–20 against $14–21 for jobs that need no study (capped at 4 runs a day, heavier on energy), tutoring $20–53 once a day (below the jobs its qualification opens), the creator path about $14 an hour over a 20-day game. None dominates a normal job; no change proposed.
+- Not changed: the legacy careful bot leaves 2–4 of 10 rival games early through the same no-clothes spiral after a degree fee; rival difficulty numbers (a retune is proposed to the owner, not applied).
