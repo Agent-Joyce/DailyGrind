@@ -337,8 +337,8 @@
     [].forEach.call(document.querySelectorAll('#rivLevel [data-rl]'),function(b){b.classList.toggle('on',b.dataset.rl===pickLevel)});
     [].forEach.call(document.querySelectorAll('#rivMood [data-rm]'),function(b){b.classList.toggle('on',b.dataset.rm===pickMood)});
     var n=pickMode==='rivals'?CONFIG.rivals.gameDays:CONFIG.time.gameDays;
-    $('welcomeGoT').textContent=pickMode==='rivals'?'▶ Start playing · '+pickCount+' AI rival'+(pickCount===1?'':'s'):'▶ Start playing';$('welcomeRivals').hidden=pickMode==='rivals';$('welcomeRivalsT').textContent=CONFIG.rivals.gameDays+' days, three neighbours, a town leaderboard';
-    $('modeSingleTxt').textContent=CONFIG.time.gameDays+' days, your own score';$('modeRivalsTxt').textContent=CONFIG.rivals.gameDays+' days, a town leaderboard';
+    $('welcomeGoT').textContent=pickMode==='rivals'?'▶ Start playing · '+pickCount+' AI rival'+(pickCount===1?'':'s'):'▶ Start playing';$('welcomeRivals').hidden=pickMode==='rivals';$('welcomeRivalsT').textContent=CONFIG.rivals.gameDays+' days, three cousins, a scoreboard for the reunion dinner';
+    $('modeSingleTxt').textContent=CONFIG.time.gameDays+' days, your own score';$('modeRivalsTxt').textContent=CONFIG.rivals.gameDays+' days, your cousins, a reunion-dinner scoreboard';
     document.querySelectorAll('#diffs [data-diff]').forEach(function(b){var D=DIFF[b.dataset.diff],sm=b.querySelector('small');if(D&&sm)sm.textContent=D.d.replace(/\.$/,'').replace(/\d+ days/,n+' days')});
   }
   $('modes').addEventListener('click',function(e){var b=e.target.closest('[data-mode]');if(!b)return;pickMode=b.dataset.mode;paintMode()});
@@ -359,7 +359,7 @@
     S.diff=k;S.flags.diff=1;S.cash=D.cash;S.px=D.px*(CONFIG.limits.startPriceMin+Math.random()*(CONFIG.limits.startPriceMax-CONFIG.limits.startPriceMin));S.wage=D.wage;S.today=null;T0();
     $('welcome').classList.remove('show');
     log('Difficulty: '+D.n+'. '+D.d.replace(/\d+ days/,gameLen()+' days'),'good');
-    if(S.mode==='rivals')log('🏁 A game with AI rivals: '+S.rivals.map(function(r){return r.ic+' '+r.name+' ('+r.diff+' · '+archetype(r).name.toLowerCase()+' · '+personality(r).name.toLowerCase()+')'}).join(', ')+'. They live the same '+gameLen()+' days in the same town. Town mood: '+moodX().icon+' '+moodX().name+'. The leaderboard is on the Overview.','good');
+    if(S.mode==='rivals')log('🏁 A game with AI rivals, your cousins: '+S.rivals.map(function(r){return r.ic+' '+r.name+' ('+r.diff+' · '+archetype(r).name.toLowerCase()+' · '+personality(r).name.toLowerCase()+')'}).join(', ')+'. They live the same '+gameLen()+' days in the same town. Town mood: '+moodX().icon+' '+moodX().name+'. The cousins’ scoreboard is on the Overview.','good');
     render();
   });
   $('rulesBtn').addEventListener('click',function(){$('rules').classList.add('show');setTimeout(function(){$('rulesClose').focus()},0)});

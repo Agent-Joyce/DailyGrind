@@ -102,7 +102,7 @@
         <div class="invline" id="debtline" hidden></div>
       </div>
       <div class="grp g-riv" id="rivBox" hidden>
-        <div class="gh">🏁 Town leaderboard <small id="rivSub"></small></div>
+        <div class="gh">🏁 Cousins’ scoreboard <small id="rivSub"></small></div>
         <div id="rivList"></div>
       </div>
       <div class="loghead"><h2>Daily log</h2><span style="display:flex;gap:8px"><button class="btn alt" id="logBig" aria-expanded="false" aria-controls="log" title="Show more of the log">Expand log</button><button class="btn alt" id="rulesBtn" title="How the game ends">How it ends</button></span></div>
@@ -121,10 +121,11 @@
 
 <div class="over" id="welcome" role="dialog" aria-modal="true" aria-labelledby="wlT"><div class="card rules welcome-card">
   <h2 id="wlT">Daily Grind</h2>
+  <p class="wl-tag">Beat your cousins before the reunion dinner.</p>
   <p class="wl-pitch">Build a life from scratch in a small town. Reach <b><span id="cfgGoal">$1,000</span> net worth</b> without going broke, burning out or skipping meals.</p>
   <div class="wl-start" id="diffs">
     <button class="btn wl-go" data-diff="normal" id="welcomeGo"><b id="welcomeGoT">▶ Start playing</b><small>$200 to start, 20 days, standard prices</small></button>
-    <button type="button" class="btn alt wl-go" id="welcomeRivals"><b>🏁 Play against AI rivals</b><small id="welcomeRivalsT">30 days, three neighbours, a town leaderboard</small></button>
+    <button type="button" class="btn alt wl-go" id="welcomeRivals"><b>🏁 Play against AI rivals</b><small id="welcomeRivalsT">30 days, three cousins, a scoreboard for the reunion dinner</small></button>
     <label class="wl-coach"><input type="checkbox" id="coachOn" checked> Guide me through my first day</label>
     <details id="customGame" class="wmore"><summary><i class="ib">⚙</i>Custom game: rivals, difficulty, starting trait</summary><div class="more-b">
   <details id="traitBox" class="tbox"><summary><span>🎭 Starting trait: <b id="traitPick">No trait</b></span><small>optional · tap to change</small></summary>
@@ -132,7 +133,7 @@
   <div id="modeWrap"><h3>How do you want to play?</h3>
   <div class="diffs modes" id="modes" role="radiogroup" aria-label="Game mode">
     <button type="button" class="btn" data-mode="single" aria-pressed="true"><b>🎯 Single game</b><small id="modeSingleTxt">20 days, your own score</small></button>
-    <button type="button" class="btn alt" data-mode="rivals" aria-pressed="false"><b>🏁 With AI rivals</b><small id="modeRivalsTxt">30 days, a town leaderboard</small></button>
+    <button type="button" class="btn alt" data-mode="rivals" aria-pressed="false"><b>🏁 With AI rivals</b><small id="modeRivalsTxt">30 days, your cousins, a reunion-dinner scoreboard</small></button>
   </div>
   <div class="rivopts" id="rivOpts" hidden>
     <div><span>Rivals</span><span class="rseg" id="rivCount"><button type="button" data-rc="1">1</button><button type="button" data-rc="2">2</button><button type="button" data-rc="3" class="on">3</button></span></div>

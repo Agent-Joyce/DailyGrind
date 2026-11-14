@@ -312,6 +312,8 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 .room{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}.room.empty{font-size:.82rem;color:var(--muted)}
 .thing{display:flex;flex-direction:column;align-items:center;width:78px;padding:5px 3px;border:2px solid var(--line);border-radius:10px;background:var(--surface);text-align:center}
 .thing span{font-size:1.5rem;line-height:1}.thing small{font-size:.64rem;line-height:1.1;margin-top:2px}.thing.brk{border-color:var(--red);opacity:.65}
+
+.reunion .auntie{list-style:none;margin:6px 0 10px;padding:0}.reunion .auntie li{margin:5px 0;line-height:1.35}
 /* end-of-day pop-up */
 #evwrap{position:absolute;inset:0;z-index:3000;display:flex;align-items:center;justify-content:center;padding:16px;background:radial-gradient(circle at 50% 50%,rgba(10,18,24,.45),rgba(10,18,24,.78));backdrop-filter:blur(3px);animation:evfade .35s ease-out}
 #evwrap[hidden]{display:none}
@@ -740,7 +742,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
 #hudTools>summary{background:var(--btn2-bg);color:var(--btn2-ink);border:1px solid var(--btn2-line);gap:6px}
 .quick-card small,.destination small{color:inherit;opacity:.82}
 /* ===== Welcome screen and the guided first day (CHANGELOG 107) ===== */
-.welcome-card{max-width:460px}.welcome-card h2{font-size:1.9rem;margin-bottom:4px}.wl-pitch{color:var(--ink);margin:0 0 14px}
+.welcome-card{max-width:460px}.welcome-card h2{font-size:1.9rem;margin-bottom:4px}.wl-tag{margin:0 0 8px;font-weight:600;color:var(--ink)}.wl-pitch{color:var(--ink);margin:0 0 14px}
 .wl-start{display:flex;flex-direction:column;gap:10px}
 .wl-start .wl-go{display:flex;flex-direction:column;gap:3px;text-align:left;padding:14px 16px;min-height:64px}
 .wl-start .wl-go b{font-size:1.08rem}.wl-start .wl-go small{font-weight:600;font-size:.78rem;opacity:.88}
@@ -864,7 +866,7 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
         <div class="invline" id="debtline" hidden></div>
       </div>
       <div class="grp g-riv" id="rivBox" hidden>
-        <div class="gh">🏁 Town leaderboard <small id="rivSub"></small></div>
+        <div class="gh">🏁 Cousins’ scoreboard <small id="rivSub"></small></div>
         <div id="rivList"></div>
       </div>
       <div class="loghead"><h2>Daily log</h2><span style="display:flex;gap:8px"><button class="btn alt" id="logBig" aria-expanded="false" aria-controls="log" title="Show more of the log">Expand log</button><button class="btn alt" id="rulesBtn" title="How the game ends">How it ends</button></span></div>
@@ -883,10 +885,11 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
 
 <div class="over" id="welcome" role="dialog" aria-modal="true" aria-labelledby="wlT"><div class="card rules welcome-card">
   <h2 id="wlT">Daily Grind</h2>
+  <p class="wl-tag">Beat your cousins before the reunion dinner.</p>
   <p class="wl-pitch">Build a life from scratch in a small town. Reach <b><span id="cfgGoal">$1,000</span> net worth</b> without going broke, burning out or skipping meals.</p>
   <div class="wl-start" id="diffs">
     <button class="btn wl-go" data-diff="normal" id="welcomeGo"><b id="welcomeGoT">▶ Start playing</b><small>$200 to start, 20 days, standard prices</small></button>
-    <button type="button" class="btn alt wl-go" id="welcomeRivals"><b>🏁 Play against AI rivals</b><small id="welcomeRivalsT">30 days, three neighbours, a town leaderboard</small></button>
+    <button type="button" class="btn alt wl-go" id="welcomeRivals"><b>🏁 Play against AI rivals</b><small id="welcomeRivalsT">30 days, three cousins, a scoreboard for the reunion dinner</small></button>
     <label class="wl-coach"><input type="checkbox" id="coachOn" checked> Guide me through my first day</label>
     <details id="customGame" class="wmore"><summary><i class="ib">⚙</i>Custom game: rivals, difficulty, starting trait</summary><div class="more-b">
   <details id="traitBox" class="tbox"><summary><span>🎭 Starting trait: <b id="traitPick">No trait</b></span><small>optional · tap to change</small></summary>
@@ -894,7 +897,7 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
   <div id="modeWrap"><h3>How do you want to play?</h3>
   <div class="diffs modes" id="modes" role="radiogroup" aria-label="Game mode">
     <button type="button" class="btn" data-mode="single" aria-pressed="true"><b>🎯 Single game</b><small id="modeSingleTxt">20 days, your own score</small></button>
-    <button type="button" class="btn alt" data-mode="rivals" aria-pressed="false"><b>🏁 With AI rivals</b><small id="modeRivalsTxt">30 days, a town leaderboard</small></button>
+    <button type="button" class="btn alt" data-mode="rivals" aria-pressed="false"><b>🏁 With AI rivals</b><small id="modeRivalsTxt">30 days, your cousins, a reunion-dinner scoreboard</small></button>
   </div>
   <div class="rivopts" id="rivOpts" hidden>
     <div><span>Rivals</span><span class="rseg" id="rivCount"><button type="button" data-rc="1">1</button><button type="button" data-rc="2">2</button><button type="button" data-rc="3" class="on">3</button></span></div>
@@ -3744,7 +3747,7 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
         if(done[x.g])return;done[x.g]=1;
         var same=a.filter(function(y){return y.g===x.g&&y.s});if(same.length===1){h+=line(x);return}
         var r=S.rivals&&S.rivals[+x.g.slice(1)],rvn=same.filter(function(y){return y.rv!=null})[0];
-        h+=line({l:same[0].l,t:'🏁 '+(r?r.ic+' '+r.name:'A rival')+': '+same.map(function(y){return y.s.replace(/\.$/,'')}).join('; ')+'.',rv:rvn?rvn.rv:null,c:c,k:''});
+        h+=line({l:same[0].l,t:'🏁 '+(r?r.ic+' Cousin '+r.name:'A cousin')+': '+same.map(function(y){return y.s.replace(/\.$/,'')}).join('; ')+'.',rv:rvn?rvn.rv:null,c:c,k:''});
       });
     });
     mn.forEach(function(x){delete x._i});
@@ -4655,7 +4658,7 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
     var hr=I.byHealth.slice().sort(function(a,b){return b.healthAtLeast-a.healthAtLeast}),hf=1;for(var k=0;k<hr.length;k++)if(r.health>=hr[k].healthAtLeast){hf=hr[k].x||hr[k].chanceX||1;break}
     return Math.min(I.maxChance,Math.max(0,base*I.cutForEveryone-I.minusForEveryone)*hf*Df().ill*trendIll());
   }
-  function rivalNote(r,t,txt){r.log.unshift('Day '+(S.day-1)+': '+txt);r.log=r.log.slice(0,8);if(t)S.notes.push({l:'rem',t:'🏁 '+r.ic+' '+r.name+' '+txt,rv:t===2?S.rivals.indexOf(r):null,c:'news',g:'r'+S.rivals.indexOf(r),s:txt})}  /* t: 0 log only, 1 news, 2 news you can congratulate them on */
+  function rivalNote(r,t,txt){r.log.unshift('Day '+(S.day-1)+': '+txt);r.log=r.log.slice(0,8);if(t)S.notes.push({l:'rem',t:'🏁 '+r.ic+' Cousin '+r.name+' '+txt,rv:t===2?S.rivals.indexOf(r):null,c:'news',g:'r'+S.rivals.indexOf(r),s:txt})}  /* t: 0 log only, 1 news, 2 news you can congratulate them on */
   /* a rival's slip today, from its state (CONFIG.rivals.mistakes): tired skips class, broke skips a meal, unhappy skips a shift,
      otherwise it skips its fun; the chance is the level's mistakeChance at most, scaled by how strained it is. One rival die. */
   function rivalStrain(r){
@@ -5508,15 +5511,29 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
     return P;
   }
   function ordinal(n){return n+(n===1?'st':n===2?'nd':n===3?'rd':'th')}
-  /* the end screen's standings, category table and "best at" badges */
+  /* the end screen, as the reunion dinner: the aunties read out each category, then the standings and the full table.
+     Text only: it reads lifeScore() and rolls no dice. */
+  function auntieLines(P,ks,me){
+    var verdict={1:'Somebody tell your mother.',2:'Second. Not first, but not bad.',3:'Third. We will not mention it again.'};
+    return ks.map(function(k){
+      var C=LIFE_CATS[k],mine=me.cats[k],top=P.filter(function(p){return p.cats[k].place===1}),others=top.filter(function(p){return !p.me});
+      var say=mine.place===1?'In '+C.n+', you came first'+(others.length?', level with '+others.map(function(p){return 'Cousin '+p.name}).join(' and '):'')+' ('+mine.txt+'). '+verdict[1]
+        :'In '+C.n+', '+others.map(function(p){return 'Cousin '+p.name}).join(' and ')+' came first ('+top[0].cats[k].txt+'). You came '+ordinal(mine.place)+' ('+mine.txt+'). '+(verdict[mine.place]||'Hmm.');
+      return '<li>'+C.ic+' <b>Auntie reads out '+C.n+':</b> “'+say+'”</li>';
+    }).join('');
+  }
+  /* the end screen's standings, category table and the aunties' readout */
   function lifeTable(){
     var P=lifeScore(),SC=CONFIG.rivals.scoring,ks=Object.keys(SC.categories).filter(function(k){return SC.categories[k].on&&LIFE_CATS[k]}),me=P.filter(function(p){return p.me})[0];
-    var badges=ks.map(function(k){var w=P.filter(function(p){return p.cats[k].place===1});return LIFE_CATS[k].ic+' '+LIFE_CATS[k].n+': '+w.map(function(p){return p.me?'<b>you</b>':p.name}).join(' & ')}).join(' · ');
-    return '<div class="standings"><h3>🏁 Life Score: you finished '+ordinal(me.place)+' of '+P.length+'</h3>'+(me.place===1?'<div class="topscore">🏆 Top of the town!</div>':'')+
-      '<ol>'+P.map(function(p){return '<li'+(p.me?' class="me"':'')+'>'+p.ic+' '+p.name+(p.r?' <small>('+p.r.diff+(p.out?', out on day '+p.out.day:'')+')</small>':'')+': <b>'+p.pts+' points</b> · '+money(p.worth)+'</li>'}).join('')+'</ol>'+
+    return '<div class="standings reunion"><h3>🏮 The reunion dinner: you finished '+ordinal(me.place)+' of '+P.length+'</h3>'+
+      '<p class="sub">The whole family is round the table. Auntie clears her throat and reads out how each of you did.</p>'+
+      '<ul class="auntie">'+auntieLines(P,ks,me)+'</ul>'+
+      (me.place===1?'<div class="topscore">🏆 Your mother will be telling this story for years.</div>':'')+
+      '<h3>The scoreboard</h3>'+
+      '<ol>'+P.map(function(p){return '<li'+(p.me?' class="me"':'')+'>'+p.ic+' '+(p.me?'':'Cousin ')+p.name+(p.r?' <small>('+p.r.diff+(p.out?', out on day '+p.out.day:'')+')</small>':'')+': <b>'+p.pts+' points</b> · '+money(p.worth)+'</li>'}).join('')+'</ol>'+
       '<div class="lifetab-w"><table class="lifetab"><tr><th></th>'+P.map(function(p){return '<th'+(p.me?' class="me"':'')+'>'+p.ic+' '+(p.me?'You':p.name)+'</th>'}).join('')+'</tr>'+
       ks.map(function(k){var c=SC.categories[k];return '<tr><td>'+LIFE_CATS[k].ic+' '+LIFE_CATS[k].n+' <small>×'+c.weight+'</small></td>'+P.map(function(p){var x=p.cats[k];return '<td class="'+(x.place===1?'win ':'')+(p.me?'me':'')+'"><b>'+ordinal(x.place)+'</b> <small>+'+x.pts+'</small><br><small>'+x.txt+'</small></td>'}).join('')+'</tr>'}).join('')+
-      '</table></div><p class="sub">Best at: '+badges+'</p></div>';
+      '</table></div></div>';
   }
   /* ---------- relationships with rivals (CONFIG.rivals.social) ----------
     r.rel runs from −100 (enemy) to +100 (friend). Building it always costs time (chat, hello, calls, congratulating);
@@ -8444,8 +8461,8 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
     [].forEach.call(document.querySelectorAll('#rivLevel [data-rl]'),function(b){b.classList.toggle('on',b.dataset.rl===pickLevel)});
     [].forEach.call(document.querySelectorAll('#rivMood [data-rm]'),function(b){b.classList.toggle('on',b.dataset.rm===pickMood)});
     var n=pickMode==='rivals'?CONFIG.rivals.gameDays:CONFIG.time.gameDays;
-    $('welcomeGoT').textContent=pickMode==='rivals'?'▶ Start playing · '+pickCount+' AI rival'+(pickCount===1?'':'s'):'▶ Start playing';$('welcomeRivals').hidden=pickMode==='rivals';$('welcomeRivalsT').textContent=CONFIG.rivals.gameDays+' days, three neighbours, a town leaderboard';
-    $('modeSingleTxt').textContent=CONFIG.time.gameDays+' days, your own score';$('modeRivalsTxt').textContent=CONFIG.rivals.gameDays+' days, a town leaderboard';
+    $('welcomeGoT').textContent=pickMode==='rivals'?'▶ Start playing · '+pickCount+' AI rival'+(pickCount===1?'':'s'):'▶ Start playing';$('welcomeRivals').hidden=pickMode==='rivals';$('welcomeRivalsT').textContent=CONFIG.rivals.gameDays+' days, three cousins, a scoreboard for the reunion dinner';
+    $('modeSingleTxt').textContent=CONFIG.time.gameDays+' days, your own score';$('modeRivalsTxt').textContent=CONFIG.rivals.gameDays+' days, your cousins, a reunion-dinner scoreboard';
     document.querySelectorAll('#diffs [data-diff]').forEach(function(b){var D=DIFF[b.dataset.diff],sm=b.querySelector('small');if(D&&sm)sm.textContent=D.d.replace(/\.$/,'').replace(/\d+ days/,n+' days')});
   }
   $('modes').addEventListener('click',function(e){var b=e.target.closest('[data-mode]');if(!b)return;pickMode=b.dataset.mode;paintMode()});
@@ -8466,7 +8483,7 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
     S.diff=k;S.flags.diff=1;S.cash=D.cash;S.px=D.px*(CONFIG.limits.startPriceMin+Math.random()*(CONFIG.limits.startPriceMax-CONFIG.limits.startPriceMin));S.wage=D.wage;S.today=null;T0();
     $('welcome').classList.remove('show');
     log('Difficulty: '+D.n+'. '+D.d.replace(/\d+ days/,gameLen()+' days'),'good');
-    if(S.mode==='rivals')log('🏁 A game with AI rivals: '+S.rivals.map(function(r){return r.ic+' '+r.name+' ('+r.diff+' · '+archetype(r).name.toLowerCase()+' · '+personality(r).name.toLowerCase()+')'}).join(', ')+'. They live the same '+gameLen()+' days in the same town. Town mood: '+moodX().icon+' '+moodX().name+'. The leaderboard is on the Overview.','good');
+    if(S.mode==='rivals')log('🏁 A game with AI rivals, your cousins: '+S.rivals.map(function(r){return r.ic+' '+r.name+' ('+r.diff+' · '+archetype(r).name.toLowerCase()+' · '+personality(r).name.toLowerCase()+')'}).join(', ')+'. They live the same '+gameLen()+' days in the same town. Town mood: '+moodX().icon+' '+moodX().name+'. The cousins’ scoreboard is on the Overview.','good');
     render();
   });
   $('rulesBtn').addEventListener('click',function(){$('rules').classList.add('show');setTimeout(function(){$('rulesClose').focus()},0)});
@@ -9001,7 +9018,7 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
   }
   function modernSetup(){
     var top=document.createElement('header');top.id='appTop';top.setAttribute('aria-label','Daily Grind status');
-    top.innerHTML='<div class="app-brand"><span class="brand-mark">'+modernIcon('brand')+'</span><div>Daily Grind<small>Your town. Your next chapter.</small></div></div><div class="app-status"><span><small>DAY</small><b id="appDay"></b></span><span><span class="hud-sky" id="appSky" aria-hidden="true">☀</span><b id="appTime"></b><small>left</small></span><span><small>CASH</small><b id="appCash"></b></span><span class="status-energy"><small>ENERGY</small><b id="appEnergy"></b></span></div>';
+    top.innerHTML='<div class="app-brand"><span class="brand-mark">'+modernIcon('brand')+'</span><div>Daily Grind<small>Beat your cousins before the reunion dinner.</small></div></div><div class="app-status"><span><small>DAY</small><b id="appDay"></b></span><span><span class="hud-sky" id="appSky" aria-hidden="true">☀</span><b id="appTime"></b><small>left</small></span><span><small>CASH</small><b id="appCash"></b></span><span class="status-energy"><small>ENERGY</small><b id="appEnergy"></b></span></div>';
     document.body.appendChild(top);top.appendChild($('actbar'));
     var vp=document.createElement('div');vp.id='townViewport';vp.setAttribute('aria-label','Town map with sixteen destinations.');
     vp.innerHTML='<div class="town-caption"><b>Your neighbourhood</b><span>Choose a pin or a destination below</span></div><div id="townCanvas" class="town-canvas"></div>';
@@ -9128,7 +9145,7 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
   function modernPortraitClose(){var p=$('characterPop');if(p)p.hidden=true;clearTimeout(portraitTimer)}
   function modernPortrait(i,context,manual){var r=S.rivals&&S.rivals[i],p=$('characterPop');if(!r||!p||S.mode!=='rivals'||S.over||S.pending||S.cert)return;
     clearTimeout(portraitTimer);portraitReturn=document.activeElement;p.hidden=false;p.classList.toggle('showcase',!!manual);p.querySelector('.character-photo').style.setProperty('--face-x',(Math.max(0,i)%4*100/3)+'%');p.querySelector('.character-photo').setAttribute('aria-label',r.name+' portrait');
-    $('characterName').textContent=r.name;$('characterContext').textContent=context||'Your neighbour';$('characterMeta').textContent=personality(r).name+' · '+relLabel(r.rel||0);$('characterLine').textContent=manual?personality(r).about:(S.logs&&S.logs[0]?String(S.logs[0][0]).replace(/^Day \d+: /,'').replace(/<[^>]*>/g,''):'');
+    $('characterName').textContent=r.name;$('characterContext').textContent=context||'Your cousin';$('characterMeta').textContent=personality(r).name+' · '+relLabel(r.rel||0);$('characterLine').textContent=manual?personality(r).about:(S.logs&&S.logs[0]?String(S.logs[0][0]).replace(/^Day \d+: /,'').replace(/<[^>]*>/g,''):'');
     p.classList.remove('minimized');p.setAttribute('aria-expanded','true');
     if(manual)$('characterClose').focus();else if(!/message/i.test(context||''))portraitTimer=setTimeout(modernPortraitMinimize,CONFIG.rivals.social.greetingMs);
   }
@@ -9136,8 +9153,8 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
     var p=document.createElement('aside');p.id='characterPop';p.hidden=true;p.setAttribute('role','dialog');p.setAttribute('aria-label','Character portrait');p.innerHTML='<div class="character-photo" role="img"></div><div class="character-copy"><span id="characterContext" class="eyebrow"></span><h2 id="characterName"></h2><p id="characterMeta"></p><p id="characterLine"></p><button type="button" class="btn" id="characterClose">Close ✕</button></div>';document.body.appendChild(p);
     var reopen=document.createElement('button');reopen.type='button';reopen.id='characterReopen';reopen.className='btn';reopen.textContent='Show greeting';reopen.addEventListener('click',function(){p.classList.remove('minimized');p.setAttribute('aria-expanded','true');$('characterClose').focus()});p.appendChild(reopen);
     $('characterClose').addEventListener('click',function(){modernPortraitClose();if(portraitReturn&&portraitReturn.isConnected)portraitReturn.focus()});
-    document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!p.hidden){e.preventDefault();e.stopImmediatePropagation();modernPortraitClose();return}var t=e.target.closest&&e.target.closest('[data-portrait]');if(t&&(e.key==='Enter'||e.key===' ')){e.preventDefault();modernPortrait(+t.dataset.portrait,'Meet your neighbour',true)}},true);
-    document.addEventListener('click',function(e){var face=e.target.closest&&e.target.closest('[data-portrait]');if(face){e.preventDefault();e.stopPropagation();modernPortrait(+face.dataset.portrait,'Meet your neighbour',true)} });
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!p.hidden){e.preventDefault();e.stopImmediatePropagation();modernPortraitClose();return}var t=e.target.closest&&e.target.closest('[data-portrait]');if(t&&(e.key==='Enter'||e.key===' ')){e.preventDefault();modernPortrait(+t.dataset.portrait,'Meet your cousin',true)}},true);
+    document.addEventListener('click',function(e){var face=e.target.closest&&e.target.closest('[data-portrait]');if(face){e.preventDefault();e.stopPropagation();modernPortrait(+face.dataset.portrait,'Meet your cousin',true)} });
     document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-act], [data-cg]');if(!b||b.disabled)return;var a=b.dataset.act,arg=b.dataset.arg||'',i=null;
       if(a==='meet'&&S.enc)i=S.enc.i;else if(a==='rcall'&&arg!=='group')i=+arg;else if(b.dataset.cg!=null)i=+b.dataset.cg;else if(a==='msg'){var m=(S.msgs||[]).find(function(m){return m.id===+arg.split('|')[0]});if(m)i=m.i}
       if(i!==null){var state=S,oldStatus=m&&m.st;setTimeout(function(){if(S!==state)return;var success=a==='rcall'?calledToday(i):a==='meet'?S.enc&&S.enc.done:b.dataset.cg!=null?S.cong&&S.cong.d===S.day&&S.cong[i]:a==='msg'?m&&m.st!==oldStatus:false;if(success)modernPortrait(i,a==='rcall'?'On the phone':a==='meet'?'Around town':'A message from your neighbour',false)},0)}
@@ -9197,13 +9214,13 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
     var blocked=!!S.over||!!S.pending||!S.flags.diff;
     $('appNav').querySelectorAll('[data-dg-screen]').forEach(function(b){b.disabled=blocked;if(b.dataset.dgScreen===modernScreen)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
     var badge=$('rivalBadge'),unread=S.mode==='rivals'?newMsgs():0;badge.hidden=!unread;badge.textContent=unread;
-    var texts={today:['Make today count.','A little progress goes a long way.'],life:['Your life, in balance.','Money, home and everything you are building.'],rivals:['Meet your neighbours.','Different ambitions. The same twenty-four hours.']},txt=texts[modernScreen]||texts.today;
-    $('screenHeading').innerHTML='<span class="eyebrow">'+(modernScreen==='rivals'?'The people in your town':modernScreen==='life'?'Your progress':'Day '+S.day+' · '+modernEsc(Df().n))+'</span><h1>'+txt[0]+'</h1><p>'+txt[1]+'</p>';
+    var texts={today:['Make today count.','A little progress goes a long way.'],life:['Your life, in balance.','Money, home and everything you are building.'],rivals:S.mode==='rivals'?['Your cousins.','Your mother has opinions about how each of them is doing.']:['Meet your cousins.','Play with AI rivals and they will turn up. Same twenty-four hours for everyone.']},txt=texts[modernScreen]||texts.today;
+    $('screenHeading').innerHTML='<span class="eyebrow">'+(modernScreen==='rivals'?'The family comparison':modernScreen==='life'?'Your progress':'Day '+S.day+' · '+modernEsc(Df().n))+'</span><h1>'+txt[0]+'</h1><p>'+txt[1]+'</p>';
     var j=myJob(),track=Object.keys(TRACKS).find(function(t){return inProgress(t)}),device=handheld()||pcHere();
     $('todayQuick').innerHTML=modernQuick('💼',j?'Go to work':'Find your first job',j?j.rk.r+' · '+money(payInfo().v)+'/shift':'Explore the Employment Office','data-dg-go="'+(j?j.b:'jobs')+'"',false,true)+modernQuick('📚',track?'Continue your course':'Build your skills',track?TRACKS[track].n:'Explore learning pathways','data-dg-go="school"')+modernQuick('🍽',S.fed?'Plan your next meal':'Time for a meal',S.fed?'You have eaten today':'Visit Fast Food or the Supermarket','data-dg-go="fast"')+modernQuick('🏠','Head home',S.homeless?'Find somewhere to live':'Rest, cook and recharge','data-dg-go="'+S.home+'"');
     var goal=Math.max(0,nextGoal()-worth());$('todayFocus').innerHTML='<div><b>'+(goal?money(goal)+' to your next rank':'You reached the top rank')+'</b><span>'+(S.fed?'Meal sorted. Make time to recharge.':'Remember to eat before ending your day.')+'</span></div><span aria-hidden="true">↗</span>';
     $('lifeShortcuts').innerHTML=modernQuick('🏦','Manage your money',device?'Savings and investments':'Visit the Bank in town',device?'data-dg-app="bankapp"':'data-dg-go="bank"');
-    $('rivalIntro').textContent=S.mode==='rivals'?'Open a profile to see personality, relationships and remembered favours.':'You are playing a solo game. Start a game with AI rivals to meet your neighbours.';
+    $('rivalIntro').textContent=S.mode==='rivals'?'Open a profile to see personality, relationships and remembered favours.':'You are playing a solo game. Start a game with AI rivals to meet your cousins.';
     var guide=$('goals').parentNode;guide.hidden=$('goals').hidden;
     if(view){$('shopTitle').innerHTML=modernIcon({jobs:'work',school:'study',bank:'bank',bankapp:'bank',jobsapp:'work',phone:'device',pc:'device',msgsapp:'rivals',callsapp:'rivals',fast:'food',resto:'food',hosp:'health',apt:'life',bung:'life',park:'tree',gym:'gym',elec:'device',comm:'rivals'}[view]||'shop')+' '+modernEsc(NAME[view]);var base=view==='bankapp'?'bank':view==='jobsapp'?'jobs':APPS.indexOf(view)>=0?loc:view,i=Math.max(0,SCENE_KEYS.indexOf(base)),hero=$('interiorHero');hero.style.setProperty('--scene-x',(i%4*100/3)+'%');hero.style.setProperty('--scene-y',(Math.floor(i/4)*100/3)+'%');hero.setAttribute('aria-label',NAME[base]+' illustrated background');hero.querySelector('.interior-caption').textContent=APPS.indexOf(view)>=0?'On your '+(appFrom==='pc'?'computer':'phone'):'Welcome to '+NAME[base];modernPaintBank();modernDecorateRivals()}
     var key=screen+'|'+view;if($('center').dataset.modernKey!==key){$('center').dataset.modernKey=key;$('center').scrollTop=0}

@@ -214,7 +214,7 @@
         if(done[x.g])return;done[x.g]=1;
         var same=a.filter(function(y){return y.g===x.g&&y.s});if(same.length===1){h+=line(x);return}
         var r=S.rivals&&S.rivals[+x.g.slice(1)],rvn=same.filter(function(y){return y.rv!=null})[0];
-        h+=line({l:same[0].l,t:'🏁 '+(r?r.ic+' '+r.name:'A rival')+': '+same.map(function(y){return y.s.replace(/\.$/,'')}).join('; ')+'.',rv:rvn?rvn.rv:null,c:c,k:''});
+        h+=line({l:same[0].l,t:'🏁 '+(r?r.ic+' Cousin '+r.name:'A cousin')+': '+same.map(function(y){return y.s.replace(/\.$/,'')}).join('; ')+'.',rv:rvn?rvn.rv:null,c:c,k:''});
       });
     });
     mn.forEach(function(x){delete x._i});

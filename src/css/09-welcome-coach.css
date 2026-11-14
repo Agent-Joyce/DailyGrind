@@ -1,5 +1,5 @@
 /* ===== Welcome screen and the guided first day (CHANGELOG 107) ===== */
-.welcome-card{max-width:460px}.welcome-card h2{font-size:1.9rem;margin-bottom:4px}.wl-pitch{color:var(--ink);margin:0 0 14px}
+.welcome-card{max-width:460px}.welcome-card h2{font-size:1.9rem;margin-bottom:4px}.wl-tag{margin:0 0 8px;font-weight:600;color:var(--ink)}.wl-pitch{color:var(--ink);margin:0 0 14px}
 .wl-start{display:flex;flex-direction:column;gap:10px}
 .wl-start .wl-go{display:flex;flex-direction:column;gap:3px;text-align:left;padding:14px 16px;min-height:64px}
 .wl-start .wl-go b{font-size:1.08rem}.wl-start .wl-go small{font-weight:600;font-size:.78rem;opacity:.88}

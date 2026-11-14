@@ -782,7 +782,7 @@
     var hr=I.byHealth.slice().sort(function(a,b){return b.healthAtLeast-a.healthAtLeast}),hf=1;for(var k=0;k<hr.length;k++)if(r.health>=hr[k].healthAtLeast){hf=hr[k].x||hr[k].chanceX||1;break}
     return Math.min(I.maxChance,Math.max(0,base*I.cutForEveryone-I.minusForEveryone)*hf*Df().ill*trendIll());
   }
-  function rivalNote(r,t,txt){r.log.unshift('Day '+(S.day-1)+': '+txt);r.log=r.log.slice(0,8);if(t)S.notes.push({l:'rem',t:'🏁 '+r.ic+' '+r.name+' '+txt,rv:t===2?S.rivals.indexOf(r):null,c:'news',g:'r'+S.rivals.indexOf(r),s:txt})}  /* t: 0 log only, 1 news, 2 news you can congratulate them on */
+  function rivalNote(r,t,txt){r.log.unshift('Day '+(S.day-1)+': '+txt);r.log=r.log.slice(0,8);if(t)S.notes.push({l:'rem',t:'🏁 '+r.ic+' Cousin '+r.name+' '+txt,rv:t===2?S.rivals.indexOf(r):null,c:'news',g:'r'+S.rivals.indexOf(r),s:txt})}  /* t: 0 log only, 1 news, 2 news you can congratulate them on */
   /* a rival's slip today, from its state (CONFIG.rivals.mistakes): tired skips class, broke skips a meal, unhappy skips a shift,
      otherwise it skips its fun; the chance is the level's mistakeChance at most, scaled by how strained it is. One rival die. */
   function rivalStrain(r){
@@ -1635,15 +1635,29 @@
     return P;
   }
   function ordinal(n){return n+(n===1?'st':n===2?'nd':n===3?'rd':'th')}
-  /* the end screen's standings, category table and "best at" badges */
+  /* the end screen, as the reunion dinner: the aunties read out each category, then the standings and the full table.
+     Text only: it reads lifeScore() and rolls no dice. */
+  function auntieLines(P,ks,me){
+    var verdict={1:'Somebody tell your mother.',2:'Second. Not first, but not bad.',3:'Third. We will not mention it again.'};
+    return ks.map(function(k){
+      var C=LIFE_CATS[k],mine=me.cats[k],top=P.filter(function(p){return p.cats[k].place===1}),others=top.filter(function(p){return !p.me});
+      var say=mine.place===1?'In '+C.n+', you came first'+(others.length?', level with '+others.map(function(p){return 'Cousin '+p.name}).join(' and '):'')+' ('+mine.txt+'). '+verdict[1]
+        :'In '+C.n+', '+others.map(function(p){return 'Cousin '+p.name}).join(' and ')+' came first ('+top[0].cats[k].txt+'). You came '+ordinal(mine.place)+' ('+mine.txt+'). '+(verdict[mine.place]||'Hmm.');
+      return '<li>'+C.ic+' <b>Auntie reads out '+C.n+':</b> “'+say+'”</li>';
+    }).join('');
+  }
+  /* the end screen's standings, category table and the aunties' readout */
   function lifeTable(){
     var P=lifeScore(),SC=CONFIG.rivals.scoring,ks=Object.keys(SC.categories).filter(function(k){return SC.categories[k].on&&LIFE_CATS[k]}),me=P.filter(function(p){return p.me})[0];
-    var badges=ks.map(function(k){var w=P.filter(function(p){return p.cats[k].place===1});return LIFE_CATS[k].ic+' '+LIFE_CATS[k].n+': '+w.map(function(p){return p.me?'<b>you</b>':p.name}).join(' & ')}).join(' · ');
-    return '<div class="standings"><h3>🏁 Life Score: you finished '+ordinal(me.place)+' of '+P.length+'</h3>'+(me.place===1?'<div class="topscore">🏆 Top of the town!</div>':'')+
-      '<ol>'+P.map(function(p){return '<li'+(p.me?' class="me"':'')+'>'+p.ic+' '+p.name+(p.r?' <small>('+p.r.diff+(p.out?', out on day '+p.out.day:'')+')</small>':'')+': <b>'+p.pts+' points</b> · '+money(p.worth)+'</li>'}).join('')+'</ol>'+
+    return '<div class="standings reunion"><h3>🏮 The reunion dinner: you finished '+ordinal(me.place)+' of '+P.length+'</h3>'+
+      '<p class="sub">The whole family is round the table. Auntie clears her throat and reads out how each of you did.</p>'+
+      '<ul class="auntie">'+auntieLines(P,ks,me)+'</ul>'+
+      (me.place===1?'<div class="topscore">🏆 Your mother will be telling this story for years.</div>':'')+
+      '<h3>The scoreboard</h3>'+
+      '<ol>'+P.map(function(p){return '<li'+(p.me?' class="me"':'')+'>'+p.ic+' '+(p.me?'':'Cousin ')+p.name+(p.r?' <small>('+p.r.diff+(p.out?', out on day '+p.out.day:'')+')</small>':'')+': <b>'+p.pts+' points</b> · '+money(p.worth)+'</li>'}).join('')+'</ol>'+
       '<div class="lifetab-w"><table class="lifetab"><tr><th></th>'+P.map(function(p){return '<th'+(p.me?' class="me"':'')+'>'+p.ic+' '+(p.me?'You':p.name)+'</th>'}).join('')+'</tr>'+
       ks.map(function(k){var c=SC.categories[k];return '<tr><td>'+LIFE_CATS[k].ic+' '+LIFE_CATS[k].n+' <small>×'+c.weight+'</small></td>'+P.map(function(p){var x=p.cats[k];return '<td class="'+(x.place===1?'win ':'')+(p.me?'me':'')+'"><b>'+ordinal(x.place)+'</b> <small>+'+x.pts+'</small><br><small>'+x.txt+'</small></td>'}).join('')+'</tr>'}).join('')+
-      '</table></div><p class="sub">Best at: '+badges+'</p></div>';
+      '</table></div></div>';
   }
   /* ---------- relationships with rivals (CONFIG.rivals.social) ----------
     r.rel runs from −100 (enemy) to +100 (friend). Building it always costs time (chat, hello, calls, congratulating);

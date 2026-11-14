@@ -197,3 +197,5 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 .room{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}.room.empty{font-size:.82rem;color:var(--muted)}
 .thing{display:flex;flex-direction:column;align-items:center;width:78px;padding:5px 3px;border:2px solid var(--line);border-radius:10px;background:var(--surface);text-align:center}
 .thing span{font-size:1.5rem;line-height:1}.thing small{font-size:.64rem;line-height:1.1;margin-top:2px}.thing.brk{border-color:var(--red);opacity:.65}
+
+.reunion .auntie{list-style:none;margin:6px 0 10px;padding:0}.reunion .auntie li{margin:5px 0;line-height:1.35}

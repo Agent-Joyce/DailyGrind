@@ -1998,3 +1998,16 @@ Base: §111. Rival games only.
 - Overnight harness, 25 games each: hungry rival-days with savings or investments over $30 went from 1 to 0 (expert) and 0 to 0 (medium); the two left in mixed games are deliberate "skipped a meal to save money" slips (§111). No new dice.
 
 **Simulations after §109–§110, with the bot's clothes reserve** (`tools/qa/sim.js`, commit `37fdc37`: the careful bot keeps the next outfit's price back from course fees and replaces clothes on their last day, as rivals do since §108). Report: [QA_Sim_2026-11-15_bot-clothes-rival-strategies.md](docs/QA_Sim_2026-11-15_bot-clothes-rival-strategies.md) ([raw](docs/QA_Sim_2026-11-15_bot-clothes-rival-strategies.json)), build `6990c46` against the Package A results on `69abb92`. The bot no longer drops out (8 of 30 rival games before, 0 now), wins 1–2 of 10 at each level and places 2nd at the median; rivals end in 17–19 distinct jobs per level (9–13 before); in mixed games expert (90 points) > medium (69) > easy (42). The one rival that left the race (hunger with money in the bank) is fixed above.
+
+## 113. The cousins hook (text only)
+
+No rule, CONFIG, save or dice change. In the game's story the AI rivals are the cousins and classmates your mother compares you to.
+
+- **Tagline:** "Beat your cousins before the reunion dinner." under the title on the welcome screen, and in place of "Your town. Your next chapter." in the app header.
+- **Welcome and Custom drawer:** the rival-game buttons now say "three cousins, a scoreboard for the reunion dinner".
+- **Rivals tab:** in a rival game the heading is "Your cousins." with "Your mother has opinions about how each of them is doing."; the eyebrow is "The family comparison". A single game says "Meet your cousins." and explains how to get them. The portrait card says "Meet your cousin".
+- **Overview:** "Town leaderboard" is now "Cousins' scoreboard".
+- **Rival news:** morning notes and the start-of-game log call them "Cousin <name>" (`rivalNote`, `morningHtml`; only the text prefix changed, not the rival logic).
+- **Ending (rival games):** `lifeTable()` is now "The reunion dinner". An Auntie reads out each Life Score category ("In Wealth, Cousin Leo came first ($…). You came 2nd…"), then the scoreboard and the full table as before. Wording depends only on `lifeScore()`; it rolls no dice. The ending title (Bankrupt, Time's up, …) is unchanged, so the simulation bots still read it. Single games keep their old end screen.
+- Added `.wl-tag` and `.reunion .auntie` styles; a case in `tools/qa/check-ux.js`.
+- The rival names themselves (Maya, Leo, Sam) change in 18g.
