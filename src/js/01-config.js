@@ -559,7 +559,7 @@
         dayOverheadMinutes: walking and errands in a rival's day, so it sleeps about as long as a busy player.
         illMix: when a rival falls ill (your nightly chance), the share of each illness; a rival who can afford it pays for treatment.
         names, icons: the rivals, in order.
-        levels: how each level plays. mistakeChance = chance a day goes wrong (skips a meal, studies, a shift, clothes or fun);
+        levels: how each level plays. mistakeChance = the most a day can go wrong (how it goes wrong follows the rival's state: mistakes below);
           shifts = shifts a day (a fraction: 2.5 = a third shift on about half of days); plans = aims at the best job reachable in the days left and studies for it; studyHours = most
           hours of lessons a day; studyChance = chance it studies on a day; applyTries = job interviews a day; usesOutlook = judges
           jobs by today's pay (the industry storyline included) rather than base pay; bank = none, savings or invest (savings and
@@ -607,7 +607,12 @@
         above the average it needs to pass (or keep); education adds studyHours; health takes the gymClass at the Gym (CONFIG.gym.classes); rep adds repPactChance to the
         nightly chance of a pact between rivals (CONFIG.rivals.politics.rivalPacts) and starts it. Wealth and career are its normal play. */
       aims:{levels:['medium','expert'], close:{happiness:6, health:1, education:1, rep:6}, defendFrom:0.8,
-        moraleLift:15, studyHours:1.5, gymClass:'spin', repPactChance:0.15},
+        moraleLift:15, studyHours:1.5, gymClass:'spin', repPactChance:0.15,
+        newsGap:3},  // a rival's aim (r.aim, shown on its profile) is in the morning news when it changes, at most once in newsGap days
+      /* A rival's slips (the level's mistakeChance is the most it can be): the chance is mistakeChance x (floor + (1 − floor) x strain),
+        strain being the worst of: tired (energy from tired[0] down to tired[1]: skips class), broke (cash and savings under brokeRents
+        rents: skips a meal) and unhappy (happiness from unhappy[0] down to unhappy[1]: skips a shift). With no strain it skips its fun. */
+      mistakes:{floor:0.5, tired:[55,20], brokeRents:2, unhappy:[45,15]},
       /* Meaningful deeds change remembered trust, independently of relationship points. Stored history is bounded.
         A help credit can be returned as one job introduction, no earlier than the next day. */
       memory:{maxEntries:5,maxTrust:3,maxOwed:3,lendPerTrust:0.04,lendTrust:1,refuseTrust:-1,repayTrust:1,defaultTrust:-2,helpTrust:1},

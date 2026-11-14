@@ -702,7 +702,7 @@
     f.entries.unshift({key:key,day:S.day});f.entries=f.entries.slice(0,M.maxEntries);return true;
   }
   function memoryLine(r){var f=r.favours,e=f&&f.entries&&f.entries[0];return e?'“'+RIVAL_MEMORIES[e.key]+'”':''}
-  function memoryProfile(r){var P=personality(r),f=r.favours,A=archetype(r),h=(A?'<li>'+archetypeLabel(r)+': '+A.about+'</li>':'')+'<li>'+personalityLabel(r)+': '+P.about+'</li>';
+  function memoryProfile(r){var P=personality(r),f=r.favours,A=archetype(r),h=(r.aim&&!r.out?'<li>🧭 Aim: '+r.aim+'</li>':'')+(A?'<li>'+archetypeLabel(r)+': '+A.about+'</li>':'')+'<li>'+personalityLabel(r)+': '+P.about+'</li>';
     var ri=S.rivals.indexOf(r);Object.keys(S.rivalRelations||{}).forEach(function(key){var ids=key.split('|').map(Number);if(ids.indexOf(ri)<0)return;var o=S.rivals[ids[0]===ri?ids[1]:ids[0]];if(o)h+='<li>Trust with '+o.name+': '+sg(S.rivalRelations[key])+'</li>'});
     h+='<li>'+loanReliability(r)+'</li>';
     if(f&&f.owed)h+='<li>🤝 Remembers '+f.owed+' favour'+(f.owed===1?'':'s')+' to return. A job introduction may come on a later morning while you are on speaking terms.</li>';
@@ -783,9 +783,22 @@
     return Math.min(I.maxChance,Math.max(0,base*I.cutForEveryone-I.minusForEveryone)*hf*Df().ill*trendIll());
   }
   function rivalNote(r,t,txt){r.log.unshift('Day '+(S.day-1)+': '+txt);r.log=r.log.slice(0,8);if(t)S.notes.push({l:'rem',t:'🏁 '+r.ic+' '+r.name+' '+txt,rv:t===2?S.rivals.indexOf(r):null,c:'news',g:'r'+S.rivals.indexOf(r),s:txt})}  /* t: 0 log only, 1 news, 2 news you can congratulate them on */
+  /* a rival's slip today, from its state (CONFIG.rivals.mistakes): tired skips class, broke skips a meal, unhappy skips a shift,
+     otherwise it skips its fun; the chance is the level's mistakeChance at most, scaled by how strained it is. One rival die. */
+  function rivalStrain(r){
+    var M=CONFIG.rivals.mistakes,c=function(x){return Math.max(0,Math.min(1,x))},money=r.cash+r.bank,rent=HOUSE[r.home||'apt'].rent;
+    var s={study:c((M.tired[0]-r.energy)/(M.tired[0]-M.tired[1])),meal:c(1-money/(rent*M.brokeRents)),lazy:c((M.unhappy[0]-r.happy)/(M.unhappy[0]-M.unhappy[1]))},k='fun',v=0;
+    ['study','meal','lazy'].forEach(function(x){if(s[x]>v){v=s[x];k=x}});return {k:k,v:v};
+  }
+  function rivalMistake(r,K){
+    var M=CONFIG.rivals.mistakes,st=rivalStrain(r);
+    if(rrand()>=K.mistakeChance*(M.floor+(1-M.floor)*st.v))return '';
+    rivalNote(r,0,{study:'skipped class: too tired.',meal:'skipped a meal to save money.',lazy:'skipped a shift: too fed up.',fun:'let the day get away and had no time for fun.'}[st.k]);
+    return st.k;
+  }
   /* one rival's day (the day that has just ended) */
   function rivalDay(r){
-    var K=rivalSkill(r),AM=CONFIG.rivals.aims,FDc=CONFIG.food,day=S.day-1,used=CONFIG.rivals.dayOverheadMinutes||0,mistake=rrand()<K.mistakeChance?['meal','study','lazy','clothes','fun'][Math.floor(rrand()*5)]:'',left=gameLen()-day;
+    var K=rivalSkill(r),AM=CONFIG.rivals.aims,FDc=CONFIG.food,day=S.day-1,used=CONFIG.rivals.dayOverheadMinutes||0,mistake=rivalMistake(r,K),left=gameLen()-day;
     var clamp100=function(v){return Math.max(0,Math.min(100,v))};
     if(r.focus&&AM){K=Object.assign({},K);if(r.focus==='happiness')K.moraleAim=Math.max(K.moraleAim,r.aimHappy||0);if(r.focus==='education')K.studyHours+=AM.studyHours}  /* today's Life Score focus (aimTick) */
     /* eat */
@@ -1735,8 +1748,20 @@
         if(down!=null&&down<=lim){var keep=c.weight*((pts[pl-1]||0)-(pts[pl]||0))/Math.max(0.25,down/lim);if(!best||keep>best.g)best={k:k,g:keep,how:'defend',pl:pl}}});
       if(best&&best.k==='happiness'){var hx=st.happiness;r.aimHappy=Math.min(100,Math.round(hx.v+(best.how==='chase'?hx.ahead:0)+A.moraleLift))}  /* a day above the average it needs to pass (or keep) */
       if(best){r.focus=best.k;r.aimWhy=best.how;r.aim=(best.how==='chase'?'chasing '+ordinal(best.pl-1)+' place in ':'defending '+ordinal(best.pl)+' place in ')+LIFE_CATS[best.k].n.toLowerCase()}
-      else{var tg=r.target&&CAREERS[r.target.c]&&CAREERS[r.target.c].ranks[r.target.i];r.aim=tg?'working towards '+tg.r:'working and saving'}
+      else r.aim=rivalPlanAim(r);
     });
+    S.rivals.forEach(function(r){if(r.out)return;if(A.levels.indexOf(r.diff)<0){r.focus=null;r.aim=rivalPlanAim(r)}
+      /* tell the town when an aim changes, at most once every newsGap days a rival (not the first one) */
+      if(r.aim!==r.aimSaid){if(r.aimSaid&&!(S.day-1-(r.aimDay||-99)<A.newsGap)){rivalNote(r,1,'is '+r.aim+'.');S.notes[S.notes.length-1].k='aim'+S.rivals.indexOf(r)}
+        if(!r.aimSaid||!(S.day-1-(r.aimDay||-99)<A.newsGap)){r.aimSaid=r.aim;r.aimDay=S.day-1}}});
+  }
+  /* the plan in words when no Life Score place is in reach: saving for or studying for its next qualification, or working */
+  function rivalPlanAim(r){
+    var tg=r.target&&CAREERS[r.target.c]&&CAREERS[r.target.c].ranks[r.target.i];
+    if(r.study&&TRACKS[r.study.t]){var T=TRACKS[r.study.t];return 'studying for the '+T.n+' '+T.lv[Math.min(T.lv.length-1,r.study.lv)]}
+    var q=tg&&(tg.q||[]).filter(function(x){return rivalLv(r,x[0])<x[1]})[0];
+    if(q){var T2=TRACKS[q[0]],lv=rivalLv(r,q[0]),fee=qualFee(q[0],r.edu[q[0]]||0);return (r.cash+r.bank<fee+HOUSE.apt.rent+80?'saving for the ':'about to start the ')+T2.n+' '+T2.lv[lv]}
+    var j=rivalJob(r);return tg&&!(j&&j.c===r.target.c&&j.i>=r.target.i)?'working towards '+tg.r:j?'working as '+(/^[AEIOU]/.test(j.rk.r)?'an ':'a ')+j.rk.r:'looking for work';
   }
   function rivalTick(){
     if(S.mode!=='rivals'||!S.rivals)return;

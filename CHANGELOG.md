@@ -1971,3 +1971,21 @@ Base: §109. Rival games only; no new dice (single games unchanged).
 - Expert now places above medium again in mixed games, which the §109 archetypes had reversed.
 
 **QA:** `check-social-rules.js` has a new case (a close happiness place becomes the focus with the right phrase and aim, a far one does not, easy rivals have no focus, and `aimTick()` rolls no dice; 60 in all). Docs: `CODE_MAP.md`, `docs/Configuration_Social_Update.md`, `docs/Daily Grind Config Guide.docx` (new `aims` row).
+
+## 111. Explainable rivals: what each rival is aiming for, and slips that follow its state (Package B, item 24)
+
+Base: §110. Rival games only; single games unchanged.
+
+**Aims**
+
+- Every rival now has an aim in words (`r.aim`, set each night by `aimTick()`). A medium or expert rival with a Life Score place in reach says what it is chasing or defending (§110). Otherwise, and for easy rivals, `rivalPlanAim()` gives the plan: "studying for the Medicine Certificate", "saving for the Creative Media Degree" (the next course fee is more than its cash and savings after the rent), "about to start the Logistics Certificate", "working towards Junior Doctor", "working as a Sales Clerk" or "looking for work".
+- The aim is the first line of the rival's profile (🧭 Aim, in `memoryProfile()`, which the Rivals tab card and the Overview profile show).
+- A change of aim goes into the morning news ("🏁 👩 Maya is saving for the Creative Media Degree."), at most once in `aims.newsGap` (3) days for each rival and never for the first aim of the game. In four seeded mixed games this was 54 lines over 116 mornings, under one a morning; the lines carry topic `aim<i>` so the morning pop-up keeps one per rival.
+
+**Slips follow state** (new `CONFIG.rivals.mistakes`; `rivalStrain()`, `rivalMistake()`)
+
+- Before, a rival had a flat `mistakeChance` of a bad day and then picked one of five slips at random (a skipped meal, class, shift, clothes or fun). Now the level's `mistakeChance` is the most it can be: the chance is `mistakeChance × (floor + (1 − floor) × strain)`, and the slip is the strain behind it. Tired (energy from 55 down to 20) skips class; broke (cash and savings under two rents) skips a meal; unhappy (happiness from 45 down to 15) skips a shift. With no strain the slip is skipping its fun. Skipping clothes is no longer a slip (it led into the no-clothes spiral of §108).
+- The rival's log says why ("skipped class: too tired."). One rival die a day for slips, where there were one or two.
+- Effect on difficulty: with `floor` 0.5, easy rivals slip on about 17% of days instead of 25% (four seeded mixed games), medium about 4% and expert about 1% (their `mistakeChance` is 3% and 2%; few slips either way). Part of the held level retune.
+
+**QA:** `check-social-rules.js` has a new case (the slip follows the strain, never exceeds `mistakeChance`, logs its reason; the plan reads as saving, about to start or studying; 61 in all). Docs: `CODE_MAP.md`, `docs/Configuration_Social_Update.md`, `docs/Daily Grind Config Guide.docx` (new `mistakes` row; `aims.newsGap`; the levels row).
