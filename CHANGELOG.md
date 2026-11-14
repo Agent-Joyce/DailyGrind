@@ -1877,3 +1877,18 @@ No rule or CONFIG change. Everything here is presentation: it spends no time or 
 - New `tools/qa/check-ux.js` (the welcome screen, both start buttons, the whole guided day by real clicks, skip and reload, header height and overlaps, button levels, settings, count-up and day sweep with motion on and off, phone toasts): 21 checks over two widths. `check-daily-ui.js` updated for the header and button levels. `run-all-checks.js` now runs ten scripts; all pass.
 - `run-uicheck.js`, `run-suite.js` and `sim.js` open the Custom game drawer and untick the guide before starting; the exact clicks they make were verified on the new screen.
 - **Not run:** the full UI check and the bot simulations. No real phone was used; phone results are Chromium at 390×844.
+
+## 108. Package A: the UI check and simulations after §104–107, and the fixes they found
+
+Base: `5ac693b` (§107 plus the roadmap). First full UI check and bot simulations since §103.
+
+**Fixes**
+
+- **Planning rivals starved after paying a course fee.** A medium or expert rival paid a Medicine module fee keeping only the rent plus $80, then its clothes ran out the next morning: a new set costs $100, a rival without clothes cannot work or take delivery runs, and it went bankrupt or was hospitalised for hunger around day 9–12. This happened to about a third of medium and expert rivals in the first simulations. Now `rivalDay()` replaces an outfit on its last day when the rent stays covered, and a course fee keeps back the price of the next outfit when the current one has two days or fewer left (`rivalDressDays()`). Rival dice only; single games are unchanged.
+- **Script error from the bank screen.** Pressing Deposit or Withdraw on a product card that is not on show (the random bot can; a person cannot) called the amount painter on a card with no amount controls (`modernSetAmount()` now skips such a card).
+- **Buttons off the phone screen.** The four answers to a broken promise (Forgive, Challenge, Request, Terminate) and the three for a contract session due today now wrap on a phone (`.btnrow`).
+
+**QA tools**
+
+- `tools/qa/check-rival-careers.js` fails when a planning rival goes two mornings running without clothes (32 such mornings on the base build, 0 now).
+- `tools/qa/uicheck.js`: five new situations (a delivery run in the Gigs app, the Creator app with followers, tutoring with a qualification, a Study Buddies contract with a session due and a competing shift, a broken promise). The button-colour rule now accepts the three button levels of §107 (it flagged every secondary and risky button, 3,837 notes) and reads the colour the button settles on, not mid-fade. The Gigs and Creator apps are treated as screens, not places, between presses.

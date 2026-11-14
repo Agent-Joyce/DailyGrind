@@ -97,7 +97,8 @@
       if(!visible(el)||el.closest('[hidden]'))return;var r=el.getBoundingClientRect();
       if(r.right>W+1||r.left<-1)note('OVERFLOW',where,'"'+(el.textContent||'').trim().slice(0,40)+'" goes off the screen');
       var box=el.closest('.pbox,.grp,.card,.cert,.evcard');if(box&&box!==el){var b=box.getBoundingClientRect();if(r.right>b.right+1||r.left<b.left-1)note('OVERFLOW',where,'"'+(el.textContent||'').trim().slice(0,40)+'" sticks out of its card')}
-      if(el.tagName==='BUTTON'&&!el.disabled&&!el.classList.contains('tile')&&document.getElementById('appTop')){var probe=document.createElement('span');probe.style.background='var(--teal)';document.body.appendChild(probe);var teal=getComputedStyle(probe).backgroundColor;probe.remove();if(getComputedStyle(el).backgroundColor!==teal)note('BUTTON COLOR',where,'clickable button is not teal: '+el.textContent.trim().slice(0,40))}
+      if(el.tagName==='BUTTON'&&!el.disabled&&!el.classList.contains('tile')&&document.getElementById('appTop')){var tr=el.style.transition;el.style.transition='none';var bg=getComputedStyle(el).backgroundColor;el.style.transition=tr;  /* .btn fades its background for 0.15s: read the colour it settles on */
+        if(levelColours().indexOf(bg)<0)note('BUTTON COLOR',where,'clickable button is none of the three button levels (main, secondary, risky): '+el.textContent.trim().slice(0,40))}
       if(el.tagName==='BUTTON'&&el.scrollWidth>el.clientWidth+2&&getComputedStyle(el).overflow!=='visible')note('CLIPPED',where,'button "'+el.textContent.trim().slice(0,40)+'"');
     });
     [].forEach.call(root.querySelectorAll('.arow'),function(row){
@@ -107,6 +108,9 @@
         bs.slice(i+1).forEach(function(c){if(hit(rb,c.getBoundingClientRect()))note('OVERLAP',where,'buttons "'+b.textContent.trim().slice(0,20)+'" and "'+c.textContent.trim().slice(0,20)+'" overlap')})});
     });
   }
+  /* the three button levels of CHANGELOG 107 (src/css/08-buttons.css): main teal, secondary, risky (danger, or warn for sleeping outside) */
+  var levelCache=null;
+  function levelColours(){if(levelCache)return levelCache;levelCache=['--teal','--btn2-bg','--danger','--warn-bg'].map(function(v){var p=document.createElement('span');p.style.background='var('+v+')';document.body.appendChild(p);var c=getComputedStyle(p).backgroundColor;p.remove();return c});return levelCache}
   function popupFits(where){
     [].forEach.call(document.querySelectorAll('.over.show'),function(o){var c=o.firstElementChild;if(!c)return;var r=c.getBoundingClientRect();
       if(r.width>innerWidth+1)note('OVERFLOW',where,'pop-up is wider than the screen');
@@ -262,7 +266,7 @@
       mod:function(S){S.items.phone=1;delete S.broken.phone;S.ill=null;S.energy=60;S.workMin=0;S.gig={stars:4.2,d:S.day,runs:1,total:6}}},
     {name:'the Creator app with followers (a post, tonight’s sponsors)',bld:'creatorapp',need:['post'],
       mod:function(S){S.items.phone=1;delete S.broken.phone;S.ill=null;S.workMin=0;S.creator={f:1250,d:S.day,posts:0,last:S.day-1,earned:84}}},
-    {name:'tutoring with a completed qualification (School)',bld:'school',need:['tutor','class'],
+    {name:'tutoring with a completed qualification (School)',bld:'school',need:['tutor'],
       mod:function(S){var t=Object.keys(G.TRACKS)[0];S.edu[t]=Math.max(S.edu[t]||0,G.TRACKS[t].c[0]);S.tutorDay=null;S.ill=null;S.workMin=0}},
     {name:'a typed contract (Study Buddies) with a session due today and a competing shift',bld:'msgsapp',need:['cdo'],
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.townMood='competitive';S.rpacts=[];S.asked=null;

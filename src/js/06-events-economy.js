@@ -555,7 +555,7 @@
   }
   function promiseRows(){
     var p=S.pact,e=p&&p.problem;if(!e)return '';var r=S.rivals[p.i],C=CONFIG.rivals.contracts,affordable=r&&r.cash-G(PX().pact.reserve)>=G(C.compensation);
-    return arow('📜 '+e.text,chip('','Respond by day '+e.expires),btn('promise','forgive','Forgive')+btn('promise','challenge','Challenge',1)+btn('promise','compensate','Request '+money(G(C.compensation)),1,!affordable)+btn('promise','terminate','Terminate',1),e.kind==='study'?'Notice: '+(e.notice?'given in advance; no time lost':'late cancellation; scheduled time may be wasted')+'. Relationship and circumstances affect your response.':'Affordable compensation comes from the partner; termination splits any pot once.');
+    return arow('📜 '+e.text,chip('','Respond by day '+e.expires),'<div class="btnrow">'+btn('promise','forgive','Forgive')+btn('promise','challenge','Challenge',1)+btn('promise','compensate','Request '+money(G(C.compensation)),1,!affordable)+btn('promise','terminate','Terminate',1)+'</div>',e.kind==='study'?'Notice: '+(e.notice?'given in advance; no time lost':'late cancellation; scheduled time may be wasted')+'. Relationship and circumstances affect your response.':'Affordable compensation comes from the partner; termination splits any pot once.');
   }
   function resolvePromise(k,auto){
     var p=S.pact,e=p&&p.problem,r=p&&S.rivals[p.i],C=CONFIG.rivals.contracts;if(!e||!r||(!auto&&S.day>e.expires))return;
@@ -594,7 +594,7 @@
     if(p.kind==='loyalty')h+=arow(loyaltyNoticeText(),' ',btn('cdo','notice','Give notice',1,p.noticeDay!=null));
     if(p.problem)h+=promiseRows();
     if(p.session){var k=p.kind,conf=p.session.conflict,note=conf==='shift'?'A better-paying '+money(G(CONFIG.rivals.contracts.conflictShift))+' shift conflicts.':conf==='social'?'A social invitation conflicts.':conf==='fatigue'?'You are tired; rest competes with this session.':'';
-      h+=arow(k==='study'?'Scheduled joint study':k==='emergency'?'Genuine emergency: help requested':'Honour household priority and contribution',chip('','Due today'),btn('cdo','honour','Honour')+btn('cdo','miss','Miss',1)+(k==='study'?btn('cdo','reschedule','Ask to reschedule',1,p.reschedules>=t.study.maxReschedules):''),' '+note);
+      h+=arow(k==='study'?'Scheduled joint study':k==='emergency'?'Genuine emergency: help requested':'Honour household priority and contribution',chip('','Due today'),'<div class="btnrow">'+btn('cdo','honour','Honour')+btn('cdo','miss','Miss',1)+(k==='study'?btn('cdo','reschedule','Ask to reschedule',1,p.reschedules>=t.study.maxReschedules):'')+'</div>',' '+note);
       if(conf)h+=arow('Take the competing opportunity',chip('','Counts as a missed session'),btn('cdo','conflict','Choose '+conf,1));
     }
     h+=arow('End this pact',chip('','Any pot split once'),btn('cdo','end','End pact',1),'Early withdrawal: relationship '+sg(t.missRel)+(p.kind==='wealth'?(p.reachedThem!=null&&p.reachedMe==null?'. '+(r?r.name:'Your partner')+' has already reached the target: leaving now gives them the pot.':', stakes refunded. Once your partner reaches the target first, leaving gives them the pot.'):'.'));return h;
@@ -732,6 +732,7 @@
   /* the job worth aiming for: the best pay x days it could be worked, among jobs whose missing qualifications fit in the days left */
   function rivalModHours(t,n){return lesCount(t,n)*lesHours(t,n)}
   /* clothes: what a rival is dressed for, and the stricter dress its best open, better-paid, qualified role needs ('' = none) */
+  function rivalDressDays(r,d){var c=r.clothes||{};return Math.max(c.suit||0,d==='suit'?0:c.smart||0,d==='casual'?c.casual||0:0)}  /* days left on the best outfit that meets dress d */
   function rivalDressed(r,d){var c=r.clothes||{};return d==='suit'?c.suit>0:d==='smart'?(c.smart>0||c.suit>0):(c.casual>0||c.smart>0||c.suit>0)}
   function rivalDressUp(r,j){
     var best=null;
@@ -801,7 +802,9 @@
     /* clothes for the job (or the one aimed for) */
     var j=rivalJob(r),want=(j&&j.rk.dress)||'casual';
     var dressed=function(d){return rivalDressed(r,d)};
-    if(mistake!=='clothes'&&!(r.clothes[want]>0||(want!=='suit'&&r.clothes.suit>0)||(want==='casual'&&r.clothes.smart>0))){var cp=G(WEAR[want].p);if(r.cash<cp&&r.bank>0){var w=Math.min(r.bank,cp-r.cash+20);r.bank-=w;r.cash+=w}if(r.cash>=cp){r.cash-=cp;r.clothes[want]=WEAR[want].w;used+=30}}
+    /* replace the outfit when it has run out, or on its last day while the rent stays covered (a rival with no clothes cannot work) */
+    var wd=rivalDressDays(r,want),cp=G(WEAR[want].p);
+    if(mistake!=='clothes'&&(wd<=0||(wd<=1&&r.cash+r.bank-cp>=HOUSE.apt.rent))){if(r.cash<cp&&r.bank>0){var w=Math.min(r.bank,cp-r.cash+20);r.bank-=w;r.cash+=w}if(r.cash>=cp){r.cash-=cp;r.clothes[want]=WEAR[want].w;used+=30}}
     /* dress for the best better-paid role it already qualifies for, so a dress code never locks a rival out of a job
        (bought with the rent still covered; no dice) */
     var up=rivalDressUp(r,j);
@@ -850,7 +853,7 @@
     if(!r.study&&need.length&&r.pausedStudy&&r.pausedStudy[need[0][0]]){r.study=r.pausedStudy[need[0][0]];delete r.pausedStudy[need[0][0]]}
     if(!r.ill&&mistake!=='study'&&!sabClass(r,day)&&(need.length||r.study)&&rrand()<K.studyChance){
       var t=r.study?r.study.t:need[0][0];
-      if(!r.study){var n0=r.edu[t]||0,fee=qualFee(t,n0),keep=HOUSE.apt.rent+80;if(r.cash-fee<keep&&r.bank>0){var w2=Math.min(r.bank,keep+fee-r.cash);r.bank-=w2;r.cash+=w2}
+      if(!r.study){var n0=r.edu[t]||0,fee=qualFee(t,n0),keep=HOUSE.apt.rent+80+(rivalDressDays(r,want)<=2?G(WEAR[want].p):0);  /* a fee never spends the money for the next outfit */if(r.cash-fee<keep&&r.bank>0){var w2=Math.min(r.bank,keep+fee-r.cash);r.bank-=w2;r.cash+=w2}
         if(r.cash-fee>=keep){r.cash-=fee;r.study={t:t,lv:levelOf(t,n0),h:0}}}
       if(r.study){var hrs=Math.min(K.studyHours,(CONFIG.burnout.loadMinutes-load)/60,Math.max(0,(r.energy-25)/Math.abs(CONFIG.education.lessonEnergyPerHour||5)));
         if(hrs>=0.5){r.wentSchool=1;var lc=lessonCost(hrs);r.energy=clamp100(r.energy+lc.en);r.happy=clamp100(r.happy+lc.hap);r.health=clamp100(r.health+lc.hp);r.know=clamp100(r.know+Math.round(hrs));used+=hrs*60;

@@ -563,6 +563,7 @@
     return {min:withdraw?1:+c.dataset.minimum,max:Math.max(0,withdraw?Math.ceil(v):Math.floor(S.cash))};
   }
   function modernSetAmount(input,raw,typing){
+    if(!input||!input.dataset.modernAmount)return;  /* a product card that is not on show has no amount controls (a script or bot can still click its buttons) */
     var c=input.closest('.bk-card'),lim=modernAmountLimit(c),valid=/^\d{1,10}$/.test(String(raw));
     input.setAttribute('aria-invalid',String(!valid));
     if(!valid){modernPaintAmount(c);return}
