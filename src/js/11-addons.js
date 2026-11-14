@@ -474,6 +474,9 @@
       tile.innerHTML='<span class="scene"><img class="building-sprite" src="'+TOWN_SPRITES[k]+'" alt="" draggable="false"><span class="pin" aria-hidden="true"><span>'+(i+1)+'</span></span><span class="tags"></span><span class="cost"></span></span><b class="lab">'+modernEsc(NAME[k])+'</b>';
       $('townCanvas').appendChild(tile);
     });
+    /* place names in their own layer above every building, so a neighbour's picture or pin never covers a name */
+    var labels=document.createElement('div');labels.id='townLabels';labels.setAttribute('aria-hidden','true');
+    labels.innerHTML=SCENE_KEYS.map(function(k,i){var p=TOWN_POINTS[i];return p&&NAME[k]?'<span class="town-label" data-for="'+k+'" style="left:'+p[0]+'%;top:'+p[1]+'%">'+modernEsc(NAME[k])+'</span>':''}).join('');$('townCanvas').appendChild(labels);
     modernDrawTown();modernPortraitSetup();
     var directory=document.createElement('section');directory.id='townDirectory';directory.hidden=true;directory.setAttribute('aria-label','Destinations');$('center').appendChild(directory);
     var heading=document.createElement('div');heading.id='screenHeading';heading.className='screen-heading';$('overview').insertBefore(heading,$('overview').firstChild);
@@ -483,7 +486,7 @@
     var guide=document.createElement('details');guide.className='guide-disclosure';guide.innerHTML='<summary>First-week checklist</summary>';$('goals').before(guide);guide.appendChild($('goals'));
     var life=document.createElement('div');life.id='lifeShortcuts';life.className='quick-grid';heading.after(life);
     var intro=document.createElement('p');intro.id='rivalIntro';intro.className='sub';heading.after(intro);
-    var tools=document.createElement('details');tools.id='hudTools';tools.innerHTML='<summary>⚙ Controls</summary><div class="hud-toolbar"></div>';$('actbar').prepend(tools);
+    var tools=document.createElement('details');tools.id='hudTools';tools.innerHTML='<summary aria-label="Controls">⚙<span class="dp-full">Controls</span></summary><div class="hud-toolbar"></div>';$('actbar').prepend(tools);
     ['muteBtn','previewBtn','rulesBtn','logBig','resetBtn'].forEach(function(id){tools.querySelector('.hud-toolbar').appendChild($(id))});
     var drawer=document.createElement('section');drawer.id='logDrawer';drawer.hidden=true;drawer.setAttribute('role','dialog');drawer.setAttribute('aria-label','Daily log');drawer.innerHTML='<div class="drawer-heading"><h2>Daily log</h2><button type="button" class="btn" id="closeLog">Close ✕</button></div>';drawer.appendChild($('log'));document.body.appendChild(drawer);$('closeLog').addEventListener('click',function(){modernLog(false);$('logBig').focus()});$('logBig').setAttribute('aria-controls','logDrawer');
     var oldHead=$('overview').querySelector('.loghead');if(oldHead)oldHead.remove();
@@ -492,10 +495,12 @@
     var context=document.createElement('div');context.id='hudContext';context.innerHTML='<span id="hudRank"></span><span id="hudLocation"></span><button type="button" class="btn" id="appInbox" data-dg-app="msgsapp" hidden></button><button type="button" class="btn" id="hudAlert" hidden></button>';$('appTop').appendChild(context);
     $('hudAlert').addEventListener('click',function(){modernSelect('today');$('warn').scrollIntoView({block:'nearest'});});
     document.querySelector('.app-status').insertAdjacentHTML('beforeend','<span class="status-health"><small>HEALTH</small><b id="appHealth"></b></span><span class="status-happy"><small>MOOD</small><b id="appHappy"></b></span>');
+    /* the three vitals are their own group, so the header can place them on a second row on a phone */
+    var vitals=document.createElement('div');vitals.className='app-vitals';['.status-energy','.status-health','.status-happy'].forEach(function(q){vitals.appendChild(top.querySelector(q))});top.querySelector('.app-status').after(vitals);
     var economy=$('econ').parentNode;economy.className='grp g-econ';economy.querySelector('.l').className='gh';$('overview').querySelector('.g-home').before(economy);
     var hero=document.createElement('div');hero.id='interiorHero';hero.className='interior-hero';hero.setAttribute('role','img');hero.innerHTML='<span class="interior-caption"></span>';$('shop').insertBefore(hero,$('shop').firstChild);
     var nav=document.createElement('nav');nav.id='appNav';nav.setAttribute('aria-label','Main navigation');
-    nav.innerHTML=['today','town','life','rivals'].map(function(k){return '<button type="button" class="nav-item" data-dg-screen="'+k+'">'+modernIcon(k)+'<span>'+k.charAt(0).toUpperCase()+k.slice(1)+'</span>'+(k==='rivals'?'<span id="rivalBadge" class="nav-badge" hidden></span>':'')+'</button>'}).join('');document.body.appendChild(nav);
+    nav.innerHTML=['today','town','life','rivals'].map(function(k){return '<button type="button" class="nav-item" data-dg-screen="'+k+'">'+modernIcon(k)+'<span>'+k.charAt(0).toUpperCase()+k.slice(1)+'</span>'+(k==='rivals'?'<span id="rivalBadge" class="nav-badge" hidden></span>':k==='today'?'<span id="todayBadge" class="nav-badge alert" hidden></span>':'')+'</button>'}).join('');document.body.appendChild(nav);
     document.addEventListener('click',function(e){
       var b=e.target.closest('[data-dg-screen],[data-dg-go],[data-dg-device],[data-dg-app],[data-dg-product],[data-dg-mode],[data-dg-preset]');if(!b||b.disabled)return;
       if(b.dataset.dgScreen){modernSelect(b.dataset.dgScreen);return}
@@ -515,7 +520,7 @@
     $('shop').addEventListener('click',function(e){var b=e.target.closest('[data-bank-deposit],[data-bank-withdraw]');if(!b)return;var c=b.closest('.bk-card'),input=c.querySelector('input');if(!/^\d{1,10}$/.test(input.value)){e.stopImmediatePropagation();input.setAttribute('aria-invalid','true');input.focus();refuse('Enter a whole dollar amount.');return}modernSetAmount(input,input.value)},true);
   }
   function modernQuick(icon,title,sub,attr,disabled,primary){icon=modernIcon({'💼':'work','📚':'study','🍽':'food','🏠':'life','📱':'device','🏦':'bank'}[icon]||'brand');return '<button type="button" class="quick-card'+(primary?' primary':'')+'" '+attr+(disabled?' disabled':'')+'><span class="quick-icon" aria-hidden="true">'+icon+'</span><b>'+modernEsc(title)+'</b><small>'+modernEsc(sub)+'</small></button>'}
-  function modernMapFit(){var v=$('townViewport'),c=$('townCanvas');if(v&&c&&v.clientWidth&&v.clientHeight)c.style.width=Math.min(v.clientWidth,v.clientHeight*1.5)+'px'}
+  function modernMapFit(){var v=$('townViewport'),c=$('townCanvas');if(v&&c&&v.clientWidth&&v.clientHeight)c.style.width=Math.min(v.clientWidth,v.clientHeight*1.5)+'px';var t=c&&c.querySelector('.tile');if(t&&t.offsetHeight)c.style.setProperty('--tile-half',Math.round(t.offsetHeight/2)+'px')}
   function modernFilterPlaces(){var term=modernSearch.trim().toLowerCase(),count=0;$('townDirectory').querySelectorAll('[data-dg-go]').forEach(function(b){b.hidden=!!term&&!b.textContent.toLowerCase().includes(term);if(!b.hidden)count++});var empty=$('destinationEmpty');if(empty)empty.hidden=!!count}
   function modernPaintPlaces(){
     var currentWork=myJob();var el=$('townDirectory'),key=loc+'|'+S.day+'|'+S.ap+'|'+S.home+'|'+S.homeless;
@@ -610,6 +615,7 @@
     document.querySelectorAll('.tile').forEach(function(t){var k=t.dataset.loc,you=k===loc,home=k===S.home&&!S.homeless,job=k===work;
       t.classList.toggle('workplace',job);t.classList.toggle('work-closed',job&&closed);t.classList.toggle('homeplace',home);
       var tags=(you?'<span class="tag you">📍 You are here</span>':'')+(job?'<span class="tag '+(closed?'closed':'job')+'">'+(closed?'🔒 Work closed':'💼 Your work')+'</span>':'')+(home?'<span class="tag home">🏠 Your '+(k==='bung'?'bungalow':'apartment')+'</span>':'');t.querySelector('.tags').innerHTML=tags;
+      var tl=document.querySelector('.town-label[data-for="'+k+'"]');if(tl){tl.classList.toggle('here',you);tl.classList.toggle('tagged',you||job||home)}
       t.setAttribute('aria-label',NAME[k]+(you?', you are here':'')+(home?', your home':'')+(job?', your workplace'+(closed?', closed today':''):'')+', '+hm(dist(loc,k)*WALK)+' walk');
     });
   }
@@ -639,7 +645,9 @@
     $('appInbox').hidden=S.mode!=='rivals'||!newMsgs()||!handheld();$('appInbox').textContent=(S.mode==='rivals'?newMsgs():0)+' messages';
     $('hudAlert').hidden=!warns.length;$('hudAlert').textContent=warns.length+' alert'+(warns.length===1?'':'s');$('hudAlert').title=warns.map(function(w){return w.t.replace(/<[^>]*>/g,'')}).join(' / ');
     $('appTime').className=S.ap<180?'time-urgent':S.ap<480?'time-warning':'';
-    $('dailyProgress').innerHTML='<span class="'+(S.fed?'eaten':'not-eaten')+'">'+(S.fed?'✓ Eaten today':'! No meal yet')+'</span><span>Work: '+hm(S.workMin||0)+'</span><span>Study: '+hm(S.studyMin||0)+'</span>';
+    $('dailyProgress').innerHTML='<span class="'+(S.fed?'eaten':'not-eaten')+'" title="'+(S.fed?'Eaten today':'No meal yet')+'"><i class="dp-short" aria-hidden="true">🍽 '+(S.fed?'✓':'!')+'</i><i class="dp-full">'+(S.fed?'✓ Eaten today':'! No meal yet')+'</i></span><span title="Worked today"><i class="dp-short" aria-hidden="true">💼 </i><i class="dp-full">Work: </i>'+hm(S.workMin||0)+'</span><span title="Studied today"><i class="dp-short" aria-hidden="true">📚 </i><i class="dp-full">Study: </i>'+hm(S.studyMin||0)+'</span>';
+    $('appTop').style.setProperty('--rank-progress',Math.max(0,Math.min(100,worth()/Math.max(1,nextGoal())*100))+'%');
+    var tb=$('todayBadge');if(tb){tb.hidden=!warns.length;tb.textContent=warns.length;tb.title=warns.length+' alert'+(warns.length===1?'':'s')+' on the Today screen'}
     $('townDevice').disabled=!handheld()||!!S.over||!!S.pending;$('townDevice').textContent=owns('tablet')&&!owns('phone')?'Tablet apps':'Phone / tablet apps';$('townDeviceNote').textContent=handheld()?'Bank · Jobs'+(S.mode==='rivals'?' · Calls · Messages':''):'Buy a phone or tablet to use apps';
     var shadeLevel=S.over?0:Math.max(0,1-S.ap/MAX_AP);document.documentElement.style.setProperty('--day-shade',(shadeLevel*.13).toFixed(3));$('board').style.setProperty('--map-dusk',(shadeLevel*.35).toFixed(3));
     modernLandmarks();modernRivalCharts();modernPortraitBeat();
@@ -656,7 +664,7 @@
     var guide=$('goals').parentNode;guide.hidden=$('goals').hidden;
     if(view){$('shopTitle').innerHTML=modernIcon({jobs:'work',school:'study',bank:'bank',bankapp:'bank',jobsapp:'work',phone:'device',pc:'device',msgsapp:'rivals',callsapp:'rivals',fast:'food',resto:'food',hosp:'health',apt:'life',bung:'life',park:'tree',gym:'gym',elec:'device',comm:'rivals'}[view]||'shop')+' '+modernEsc(NAME[view]);var base=view==='bankapp'?'bank':view==='jobsapp'?'jobs':APPS.indexOf(view)>=0?loc:view,i=Math.max(0,SCENE_KEYS.indexOf(base)),hero=$('interiorHero');hero.style.setProperty('--scene-x',(i%4*100/3)+'%');hero.style.setProperty('--scene-y',(Math.floor(i/4)*100/3)+'%');hero.setAttribute('aria-label',NAME[base]+' illustrated background');hero.querySelector('.interior-caption').textContent=APPS.indexOf(view)>=0?'On your '+(appFrom==='pc'?'computer':'phone'):'Welcome to '+NAME[base];modernPaintBank();modernDecorateRivals()}
     var key=screen+'|'+view;if($('center').dataset.modernKey!==key){$('center').dataset.modernKey=key;$('center').scrollTop=0}
-    $('hudLeave').setAttribute('aria-label','Back to '+modernScreen);var endLabel=$('hudEnd').textContent;$('hudEnd').setAttribute('aria-label',endLabel);$('hudEnd').title=endLabel;$('hudEnd').textContent=atHome()?'Sleep':'Bunk outside';$('hudEnd').setAttribute('aria-label',$('hudEnd').textContent);
+    $('hudLeave').setAttribute('aria-label','Back to '+modernScreen);var endLabel=$('hudEnd').textContent;$('hudEnd').setAttribute('aria-label',endLabel);$('hudEnd').title=endLabel;var endFull=atHome()?'Sleep':'Bunk outside';$('hudEnd').innerHTML=atHome()?'Sleep':'<i class="dp-full">Bunk outside</i><i class="dp-short">Sleep out</i>';$('hudEnd').setAttribute('aria-label',endFull);$('hudEnd').title=endFull;$('hudEnd').classList.toggle('warn',!atHome());
   }
   modernSetup();
   /* Keep the panel in one app viewport on every device; it never moves below the map. */

@@ -609,7 +609,7 @@ body[data-screen=town] #center{padding:0}body[data-screen=town] #overview,body[d
 .g-riv .rivrow{align-items:center}.g-riv .rivrow .rival-meta{display:block}
 
 /* Daily play: teal actions, visible daily progress and map landmarks. */
-button:not(.tile),button:not(.tile):hover,button:not(.tile):active,button:not(.tile)[aria-selected=true],button:not(.tile)[aria-pressed=true],button.nav-item[aria-current=page]{background:var(--teal)!important;color:var(--teal-ink)!important;border-color:var(--teal)!important}
+button:not(.tile){background:var(--teal);color:var(--teal-ink);border-color:var(--teal)}  /* the default; 08-buttons.css sets the three levels */
 button[aria-current=page],button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--gold)!important}
 button svg{color:inherit}.quick-card small,.quick-card .quick-icon{color:inherit!important}.tile .lab{background:var(--teal);color:var(--teal-ink)}
 .daily-progress{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.daily-progress span{flex:1;min-width:100px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#e6f3ed;font-size:12px;font-weight:700}.daily-progress .not-eaten{background:#fff0df;color:#87521b}.daily-progress .eaten{background:#d5eee0;color:#185e43}
@@ -643,7 +643,7 @@ body{background:radial-gradient(ellipse at top left,#c7bfb2,transparent 65%),rep
 #townViewport{background:#4b5f4d;border:1px solid #678273;border-radius:22px;box-shadow:inset 0 0 80px #021c2b55}.town-canvas{background-image:none!important;isolation:isolate}.neighbourhood-art{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.tile{width:12%;max-width:130px;min-width:0;transform:translate(-50%,-50%);padding:0;gap:0}.tile .scene{display:block;position:relative;width:100%}.tile .scene>svg{display:block;width:100%;height:auto;overflow:visible;filter:drop-shadow(0 6px 4px #071e2b99);animation:none}.tile .pin{position:absolute;top:4%;left:0;width:19px;height:19px;font-size:9px;border-width:1px;z-index:3}.tile .pin span{font-size:9px}.tile .lab{font-size:9px;max-width:135%;width:max-content;padding:3px 5px;position:relative;z-index:4}.tile .cost{position:absolute;top:3%;right:-4%;font-size:9px}.tile .tags{position:relative;max-width:160%;order:3}.tile .tag{font-size:10px;border:2px solid #cfa750;padding:3px 6px;font-weight:800;box-shadow:0 3px 8px #06212a99;line-height:1.15}.tile .tag.home{border-color:#b6a0e3;background:#3f365b;color:#f0e3ff}.tile .tag.you{background:#6a4e21;color:#fff0ba;border-color:#f2c26d}.tile .tag.job{background:#1d5952;color:#d6fff2;border-color:#6dd8c1}.tile .tag.closed{background:#693733;color:#ffe1d5;border-color:#f0957e}
 .tile{--place-glow:transparent;--work-glow:transparent;--home-glow:transparent}.tile.here{--place-glow:#ffcf70}.tile.workplace{--work-glow:#52e0cf}.tile.homeplace{--home-glow:#c2a0ff}.tile.here .scene>svg,.tile.workplace .scene>svg,.tile.homeplace .scene>svg{filter:drop-shadow(0 0 2px var(--place-glow)) drop-shadow(0 0 5px var(--place-glow)) drop-shadow(0 0 2px var(--work-glow)) drop-shadow(0 0 6px var(--work-glow)) drop-shadow(0 0 3px var(--home-glow)) drop-shadow(0 0 9px var(--home-glow));animation:none}.tile.work-closed{--work-glow:#f18d76}.tile.here .pin,.tile.homeplace .lab,.tile.workplace .pin{outline:none;box-shadow:none;border:1px solid #d6bb7f}.tile.open .lab{background:#1a5f58;color:#f6ffe8}.street-lamp{opacity:calc(.25 + var(--map-dusk,0)*2)}
 @media(max-width:1099px) and (min-width:641px){#appTop{grid-template-columns:130px minmax(0,1fr) auto;padding:12px 16px;gap:6px 8px}.app-brand{font-size:17px}.app-status{gap:8px}.app-status b{font-size:13px}.app-status .status-energy{display:flex}}
-@media(max-width:640px){:root{--head:200px}#appTop{padding:8px 14px;grid-template-columns:1fr auto;grid-template-rows:44px 56px 26px 22px;gap:4px 8px}.app-brand{font-size:18px}.app-status{display:flex;flex-wrap:wrap;gap:2px 8px;grid-row:2;grid-column:1/-1;padding:4px 0;border-color:#6d6253}.app-status>span{flex:1 0 28%;justify-content:center;font-size:10px}.app-status>span b{font-size:13px}.app-status small{display:inline!important;font-size:9px}.app-status .status-energy small{display:inline!important}.actbar{grid-row:1;grid-column:2;gap:5px}.actbar .btn,#hudTools>summary{font-size:10px;padding:6px 7px;min-height:38px}#appTop .daily-progress{grid-row:3}#hudContext{grid-row:4;font-size:9px;gap:7px}#hudLocation{display:none}#hudRank{flex:1}#hudAlert{min-height:22px;font-size:9px}.hud-toolbar{width:220px;right:0}.tile{width:13%;min-width:40px;max-width:none;min-height:44px;justify-content:center}.tile .scene>svg{min-height:35px}.tile .pin{width:14px;height:14px;top:3%;left:-3px}.tile .pin span{font-size:7px}.tile .tags{position:absolute;top:85%;left:50%;transform:translateX(-50%);width:76px;max-width:none}.tile .tag{font-size:7px;border-width:1px;padding:1px 3px;max-width:76px}.tile .lab{display:none}.town-caption{display:none}.town-device{top:3px;right:3px}.town-device .btn{font-size:9px;min-height:30px}#logDrawer{top:calc(var(--head) + 6px);right:8px;width:calc(100vw - 16px);padding:12px}.rival-chart{font-size:10px}.tile .cost{display:none}}
+@media(max-width:640px){:root{--head:200px}#appTop{padding:8px 14px;grid-template-columns:1fr auto;grid-template-rows:44px 56px 26px 22px;gap:4px 8px}.app-brand{font-size:18px}.app-status{display:flex;flex-wrap:wrap;gap:2px 8px;grid-row:2;grid-column:1/-1;padding:4px 0;border-color:#6d6253}.app-status>span{flex:1 0 28%;justify-content:center;font-size:10px}.app-status>span b{font-size:13px}.actbar{grid-row:1;grid-column:2;gap:5px}.actbar .btn,#hudTools>summary{font-size:10px;padding:6px 7px;min-height:38px}#appTop .daily-progress{grid-row:3}#hudContext{grid-row:4;font-size:9px;gap:7px}#hudLocation{display:none}#hudRank{flex:1}#hudAlert{min-height:22px;font-size:9px}.hud-toolbar{width:220px;right:0}.tile{width:13%;min-width:40px;max-width:none;min-height:44px;justify-content:center}.tile .scene>svg{min-height:35px}.tile .pin{width:14px;height:14px;top:3%;left:-3px}.tile .pin span{font-size:7px}.tile .tags{position:absolute;top:85%;left:50%;transform:translateX(-50%);width:76px;max-width:none}.tile .tag{font-size:7px;border-width:1px;padding:1px 3px;max-width:76px}.tile .lab{display:none}.town-caption{display:none}.town-device{top:3px;right:3px}.town-device .btn{font-size:9px;min-height:30px}#logDrawer{top:calc(var(--head) + 6px);right:8px;width:calc(100vw - 16px);padding:12px}.rival-chart{font-size:10px}.tile .cost{display:none}}
 /* Notifications cannot block town controls, including the mobile phone shortcut. */
 #toasts .toast{pointer-events:none}
 @media(max-width:640px){#toasts{left:8px;right:auto;width:min(210px,calc(100vw - 164px))}}
@@ -673,6 +673,72 @@ button:focus-visible,summary:focus-visible{outline:3px solid var(--gold);outline
 #characterPop.minimized{width:auto;max-width:calc(100vw - 20px);grid-template-columns:1fr;padding:8px 12px}#characterPop.minimized .character-photo,#characterPop.minimized .character-copy{display:none}#characterReopen{display:none}#characterPop.minimized #characterReopen{display:block}
 button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 var(--gold)}
 @media(max-width:640px){.btnrow,.bk-presets{flex-wrap:wrap}.arow .btn{max-width:100%}}
+/* ===== Compact layout (CHANGELOG 107) =====
+   Shared sizes for the header, used by everything that sits under it. Later files win, so this replaces the header
+   sizes set in 05-app-shell.css and 06-dusk-illustrated.css. */
+:root,:root[data-theme],:root:not([data-theme]){--head:104px;--head-pad-x:24px;--head-row:44px;--head-row2:30px}
+#appTop{grid-template-columns:auto auto minmax(0,1fr) auto;grid-template-rows:var(--head-row) var(--head-row2);gap:8px 20px;padding:10px var(--head-pad-x);align-items:center;position:fixed}
+#appTop .app-brand{grid-row:1;grid-column:1}.app-brand small{display:none}
+#appTop .app-status{grid-row:1;grid-column:2;display:flex;align-items:baseline;gap:18px;border:0;padding:0;min-width:0}
+#appTop .app-vitals{grid-row:1;grid-column:3;display:flex;align-items:baseline;gap:18px;min-width:0}
+.app-vitals>span{display:flex;align-items:baseline;gap:6px;white-space:nowrap}.app-vitals small{font-size:10px;letter-spacing:.06em;color:var(--muted)}.app-vitals b{font-size:17px;color:#9ce3ce}
+#appTop #actbar{grid-row:1;grid-column:4;justify-self:end}
+#appTop #hudContext{grid-row:2;grid-column:1/4;min-width:0}
+#appTop .daily-progress{grid-row:2;grid-column:4;justify-content:flex-end;flex-wrap:nowrap;gap:8px;margin:0}
+#appTop .daily-progress span{flex:0 0 auto;padding:4px 12px;font-size:12px;white-space:nowrap}
+.daily-progress i,#hudEnd i{font-style:normal}.dp-short{display:none}
+/* the rank progress is the header's bottom edge */
+#appTop::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:var(--rank-progress,0%);background:var(--gold);opacity:.8;transition:width .5s ease}
+.nav-badge.alert{background:var(--red);color:#2b1512}
+@media(max-width:1099px) and (min-width:641px){
+  :root,:root[data-theme],:root:not([data-theme]){--head-pad-x:16px}
+  #appTop{gap:8px 12px;grid-template-columns:auto auto minmax(0,1fr) auto}.app-brand{font-size:0}.app-brand .brand-mark{font-size:1rem}
+  #appTop .app-status,#appTop .app-vitals{gap:10px}.app-vitals b,.app-status b{font-size:14px}
+  #appTop #hudContext{grid-column:1/3}#appTop .daily-progress{grid-column:3/-1}
+}
+@media(max-width:640px){
+  /* a phone: two rows. Day, time, cash and the buttons; then the three vitals and today's meal, work and study */
+  :root,:root[data-theme],:root:not([data-theme]){--head:calc(92px + env(safe-area-inset-top,0px));--head-pad-x:12px;--head-row:40px;--head-row2:28px}
+  #appTop{grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:var(--head-row) var(--head-row2);gap:6px 8px;padding:calc(8px + env(safe-area-inset-top,0px)) var(--head-pad-x) 10px}
+  #appTop{grid-template-columns:minmax(0,1fr) auto}#appTop .app-brand{display:none}   /* no room for the logo beside the clock; it is on the welcome screen */
+  #appTop .app-status{grid-row:1;grid-column:1;gap:10px;flex-wrap:nowrap;justify-content:flex-start;padding:0;border:0}
+  #appTop .app-status>span{flex:0 1 auto;font-size:10px;justify-content:flex-start;white-space:nowrap}#appTop .app-status>span b{font-size:14px}
+  #appTop #actbar{grid-row:1;grid-column:2}
+  body #appTop .app-status>span>small{display:none}body #appTop .app-status>span:first-child>small{display:inline;font-size:9px}   /* the sun and the $ already say what time and cash are */
+  #appTop .app-vitals{grid-row:2;grid-column:1;gap:10px;justify-content:flex-start}.app-vitals small{display:none}.app-vitals b{font-size:13px}
+  .app-vitals>span{gap:3px}.app-vitals>span::before{font-size:12px}.status-energy::before{content:"⚡"}.status-health::before{content:"❤️"}.status-happy::before{content:"😊"}
+  #appTop .daily-progress{grid-row:2;grid-column:2;gap:4px}
+  #appTop .daily-progress span{padding:3px 7px;font-size:11px}
+  .dp-full{display:none}.dp-short{display:inline}
+  #appTop #hudContext{display:none}   /* net worth is on Today and Life; alerts show as a badge on the Today tab */
+  .actbar{gap:4px}.actbar .btn,#hudTools>summary{min-height:40px}#hudTools>summary{width:40px;padding:0;justify-content:center;font-size:16px}
+  .actbar #hudLeave{width:40px;min-width:40px}.actbar #hudEnd{min-width:64px;max-width:none;padding:0 10px;white-space:nowrap}
+}
+@media(max-width:360px){.app-vitals small{display:none}#appTop .app-status>span small{display:none}}
+/* place names above the buildings (see modernSetup): one layer, so nothing covers a name */
+#townLabels{position:absolute;inset:0;pointer-events:none;z-index:160}
+.town-label{position:absolute;transform:translate(-50%,calc(var(--tile-half,48px) - 12px));padding:3px 6px;border-radius:8px;background:var(--teal);color:var(--teal-ink);font-size:9px;line-height:1.2;font-weight:650;white-space:nowrap;box-shadow:0 2px 6px #0d262866}
+.town-label.here{background:#ffe0a0;color:#503400}
+@media(min-width:641px){.tile .lab{display:none}.tile .tags{top:calc(100% + 14px)}}
+@media(max-width:640px){.town-label{display:none}}
+/* ===== Buttons: three levels (CHANGELOG 107) =====
+   1. Main action: solid teal (the default for any button).
+   2. Secondary: outlined, for "other" choices: .btn.alt, small and utility buttons, places, quick cards, tabs not in use.
+   3. Risky or hard to undo: a warm warning colour: .btn.danger, Reset, betray, end a pact, sabotage; .warn for sleeping outside.
+   The scope list repeats the containers used by the older rules so these win without !important. */
+:root{--btn2-bg:#3a4a45;--btn2-ink:#e9f3ee;--btn2-line:#5f9c90;--btn2-hover:#44574f;--danger:#b8492f;--danger-ink:#fff4ee;--danger-hover:#a23f27;--warn-bg:#8a6a2a;--warn-ink:#fff6df}
+:is(#shop,#hud,#appTop,#appNav,#characterPop,.over,.evcard,#center,#townViewport,#logDrawer,body) button:not(.tile):not(:disabled){background:var(--teal);color:var(--teal-ink);border-color:var(--teal)}
+:is(#shop,#hud,#appTop,#appNav,#characterPop,.over,.evcard,#center,#townViewport,#logDrawer,body) :is(button.alt,button.mini,button.mute,button.ib,button.nav-item,button.destination,button.quick-card,button.leave):not(:disabled){background:var(--btn2-bg);color:var(--btn2-ink);border:1px solid var(--btn2-line)}
+:is(#shop,#hud,#appTop,#appNav,#characterPop,.over,.evcard,#center,#townViewport,#logDrawer,body) :is(button.alt,button.mini,button.mute,button.ib,button.nav-item,button.destination,button.quick-card,button.leave):not(:disabled):hover{background:var(--btn2-hover)}
+/* the tab in use and the suggested quick card are main actions */
+:is(#appNav,body) button.nav-item[aria-current=page]:not(:disabled),:is(#center,body) button.quick-card.primary:not(:disabled){background:var(--teal);color:var(--teal-ink);border-color:var(--teal)}
+:is(#shop,#center,body) button[aria-pressed=true]:not(:disabled):not(.mute),:is(#shop,#center,body) button[aria-selected=true]:not(:disabled){background:var(--teal);color:var(--teal-ink);border-color:var(--teal)}
+/* risky */
+:is(#shop,#hud,#appTop,#characterPop,.over,.evcard,#center,body) :is(button.danger,button.reset,button[data-act=pbetray],button[data-act=pend],button[data-act=unflat],button[data-act=sab],button[data-act=cdo][data-arg=end],button[data-act=promise][data-arg=terminate]):not(:disabled){background:var(--danger);color:var(--danger-ink);border:1px solid var(--danger)}
+:is(#shop,#hud,#appTop,#characterPop,.over,.evcard,#center,body) :is(button.danger,button.reset,button[data-act=pbetray],button[data-act=pend],button[data-act=unflat],button[data-act=sab],button[data-act=cdo][data-arg=end],button[data-act=promise][data-arg=terminate]):not(:disabled):hover{background:var(--danger-hover)}
+:is(#appTop,body) #hudEnd.warn:not(:disabled){background:var(--warn-bg);color:var(--warn-ink);border:1px solid var(--warn-bg)}
+#hudTools>summary{background:var(--btn2-bg);color:var(--btn2-ink);border:1px solid var(--btn2-line);gap:6px}
+.quick-card small,.destination small{color:inherit;opacity:.82}
 </style>
 </head>
 <body>
@@ -8782,6 +8848,9 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
       tile.innerHTML='<span class="scene"><img class="building-sprite" src="'+TOWN_SPRITES[k]+'" alt="" draggable="false"><span class="pin" aria-hidden="true"><span>'+(i+1)+'</span></span><span class="tags"></span><span class="cost"></span></span><b class="lab">'+modernEsc(NAME[k])+'</b>';
       $('townCanvas').appendChild(tile);
     });
+    /* place names in their own layer above every building, so a neighbour's picture or pin never covers a name */
+    var labels=document.createElement('div');labels.id='townLabels';labels.setAttribute('aria-hidden','true');
+    labels.innerHTML=SCENE_KEYS.map(function(k,i){var p=TOWN_POINTS[i];return p&&NAME[k]?'<span class="town-label" data-for="'+k+'" style="left:'+p[0]+'%;top:'+p[1]+'%">'+modernEsc(NAME[k])+'</span>':''}).join('');$('townCanvas').appendChild(labels);
     modernDrawTown();modernPortraitSetup();
     var directory=document.createElement('section');directory.id='townDirectory';directory.hidden=true;directory.setAttribute('aria-label','Destinations');$('center').appendChild(directory);
     var heading=document.createElement('div');heading.id='screenHeading';heading.className='screen-heading';$('overview').insertBefore(heading,$('overview').firstChild);
@@ -8791,7 +8860,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     var guide=document.createElement('details');guide.className='guide-disclosure';guide.innerHTML='<summary>First-week checklist</summary>';$('goals').before(guide);guide.appendChild($('goals'));
     var life=document.createElement('div');life.id='lifeShortcuts';life.className='quick-grid';heading.after(life);
     var intro=document.createElement('p');intro.id='rivalIntro';intro.className='sub';heading.after(intro);
-    var tools=document.createElement('details');tools.id='hudTools';tools.innerHTML='<summary>⚙ Controls</summary><div class="hud-toolbar"></div>';$('actbar').prepend(tools);
+    var tools=document.createElement('details');tools.id='hudTools';tools.innerHTML='<summary aria-label="Controls">⚙<span class="dp-full">Controls</span></summary><div class="hud-toolbar"></div>';$('actbar').prepend(tools);
     ['muteBtn','previewBtn','rulesBtn','logBig','resetBtn'].forEach(function(id){tools.querySelector('.hud-toolbar').appendChild($(id))});
     var drawer=document.createElement('section');drawer.id='logDrawer';drawer.hidden=true;drawer.setAttribute('role','dialog');drawer.setAttribute('aria-label','Daily log');drawer.innerHTML='<div class="drawer-heading"><h2>Daily log</h2><button type="button" class="btn" id="closeLog">Close ✕</button></div>';drawer.appendChild($('log'));document.body.appendChild(drawer);$('closeLog').addEventListener('click',function(){modernLog(false);$('logBig').focus()});$('logBig').setAttribute('aria-controls','logDrawer');
     var oldHead=$('overview').querySelector('.loghead');if(oldHead)oldHead.remove();
@@ -8800,10 +8869,12 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     var context=document.createElement('div');context.id='hudContext';context.innerHTML='<span id="hudRank"></span><span id="hudLocation"></span><button type="button" class="btn" id="appInbox" data-dg-app="msgsapp" hidden></button><button type="button" class="btn" id="hudAlert" hidden></button>';$('appTop').appendChild(context);
     $('hudAlert').addEventListener('click',function(){modernSelect('today');$('warn').scrollIntoView({block:'nearest'});});
     document.querySelector('.app-status').insertAdjacentHTML('beforeend','<span class="status-health"><small>HEALTH</small><b id="appHealth"></b></span><span class="status-happy"><small>MOOD</small><b id="appHappy"></b></span>');
+    /* the three vitals are their own group, so the header can place them on a second row on a phone */
+    var vitals=document.createElement('div');vitals.className='app-vitals';['.status-energy','.status-health','.status-happy'].forEach(function(q){vitals.appendChild(top.querySelector(q))});top.querySelector('.app-status').after(vitals);
     var economy=$('econ').parentNode;economy.className='grp g-econ';economy.querySelector('.l').className='gh';$('overview').querySelector('.g-home').before(economy);
     var hero=document.createElement('div');hero.id='interiorHero';hero.className='interior-hero';hero.setAttribute('role','img');hero.innerHTML='<span class="interior-caption"></span>';$('shop').insertBefore(hero,$('shop').firstChild);
     var nav=document.createElement('nav');nav.id='appNav';nav.setAttribute('aria-label','Main navigation');
-    nav.innerHTML=['today','town','life','rivals'].map(function(k){return '<button type="button" class="nav-item" data-dg-screen="'+k+'">'+modernIcon(k)+'<span>'+k.charAt(0).toUpperCase()+k.slice(1)+'</span>'+(k==='rivals'?'<span id="rivalBadge" class="nav-badge" hidden></span>':'')+'</button>'}).join('');document.body.appendChild(nav);
+    nav.innerHTML=['today','town','life','rivals'].map(function(k){return '<button type="button" class="nav-item" data-dg-screen="'+k+'">'+modernIcon(k)+'<span>'+k.charAt(0).toUpperCase()+k.slice(1)+'</span>'+(k==='rivals'?'<span id="rivalBadge" class="nav-badge" hidden></span>':k==='today'?'<span id="todayBadge" class="nav-badge alert" hidden></span>':'')+'</button>'}).join('');document.body.appendChild(nav);
     document.addEventListener('click',function(e){
       var b=e.target.closest('[data-dg-screen],[data-dg-go],[data-dg-device],[data-dg-app],[data-dg-product],[data-dg-mode],[data-dg-preset]');if(!b||b.disabled)return;
       if(b.dataset.dgScreen){modernSelect(b.dataset.dgScreen);return}
@@ -8823,7 +8894,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     $('shop').addEventListener('click',function(e){var b=e.target.closest('[data-bank-deposit],[data-bank-withdraw]');if(!b)return;var c=b.closest('.bk-card'),input=c.querySelector('input');if(!/^\d{1,10}$/.test(input.value)){e.stopImmediatePropagation();input.setAttribute('aria-invalid','true');input.focus();refuse('Enter a whole dollar amount.');return}modernSetAmount(input,input.value)},true);
   }
   function modernQuick(icon,title,sub,attr,disabled,primary){icon=modernIcon({'💼':'work','📚':'study','🍽':'food','🏠':'life','📱':'device','🏦':'bank'}[icon]||'brand');return '<button type="button" class="quick-card'+(primary?' primary':'')+'" '+attr+(disabled?' disabled':'')+'><span class="quick-icon" aria-hidden="true">'+icon+'</span><b>'+modernEsc(title)+'</b><small>'+modernEsc(sub)+'</small></button>'}
-  function modernMapFit(){var v=$('townViewport'),c=$('townCanvas');if(v&&c&&v.clientWidth&&v.clientHeight)c.style.width=Math.min(v.clientWidth,v.clientHeight*1.5)+'px'}
+  function modernMapFit(){var v=$('townViewport'),c=$('townCanvas');if(v&&c&&v.clientWidth&&v.clientHeight)c.style.width=Math.min(v.clientWidth,v.clientHeight*1.5)+'px';var t=c&&c.querySelector('.tile');if(t&&t.offsetHeight)c.style.setProperty('--tile-half',Math.round(t.offsetHeight/2)+'px')}
   function modernFilterPlaces(){var term=modernSearch.trim().toLowerCase(),count=0;$('townDirectory').querySelectorAll('[data-dg-go]').forEach(function(b){b.hidden=!!term&&!b.textContent.toLowerCase().includes(term);if(!b.hidden)count++});var empty=$('destinationEmpty');if(empty)empty.hidden=!!count}
   function modernPaintPlaces(){
     var currentWork=myJob();var el=$('townDirectory'),key=loc+'|'+S.day+'|'+S.ap+'|'+S.home+'|'+S.homeless;
@@ -8918,6 +8989,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     document.querySelectorAll('.tile').forEach(function(t){var k=t.dataset.loc,you=k===loc,home=k===S.home&&!S.homeless,job=k===work;
       t.classList.toggle('workplace',job);t.classList.toggle('work-closed',job&&closed);t.classList.toggle('homeplace',home);
       var tags=(you?'<span class="tag you">📍 You are here</span>':'')+(job?'<span class="tag '+(closed?'closed':'job')+'">'+(closed?'🔒 Work closed':'💼 Your work')+'</span>':'')+(home?'<span class="tag home">🏠 Your '+(k==='bung'?'bungalow':'apartment')+'</span>':'');t.querySelector('.tags').innerHTML=tags;
+      var tl=document.querySelector('.town-label[data-for="'+k+'"]');if(tl){tl.classList.toggle('here',you);tl.classList.toggle('tagged',you||job||home)}
       t.setAttribute('aria-label',NAME[k]+(you?', you are here':'')+(home?', your home':'')+(job?', your workplace'+(closed?', closed today':''):'')+', '+hm(dist(loc,k)*WALK)+' walk');
     });
   }
@@ -8947,7 +9019,9 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     $('appInbox').hidden=S.mode!=='rivals'||!newMsgs()||!handheld();$('appInbox').textContent=(S.mode==='rivals'?newMsgs():0)+' messages';
     $('hudAlert').hidden=!warns.length;$('hudAlert').textContent=warns.length+' alert'+(warns.length===1?'':'s');$('hudAlert').title=warns.map(function(w){return w.t.replace(/<[^>]*>/g,'')}).join(' / ');
     $('appTime').className=S.ap<180?'time-urgent':S.ap<480?'time-warning':'';
-    $('dailyProgress').innerHTML='<span class="'+(S.fed?'eaten':'not-eaten')+'">'+(S.fed?'✓ Eaten today':'! No meal yet')+'</span><span>Work: '+hm(S.workMin||0)+'</span><span>Study: '+hm(S.studyMin||0)+'</span>';
+    $('dailyProgress').innerHTML='<span class="'+(S.fed?'eaten':'not-eaten')+'" title="'+(S.fed?'Eaten today':'No meal yet')+'"><i class="dp-short" aria-hidden="true">🍽 '+(S.fed?'✓':'!')+'</i><i class="dp-full">'+(S.fed?'✓ Eaten today':'! No meal yet')+'</i></span><span title="Worked today"><i class="dp-short" aria-hidden="true">💼 </i><i class="dp-full">Work: </i>'+hm(S.workMin||0)+'</span><span title="Studied today"><i class="dp-short" aria-hidden="true">📚 </i><i class="dp-full">Study: </i>'+hm(S.studyMin||0)+'</span>';
+    $('appTop').style.setProperty('--rank-progress',Math.max(0,Math.min(100,worth()/Math.max(1,nextGoal())*100))+'%');
+    var tb=$('todayBadge');if(tb){tb.hidden=!warns.length;tb.textContent=warns.length;tb.title=warns.length+' alert'+(warns.length===1?'':'s')+' on the Today screen'}
     $('townDevice').disabled=!handheld()||!!S.over||!!S.pending;$('townDevice').textContent=owns('tablet')&&!owns('phone')?'Tablet apps':'Phone / tablet apps';$('townDeviceNote').textContent=handheld()?'Bank · Jobs'+(S.mode==='rivals'?' · Calls · Messages':''):'Buy a phone or tablet to use apps';
     var shadeLevel=S.over?0:Math.max(0,1-S.ap/MAX_AP);document.documentElement.style.setProperty('--day-shade',(shadeLevel*.13).toFixed(3));$('board').style.setProperty('--map-dusk',(shadeLevel*.35).toFixed(3));
     modernLandmarks();modernRivalCharts();modernPortraitBeat();
@@ -8964,7 +9038,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     var guide=$('goals').parentNode;guide.hidden=$('goals').hidden;
     if(view){$('shopTitle').innerHTML=modernIcon({jobs:'work',school:'study',bank:'bank',bankapp:'bank',jobsapp:'work',phone:'device',pc:'device',msgsapp:'rivals',callsapp:'rivals',fast:'food',resto:'food',hosp:'health',apt:'life',bung:'life',park:'tree',gym:'gym',elec:'device',comm:'rivals'}[view]||'shop')+' '+modernEsc(NAME[view]);var base=view==='bankapp'?'bank':view==='jobsapp'?'jobs':APPS.indexOf(view)>=0?loc:view,i=Math.max(0,SCENE_KEYS.indexOf(base)),hero=$('interiorHero');hero.style.setProperty('--scene-x',(i%4*100/3)+'%');hero.style.setProperty('--scene-y',(Math.floor(i/4)*100/3)+'%');hero.setAttribute('aria-label',NAME[base]+' illustrated background');hero.querySelector('.interior-caption').textContent=APPS.indexOf(view)>=0?'On your '+(appFrom==='pc'?'computer':'phone'):'Welcome to '+NAME[base];modernPaintBank();modernDecorateRivals()}
     var key=screen+'|'+view;if($('center').dataset.modernKey!==key){$('center').dataset.modernKey=key;$('center').scrollTop=0}
-    $('hudLeave').setAttribute('aria-label','Back to '+modernScreen);var endLabel=$('hudEnd').textContent;$('hudEnd').setAttribute('aria-label',endLabel);$('hudEnd').title=endLabel;$('hudEnd').textContent=atHome()?'Sleep':'Bunk outside';$('hudEnd').setAttribute('aria-label',$('hudEnd').textContent);
+    $('hudLeave').setAttribute('aria-label','Back to '+modernScreen);var endLabel=$('hudEnd').textContent;$('hudEnd').setAttribute('aria-label',endLabel);$('hudEnd').title=endLabel;var endFull=atHome()?'Sleep':'Bunk outside';$('hudEnd').innerHTML=atHome()?'Sleep':'<i class="dp-full">Bunk outside</i><i class="dp-short">Sleep out</i>';$('hudEnd').setAttribute('aria-label',endFull);$('hudEnd').title=endFull;$('hudEnd').classList.toggle('warn',!atHome());
   }
   modernSetup();
   /* Keep the panel in one app viewport on every device; it never moves below the map. */

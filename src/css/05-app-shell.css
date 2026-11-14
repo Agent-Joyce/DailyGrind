@@ -75,7 +75,7 @@ body[data-screen=town] #center{padding:0}body[data-screen=town] #overview,body[d
 .g-riv .rivrow{align-items:center}.g-riv .rivrow .rival-meta{display:block}
 
 /* Daily play: teal actions, visible daily progress and map landmarks. */
-button:not(.tile),button:not(.tile):hover,button:not(.tile):active,button:not(.tile)[aria-selected=true],button:not(.tile)[aria-pressed=true],button.nav-item[aria-current=page]{background:var(--teal)!important;color:var(--teal-ink)!important;border-color:var(--teal)!important}
+button:not(.tile){background:var(--teal);color:var(--teal-ink);border-color:var(--teal)}  /* the default; 08-buttons.css sets the three levels */
 button[aria-current=page],button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--gold)!important}
 button svg{color:inherit}.quick-card small,.quick-card .quick-icon{color:inherit!important}.tile .lab{background:var(--teal);color:var(--teal-ink)}
 .daily-progress{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.daily-progress span{flex:1;min-width:100px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#e6f3ed;font-size:12px;font-weight:700}.daily-progress .not-eaten{background:#fff0df;color:#87521b}.daily-progress .eaten{background:#d5eee0;color:#185e43}

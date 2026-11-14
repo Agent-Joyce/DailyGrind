@@ -1,0 +1,48 @@
+/* ===== Compact layout (CHANGELOG 107) =====
+   Shared sizes for the header, used by everything that sits under it. Later files win, so this replaces the header
+   sizes set in 05-app-shell.css and 06-dusk-illustrated.css. */
+:root,:root[data-theme],:root:not([data-theme]){--head:104px;--head-pad-x:24px;--head-row:44px;--head-row2:30px}
+#appTop{grid-template-columns:auto auto minmax(0,1fr) auto;grid-template-rows:var(--head-row) var(--head-row2);gap:8px 20px;padding:10px var(--head-pad-x);align-items:center;position:fixed}
+#appTop .app-brand{grid-row:1;grid-column:1}.app-brand small{display:none}
+#appTop .app-status{grid-row:1;grid-column:2;display:flex;align-items:baseline;gap:18px;border:0;padding:0;min-width:0}
+#appTop .app-vitals{grid-row:1;grid-column:3;display:flex;align-items:baseline;gap:18px;min-width:0}
+.app-vitals>span{display:flex;align-items:baseline;gap:6px;white-space:nowrap}.app-vitals small{font-size:10px;letter-spacing:.06em;color:var(--muted)}.app-vitals b{font-size:17px;color:#9ce3ce}
+#appTop #actbar{grid-row:1;grid-column:4;justify-self:end}
+#appTop #hudContext{grid-row:2;grid-column:1/4;min-width:0}
+#appTop .daily-progress{grid-row:2;grid-column:4;justify-content:flex-end;flex-wrap:nowrap;gap:8px;margin:0}
+#appTop .daily-progress span{flex:0 0 auto;padding:4px 12px;font-size:12px;white-space:nowrap}
+.daily-progress i,#hudEnd i{font-style:normal}.dp-short{display:none}
+/* the rank progress is the header's bottom edge */
+#appTop::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:var(--rank-progress,0%);background:var(--gold);opacity:.8;transition:width .5s ease}
+.nav-badge.alert{background:var(--red);color:#2b1512}
+@media(max-width:1099px) and (min-width:641px){
+  :root,:root[data-theme],:root:not([data-theme]){--head-pad-x:16px}
+  #appTop{gap:8px 12px;grid-template-columns:auto auto minmax(0,1fr) auto}.app-brand{font-size:0}.app-brand .brand-mark{font-size:1rem}
+  #appTop .app-status,#appTop .app-vitals{gap:10px}.app-vitals b,.app-status b{font-size:14px}
+  #appTop #hudContext{grid-column:1/3}#appTop .daily-progress{grid-column:3/-1}
+}
+@media(max-width:640px){
+  /* a phone: two rows. Day, time, cash and the buttons; then the three vitals and today's meal, work and study */
+  :root,:root[data-theme],:root:not([data-theme]){--head:calc(92px + env(safe-area-inset-top,0px));--head-pad-x:12px;--head-row:40px;--head-row2:28px}
+  #appTop{grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:var(--head-row) var(--head-row2);gap:6px 8px;padding:calc(8px + env(safe-area-inset-top,0px)) var(--head-pad-x) 10px}
+  #appTop{grid-template-columns:minmax(0,1fr) auto}#appTop .app-brand{display:none}   /* no room for the logo beside the clock; it is on the welcome screen */
+  #appTop .app-status{grid-row:1;grid-column:1;gap:10px;flex-wrap:nowrap;justify-content:flex-start;padding:0;border:0}
+  #appTop .app-status>span{flex:0 1 auto;font-size:10px;justify-content:flex-start;white-space:nowrap}#appTop .app-status>span b{font-size:14px}
+  #appTop #actbar{grid-row:1;grid-column:2}
+  body #appTop .app-status>span>small{display:none}body #appTop .app-status>span:first-child>small{display:inline;font-size:9px}   /* the sun and the $ already say what time and cash are */
+  #appTop .app-vitals{grid-row:2;grid-column:1;gap:10px;justify-content:flex-start}.app-vitals small{display:none}.app-vitals b{font-size:13px}
+  .app-vitals>span{gap:3px}.app-vitals>span::before{font-size:12px}.status-energy::before{content:"⚡"}.status-health::before{content:"❤️"}.status-happy::before{content:"😊"}
+  #appTop .daily-progress{grid-row:2;grid-column:2;gap:4px}
+  #appTop .daily-progress span{padding:3px 7px;font-size:11px}
+  .dp-full{display:none}.dp-short{display:inline}
+  #appTop #hudContext{display:none}   /* net worth is on Today and Life; alerts show as a badge on the Today tab */
+  .actbar{gap:4px}.actbar .btn,#hudTools>summary{min-height:40px}#hudTools>summary{width:40px;padding:0;justify-content:center;font-size:16px}
+  .actbar #hudLeave{width:40px;min-width:40px}.actbar #hudEnd{min-width:64px;max-width:none;padding:0 10px;white-space:nowrap}
+}
+@media(max-width:360px){.app-vitals small{display:none}#appTop .app-status>span small{display:none}}
+/* place names above the buildings (see modernSetup): one layer, so nothing covers a name */
+#townLabels{position:absolute;inset:0;pointer-events:none;z-index:160}
+.town-label{position:absolute;transform:translate(-50%,calc(var(--tile-half,48px) - 12px));padding:3px 6px;border-radius:8px;background:var(--teal);color:var(--teal-ink);font-size:9px;line-height:1.2;font-weight:650;white-space:nowrap;box-shadow:0 2px 6px #0d262866}
+.town-label.here{background:#ffe0a0;color:#503400}
+@media(min-width:641px){.tile .lab{display:none}.tile .tags{top:calc(100% + 14px)}}
+@media(max-width:640px){.town-label{display:none}}
