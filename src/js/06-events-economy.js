@@ -802,9 +802,10 @@
     /* clothes for the job (or the one aimed for) */
     var j=rivalJob(r),want=(j&&j.rk.dress)||'casual';
     var dressed=function(d){return rivalDressed(r,d)};
-    /* replace the outfit when it has run out, or on its last day while the rent stays covered (a rival with no clothes cannot work) */
+    /* replace the outfit when it has run out or is on its last day: a rival with no clothes can neither work nor take gigs,
+       so clothes come before the rent (a short rent shortfall is earned back the next day) */
     var wd=rivalDressDays(r,want),cp=G(WEAR[want].p);
-    if(mistake!=='clothes'&&(wd<=0||(wd<=1&&r.cash+r.bank-cp>=HOUSE.apt.rent))){if(r.cash<cp&&r.bank>0){var w=Math.min(r.bank,cp-r.cash+20);r.bank-=w;r.cash+=w}if(r.cash>=cp){r.cash-=cp;r.clothes[want]=WEAR[want].w;used+=30}}
+    if(mistake!=='clothes'&&wd<=1){if(r.cash<cp&&r.bank>0){var w=Math.min(r.bank,cp-r.cash+20);r.bank-=w;r.cash+=w}if(r.cash>=cp){r.cash-=cp;r.clothes[want]=WEAR[want].w;used+=30}}
     /* dress for the best better-paid role it already qualifies for, so a dress code never locks a rival out of a job
        (bought with the rent still covered; no dice) */
     var up=rivalDressUp(r,j);
@@ -827,7 +828,7 @@
         if(!r.bestJob||j.rk.pay>r.bestJob.pay)r.bestJob={r:j.rk.r,pay:j.rk.pay};break}
     }
     /* ill: no work or lessons; a rival who can spare the money pays for treatment (cured from tomorrow) */
-    if(r.ill){var IL=ILL[r.ill.k],fee=G(IL.cost||Math.round((IL.lo+IL.hi)/2));if(K.bank!=='none'&&r.cash+r.bank>fee+HOUSE.apt.rent){var wf=Math.max(0,fee-r.cash);r.bank-=wf;r.cash+=wf-fee;r.ill.d=0;used+=120;rivalNote(r,0,'paid '+money(fee)+' to be treated for '+illShort(IL)+'.')}}
+    if(r.ill){var IL=ILL[r.ill.k],fee=G(IL.cost||Math.round((IL.lo+IL.hi)/2));if(K.bank!=='none'&&r.cash+r.bank>fee+HOUSE.apt.rent+G(WEAR[want].p)){var wf=Math.max(0,fee-r.cash);r.bank-=wf;r.cash+=wf-fee;r.ill.d=0;used+=120;rivalNote(r,0,'paid '+money(fee)+' to be treated for '+illShort(IL)+'.')}}
     /* work */
     var shifts=Math.floor(K.shifts)+(rrand()<K.shifts%1?1:0)-(mistake==='lazy'?1:0)-(r.ill?99:0),load=0;  /* 2.5 = a third shift on about half of days */
     var targetRank=r.target&&CAREERS[r.target.c]&&CAREERS[r.target.c].ranks[r.target.i];
@@ -853,7 +854,7 @@
     if(!r.study&&need.length&&r.pausedStudy&&r.pausedStudy[need[0][0]]){r.study=r.pausedStudy[need[0][0]];delete r.pausedStudy[need[0][0]]}
     if(!r.ill&&mistake!=='study'&&!sabClass(r,day)&&(need.length||r.study)&&rrand()<K.studyChance){
       var t=r.study?r.study.t:need[0][0];
-      if(!r.study){var n0=r.edu[t]||0,fee=qualFee(t,n0),keep=HOUSE.apt.rent+80+(rivalDressDays(r,want)<=2?G(WEAR[want].p):0);  /* a fee never spends the money for the next outfit */if(r.cash-fee<keep&&r.bank>0){var w2=Math.min(r.bank,keep+fee-r.cash);r.bank-=w2;r.cash+=w2}
+      if(!r.study){var n0=r.edu[t]||0,fee=qualFee(t,n0),keep=HOUSE.apt.rent+80+G(WEAR[want].p);  /* a fee never spends the money for the next outfit */if(r.cash-fee<keep&&r.bank>0){var w2=Math.min(r.bank,keep+fee-r.cash);r.bank-=w2;r.cash+=w2}
         if(r.cash-fee>=keep){r.cash-=fee;r.study={t:t,lv:levelOf(t,n0),h:0}}}
       if(r.study){var hrs=Math.min(K.studyHours,(CONFIG.burnout.loadMinutes-load)/60,Math.max(0,(r.energy-25)/Math.abs(CONFIG.education.lessonEnergyPerHour||5)));
         if(hrs>=0.5){r.wentSchool=1;var lc=lessonCost(hrs);r.energy=clamp100(r.energy+lc.en);r.happy=clamp100(r.happy+lc.hap);r.health=clamp100(r.health+lc.hp);r.know=clamp100(r.know+Math.round(hrs));used+=hrs*60;
