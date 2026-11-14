@@ -119,16 +119,14 @@
   <div id="evwrap" hidden><div id="event" class="evcard" role="dialog" aria-live="assertive"></div></div>
 </main>
 
-<div class="over" id="welcome" role="dialog" aria-modal="true" aria-labelledby="wlT"><div class="card rules">
-  <h2 id="wlT">Welcome to Daily Grind</h2>
-  <p style="color:var(--ink)">Build a life from scratch. Reach <b><span id="cfgGoal">$1,000</span> net worth</b> without going broke, burning out or skipping meals.</p>
-  <div class="wtiles">
-    <div><b>⏱ 24 hours a day</b><span>Walking: <span id="cfgWalk">5 minutes</span> and <span id="cfgWalkE">1%</span> energy per distance step. Destination labels show the total walk.</span></div>
-    <div><b>🍽 Eat once a day</b><span>Low energy makes you ill</span></div>
-    <div><b>🏠 Rent <span id="cfgRent">every 5 days</span></b><span>Short of cash? It goes on a plan</span></div>
-    <div><b>👕 Clothes last <span id="cfgClothes">5 days</span></b><span>Replace them at the Clothes Mall</span></div>
-  </div>
-  <details class="wmore"><summary><i class="ib">i</i>More about how to play</summary><div class="more-b">Working, studying and shopping all use time. End the day with <b>Sleep in Apartment</b> at home (the most rest) or <b>Sleep outside</b> anywhere else. Keep an eye on energy and happiness: low happiness cuts your pay. Start with a job at the Employment Office, work shifts, then study at School for better jobs. The <b>First week</b> checklist guides your first days, and the game saves automatically.</div></details>
+<div class="over" id="welcome" role="dialog" aria-modal="true" aria-labelledby="wlT"><div class="card rules welcome-card">
+  <h2 id="wlT">Daily Grind</h2>
+  <p class="wl-pitch">Build a life from scratch in a small town. Reach <b><span id="cfgGoal">$1,000</span> net worth</b> without going broke, burning out or skipping meals.</p>
+  <div class="wl-start" id="diffs">
+    <button class="btn wl-go" data-diff="normal" id="welcomeGo"><b id="welcomeGoT">▶ Start playing</b><small>$200 to start, 20 days, standard prices</small></button>
+    <button type="button" class="btn alt wl-go" id="welcomeRivals"><b>🏁 Play against AI rivals</b><small id="welcomeRivalsT">30 days, three neighbours, a town leaderboard</small></button>
+    <label class="wl-coach"><input type="checkbox" id="coachOn" checked> Guide me through my first day</label>
+    <details id="customGame" class="wmore"><summary><i class="ib">⚙</i>Custom game: rivals, difficulty, starting trait</summary><div class="more-b">
   <details id="traitBox" class="tbox"><summary><span>🎭 Starting trait: <b id="traitPick">No trait</b></span><small>optional · tap to change</small></summary>
   <div class="traits" id="traits" role="radiogroup" aria-label="Starting trait"></div></details>
   <div id="modeWrap"><h3>How do you want to play?</h3>
@@ -141,12 +139,21 @@
     <div><span>Level</span><span class="rseg" id="rivLevel"><button type="button" data-rl="easy">Easy</button><button type="button" data-rl="medium" class="on">Medium</button><button type="button" data-rl="expert">Expert</button><button type="button" data-rl="mixed">Mixed</button></span></div>
     <div><span>Town mood</span><span class="rseg" id="rivMood"><button type="button" data-rm="friendly">😊 Friendly</button><button type="button" data-rm="competitive" class="on">⚖️ Competitive</button><button type="button" data-rm="cutthroat">🔪 Cutthroat</button></span></div>
   </div></div>
-  <div id="diffsWrap"><h3>Choose a difficulty</h3>
-  <div class="diffs" id="diffs">
+  <div id="diffsWrap"><h3>Other difficulties</h3>
+  <div class="diffs">
     <button class="btn alt" data-diff="easy"><b>Easy</b><small>$500 to start, 20 days, cheaper prices, fewer illnesses</small></button>
-    <button class="btn" data-diff="normal" id="welcomeGo"><b>Normal</b><small>$200 to start, 20 days, standard prices</small></button>
     <button class="btn alt" data-diff="hard"><b>Hard</b><small>$100 to start, 20 days, prices +15%, pay −5%, more illness</small></button>
-  </div></div>
+  </div><p class="wl-note">Easy and Hard start the game straight away with the choices above. “Start playing” is Normal.</p></div>
+    </div></details>
+    <details class="wmore" id="howWorks"><summary><i class="ib">i</i>How the game works</summary>
+  <div class="wtiles">
+    <div><b>⏱ 24 hours a day</b><span>Walking: <span id="cfgWalk">5 minutes</span> and <span id="cfgWalkE">1%</span> energy per distance step. Destination labels show the total walk.</span></div>
+    <div><b>🍽 Eat once a day</b><span>Low energy makes you ill</span></div>
+    <div><b>🏠 Rent <span id="cfgRent">every 5 days</span></b><span>Short of cash? It goes on a plan</span></div>
+    <div><b>👕 Clothes last <span id="cfgClothes">5 days</span></b><span>Replace them at the Clothes Mall</span></div>
+  </div>
+    <div class="more-b">Working, studying and shopping all use time. End the day with <b>Sleep in Apartment</b> at home (the most rest) or <b>Sleep outside</b> anywhere else. Keep an eye on energy and happiness: low happiness cuts your pay. Start with a job at the Employment Office, work shifts, then study at School for better jobs. The <b>First week</b> checklist guides your first days, and the game saves automatically.</div></details>
+  </div>
 </div></div>
 <div class="over" id="rules" role="dialog" aria-modal="true" aria-labelledby="rlT"><div class="card rules">
   <h2 id="rlT">How the game ends</h2>

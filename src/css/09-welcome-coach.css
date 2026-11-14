@@ -1,0 +1,19 @@
+/* ===== Welcome screen and the guided first day (CHANGELOG 107) ===== */
+.welcome-card{max-width:460px}.welcome-card h2{font-size:1.9rem;margin-bottom:4px}.wl-pitch{color:var(--ink);margin:0 0 14px}
+.wl-start{display:flex;flex-direction:column;gap:10px}
+.wl-start .wl-go{display:flex;flex-direction:column;gap:3px;text-align:left;padding:14px 16px;min-height:64px}
+.wl-start .wl-go b{font-size:1.08rem}.wl-start .wl-go small{font-weight:600;font-size:.78rem;opacity:.88}
+.wl-coach{display:flex;align-items:center;gap:8px;font-size:.86rem;font-weight:600;min-height:32px;cursor:pointer}.wl-coach input{width:18px;height:18px;accent-color:var(--teal)}
+.welcome-card .wmore>summary{min-height:36px}.welcome-card .more-b{padding-top:6px}.wl-note{font-size:.76rem;color:var(--muted);margin:6px 0 0}
+.welcome-card .diffs{grid-template-columns:repeat(2,minmax(0,1fr))}
+#coach{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:0 0 12px;padding:12px 14px;border:1px solid var(--gold);border-radius:14px;background:color-mix(in srgb,var(--gold) 14%,var(--surface))}
+#coach[hidden]{display:none}
+.coach-t{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:2px}.coach-t small{font-size:.68rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--gold)}
+.coach-t b{font-size:1rem}.coach-t span{font-size:.84rem;line-height:1.4}
+.coach-b{display:flex;gap:8px;flex-wrap:wrap}.coach-b .btn{min-height:40px}
+/* where the guide is pointing: a soft gold pulse */
+.coach-target{outline:3px solid var(--gold);outline-offset:3px;border-radius:12px;animation:coachPulse 1.4s ease-in-out infinite}
+.tile.coach-target{outline:0;animation:none}.tile.coach-target .building-sprite{animation:coachGlow 1.4s ease-in-out infinite}
+@keyframes coachPulse{50%{outline-color:transparent}}
+@keyframes coachGlow{0%,100%{filter:drop-shadow(0 0 3px var(--gold)) drop-shadow(0 0 10px var(--gold))}50%{filter:drop-shadow(0 5px 5px #142f3555)}}
+@media(prefers-reduced-motion:reduce){.coach-target,.tile.coach-target .building-sprite{animation:none}.tile.coach-target .building-sprite{filter:drop-shadow(0 0 3px var(--gold)) drop-shadow(0 0 10px var(--gold))}}

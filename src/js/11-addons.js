@@ -459,6 +459,32 @@
     closePlaces();modernScreen=screen;ovHidden=false;view=null;render();
     $('center').scrollTop=0;
   }
+  /* ---------- the guided first day (CHANGELOG 107) ----------
+    Four steps, each finished by doing the thing in the game: get a job, work a shift, eat, sleep at home. It only points
+    the way: it never spends time or money, rolls no dice and blocks nothing. S.coach = {on, step}; "Skip" or the last
+    step turns it off. coachNow() returns the current prompt, or null. */
+  function coachNow(){
+    var c=S.coach;if(!c||!c.on||S.over||!S.flags.diff)return null;
+    var j=myJob(),steps=[
+      {k:'job',done:!!j,go:'jobs',t:'Get a job',far:'Walk to the Employment Office and pick a job you can apply for.',near:'Press Apply on a job without a lock. An interview takes an hour.',sel:'#shop [data-act="apply"]:not([disabled])'},
+      {k:'work',done:!!S.flags.worked,go:j?j.b:'jobs',t:'Work your first shift',far:'Go to '+(j?'the '+NAME[j.b]:'your workplace')+' and work a shift.',near:'Press the Work button. A shift earns money and uses time and energy.',sel:'#shop [data-act="work"]:not([disabled])'},
+      {k:'eat',done:!!S.fed||S.day>1,go:'fast',t:'Eat something',far:'You need one meal a day. Fast Food is the quickest; the Supermarket is cheaper if you cook at home.',near:'Order a meal here. Each row shows what it does to your energy, happiness and health.',sel:'#shop [data-act="treat"]:not([disabled])'},
+      {k:'sleep',done:S.day>1,go:S.homeless?'':S.home,t:'Go home and sleep',far:'Head home when you are done for the day. Sleeping at home gives the most rest.',near:'Press Sleep at the top to end the day. Whatever time is left becomes rest.',sel:'#hudEnd'}
+    ];
+    var i=0;while(i<steps.length&&steps[i].done)i++;c.step=i;
+    if(i>=steps.length)return {end:true,n:steps.length};
+    var st=steps[i];st.i=i;st.n=steps.length;st.here=!!st.go&&loc===st.go&&(st.k==='sleep'||view===st.go);return st;
+  }
+  function coachPaint(){
+    var el=$('coach');if(!el)return;var st=coachNow();
+    document.querySelectorAll('.coach-target').forEach(function(x){x.classList.remove('coach-target')});
+    if(!st||S.pending||S.morning){el.hidden=true;return}
+    el.hidden=false;
+    if(st.end){el.innerHTML='<div class="coach-t"><b>🎉 That is a full day.</b><span>Each day is the same loop: eat, earn, learn, rest. Rent comes every '+RENT_EVERY+' days and clothes wear out, so keep some cash. The First-week checklist on Today has more to try.</span></div><div class="coach-b"><button type="button" class="btn" data-coach="done">Got it</button></div>';return}
+    el.innerHTML='<div class="coach-t"><small>First day · step '+(st.i+1)+' of '+st.n+'</small><b>'+st.t+'</b><span>'+(st.here?st.near:st.far)+'</span></div><div class="coach-b">'+(!st.here&&st.go?'<button type="button" class="btn" data-dg-go="'+st.go+'">Take me there · '+hm(dist(loc,st.go)*WALK)+'</button>':'')+'<button type="button" class="btn alt" data-coach="skip">Skip guide</button></div>';
+    if(st.here){var tg=document.querySelector(st.sel);if(tg)tg.classList.add('coach-target')}
+    else if(st.go){var tile=document.querySelector('.tile[data-loc="'+st.go+'"]');if(tile)tile.classList.add('coach-target')}
+  }
   function modernSetup(){
     var top=document.createElement('header');top.id='appTop';top.setAttribute('aria-label','Daily Grind status');
     top.innerHTML='<div class="app-brand"><span class="brand-mark">'+modernIcon('brand')+'</span><div>Daily Grind<small>Your town. Your next chapter.</small></div></div><div class="app-status"><span><small>DAY</small><b id="appDay"></b></span><span><span class="hud-sky" id="appSky" aria-hidden="true">☀</span><b id="appTime"></b><small>left</small></span><span><small>CASH</small><b id="appCash"></b></span><span class="status-energy"><small>ENERGY</small><b id="appEnergy"></b></span></div>';
@@ -478,6 +504,8 @@
     var labels=document.createElement('div');labels.id='townLabels';labels.setAttribute('aria-hidden','true');
     labels.innerHTML=SCENE_KEYS.map(function(k,i){var p=TOWN_POINTS[i];return p&&NAME[k]?'<span class="town-label" data-for="'+k+'" style="left:'+p[0]+'%;top:'+p[1]+'%">'+modernEsc(NAME[k])+'</span>':''}).join('');$('townCanvas').appendChild(labels);
     modernDrawTown();modernPortraitSetup();
+    var coach=document.createElement('section');coach.id='coach';coach.hidden=true;coach.setAttribute('aria-live','polite');coach.setAttribute('aria-label','First day guide');$('center').insertBefore(coach,$('center').firstChild);
+    coach.addEventListener('click',function(e){var b=e.target.closest('[data-coach]');if(!b)return;S.coach={on:false,step:0};if(b.dataset.coach==='skip')log('Guide skipped. The First-week checklist on Today is still there.');save();render()});
     var directory=document.createElement('section');directory.id='townDirectory';directory.hidden=true;directory.setAttribute('aria-label','Destinations');$('center').appendChild(directory);
     var heading=document.createElement('div');heading.id='screenHeading';heading.className='screen-heading';$('overview').insertBefore(heading,$('overview').firstChild);
     var progress=document.createElement('div');progress.id='dailyProgress';progress.className='daily-progress';progress.setAttribute('aria-live','polite');$('appTop').appendChild(progress);
@@ -650,7 +678,7 @@
     var tb=$('todayBadge');if(tb){tb.hidden=!warns.length;tb.textContent=warns.length;tb.title=warns.length+' alert'+(warns.length===1?'':'s')+' on the Today screen'}
     $('townDevice').disabled=!handheld()||!!S.over||!!S.pending;$('townDevice').textContent=owns('tablet')&&!owns('phone')?'Tablet apps':'Phone / tablet apps';$('townDeviceNote').textContent=handheld()?'Bank · Jobs'+(S.mode==='rivals'?' · Calls · Messages':''):'Buy a phone or tablet to use apps';
     var shadeLevel=S.over?0:Math.max(0,1-S.ap/MAX_AP);document.documentElement.style.setProperty('--day-shade',(shadeLevel*.13).toFixed(3));$('board').style.setProperty('--map-dusk',(shadeLevel*.35).toFixed(3));
-    modernLandmarks();modernRivalCharts();modernPortraitBeat();
+    modernLandmarks();modernRivalCharts();modernPortraitBeat();coachPaint();
     var blocked=!!S.over||!!S.pending||!S.flags.diff;
     $('appNav').querySelectorAll('[data-dg-screen]').forEach(function(b){b.disabled=blocked;if(b.dataset.dgScreen===modernScreen)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
     var badge=$('rivalBadge'),unread=S.mode==='rivals'?newMsgs():0;badge.hidden=!unread;badge.textContent=unread;

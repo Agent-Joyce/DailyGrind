@@ -337,10 +337,13 @@
     [].forEach.call(document.querySelectorAll('#rivLevel [data-rl]'),function(b){b.classList.toggle('on',b.dataset.rl===pickLevel)});
     [].forEach.call(document.querySelectorAll('#rivMood [data-rm]'),function(b){b.classList.toggle('on',b.dataset.rm===pickMood)});
     var n=pickMode==='rivals'?CONFIG.rivals.gameDays:CONFIG.time.gameDays;
+    $('welcomeGoT').textContent=pickMode==='rivals'?'▶ Start playing · '+pickCount+' AI rival'+(pickCount===1?'':'s'):'▶ Start playing';$('welcomeRivals').hidden=pickMode==='rivals';$('welcomeRivalsT').textContent=CONFIG.rivals.gameDays+' days, three neighbours, a town leaderboard';
     $('modeSingleTxt').textContent=CONFIG.time.gameDays+' days, your own score';$('modeRivalsTxt').textContent=CONFIG.rivals.gameDays+' days, a town leaderboard';
     document.querySelectorAll('#diffs [data-diff]').forEach(function(b){var D=DIFF[b.dataset.diff],sm=b.querySelector('small');if(D&&sm)sm.textContent=D.d.replace(/\.$/,'').replace(/\d+ days/,n+' days')});
   }
   $('modes').addEventListener('click',function(e){var b=e.target.closest('[data-mode]');if(!b)return;pickMode=b.dataset.mode;paintMode()});
+  /* the second big button: a game against three medium rivals at Normal, or whatever the Custom game drawer was set to */
+  $('welcomeRivals').addEventListener('click',function(){pickMode='rivals';paintMode();$('welcomeGo').click()});
   $('rivOpts').addEventListener('click',function(e){var c=e.target.closest('[data-rc]'),l=e.target.closest('[data-rl]'),md=e.target.closest('[data-rm]');if(c)pickCount=+c.dataset.rc;if(l)pickLevel=l.dataset.rl;if(md)pickMood=md.dataset.rm;paintMode()});
   /* capture phase: before the difficulty handler below starts the game */
   $('diffs').addEventListener('click',function(e){
@@ -352,6 +355,7 @@
   $('diffs').addEventListener('click',function(e){
     var b=e.target.closest('[data-diff]');if(!b)return;
     var k=b.dataset.diff,D=DIFF[k];
+    S.coach={on:!!($('coachOn')&&$('coachOn').checked),step:0};  /* the guided first day (coachNow) */
     S.diff=k;S.flags.diff=1;S.cash=D.cash;S.px=D.px*(CONFIG.limits.startPriceMin+Math.random()*(CONFIG.limits.startPriceMax-CONFIG.limits.startPriceMin));S.wage=D.wage;S.today=null;T0();
     $('welcome').classList.remove('show');
     log('Difficulty: '+D.n+'. '+D.d.replace(/\d+ days/,gameLen()+' days'),'good');

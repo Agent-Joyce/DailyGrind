@@ -739,6 +739,25 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
 :is(#appTop,body) #hudEnd.warn:not(:disabled){background:var(--warn-bg);color:var(--warn-ink);border:1px solid var(--warn-bg)}
 #hudTools>summary{background:var(--btn2-bg);color:var(--btn2-ink);border:1px solid var(--btn2-line);gap:6px}
 .quick-card small,.destination small{color:inherit;opacity:.82}
+/* ===== Welcome screen and the guided first day (CHANGELOG 107) ===== */
+.welcome-card{max-width:460px}.welcome-card h2{font-size:1.9rem;margin-bottom:4px}.wl-pitch{color:var(--ink);margin:0 0 14px}
+.wl-start{display:flex;flex-direction:column;gap:10px}
+.wl-start .wl-go{display:flex;flex-direction:column;gap:3px;text-align:left;padding:14px 16px;min-height:64px}
+.wl-start .wl-go b{font-size:1.08rem}.wl-start .wl-go small{font-weight:600;font-size:.78rem;opacity:.88}
+.wl-coach{display:flex;align-items:center;gap:8px;font-size:.86rem;font-weight:600;min-height:32px;cursor:pointer}.wl-coach input{width:18px;height:18px;accent-color:var(--teal)}
+.welcome-card .wmore>summary{min-height:36px}.welcome-card .more-b{padding-top:6px}.wl-note{font-size:.76rem;color:var(--muted);margin:6px 0 0}
+.welcome-card .diffs{grid-template-columns:repeat(2,minmax(0,1fr))}
+#coach{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:0 0 12px;padding:12px 14px;border:1px solid var(--gold);border-radius:14px;background:color-mix(in srgb,var(--gold) 14%,var(--surface))}
+#coach[hidden]{display:none}
+.coach-t{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:2px}.coach-t small{font-size:.68rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--gold)}
+.coach-t b{font-size:1rem}.coach-t span{font-size:.84rem;line-height:1.4}
+.coach-b{display:flex;gap:8px;flex-wrap:wrap}.coach-b .btn{min-height:40px}
+/* where the guide is pointing: a soft gold pulse */
+.coach-target{outline:3px solid var(--gold);outline-offset:3px;border-radius:12px;animation:coachPulse 1.4s ease-in-out infinite}
+.tile.coach-target{outline:0;animation:none}.tile.coach-target .building-sprite{animation:coachGlow 1.4s ease-in-out infinite}
+@keyframes coachPulse{50%{outline-color:transparent}}
+@keyframes coachGlow{0%,100%{filter:drop-shadow(0 0 3px var(--gold)) drop-shadow(0 0 10px var(--gold))}50%{filter:drop-shadow(0 5px 5px #142f3555)}}
+@media(prefers-reduced-motion:reduce){.coach-target,.tile.coach-target .building-sprite{animation:none}.tile.coach-target .building-sprite{filter:drop-shadow(0 0 3px var(--gold)) drop-shadow(0 0 10px var(--gold))}}
 </style>
 </head>
 <body>
@@ -845,16 +864,14 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
   <div id="evwrap" hidden><div id="event" class="evcard" role="dialog" aria-live="assertive"></div></div>
 </main>
 
-<div class="over" id="welcome" role="dialog" aria-modal="true" aria-labelledby="wlT"><div class="card rules">
-  <h2 id="wlT">Welcome to Daily Grind</h2>
-  <p style="color:var(--ink)">Build a life from scratch. Reach <b><span id="cfgGoal">$1,000</span> net worth</b> without going broke, burning out or skipping meals.</p>
-  <div class="wtiles">
-    <div><b>⏱ 24 hours a day</b><span>Walking: <span id="cfgWalk">5 minutes</span> and <span id="cfgWalkE">1%</span> energy per distance step. Destination labels show the total walk.</span></div>
-    <div><b>🍽 Eat once a day</b><span>Low energy makes you ill</span></div>
-    <div><b>🏠 Rent <span id="cfgRent">every 5 days</span></b><span>Short of cash? It goes on a plan</span></div>
-    <div><b>👕 Clothes last <span id="cfgClothes">5 days</span></b><span>Replace them at the Clothes Mall</span></div>
-  </div>
-  <details class="wmore"><summary><i class="ib">i</i>More about how to play</summary><div class="more-b">Working, studying and shopping all use time. End the day with <b>Sleep in Apartment</b> at home (the most rest) or <b>Sleep outside</b> anywhere else. Keep an eye on energy and happiness: low happiness cuts your pay. Start with a job at the Employment Office, work shifts, then study at School for better jobs. The <b>First week</b> checklist guides your first days, and the game saves automatically.</div></details>
+<div class="over" id="welcome" role="dialog" aria-modal="true" aria-labelledby="wlT"><div class="card rules welcome-card">
+  <h2 id="wlT">Daily Grind</h2>
+  <p class="wl-pitch">Build a life from scratch in a small town. Reach <b><span id="cfgGoal">$1,000</span> net worth</b> without going broke, burning out or skipping meals.</p>
+  <div class="wl-start" id="diffs">
+    <button class="btn wl-go" data-diff="normal" id="welcomeGo"><b id="welcomeGoT">▶ Start playing</b><small>$200 to start, 20 days, standard prices</small></button>
+    <button type="button" class="btn alt wl-go" id="welcomeRivals"><b>🏁 Play against AI rivals</b><small id="welcomeRivalsT">30 days, three neighbours, a town leaderboard</small></button>
+    <label class="wl-coach"><input type="checkbox" id="coachOn" checked> Guide me through my first day</label>
+    <details id="customGame" class="wmore"><summary><i class="ib">⚙</i>Custom game: rivals, difficulty, starting trait</summary><div class="more-b">
   <details id="traitBox" class="tbox"><summary><span>🎭 Starting trait: <b id="traitPick">No trait</b></span><small>optional · tap to change</small></summary>
   <div class="traits" id="traits" role="radiogroup" aria-label="Starting trait"></div></details>
   <div id="modeWrap"><h3>How do you want to play?</h3>
@@ -867,12 +884,21 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     <div><span>Level</span><span class="rseg" id="rivLevel"><button type="button" data-rl="easy">Easy</button><button type="button" data-rl="medium" class="on">Medium</button><button type="button" data-rl="expert">Expert</button><button type="button" data-rl="mixed">Mixed</button></span></div>
     <div><span>Town mood</span><span class="rseg" id="rivMood"><button type="button" data-rm="friendly">😊 Friendly</button><button type="button" data-rm="competitive" class="on">⚖️ Competitive</button><button type="button" data-rm="cutthroat">🔪 Cutthroat</button></span></div>
   </div></div>
-  <div id="diffsWrap"><h3>Choose a difficulty</h3>
-  <div class="diffs" id="diffs">
+  <div id="diffsWrap"><h3>Other difficulties</h3>
+  <div class="diffs">
     <button class="btn alt" data-diff="easy"><b>Easy</b><small>$500 to start, 20 days, cheaper prices, fewer illnesses</small></button>
-    <button class="btn" data-diff="normal" id="welcomeGo"><b>Normal</b><small>$200 to start, 20 days, standard prices</small></button>
     <button class="btn alt" data-diff="hard"><b>Hard</b><small>$100 to start, 20 days, prices +15%, pay −5%, more illness</small></button>
-  </div></div>
+  </div><p class="wl-note">Easy and Hard start the game straight away with the choices above. “Start playing” is Normal.</p></div>
+    </div></details>
+    <details class="wmore" id="howWorks"><summary><i class="ib">i</i>How the game works</summary>
+  <div class="wtiles">
+    <div><b>⏱ 24 hours a day</b><span>Walking: <span id="cfgWalk">5 minutes</span> and <span id="cfgWalkE">1%</span> energy per distance step. Destination labels show the total walk.</span></div>
+    <div><b>🍽 Eat once a day</b><span>Low energy makes you ill</span></div>
+    <div><b>🏠 Rent <span id="cfgRent">every 5 days</span></b><span>Short of cash? It goes on a plan</span></div>
+    <div><b>👕 Clothes last <span id="cfgClothes">5 days</span></b><span>Replace them at the Clothes Mall</span></div>
+  </div>
+    <div class="more-b">Working, studying and shopping all use time. End the day with <b>Sleep in Apartment</b> at home (the most rest) or <b>Sleep outside</b> anywhere else. Keep an eye on energy and happiness: low happiness cuts your pay. Start with a job at the Employment Office, work shifts, then study at School for better jobs. The <b>First week</b> checklist guides your first days, and the game saves automatically.</div></details>
+  </div>
 </div></div>
 <div class="over" id="rules" role="dialog" aria-modal="true" aria-labelledby="rlT"><div class="card rules">
   <h2 id="rlT">How the game ends</h2>
@@ -2340,7 +2366,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
      3. STATE AND SAVES
      blank() is the full shape of S. fresh() starts a game; save() and load() keep it in localStorage; finish() ends it.
      ================================================================== */
-  function blank(){return {gig:{stars:CONFIG.side.gig.startStars,d:0,runs:0,total:0},tutorDay:0,creator:{f:0,d:0,posts:0,last:0,earned:0},socialEvents:[],socialN:0,socialLast:0,rivalRelations:{},fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,ind:null,indNext:0,indId:'',macroLast:0,bankOffer:null,promo:null,comm:null,tip:null,mode:'single',rivals:[],rivalSeed:0,indLeft:0,life:null,raced:{},jobRaces:0,enc:null,rcalled:null,cong:null,msgs:[],rloans:[],bets:[],msgN:0,asked:null,flat:null,flatSkip:0,townMood:'competitive',rep:60,pact:null,leak:null,blocked:null,rpacts:[],sabOn:[],sabMine:[],sabUsed:0,incidents:[],incN:0,rentPaidAmt:0,rcards:{},lastRCard:0,lastRace:'',deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0,data:0,media:0,green:0,logi:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:CONFIG.market.rateBase,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
+  function blank(){return {coach:{on:false,step:0},gig:{stars:CONFIG.side.gig.startStars,d:0,runs:0,total:0},tutorDay:0,creator:{f:0,d:0,posts:0,last:0,earned:0},socialEvents:[],socialN:0,socialLast:0,rivalRelations:{},fac:{},calls:null,rankDay:{},bestDay:0,newsPlan:null,loan:null,broke:0,workMin:0,loadStreak:0,lowE:[],homeless:0,sagaLast:'',sagaNext:0,ind:null,indNext:0,indId:'',macroLast:0,bankOffer:null,promo:null,comm:null,tip:null,mode:'single',rivals:[],rivalSeed:0,indLeft:0,life:null,raced:{},jobRaces:0,enc:null,rcalled:null,cong:null,msgs:[],rloans:[],bets:[],msgN:0,asked:null,flat:null,flatSkip:0,townMood:'competitive',rep:60,pact:null,leak:null,blocked:null,rpacts:[],sabOn:[],sabMine:[],sabUsed:0,incidents:[],incN:0,rentPaidAmt:0,rcards:{},lastRCard:0,lastRace:'',deckS:[],deckM:[],deckG:[],slept:0,homeMeals:0,shut:{},food:[],chips:0,chipsDay:0,health:CONFIG.health.start,gym:[],good:[],studyMin:0,burn:0,saga:null,sagaGap:0,restHap:0,goalPop:0,arrears:null,enr:{},tickets:[],junk:[],notes:[],les:{},restBonus:0,cert:null,lastTrack:null,morning:null,rentPaid:0,trends:[],ver:SAVE_VERSION,tmin:1,tier:-1,diff:'normal',today:null,summary:null,flags:{},tut:0,day:1,ap:MAX_AP,cash:200,bank:0,energy:CONFIG.start.energy,happy:70,know:10,ill:null,hosp:null,restHrs:0,sickSleep:0,immune:0,ins:0,medDebt:0,medDays:0,medFresh:0,fed:false,hungry:0,exh:0,gloom:0,sick:0,broken:{},pawned:{},mkt:0,inv:{cry:{c:0,v:0,lock:0,seen:0,last:0,lp:0},fd:{c:0,v:0,lock:0,seen:0,last:0,lp:0},etf:{c:0,v:0,lock:0,seen:0,last:0,lp:0},hf:{c:0,v:0,lock:0,seen:0,last:0,lp:0}},sinceClass:0,studied:false,enrolled:false,expelled:0,edu:{sal:0,fnb:0,fin:0,tech:0,eng:0,med:0,cus:0,data:0,media:0,green:0,logi:0},career:{},closed:{},home:'apt',items:{},clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},offer:{},barg:{},px:1,wage:1,rate:CONFIG.market.rateBase,layoff:0,pending:null,deckN:[],deckC:[],over:false}}
   function fresh(){
     S=blank();T0();PREV=null;applyPayVar();S.certVar={};Object.keys(TRACKS).forEach(function(t){S.certVar[t]=1+(Math.random()*2-1)*CONFIG.education.certVariance});
     S.sagaNext=sagaDay();S.indNext=indDay();S.indId=INDUSTRY[Math.floor(Math.random()*INDUSTRY.length)].id;
@@ -8310,10 +8336,13 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     [].forEach.call(document.querySelectorAll('#rivLevel [data-rl]'),function(b){b.classList.toggle('on',b.dataset.rl===pickLevel)});
     [].forEach.call(document.querySelectorAll('#rivMood [data-rm]'),function(b){b.classList.toggle('on',b.dataset.rm===pickMood)});
     var n=pickMode==='rivals'?CONFIG.rivals.gameDays:CONFIG.time.gameDays;
+    $('welcomeGoT').textContent=pickMode==='rivals'?'▶ Start playing · '+pickCount+' AI rival'+(pickCount===1?'':'s'):'▶ Start playing';$('welcomeRivals').hidden=pickMode==='rivals';$('welcomeRivalsT').textContent=CONFIG.rivals.gameDays+' days, three neighbours, a town leaderboard';
     $('modeSingleTxt').textContent=CONFIG.time.gameDays+' days, your own score';$('modeRivalsTxt').textContent=CONFIG.rivals.gameDays+' days, a town leaderboard';
     document.querySelectorAll('#diffs [data-diff]').forEach(function(b){var D=DIFF[b.dataset.diff],sm=b.querySelector('small');if(D&&sm)sm.textContent=D.d.replace(/\.$/,'').replace(/\d+ days/,n+' days')});
   }
   $('modes').addEventListener('click',function(e){var b=e.target.closest('[data-mode]');if(!b)return;pickMode=b.dataset.mode;paintMode()});
+  /* the second big button: a game against three medium rivals at Normal, or whatever the Custom game drawer was set to */
+  $('welcomeRivals').addEventListener('click',function(){pickMode='rivals';paintMode();$('welcomeGo').click()});
   $('rivOpts').addEventListener('click',function(e){var c=e.target.closest('[data-rc]'),l=e.target.closest('[data-rl]'),md=e.target.closest('[data-rm]');if(c)pickCount=+c.dataset.rc;if(l)pickLevel=l.dataset.rl;if(md)pickMood=md.dataset.rm;paintMode()});
   /* capture phase: before the difficulty handler below starts the game */
   $('diffs').addEventListener('click',function(e){
@@ -8325,6 +8354,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
   $('diffs').addEventListener('click',function(e){
     var b=e.target.closest('[data-diff]');if(!b)return;
     var k=b.dataset.diff,D=DIFF[k];
+    S.coach={on:!!($('coachOn')&&$('coachOn').checked),step:0};  /* the guided first day (coachNow) */
     S.diff=k;S.flags.diff=1;S.cash=D.cash;S.px=D.px*(CONFIG.limits.startPriceMin+Math.random()*(CONFIG.limits.startPriceMax-CONFIG.limits.startPriceMin));S.wage=D.wage;S.today=null;T0();
     $('welcome').classList.remove('show');
     log('Difficulty: '+D.n+'. '+D.d.replace(/\d+ days/,gameLen()+' days'),'good');
@@ -8833,6 +8863,32 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     closePlaces();modernScreen=screen;ovHidden=false;view=null;render();
     $('center').scrollTop=0;
   }
+  /* ---------- the guided first day (CHANGELOG 107) ----------
+    Four steps, each finished by doing the thing in the game: get a job, work a shift, eat, sleep at home. It only points
+    the way: it never spends time or money, rolls no dice and blocks nothing. S.coach = {on, step}; "Skip" or the last
+    step turns it off. coachNow() returns the current prompt, or null. */
+  function coachNow(){
+    var c=S.coach;if(!c||!c.on||S.over||!S.flags.diff)return null;
+    var j=myJob(),steps=[
+      {k:'job',done:!!j,go:'jobs',t:'Get a job',far:'Walk to the Employment Office and pick a job you can apply for.',near:'Press Apply on a job without a lock. An interview takes an hour.',sel:'#shop [data-act="apply"]:not([disabled])'},
+      {k:'work',done:!!S.flags.worked,go:j?j.b:'jobs',t:'Work your first shift',far:'Go to '+(j?'the '+NAME[j.b]:'your workplace')+' and work a shift.',near:'Press the Work button. A shift earns money and uses time and energy.',sel:'#shop [data-act="work"]:not([disabled])'},
+      {k:'eat',done:!!S.fed||S.day>1,go:'fast',t:'Eat something',far:'You need one meal a day. Fast Food is the quickest; the Supermarket is cheaper if you cook at home.',near:'Order a meal here. Each row shows what it does to your energy, happiness and health.',sel:'#shop [data-act="treat"]:not([disabled])'},
+      {k:'sleep',done:S.day>1,go:S.homeless?'':S.home,t:'Go home and sleep',far:'Head home when you are done for the day. Sleeping at home gives the most rest.',near:'Press Sleep at the top to end the day. Whatever time is left becomes rest.',sel:'#hudEnd'}
+    ];
+    var i=0;while(i<steps.length&&steps[i].done)i++;c.step=i;
+    if(i>=steps.length)return {end:true,n:steps.length};
+    var st=steps[i];st.i=i;st.n=steps.length;st.here=!!st.go&&loc===st.go&&(st.k==='sleep'||view===st.go);return st;
+  }
+  function coachPaint(){
+    var el=$('coach');if(!el)return;var st=coachNow();
+    document.querySelectorAll('.coach-target').forEach(function(x){x.classList.remove('coach-target')});
+    if(!st||S.pending||S.morning){el.hidden=true;return}
+    el.hidden=false;
+    if(st.end){el.innerHTML='<div class="coach-t"><b>🎉 That is a full day.</b><span>Each day is the same loop: eat, earn, learn, rest. Rent comes every '+RENT_EVERY+' days and clothes wear out, so keep some cash. The First-week checklist on Today has more to try.</span></div><div class="coach-b"><button type="button" class="btn" data-coach="done">Got it</button></div>';return}
+    el.innerHTML='<div class="coach-t"><small>First day · step '+(st.i+1)+' of '+st.n+'</small><b>'+st.t+'</b><span>'+(st.here?st.near:st.far)+'</span></div><div class="coach-b">'+(!st.here&&st.go?'<button type="button" class="btn" data-dg-go="'+st.go+'">Take me there · '+hm(dist(loc,st.go)*WALK)+'</button>':'')+'<button type="button" class="btn alt" data-coach="skip">Skip guide</button></div>';
+    if(st.here){var tg=document.querySelector(st.sel);if(tg)tg.classList.add('coach-target')}
+    else if(st.go){var tile=document.querySelector('.tile[data-loc="'+st.go+'"]');if(tile)tile.classList.add('coach-target')}
+  }
   function modernSetup(){
     var top=document.createElement('header');top.id='appTop';top.setAttribute('aria-label','Daily Grind status');
     top.innerHTML='<div class="app-brand"><span class="brand-mark">'+modernIcon('brand')+'</span><div>Daily Grind<small>Your town. Your next chapter.</small></div></div><div class="app-status"><span><small>DAY</small><b id="appDay"></b></span><span><span class="hud-sky" id="appSky" aria-hidden="true">☀</span><b id="appTime"></b><small>left</small></span><span><small>CASH</small><b id="appCash"></b></span><span class="status-energy"><small>ENERGY</small><b id="appEnergy"></b></span></div>';
@@ -8852,6 +8908,8 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     var labels=document.createElement('div');labels.id='townLabels';labels.setAttribute('aria-hidden','true');
     labels.innerHTML=SCENE_KEYS.map(function(k,i){var p=TOWN_POINTS[i];return p&&NAME[k]?'<span class="town-label" data-for="'+k+'" style="left:'+p[0]+'%;top:'+p[1]+'%">'+modernEsc(NAME[k])+'</span>':''}).join('');$('townCanvas').appendChild(labels);
     modernDrawTown();modernPortraitSetup();
+    var coach=document.createElement('section');coach.id='coach';coach.hidden=true;coach.setAttribute('aria-live','polite');coach.setAttribute('aria-label','First day guide');$('center').insertBefore(coach,$('center').firstChild);
+    coach.addEventListener('click',function(e){var b=e.target.closest('[data-coach]');if(!b)return;S.coach={on:false,step:0};if(b.dataset.coach==='skip')log('Guide skipped. The First-week checklist on Today is still there.');save();render()});
     var directory=document.createElement('section');directory.id='townDirectory';directory.hidden=true;directory.setAttribute('aria-label','Destinations');$('center').appendChild(directory);
     var heading=document.createElement('div');heading.id='screenHeading';heading.className='screen-heading';$('overview').insertBefore(heading,$('overview').firstChild);
     var progress=document.createElement('div');progress.id='dailyProgress';progress.className='daily-progress';progress.setAttribute('aria-live','polite');$('appTop').appendChild(progress);
@@ -9024,7 +9082,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     var tb=$('todayBadge');if(tb){tb.hidden=!warns.length;tb.textContent=warns.length;tb.title=warns.length+' alert'+(warns.length===1?'':'s')+' on the Today screen'}
     $('townDevice').disabled=!handheld()||!!S.over||!!S.pending;$('townDevice').textContent=owns('tablet')&&!owns('phone')?'Tablet apps':'Phone / tablet apps';$('townDeviceNote').textContent=handheld()?'Bank · Jobs'+(S.mode==='rivals'?' · Calls · Messages':''):'Buy a phone or tablet to use apps';
     var shadeLevel=S.over?0:Math.max(0,1-S.ap/MAX_AP);document.documentElement.style.setProperty('--day-shade',(shadeLevel*.13).toFixed(3));$('board').style.setProperty('--map-dusk',(shadeLevel*.35).toFixed(3));
-    modernLandmarks();modernRivalCharts();modernPortraitBeat();
+    modernLandmarks();modernRivalCharts();modernPortraitBeat();coachPaint();
     var blocked=!!S.over||!!S.pending||!S.flags.diff;
     $('appNav').querySelectorAll('[data-dg-screen]').forEach(function(b){b.disabled=blocked;if(b.dataset.dgScreen===modernScreen)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
     var badge=$('rivalBadge'),unread=S.mode==='rivals'?newMsgs():0;badge.hidden=!unread;badge.textContent=unread;
