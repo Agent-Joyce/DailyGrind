@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 The project is the GitHub repo **`Agent-Joyce/DailyGrind`**. Work happens in a clone of it, on `main`. Reusable QA tools belong in `tools/qa/`. Throwaway files (hooked test copies, scratch scripts, browser profiles, debugging output and screenshots) go in a folder outside the repo, such as the session scratchpad, and are never committed. Final simulation reports and their raw results belong in `docs/`, as described below.
 
+**Continuing the work?** `docs/ROADMAP.md` is the current plan: what is built, what is owed, and the remaining packages in order.
+
 ## Source and build (read this first)
 
 **Edit `src/`, never `index.html`.** Since CHANGELOG 106 the game's source is in `src/`: `src/index.html` (the page shell), `src/css/*.css` (the stylesheet, six files in name order), `src/js/00-open.js` to `src/js/12-start.js` (the script, one file per numbered section, joined in name order into one closure), `src/img/` (the pictures) and `src/pwa/` (manifest, icons, service worker). After any change run:
