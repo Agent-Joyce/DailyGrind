@@ -60,7 +60,7 @@
   function closeOver(){[].forEach.call(document.querySelectorAll('.over.show'),function(o){o.classList.remove('show')})}
   var bankChoice=null;
   function restore(where){
-    G.S=JSON.parse(base);S=G.S;G.loc=where&&['phone','pc','bankapp','jobsapp','callsapp','msgsapp'].indexOf(where)<0?where:baseLoc;G.view=where||null;  /* device and app screens are not places */
+    G.S=JSON.parse(base);S=G.S;G.loc=where&&['phone','pc','bankapp','jobsapp','callsapp','msgsapp','gigsapp','creatorapp'].indexOf(where)<0?where:baseLoc;G.view=where||null;  /* device and app screens are not places */
     closeOver();$('toasts').innerHTML='';G.render();if(bankChoice&&(where==='bank'||where==='bankapp')){var tab=document.querySelector('[data-dg-product="'+bankChoice.id+'"]');if(tab)tab.click();var mode=document.querySelector('.bk-card:not([hidden]) [data-dg-mode="'+bankChoice.mode+'"]');if(mode)mode.click()}$('toasts').innerHTML='';
   }
 
@@ -257,8 +257,25 @@
     {name:'out of clothes, buying used ones',bld:'thrift',need:['ubuy'],
       mod:function(S){S.clothes={casual:0,smart:0,suit:0}}},
     {name:'out of clothes with a job (shift disabled, "No clothes" chip)',bld:'fast',need:[],
-      mod:function(S){S.clothes={casual:0,smart:0,suit:0};S.career={fast:0};S.jobName='Crew Member';S.shut={};S.ill=null}}
+      mod:function(S){S.clothes={casual:0,smart:0,suit:0};S.career={fast:0};S.jobName='Crew Member';S.shut={};S.ill=null}},
+    {name:'the Gigs app with a rating and runs left (a delivery run)',bld:'gigsapp',need:['gig'],
+      mod:function(S){S.items.phone=1;delete S.broken.phone;S.ill=null;S.energy=60;S.workMin=0;S.gig={stars:4.2,d:S.day,runs:1,total:6}}},
+    {name:'the Creator app with followers (a post, tonight’s sponsors)',bld:'creatorapp',need:['post'],
+      mod:function(S){S.items.phone=1;delete S.broken.phone;S.ill=null;S.workMin=0;S.creator={f:1250,d:S.day,posts:0,last:S.day-1,earned:84}}},
+    {name:'tutoring with a completed qualification (School)',bld:'school',need:['tutor','class'],
+      mod:function(S){var t=Object.keys(G.TRACKS)[0];S.edu[t]=Math.max(S.edu[t]||0,G.TRACKS[t].c[0]);S.tutorDay=null;S.ill=null;S.workMin=0}},
+    {name:'a typed contract (Study Buddies) with a session due today and a competing shift',bld:'msgsapp',need:['cdo'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.townMood='competitive';S.rpacts=[];S.asked=null;
+        S.pact={i:1,kind:'study',since:S.day-2,until:S.day+3,pot:0,stake:0,terms:uiTerms(S),progress:1,missed:0,next:S.day,reschedules:0,reachedMe:null,reachedThem:null,session:{day:S.day,conflict:'shift'}}}},
+    {name:'a broken promise to answer (a cancelled study session)',bld:'msgsapp',need:['promise','cdo'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.townMood='competitive';S.rpacts=[];S.asked=null;
+        S.pact={i:1,kind:'study',since:S.day-2,until:S.day+3,pot:0,stake:0,terms:uiTerms(S),progress:1,missed:0,next:S.day+1,reschedules:0,reachedMe:null,reachedThem:null,
+          problem:{kind:'study',text:'Leo cancelled a session because of fatigue.',notice:false,day:S.day,expires:S.day+2}}}}
   ];
+  /* a contract's fixed terms, as contractTerms() builds them (it is not exposed to the check) */
+  function uiTerms(S){var C=G.CONFIG.rivals.contracts,cp=function(o){return JSON.parse(JSON.stringify(o))};
+    return {days:C.days,minutes:C.minutes,keepRel:C.keepRel,missRel:C.missRel,honourRel:C.honourRel,rewardHappy:C.rewardHappy,noticeDays:C.noticeDays,
+      study:cp(C.study),emergency:cp(C.emergency),royalty:cp(C.royalty),target:Math.ceil(G.worth()*1.25),stake:0,reminderDays:C.wealth.reminderDays}}
   async function situation(x){
     var keep=base,S0=JSON.parse(base);x.mod(S0);base=JSON.stringify(S0);
     try{
