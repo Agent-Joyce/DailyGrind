@@ -600,6 +600,14 @@
         socialite:{name:'Socialite',icon:'🥂',about:'Keeps spirits and friendships up, and likes jobs with people.',tracks:{media:1.55,sal:1.4,fnb:1.35,cus:1.35,med:0.75},shifts:-0.25,study:0.9,bank:0,morale:12,social:true},
         hustler:  {name:'Hustler',icon:'⚡',about:'Works every hour going and climbs practical trades fast.',tracks:{logi:1.55,green:1.5,eng:1.15,med:0.75},shifts:0.5,study:0.8,bank:0,morale:-5,social:null}
       },
+      /* Playing to win (planning rivals: levels listed): each night a rival looks at its Life Score places and picks one focus for the
+        next day where a place is cheapest to gain: a category where the player just ahead is within `close` (happiness: average
+        points; health: unwell nights; education: qualification levels; rep: reputation points). From defendFrom (share of the game)
+        it also defends a place that the player just behind is that close to. Focus levers: happiness sets the day's happiness aim moraleLift
+        above the average it needs to pass (or keep); education adds studyHours; health takes the gymClass at the Gym (CONFIG.gym.classes); rep adds repPactChance to the
+        nightly chance of a pact between rivals (CONFIG.rivals.politics.rivalPacts) and starts it. Wealth and career are its normal play. */
+      aims:{levels:['medium','expert'], close:{happiness:6, health:1, education:1, rep:6}, defendFrom:0.8,
+        moraleLift:15, studyHours:1.5, gymClass:'spin', repPactChance:0.15},
       /* Meaningful deeds change remembered trust, independently of relationship points. Stored history is bounded.
         A help credit can be returned as one job introduction, no earlier than the next day. */
       memory:{maxEntries:5,maxTrust:3,maxOwed:3,lendPerTrust:0.04,lendTrust:1,refuseTrust:-1,repayTrust:1,defaultTrust:-2,helpTrust:1},

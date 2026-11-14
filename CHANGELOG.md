@@ -1943,3 +1943,31 @@ Base: §108. Rival games only; single games draw no rival dice and are unchanged
 - `check-social-rules.js`: the two tests of the removed career switch and personality tastes are replaced by two archetype tests (dealt one each, taste changes a job's value; level adjustments, the one-shift floor, and old saves given distinct archetypes without dice).
 - `tools/qa/suite-player.js` records `archetype` in rival snapshots in place of the removed fields; `report-suite.js` reports archetypes in the diversity table, and GAME-01 is now "rivals with different archetypes still finished on one path".
 - Docs: `CODE_MAP.md`, `CLAUDE.md`, `docs/Configuration_Social_Update.md`, `docs/Daily Grind Config Guide.docx` (archetypes row; career settings and tastes rows updated).
+
+## 110. Rivals play to win the Life Score (Package B, item 20)
+
+Base: §109. Rival games only; no new dice (single games unchanged).
+
+**Why:** a planning rival chose its day to maximise pay × days, but a rival game is won on eight Life Score categories, so rivals never tried for the places they were closest to.
+
+**How it works** (new `CONFIG.rivals.aims`; `aimTick()`, `rivalStanding()`)
+
+- Once a night, first in `rivalTick()`, each medium and expert rival (`aims.levels`) works out its place in every category from `lifeScore()` and the gap to the player just ahead and just behind (`rivalStanding()`, stored as `r.standing`).
+- It picks one focus for the day (`r.focus`): the category among happiness, health, education and reputation where the player just ahead is within `aims.close` (average happiness 6, unwell nights 1, qualification levels 1, reputation 6) and moving up is worth the most points for the gap. From `defendFrom` (80% of the game, the last fifth) it also weighs defending a place that the player just behind is that close to. Wealth and career stay its normal play. Easy rivals do not play for places.
+- Levers, all existing game numbers: **happiness** sets the day's happiness aim `moraleLift` (15) above the average it needs to pass or keep, so it makes calls, walks and Community Centre visits (`rivalDay()` morale block); **education** adds `studyHours` (1.5) to the day's lessons; **health** takes the `gymClass` (Spin) at the Gym at its normal price, with the rent and next outfit still covered (rivals did not use the Gym before; a rival there can now be met at the Gym); **reputation** adds `repPactChance` (0.15) to the nightly chance of a pact between rivals and makes that rival the one who proposes.
+- `r.aim` holds a short phrase ("chasing 2nd place in happiness", "defending 1st place in education", or "working towards Junior Doctor") for item 24 to show.
+- The Rules text says which levels play to win and from when they defend (from CONFIG).
+
+**Results** (overnight harness: the player only sleeps, 12 games per level, 30 days, three rivals; §109 → now)
+
+| | Medium | Expert | Mixed (expert / medium / easy) |
+|---|---|---|---|
+| Median Life Score points | 75 → 82 | 83 → 87 | 92 / 96 / 45 → 103 / 90 / 49 |
+| Average happiness (median) | 86 → 92 | 83 → 89 | 82 / 84 → 93 / 96 |
+| Median net worth | $8,999 → $10,230 | $12,977 → $12,191 | $7,065 → $6,371 |
+| Days with a focus | 84% | 86% | 57% (easy has none) |
+
+- Focus days by category (medium, 1,080 rival-days): happiness 585, education 279, reputation 44, health 0; a health place is rarely within one unwell night.
+- Expert now places above medium again in mixed games, which the §109 archetypes had reversed.
+
+**QA:** `check-social-rules.js` has a new case (a close happiness place becomes the focus with the right phrase and aim, a far one does not, easy rivals have no focus, and `aimTick()` rolls no dice; 60 in all). Docs: `CODE_MAP.md`, `docs/Configuration_Social_Update.md`, `docs/Daily Grind Config Guide.docx` (new `aims` row).

@@ -785,8 +785,9 @@
   function rivalNote(r,t,txt){r.log.unshift('Day '+(S.day-1)+': '+txt);r.log=r.log.slice(0,8);if(t)S.notes.push({l:'rem',t:'🏁 '+r.ic+' '+r.name+' '+txt,rv:t===2?S.rivals.indexOf(r):null,c:'news',g:'r'+S.rivals.indexOf(r),s:txt})}  /* t: 0 log only, 1 news, 2 news you can congratulate them on */
   /* one rival's day (the day that has just ended) */
   function rivalDay(r){
-    var K=rivalSkill(r),FDc=CONFIG.food,day=S.day-1,used=CONFIG.rivals.dayOverheadMinutes||0,mistake=rrand()<K.mistakeChance?['meal','study','lazy','clothes','fun'][Math.floor(rrand()*5)]:'',left=gameLen()-day;
+    var K=rivalSkill(r),AM=CONFIG.rivals.aims,FDc=CONFIG.food,day=S.day-1,used=CONFIG.rivals.dayOverheadMinutes||0,mistake=rrand()<K.mistakeChance?['meal','study','lazy','clothes','fun'][Math.floor(rrand()*5)]:'',left=gameLen()-day;
     var clamp100=function(v){return Math.max(0,Math.min(100,v))};
+    if(r.focus&&AM){K=Object.assign({},K);if(r.focus==='happiness')K.moraleAim=Math.max(K.moraleAim,r.aimHappy||0);if(r.focus==='education')K.studyHours+=AM.studyHours}  /* today's Life Score focus (aimTick) */
     /* eat */
     var meal=Math.round(G(FDc.basic.cost)*(1-(FDc.bundleDiscount||0)));
     if(mistake!=='meal'&&r.cash>=meal){r.cash-=meal;r.energy=clamp100(r.energy+FDc.basic.energy);r.happy=clamp100(r.happy+FDc.basic.happiness);r.health=clamp100(r.health+FDc.basic.health);r.hungry=0;used+=90}
@@ -863,12 +864,15 @@
     if(mistake!=='fun'&&r.happy<K.moraleAim){var L=CONFIG.leisure,C=CONFIG.community,acts=[L.call,L.walk];if(K.social&&C)acts.push(C.volunteer,C.karaoke,C.nightOut);
       acts.forEach(function(c){if(!c||r.happy>=K.moraleAim||used+c.minutes>1440-360)return;var cost=G(c.cost||0);if(r.cash-cost<HOUSE.apt.rent)return;if(c.energy&&r.energy+c.energy<25)return;
         if(c!==L.call&&c!==L.walk)r.wentComm=1;r.cash-=cost;r.happy=clamp100(r.happy+(c.happiness||0));r.energy=clamp100(r.energy+(c.energy||0));r.health=clamp100(r.health+(c.health||0));if(c.knowledge)r.know=clamp100(r.know+c.knowledge);used+=c.minutes})}
+    /* chasing a health place: a class at the Gym, paid with the rent and the next outfit still covered (CONFIG.rivals.aims.gymClass) */
+    if(r.focus==='health'&&!r.ill&&mistake!=='fun'){var gc=null;(CONFIG.gym.classes||[]).forEach(function(c){if(c.k===AM.gymClass)gc=c});
+      if(gc&&used+gc.minutes<=1440-360&&r.energy+gc.energy>=25){var gcost=G(gc.cost);if(r.cash-gcost>=HOUSE.apt.rent+G(WEAR[want].p)){r.cash-=gcost;r.energy=clamp100(r.energy+gc.energy);r.health=clamp100(r.health+gc.health);r.happy=clamp100(r.happy+(gc.happiness||0));used+=gc.minutes;r.wentGym=1}}}
     /* money: savings (medium), savings and the ETF in a good market (expert) */
     var keepC=HOUSE.apt.rent+150+G(WEAR.casual.p);
     if(K.bank!=='none'&&r.cash>keepC+50){r.bank+=r.cash-keepC;r.cash=keepC}
     if(K.bank==='invest'){if(S.mkt>0.3&&r.bank>300){var mv=Math.round(r.bank/2);r.bank-=mv;r.etf+=mv}else if(S.mkt<-0.3&&r.etf>0){r.bank+=r.etf;r.etf=0}}
     /* where a rival spends its days: where you may meet them tomorrow */
-    var jb=rivalJob(r);r.places=[jb?jb.b:null,r.wentSchool?'school':null,r.wentComm?'comm':null,'market'].filter(Boolean);r.wentSchool=0;r.wentComm=0;
+    var jb=rivalJob(r);r.places=[jb?jb.b:null,r.wentSchool?'school':null,r.wentComm?'comm':null,r.wentGym?'gym':null,'market'].filter(Boolean);r.wentSchool=0;r.wentComm=0;r.wentGym=0;
     return used;
   }
   /* the night for one rival: sleep, hunger, clothes wear, interest, rent, layoffs, endings and news */
@@ -1226,9 +1230,10 @@
       if(canBetray()){var x=rrand()<0.5?a:b,y=x===a?b:a;if(rrand()<betrayChance(x)){x.cash+=q.pot;repAdd(x,PX().rep.betray);
         S.notes.push({l:'rem',t:'💔 '+nm(x)+' walked out on '+nm(y)+(q.pot?' and kept their '+money(q.pot)+' pot':'')+' (reputation '+sg(PX().rep.betray)+').'});return false}}
       return true});
-    if(rrand()>=R.chance)return;
+    var AM=CONFIG.rivals.aims,repSeek=S.rivals.map(function(r,i){return i}).filter(function(i){var r=S.rivals[i];return !r.out&&!hasAlly(i)&&r.focus==='rep'});  /* a rival chasing a reputation place looks for a pact */
+    if(rrand()>=R.chance+(repSeek.length&&AM?AM.repPactChance:0))return;
     var free=S.rivals.map(function(r,i){return i}).filter(function(i){return !S.rivals[i].out&&!hasAlly(i)});if(free.length<2)return;
-    var ai=free[Math.floor(rrand()*free.length)],rest=free.filter(function(i){return i!==ai}),bi=rest[Math.floor(rrand()*rest.length)],a=S.rivals[ai],b=S.rivals[bi],st=scaledStake(a,b,P);
+    var ai=free[Math.floor(rrand()*free.length)];if(repSeek.length)ai=repSeek[0];var rest=free.filter(function(i){return i!==ai}),bi=rest[Math.floor(rrand()*rest.length)],a=S.rivals[ai],b=S.rivals[bi],st=scaledStake(a,b,P);
     if((S.rivalRelations[[ai,bi].sort().join('|')]||0)<=CONFIG.rivals.social.rivalAt)return;
     var pot=canStake(a,st,P)&&canStake(b,st,P)?st:0;if(pot){a.cash-=pot;b.cash-=pot}
     S.rpacts.push({a:ai,b:bi,since:S.day,until:S.day+P.days-1,pot:pot*2});
@@ -1708,8 +1713,34 @@
       done();
     }finally{toastAll=false}
   }
+  /* ---------- playing to win the Life Score (CONFIG.rivals.aims) ----------
+    Once a night, before the rivals' day: each planning rival's place in each category (rivalStanding) and the one focus it chases
+    tomorrow (r.focus: a LIFE_CATS key, or null), with a short phrase (r.aim). No dice. */
+  var AIM_CATS=['happiness','health','education','rep'];
+  function rivalStanding(r,P){
+    P=P||lifeScore();var me=P.filter(function(p){return p.r===r})[0];if(!me)return null;var out={};
+    Object.keys(me.cats).forEach(function(k){var C=LIFE_CATS[k],v=C.v(me),above=null,below=null;
+      P.forEach(function(q){if(q===me||(q.out&&q.r))return;var w=C.v(q);if(w>v&&(above==null||w<above))above=w;if(w<v&&(below==null||w>below))below=w});
+      out[k]={place:me.cats[k].place,v:v,ahead:above==null?null:above-v,behind:below==null?null:v-below}});
+    return out;
+  }
+  function aimUnit(k,gap){return k==='education'?gap/1000:gap}  /* education counts levels x 1000 plus knowledge */
+  function aimTick(){
+    var A=CONFIG.rivals.aims;if(!A)return;var P=lifeScore(),pts=CONFIG.rivals.scoring.placePoints,cats=CONFIG.rivals.scoring.categories,late=(S.day-1)>=gameLen()*A.defendFrom;
+    S.rivals.forEach(function(r){r.focus=null;r.aimWhy=null;if(r.out||A.levels.indexOf(r.diff)<0)return;
+      var st=rivalStanding(r,P);r.standing=st;if(!st)return;var best=null;
+      AIM_CATS.forEach(function(k){var x=st[k],c=cats[k],lim=A.close[k];if(!x||!c||!c.on||!lim)return;
+        var pl=x.place,up=pl>1&&x.ahead!=null?aimUnit(k,x.ahead):null,down=late&&x.behind!=null?aimUnit(k,x.behind):null;
+        if(up!=null&&up<=lim){var gain=c.weight*((pts[pl-2]||0)-(pts[pl-1]||0))/Math.max(0.25,up/lim);if(!best||gain>best.g)best={k:k,g:gain,how:'chase',pl:pl}}
+        if(down!=null&&down<=lim){var keep=c.weight*((pts[pl-1]||0)-(pts[pl]||0))/Math.max(0.25,down/lim);if(!best||keep>best.g)best={k:k,g:keep,how:'defend',pl:pl}}});
+      if(best&&best.k==='happiness'){var hx=st.happiness;r.aimHappy=Math.min(100,Math.round(hx.v+(best.how==='chase'?hx.ahead:0)+A.moraleLift))}  /* a day above the average it needs to pass (or keep) */
+      if(best){r.focus=best.k;r.aimWhy=best.how;r.aim=(best.how==='chase'?'chasing '+ordinal(best.pl-1)+' place in ':'defending '+ordinal(best.pl)+' place in ')+LIFE_CATS[best.k].n.toLowerCase()}
+      else{var tg=r.target&&CAREERS[r.target.c]&&CAREERS[r.target.c].ranks[r.target.i];r.aim=tg?'working towards '+tg.r:'working and saving'}
+    });
+  }
   function rivalTick(){
     if(S.mode!=='rivals'||!S.rivals)return;
+    aimTick();  /* each planning rival picks the Life Score place it plays for today */
     S.rivals.forEach(function(r){if(r.out)return;r.y=rivalWorth(r);r.took=null;rivalNight(r,rivalDay(r))});
     /* the job race (CONFIG.rivals.jobRace): a role a rival just took may have no openings left for you today */
     var JR=CONFIG.rivals.jobRace;
