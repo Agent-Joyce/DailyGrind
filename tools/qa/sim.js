@@ -147,6 +147,12 @@
   }
   async function withdraw(n){if(G.S.bank<=0||!(await go('bank')))return;var a=$('amt');if(a){a.value=String(Math.ceil(n));await click(btn('wd',''),'wd')}}
   /* clothes are bought on the last day of the outfit the job needs, or the moment it has run out (CHANGELOG 108: a day without clothes means no pay) */
+  /* the Community Centre's emergency help (CHANGELOG 116): tried only when the player is stuck; builds without it have no such button */
+  async function rescue(why){
+    var Z=G.CONFIG.community.safetyNet;if(!Z||!Z.enabled)return false;
+    if(!(await go('comm')))return false;var b=btn('safety','');if(!b)return false;
+    var d=G.S.day;await click(b,'safety:'+why);(rep.safety=rep.safety||[]).push(why+' day '+d);return true;
+  }
   async function ensureClothes(){
     var j=curJob(),nx=jobsWanted()[0],order=['casual','smart','suit'];
     var want=[j&&j.rk.dress,nx&&nx.rk.dress].filter(Boolean).sort(function(a,b){return order.indexOf(b)-order.indexOf(a)})[0]||'casual';
@@ -154,7 +160,7 @@
     if(left>1)return;
     var p=G.price(want);
     if(G.S.cash<p)await withdraw(p-G.S.cash+20);
-    if(G.S.cash<p){if(!left)note('SURVIVAL','clothes ran out and new ones were unaffordable (day '+G.S.day+')');return}  /* on the last day, try again tomorrow */
+    if(G.S.cash<p){if(!left){if(!G.hasDress('casual')&&await rescue('clothes'))return;note('SURVIVAL','clothes ran out and new ones were unaffordable (day '+G.S.day+')')}return}  /* on the last day, try again tomorrow */
     if(await go('mall'))await click(btn('cbuy',want),'cbuy:'+want);
   }
   function fresh(list,type){return list.filter(function(p){return !p.sp&&(!type||p.t===type)})}
@@ -174,6 +180,7 @@
       await click(btn('eatc',''),'eatc');
     }
     if(!G.S.fed&&G.S.cash>=G.G(15)&&await go('fast'))await click(btn('treat','meal')||btn('treat','snack'),'treat');
+    if(!G.S.fed&&await rescue('meal'))return;
     if(!G.S.fed)note('SURVIVAL','could not eat on day '+G.S.day+' (cash '+G.S.cash+', time left '+G.S.ap+'m)');
   }
   async function handleSick(){
