@@ -108,6 +108,13 @@
     Object.keys(S.career).forEach(function(c){var rk=CAREERS[c].ranks[S.career[c]];if(!rk)return;n++;var v=Math.round(Math.round(rolePay(c,S.career[c])*payIdx())*(1+S.know/400));if(!best||v>best.v)best={v:v,r:rk.r,c:c}});
     return best?{v:best.v,txt:best.r+' · '+NAME[CAREERS[best.c].b||best.c]+(n>1?' (+'+(n-1)+' more job'+(n>2?'s':'')+')':''),n:n}:{v:0,txt:'no job',n:0};
   }
+  /* the Community Centre's emergency-help row: always shown, greyed unless you qualify (CONFIG.community.safetyNet) */
+  function safetyRow(){
+    var Z=CONFIG.community.safetyNet,N=safetyNeeds();if(!N.on)return '';
+    var can=N.left>0&&(N.clothes||N.meal);
+    return arow('🆘 Emergency help',chip('time',hm(Z.minutes))+chip('','👕 '+dayN(Z.clothesDays)+' of Casual Clothes')+chip('','🍲 A hot meal')+chip('',N.left>0?'Once a game':'✓ Already used',N.left>0?'':'warn'),btn('safety','','Ask for help',0,!can),
+      'For when you have no clothes, or no meal and none at home, and cannot afford the cheapest fix (new or used clothes '+money(safetyCheapClothes())+', a meal '+money(safetyCheapMeal())+'; cash and savings count). You get only what you lack.');
+  }
   function stressList(){
     var a=[],H=HOUSE[S.home],nw=worth();
     var push=function(l,t){a.push({l:l,t:t})};
@@ -137,6 +144,12 @@
     if(S.medDebt>0)push('bad','🧾 Medical bill arrears: '+money(S.medDebt)+' owed, '+money(medInstal())+' due tomorrow morning (late fee if you can’t pay). Pay more at the Hospital.');
     if(S.hungry>=1&&!S.fed)push('bad','🍽 '+S.hungry+' day'+(S.hungry>1?'s':'')+' without a meal and none yet today: '+FD.hungryDaysToHospital+' in a row puts you in hospital.');
     else if(!S.fed&&S.ap<M(15))push('warn','🍽 No meal yet today. Eat before you end the day.');
+    /* earlier, specific warnings for the two ways a bad run snowballs: no meal you can pay for, and no clothes you can pay for (CHANGELOG 111) */
+    (function(){var N=safetyNeeds(),have=S.cash+S.bank,help=function(ok){return N.on&&ok?(N.left>0?' The Community Centre can help once this game.':' (The Community Centre has already helped you once.)'):''};
+      if(!S.fed&&!(S.food||[]).some(function(p){return !p.sp})&&have<safetyCheapMeal())push('bad','🍽 You cannot afford a meal: the cheapest is '+money(safetyCheapMeal())+' and you have '+money(have)+' in cash and savings. Work a shift first, or sell something at the Second-Hand Shop.'+help(true));
+      if(naked())push('bad','👕 You are out of clothes: no shift away from home until you have some (the cheapest is '+money(safetyCheapClothes())+(have<safetyCheapClothes()?', and you have '+money(have)+' in cash and savings':'')+').'+help(have<safetyCheapClothes()));
+      else{var days=Math.max(S.clothes.casual||0,S.clothes.smart||0,S.clothes.suit||0);
+        if(days<=2&&have<safetyCheapClothes())push('warn','👕 Your last clothes wear out in '+dayN(days)+' and you cannot afford new ones yet (the cheapest is '+money(safetyCheapClothes())+', you have '+money(have)+'). Earn it first: with no clothes you cannot work.')}})();
     if(nw<0)push('bad','💸 In debt ('+money(nw)+'): if your net worth is still under $0 when you end the day, shame costs 8 happiness and 5% energy.');
     else if(nw<CONFIG.shame.nearlyBrokeBelow&&S.day>=CONFIG.shame.nearlyBrokeFromDay)push('warn','💸 Nearly broke ('+money(nw)+'): if your net worth is still under '+money(CONFIG.shame.nearlyBrokeBelow)+' when you end the day, shame costs '+Math.abs(CONFIG.shame.nearlyBrokeHappiness)+' happiness.');
     var left=nextRentWeek()-S.day;
@@ -320,7 +333,7 @@
     var mn=(S.notes||[]).slice(),rw2=nextRentWeek(),rentNext=myRent(rw2);S.notes=[];
     mn.push.apply(mn,moneyBrief(i,invMoved));
     if(tipOn())mn.push({l:'good',c:'run',k:'tip',t:'🤝 Job tip good until the end of day '+S.tip.until+'. Your next interview is easier and never fails for “no openings”.'});
-    if(naked())mn.unshift({l:'bad',c:'act',k:'clothes',t:'👕 You are out of clothes. You can’t work any shift until you buy some (new at the Clothes Mall, or used at the Second-Hand Shop)'+(nakedHap?', and the shame cost you '+Math.abs(nakedHap)+' happiness overnight. It happens again every morning you wake up with nothing to wear.':'.')});
+    if(naked())mn.unshift({l:'bad',c:'act',k:'clothes',t:'👕 You are out of clothes. You can’t work any shift until you buy some (new at the Clothes Mall, or used at the Second-Hand Shop)'+(nakedHap?', and the shame cost you '+Math.abs(nakedHap)+' happiness overnight. It happens again every morning you wake up with nothing to wear.':'.')+(safetyNeeds().clothes&&safetyNeeds().left>0?' You cannot afford any, but the Community Centre can give you a set once this game.':'')});
     if(S.newsPlan&&S.newsPlan.tip)mn.push({l:'rem',c:'act',t:'📡 Tip-off: tonight’s headline is expected to be “'+S.newsPlan.n[0]+'” ('+newsHint(S.newsPlan.n)+'). You have today to move your savings and investments at the Bank.'});
     /* a rank target day passed yesterday without the rank */
     (function(){var i=S.tier+1,due=tierDue(i);if(i<TIERS.length&&due&&S.day===due+1&&reachedTier()<i)mn.push({l:'warn',c:'news',t:'⭐ You missed the day-'+due+' target for '+TIERS[i].ic+' '+TIERS[i].n+'. Its +'+TIERS[i].b.toLocaleString()+' on-time bonus is gone. It still counts as a rank if you reach it'+(maxDays()===Infinity?'':' by day '+maxDays())+'.'+(i+1<TIERS.length&&tierDue(i+1)?' Next target: '+TIERS[i+1].n+' by day '+tierDue(i+1)+'.':'')})})();

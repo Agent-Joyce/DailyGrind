@@ -2034,3 +2034,13 @@ No rule, CONFIG or save change, and no new dice: the rows only read the same fun
 - New code: `rivalMoves(i)` (section 6, beside `callRows`), the `rivList` click handler for `data-rmove` buttons (section 10), a few `.rmoves` styles. The action preview (🔎) does not cover these buttons; the chips on each row show the cost instead.
 - `tools/qa/check-ux.js`: a case that opens a card, checks every move is listed, presses Call, checks the card stays open and Call greys out, opens Messages, and checks Call is disabled without a phone.
 
+## 111. Softer death spiral: emergency help at the Community Centre, earlier warnings
+
+Gameplay change for the player. It rolls no dice. **Rivals are exempt:** they have their own rules for clothes and meals (`rivalDressUp`, `rivalDay`), which this round does not touch, and the other chat owns rival logic.
+
+- **Emergency help** (new `CONFIG.community.safetyNet`: `enabled` true, `perGame` 1, `minutes` 30, `clothesDays` 3, `mealEnergy` 12, `mealHappiness` 3). Once a game, at the Community Centre, a player who has **no clothes at all and cannot afford the cheapest way to get some** (new Casual Clothes or a used outfit; cash and savings both count) and/or **has had no meal today, has none at home and cannot afford the cheapest meal out** is given what they lack: a set of Casual Clothes lasting 3 days, and/or a hot meal (+12% energy, +3 happiness, counts as the day's meal). It takes 30 minutes and gives only what is missing; it does nothing for someone who can afford the fix. New action `safety`, `safetyNeeds()` and `safetyNet()` (section 4), `safetyRow()` (always shown on the Community Centre screen, greyed unless it applies).
+- **Earlier, specific warnings** in `stressList()`: "You cannot afford a meal" (with the cheapest price and what you have), "You are out of clothes" (with the cheapest fix), and "Your last clothes wear out in N days and you cannot afford new ones yet". Each mentions the Community Centre when help is left. The morning "out of clothes" note says it too.
+- **Save:** new `S.safetyUsed` (defaults to 0 through `blank()`; no migration step or version change needed).
+- Rules text (`cfgComm`) describes it; `docs/Daily Grind Config Guide.docx` has a new row for `safetyNet`, and its old food, place and rival names are updated for CHANGELOG 109.
+- Checks: a case in `tools/qa/check-ux.js` (greyed when you can afford things or have eaten and have clothes; works once; gives exactly what is lacking; the warnings mention the centre; savings count). **Not measured:** the roadmap's "fewer *clothes ran out* and *could not eat* runs" needs the single-game simulation, which was not run in this round; ask the owner when it should be.
+

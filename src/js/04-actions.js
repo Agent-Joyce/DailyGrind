@@ -881,6 +881,30 @@
       log('🤝 A friend tipped you off about openings. Your next job interview is easier (until the end of day '+S.tip.until+').','good')}
     done();
   }
+  /* emergency help at the Community Centre (CONFIG.community.safetyNet): once a game, for a player with no clothes or no meal who cannot afford them */
+  function safetyCheapMeal(){return G(CONFIG.food.burger.cost)}
+  function safetyCheapClothes(){return Math.min(price('casual'),usedPrice('smart'))}
+  function safetyNeeds(){
+    var Z=CONFIG.community.safetyNet;if(!Z||!Z.enabled||S.over)return {on:false,left:0,clothes:false,meal:false};
+    var left=Math.max(0,Z.perGame-(S.safetyUsed||0)),m=S.cash+S.bank;
+    return {on:true,left:left,
+      clothes:naked()&&m<safetyCheapClothes(),
+      meal:!S.fed&&!(S.food||[]).some(function(p){return !p.sp})&&m<safetyCheapMeal()};
+  }
+  function safetyNet(){
+    var Z=CONFIG.community.safetyNet,N=safetyNeeds();
+    if(loc!=='comm')return refuse('You can only ask for emergency help at the Community Centre.');
+    if(!N.on)return refuse('The centre has no emergency help right now.');
+    if(N.left<=0)return refuse('The centre has already helped you once this game.');
+    if(!N.clothes&&!N.meal)return refuse('The centre helps only when you have no clothes, or no meal and none at home, and cannot afford them.');
+    if(!spendMin(Z.minutes,0))return;
+    var v0=vitSnap(),got=[];
+    if(N.clothes){S.clothes.casual=Z.clothesDays;S.flags.clothes=1;got.push('a set of '+WEAR.casual.n+' ('+dayN(Z.clothesDays)+' of wear)')}
+    if(N.meal){S.energy=clamp(S.energy+Z.mealEnergy);S.happy=clamp(S.happy+Z.mealHappiness);S.fed=true;S.flags.ate=1;got.push('a hot meal')}
+    S.safetyUsed=(S.safetyUsed||0)+1;
+    log('🆘 The Community Centre gave you '+got.join(' and ')+' ('+hm(Z.minutes)+(vitTxt(v0)?', '+vitTxt(v0):'')+'). They can only do this once a game.','good');
+    done();
+  }
   /* ---------- the Factory for outsiders: day labour, safety course, tour (CONFIG.factory) ---------- */
   function facJob(){return Object.keys(S.career).some(function(c){return cur(c)&&bOf(c)==='factory'})}
   function labourPay(){var low=Infinity;Object.keys(CAREERS).forEach(function(c){if(bOf(c)==='factory')CAREERS[c].ranks.forEach(function(r,i){low=Math.min(low,rolePay(c,i))})});return Math.round(low*CONFIG.factory.dayLabour.payShare)}

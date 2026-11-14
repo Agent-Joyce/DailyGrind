@@ -253,7 +253,7 @@
       var C=CONFIG.community,row=function(k,ic,title,btnTxt){var c=C[k],cost=G(c.cost||0),dn=commToday(k)>=c.perDay;
         return arow(ic+' '+title+(cost?' · '+money(cost):''),chip('time',hm(c.minutes))+(c.energy?chip('energy',sg(c.energy)+'%'):'')+chip('happy',sg(c.happiness))+(c.knowledge?chip('know',sg(c.knowledge)):'')+(c.tipChance?chip('','🤝 '+pctTxt(c.tipChance)+' job tip'):'')+(dn?chip('','✓ Done today','ok'):''),btn('comm',k,btnTxt,0,dn||S.cash<cost))};
       return boxed(psec('comm','🤝 Tonight at the centre',tipOn()?chip('','🤝 Job tip until day '+S.tip.until,'ok'):chip('','Once a day each'),'Time with other people lifts your mood more than time alone. Each activity can be done once a day. A night out or volunteering can also get you a job tip from a friend: your next interview (here in town or in the Jobs app) is '+Math.round(C.tip.passBonus*100)+'% more likely to pass and never fails for “no openings”, for up to '+dayN(C.tip.days)+'. The tip is used up by that interview.')+
-        row('nightOut','🍻','Night out with friends','Go out')+row('karaoke','🎤','Karaoke night','Sing')+row('volunteer','🧡','Volunteer at the centre','Volunteer')+whoRows()+sabRows('comm'))
+        row('nightOut','🍻','Night out with friends','Go out')+row('karaoke','🎤','Karaoke night','Sing')+row('volunteer','🧡','Volunteer at the centre','Volunteer')+safetyRow()+whoRows()+sabRows('comm'))
     },
     gym:function(){
       var staff=isGymStaff(),n=gymCount();
