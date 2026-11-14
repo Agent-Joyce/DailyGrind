@@ -260,6 +260,10 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 #overScore{margin:8px 0 10px}.bigscore{font-size:1.6rem;font-weight:800;margin:4px 0}.topscore{font-weight:800;color:#1f7a4a;font-size:1.05rem}.prevtop{color:var(--muted);font-size:.9rem}
 .sctab{margin:4px auto 0;font-size:.85rem;border-collapse:collapse}.sctab td{padding:1px 10px;text-align:left}.sctab td+td{text-align:right;font-weight:700}
 .morning{text-align:left;max-width:520px}.morning ul{list-style:none;padding:0;margin:8px 0}.morning li{padding:6px 10px;border-radius:9px;margin:4px 0;font-size:.9rem;font-weight:600;border:2px solid var(--gold);background:color-mix(in srgb,var(--gold) 14%,var(--surface))}.morning li.bad{border-color:var(--red);background:color-mix(in srgb,var(--red) 12%,var(--surface))}.morning li.good{border-color:#2f8f5b;background:color-mix(in srgb,#2f8f5b 14%,var(--surface))}.morning li.rem{border-color:#4b78c2;background:color-mix(in srgb,#4b78c2 12%,var(--surface))}
+.morning li.mnhead{border:0;background:none;padding:8px 2px 0;margin:6px 0 0;font-size:.7rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.morning .mnmore{font-weight:500;font-size:.82rem;margin-top:3px}.morning .mnmore summary{cursor:pointer;font-weight:700;font-size:.74rem;color:var(--muted);min-height:24px}
+.morning .mntop{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;font-size:.86rem;font-weight:650;padding:8px 10px;border:1px solid var(--line);border-radius:10px}.mntop .up{color:var(--green)}.mntop .dn{color:var(--red)}.mntop .mnmoney{flex-basis:100%;font-size:.8rem;font-weight:500}
+.evtag .evstep{margin-left:8px;font-weight:700;opacity:.75}
 .ns-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.ns-top .btn{min-height:36px;padding:4px 12px}.ns-l{font-size:.74rem;color:var(--muted);margin-top:4px}
 .les{display:inline-flex;gap:3px;vertical-align:middle}.les i{width:12px;height:12px;border-radius:50%;background:var(--line);display:inline-block}.les i.on{background:#2f8f5b}.les i.cur{background:#fff;border:2px solid #4b78c2;width:10px;height:10px}
 .nowstudy{margin:4px 0 8px;padding:8px 10px;border:2px solid #4b78c2;border-radius:12px;background:color-mix(in srgb,#4b78c2 10%,var(--surface))}
@@ -693,7 +697,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     <div class="tcell"><span class="l">Day</span><b><span id="day">1</span><small id="dayMax"> / 30</small></b></div>
         <div class="tcell tleft" id="donutWrap"><svg class="donut" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15.9155" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="5"/><circle id="donut" cx="18" cy="18" r="15.9155" fill="none" stroke="#3cc0c3" stroke-width="5" stroke-dasharray="100 100" stroke-linecap="round" transform="rotate(-90 18 18)"/><text id="donutTxt" x="18" y="21" text-anchor="middle" font-size="8.5" font-weight="800" fill="#fff">100%</text></svg><div><span class="l"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-time"/></svg><span id="clockNow">7:00 AM</span> <span id="clockIcon">☀️</span></span><b><span id="ap">24h</span><small id="apOf"> of 24h</small></b></div></div>
         
-    <div class="tcell" id="hNwC" data-tip="Net worth: cash + bank + investments + the resale value of your things, minus any loan and bills you owe. Reach the next rank to win." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Net worth"><use href="#ic-worth"/></svg></span><b id="hNw">$200</b></div>
+    <div class="tcell" id="hNwC" data-tip="Net worth: cash + bank + investments + the resale value of your things, minus any loan and bills you owe. Ranks are milestones on the way: the game runs to its last day." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Net worth"><use href="#ic-worth"/></svg></span><b id="hNw">$200</b></div>
     <div class="tcell" data-tip="Cash in hand. Pays for food, shopping and rent. Bank savings and investments are not included." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Cash"><use href="#ic-cash"/></svg></span><b id="hCash">$200</b></div>
     <div class="tcell" data-tip="Energy: work and study use it up; food, rest and sleep restore it. Under 30% your shifts pay less and you fall ill more easily." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Energy"><use href="#ic-energy"/></svg></span><b id="hEn">100%</b></div>
     <div class="tcell" data-tip="Happiness: fun, good food and comfort at home raise it. Low happiness cuts your pay, and too long at rock bottom ends the game." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Happiness"><use href="#ic-happy"/></svg></span><b id="hHp">70</b></div>
@@ -807,8 +811,8 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
 <div class="over" id="rules" role="dialog" aria-modal="true" aria-labelledby="rlT"><div class="card rules">
   <h2 id="rlT">How the game ends</h2>
   <h3 class="win">You win</h3>
-  <ul><li><b>Net worth reaches <span id="cfgGoal2">$1,000</span></b>: cash + bank + investments + the resale value of your things, minus hospital debt, rent arrears and any loan you owe<span id="rlWin">, within 20 days</span>. That makes you <b id="cfgRank1">🙂 Comfortable</b> and you have won.</li>
-  <li>Keep playing for a higher rank: <span id="cfgRanks"><b>💼 Wealthy</b> at $5,000 and <b>👑 Tycoon</b> at $10,000 (Tycoon ends the game)</span>. When time runs out, your best rank is your final result.</li>
+  <ul><li><b>Net worth reaches <span id="cfgGoal2">$1,000</span></b>: cash + bank + investments + the resale value of your things, minus hospital debt, rent arrears and any loan you owe<span id="rlWin">, within 20 days</span>. That makes you <b id="cfgRank1">🙂 Comfortable</b>, the first rank.</li>
+  <li>Keep playing for a higher rank: <span id="cfgRanks"><b>💼 Wealthy</b> at $5,000 and <b>👑 Tycoon</b> at $10,000 (ranks are milestones: the game goes on to its last day)</span>. When time runs out, your best rank is your final result.</li>
   <li><span id="cfgOnTime">Reach a rank by its target day for bonus points.</span></li></ul>
   <h3 class="lose">You lose</h3>
   <ul>
@@ -3397,6 +3401,73 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     ['console','tv'].forEach(function(g){var k=ikey(g),d=k&&GD.perRestHour[k];if(d){hap+=(d.happiness||0)*hrs;know+=(d.knowledge||0)*hrs}});
     return {hap:Math.round(hap),know:know,hrs:hrs};
   }
+  /* ---------- the morning pop-up: one line per topic, in three groups ----------
+    A note is {l: bad|warn|rem|good, t: text, c: group, k: topic, m: detail, g: rival group, s: short rival text, rv}.
+    c: 'act' (do today), 'news' (what happened overnight), 'run' (still going on). Notes pushed without c or k are sorted
+    here by what they say, so the many S.notes.push lines need no change. Two notes on one topic become one: the more
+    serious (then the earlier) is kept and the other's text becomes its detail. */
+  var NOTE_SEV={bad:0,warn:1,rem:2,good:3};
+  function noteMeta(x){
+    var t=String(x.t||''),m=function(c,k){if(!x.c)x.c=c;if(x.k==null)x.k=k;return x};
+    if(/^🏦 Loan/i.test(t))return m('act','loan');
+    if(/^🤒/.test(t))return m('act','ill');
+    if(/^🔥/.test(t))return m('act','burn');
+    if(/^🏥 You (are warded|have been admitted)/.test(t))return m('act','hosp');
+    if(/job tip|tipped you off|passed you a lead|job introduction/i.test(t))return m('news','tip');
+    if(/out of clothes|nothing to wear/i.test(t))return m('act','clothes');
+    if(/New message from|invited you to share|Reminder: you owe|You still owe|Review the response in Messages|confront or forgive|is due tonight/.test(t))return m('act','');
+    if(/^🏚️/.test(t))return m('act','home');
+    return m('news','');
+  }
+  function tidyMorning(mn){
+    var seen={},byKey={},out=[];
+    mn.forEach(function(x){
+      if(!x||!x.t)return;noteMeta(x);
+      var txt=x.t.replace(/\s+/g,' ').trim();if(seen[txt])return;seen[txt]=1;
+      var o=x.k?byKey[x.k]:null;
+      if(!o){if(x.k)byKey[x.k]=x;out.push(x);return}
+      var win=(NOTE_SEV[x.l]<NOTE_SEV[o.l])?x:o,lose=win===x?o:x;
+      win.m=(win.m?win.m+' ':'')+lose.t+(lose.m?' '+lose.m:'');if(lose.c==='act')win.c='act';
+      if(win===x){out[out.indexOf(o)]=x;byKey[x.k]=x}
+    });
+    return out;
+  }
+  /* a long note as a headline and its detail (the first sentence, then the rest) */
+  function noteSplit(x){
+    var t=String(x.t||''),m=x.m||'',r=/^(.{28,}?[.!?])\s+(?=[A-Z0-9“(])/.exec(t);
+    if(t.length>100&&r&&!/\b(Mr|Ms|Dr|vs)\.$/.test(r[1])&&r[1].indexOf('<')<0)return {h:r[1],m:(t.slice(r[0].length)+' '+m).trim()};
+    return {h:t,m:m};
+  }
+  function morningHtml(mn){
+    var groups={act:[],news:[],run:[]},names={act:'Do today',news:'Overnight',run:'Still going on'},h='';
+    mn.forEach(function(x,i){noteMeta(x);x._i=i;(groups[x.c]||groups.news).push(x)});
+    var line=function(x){
+      var cg=x.rv!=null&&S.mode==='rivals'&&S.rivals&&S.rivals[x.rv],sp=noteSplit(x);
+      var btn=cg?' '+(S.cong&&S.cong.d===S.day&&S.cong[x.rv]?'<small>✓ Congratulated</small>':'<button type="button" class="mini" data-cg="'+x.rv+'">🎉 Congratulate · '+hm(CONFIG.rivals.social.congratulate.minutes)+'</button>'+((S.rivals[x.rv].rel||0)<0?' <small>⚠️ on bad terms: an argument costs '+sg(CONFIG.rivals.social.argument.happiness)+' happiness</small>':'')):'';
+      return '<li class="'+x.l+'">'+sp.h+btn+(sp.m?'<details class="mnmore"><summary>More</summary>'+sp.m+'</details>':'')+'</li>';
+    };
+    ['act','news','run'].forEach(function(c){
+      var a=groups[c].slice().sort(function(p,q){return (NOTE_SEV[p.l]-NOTE_SEV[q.l])||(p._i-q._i)});if(!a.length)return;
+      h+='<li class="mnhead" role="presentation">'+names[c]+'</li>';
+      var done={};
+      a.forEach(function(x){
+        if(!x.g||!x.s){h+=line(x);return}
+        if(done[x.g])return;done[x.g]=1;
+        var same=a.filter(function(y){return y.g===x.g&&y.s});if(same.length===1){h+=line(x);return}
+        var r=S.rivals&&S.rivals[+x.g.slice(1)],rvn=same.filter(function(y){return y.rv!=null})[0];
+        h+=line({l:same[0].l,t:'🏁 '+(r?r.ic+' '+r.name:'A rival')+': '+same.map(function(y){return y.s.replace(/\.$/,'')}).join('; ')+'.',rv:rvn?rvn.rv:null,c:c,k:''});
+      });
+    });
+    mn.forEach(function(x){delete x._i});
+    return h;
+  }
+  /* how the night went, above the list: sleep and the overnight change, then yesterday's money */
+  function morningTop(){
+    var sm=S.summary,n=sm&&sm.n;if(!sm||!n||sm.day!==S.day-1)return '';
+    var d=function(v,suf){return '<b class="'+(v>0?'up':v<0?'dn':'')+'">'+sg(Math.round(v))+(suf||'')+'</b>'};
+    return '<div class="mntop"><span>'+(n.home?'🛏️ Slept at home':'🌙 Slept outside')+'</span><span>⚡ '+d(n.e,'%')+'</span><span>😊 '+d(n.h)+'</span><span>❤️ '+d(n.l)+'</span><span>🧠 '+d(n.k)+'</span>'+
+      '<span class="mnmoney">Day '+sm.day+': earned <b class="up">'+money(Math.round(sm.earn))+'</b> · spent <b class="dn">'+money(Math.round(sm.spend))+'</b> · net worth <b class="'+(sm.dnw>0?'up':sm.dnw<0?'dn':'')+'">'+(sm.dnw<0?'−':'+')+money(Math.abs(Math.round(sm.dnw)))+'</b></span></div>';
+  }
   function rollover(rested){nightRun=true;nightFed=S.fed;try{return rollover0(rested)}finally{nightRun=false;nightFed=false}}
   function rollover0(rested){
     ovHidden=false;  /* a new day shows the overview again */
@@ -3482,27 +3553,28 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     var dnw=worth()-t.nw,best=false;
     if(dnw>(S.bestDay||0)){best=(S.bestDay||0)>0;S.bestDay=dnw}  /* the first good day sets the bar; later ones that beat it are flagged */
     S.summary={day:S.day-1,earn:t.earn,spend:t.spend,dnw:dnw,de:S.energy-t.e,dh:S.happy-t.h,dl:S.health-(t.hl==null?S.health:t.hl),dk:Math.floor(S.know)-Math.floor(t.k),hits:t.hits.slice(0,3),wins:(t.wins||[]).slice(),best:best};
+    S.summary.n={e:S.energy-FLASH.e,h:S.happy-FLASH.h,l:S.health-FLASH.l,k:Math.floor(S.know)-FLASH.k,home:!!rested};  /* overnight only, for the morning strip */
     S.today=null;T0();
     lottoDraw();
     planNews();
     var mn=(S.notes||[]).slice(),rw2=nextRentWeek(),rentNext=myRent(rw2);S.notes=[];
     mn.push.apply(mn,moneyBrief(i,invMoved));
-    if(tipOn())mn.push({l:'good',t:'🤝 A friend’s job tip is still good until the end of day '+S.tip.until+': your next interview is easier and never fails for “no openings”.'});
-    if(naked())mn.unshift({l:'bad',t:'👕 You are out of clothes. You can’t work any shift until you buy some (new at the Clothes Mall, or used at the Thrift Store)'+(nakedHap?', and the shame cost you '+Math.abs(nakedHap)+' happiness overnight. It happens again every morning you wake up with nothing to wear.':'.')});
-    if(S.newsPlan&&S.newsPlan.tip)mn.push({l:'rem',t:'📡 Tip-off: tonight’s headline is expected to be “'+S.newsPlan.n[0]+'” ('+newsHint(S.newsPlan.n)+'). You have today to move your savings and investments at the Bank.'});
+    if(tipOn())mn.push({l:'good',c:'run',k:'tip',t:'🤝 Job tip good until the end of day '+S.tip.until+'. Your next interview is easier and never fails for “no openings”.'});
+    if(naked())mn.unshift({l:'bad',c:'act',k:'clothes',t:'👕 You are out of clothes. You can’t work any shift until you buy some (new at the Clothes Mall, or used at the Thrift Store)'+(nakedHap?', and the shame cost you '+Math.abs(nakedHap)+' happiness overnight. It happens again every morning you wake up with nothing to wear.':'.')});
+    if(S.newsPlan&&S.newsPlan.tip)mn.push({l:'rem',c:'act',t:'📡 Tip-off: tonight’s headline is expected to be “'+S.newsPlan.n[0]+'” ('+newsHint(S.newsPlan.n)+'). You have today to move your savings and investments at the Bank.'});
     /* a rank target day passed yesterday without the rank */
-    (function(){var i=S.tier+1,due=tierDue(i);if(i<TIERS.length&&due&&S.day===due+1&&reachedTier()<i)mn.push({l:'warn',t:'⭐ You missed the day-'+due+' target for '+TIERS[i].ic+' '+TIERS[i].n+' ('+money(TIERS[i].v)+'), so its +'+TIERS[i].b.toLocaleString()+' on-time bonus is gone. It still counts as a rank if you reach it'+(maxDays()===Infinity?'':' by day '+maxDays())+'.'+(i+1<TIERS.length&&tierDue(i+1)?' Next target: '+TIERS[i+1].n+' by day '+tierDue(i+1)+'.':'')})})();
-    if((S.tickets||[]).some(function(t){return t.draw===S.day}))mn.push({l:'rem',t:'🎟️ Lottery draw tonight (end of day '+S.day+'). Results tomorrow morning.'});
-    (function(){var jb=myJob();if(jb&&shutLeft(jb.b)>0)mn.push({l:'bad',t:'🔒 The '+NAME[jb.b]+' is closed ('+shutLeft(jb.b)+' day'+(shutLeft(jb.b)>1?'s':'')+' left, counting today). Work is disabled there. Your job as '+jb.rk.r+' stays on record and returns automatically.'})})();
-    S.trends.forEach(function(t){if(t.left>0&&(t.term||t.lay||t.r))mn.push({l:'rem',t:'🌐 '+t.n+' continues'+(t.last?' (latest: '+t.last+')':'')+' · '+t.left+' day'+(t.left>1?'s':'')+' left: '+trendNow(t)+'.'})});
-    if(S.inv.fd.v>0.5&&S.inv.fd.lock-S.day===1)mn.push({l:'rem',t:'🏦 Your fixed deposit matures tomorrow morning ('+money(Math.round(S.inv.fd.v))+' so far).'});
-    if(junkCount()>=CONFIG.illness.junkMeals)mn.push({l:'warn',t:'🍟 You have had junk food '+junkCount()+' times in 5 days. Your chance of falling ill is higher.'});
-    if(!S.homeless&&rw2-S.day===1&&S.rentPaid!==rw2)mn.push({l:'rem',t:'🏠 Reminder: rent of '+money(rentNext)+' is due at the end of tomorrow (day '+rw2+'). Keep it in cash, or pay early at home.'});
-    if(!S.homeless&&rw2-S.day===0&&S.rentPaid!==rw2)mn.push({l:S.cash<rentNext?'bad':'rem',t:'🏠 Rent of '+money(rentNext)+' is due tonight. You have '+money(S.cash)+' in cash.'});
-    [['casual',WEAR.casual.n],['smart',WEAR.smart.n],['suit',WEAR.suit.n]].forEach(function(c){if(S.clothes[c[0]]>0&&S.clothes[c[0]]<=CONFIG.clothes.wearPerDay)mn.push({l:'rem',t:'👕 Reminder: your '+c[1]+' wear out tonight. Buy new ones at the Clothes Mall to keep meeting dress codes.'})});
+    (function(){var i=S.tier+1,due=tierDue(i);if(i<TIERS.length&&due&&S.day===due+1&&reachedTier()<i)mn.push({l:'warn',c:'news',t:'⭐ You missed the day-'+due+' target for '+TIERS[i].ic+' '+TIERS[i].n+'. Its +'+TIERS[i].b.toLocaleString()+' on-time bonus is gone. It still counts as a rank if you reach it'+(maxDays()===Infinity?'':' by day '+maxDays())+'.'+(i+1<TIERS.length&&tierDue(i+1)?' Next target: '+TIERS[i+1].n+' by day '+tierDue(i+1)+'.':'')})})();
+    if((S.tickets||[]).some(function(t){return t.draw===S.day}))mn.push({l:'rem',c:'run',k:'lotto',t:'🎟️ Lottery draw tonight (end of day '+S.day+'). Results tomorrow morning.'});
+    (function(){var jb=myJob();if(jb&&shutLeft(jb.b)>0)mn.push({l:'bad',c:'run',k:'shut',t:'🔒 The '+NAME[jb.b]+' is closed ('+shutLeft(jb.b)+' day'+(shutLeft(jb.b)>1?'s':'')+' left, counting today). Work is disabled there. Your job as '+jb.rk.r+' stays on record and returns automatically.'})})();
+    S.trends.forEach(function(t){if(t.left>0&&(t.term||t.lay||t.r)&&t.card!==S.day-1)mn.push({l:'rem',c:'run',k:'trend:'+t.n,t:'🌐 '+t.n+' · '+t.left+' day'+(t.left>1?'s':'')+' left: '+trendNow(t)+'.'+(t.last?' Latest: '+t.last+'.':'')})});  /* not on a morning after its own night card */
+    if(S.inv.fd.v>0.5&&S.inv.fd.lock-S.day===1)mn.push({l:'rem',c:'run',k:'fd',t:'🏦 Your fixed deposit matures tomorrow morning ('+money(Math.round(S.inv.fd.v))+' so far).'});
+    if(junkCount()>=CONFIG.illness.junkMeals)mn.push({l:'warn',c:'run',k:'junk',t:'🍟 Junk food '+junkCount()+' times in 5 days. Your chance of falling ill is higher.'});
+    if(!S.homeless&&rw2-S.day===1&&S.rentPaid!==rw2)mn.push({l:'rem',c:'act',k:'rent',t:'🏠 Reminder: rent of '+money(rentNext)+' is due at the end of tomorrow (day '+rw2+'). Keep it in cash, or pay early at home.'});
+    if(!S.homeless&&rw2-S.day===0&&S.rentPaid!==rw2)mn.push({l:S.cash<rentNext?'bad':'rem',c:'act',k:'rent',t:'🏠 Rent of '+money(rentNext)+' is due tonight. You have '+money(S.cash)+' in cash.'});
+    [['casual',WEAR.casual.n],['smart',WEAR.smart.n],['suit',WEAR.suit.n]].forEach(function(c){if(S.clothes[c[0]]>0&&S.clothes[c[0]]<=CONFIG.clothes.wearPerDay)mn.push({l:'rem',c:'act',k:'wear:'+c[0],t:'👕 Your '+c[1]+' wear out tonight. Buy new ones at the Clothes Mall to keep meeting dress codes.'})});
     var burnNote=mn.some(function(a){return /BURNOUT!/.test(a.t)});
-    stressList().forEach(function(a){if(!/Rent of/.test(a.t)&&!(burnNote&&/^🔥 Burnout \(/.test(a.t))&&!(naked()&&/out of clothes|nothing to wear/i.test(a.t)))mn.push(a)});
-    var seenMorning={};mn=mn.filter(function(x){var key=x.t.replace(/\s+/g,' ').trim();if(seenMorning[key])return false;seenMorning[key]=1;return true});
+    stressList().forEach(function(a){if(!/Rent of/.test(a.t)&&!(burnNote&&/^🔥 Burnout \(/.test(a.t))&&!(naked()&&/out of clothes|nothing to wear/i.test(a.t))){a.c='act';mn.push(a)}});
+    mn=tidyMorning(mn);
     S.morning=mn.length?mn:null;
     loc=S.hosp&&S.hosp.inWard?'hosp':S.home;view=null;
     log(S.hosp&&S.hosp.inWard?'A new day starts in the hospital ward.':S.homeless?'A new day starts. You woke up outside, with no home to go back to. You have 24 hours.':'A new day starts. You have 24 hours.');
@@ -4043,7 +4115,8 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     var p=S.pact;if(!p||p.settled)return;p.settled=true;var r=S.rivals[p.i],pot=p.pot||0;S.pact=null;
     if(r){if(outcome==='win')S.cash+=pot;else if(outcome==='lose')r.cash+=pot;else splitPot(pot,S,r)}else S.cash+=Math.floor(pot/2);
     if(outcome==='kept'&&r){relAdd(r,p.terms.keepRel);S.happy=clamp(S.happy+p.terms.rewardHappy);repAdd(S,PX().rep.keepPact);repAdd(r,PX().rep.keepPact)}
-    S.notes.push({l:outcome==='lose'?'warn':'rem',t:contractName(p.kind)+' ended: '+outcome+(pot?' · pot '+money(pot)+(outcome==='win'?' paid to you':outcome==='lose'?' paid to your partner':' split once'):'')+'.'});
+    var said={kept:'kept in full',incomplete:'ended with missed obligations',cancelled:'ended early',win:'you won',lose:'your partner won',tie:'a tie'}[outcome]||outcome;
+    S.notes.push({l:outcome==='lose'?'warn':'rem',t:'📜 '+contractName(p.kind)+(r?' with '+r.name:'')+': '+said+(pot?' · pot '+money(pot)+(outcome==='win'?' paid to you':outcome==='lose'?' paid to your partner':' returned'):'')+'.'});
   }
   function wealthProgress(day){
     var p=S.pact;if(!p||p.kind!=='wealth')return;day=day==null?S.day:day;if(day>p.until)return;var r=S.rivals[p.i];if(!r)return;
@@ -4071,10 +4144,13 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     var p=S.pact,e=p&&p.problem,r=p&&S.rivals[p.i],C=CONFIG.rivals.contracts;if(!e||!r||(!auto&&S.day>e.expires))return;
     if(['forgive','challenge','compensate','terminate'].indexOf(k)<0)return;
     var n=G(C.compensation);if(k==='compensate'&&r.cash-n<G(PX().pact.reserve))return refuse('Your partner cannot afford compensation.');
-    if(k==='terminate'){if(p.kind)settleContract('cancelled');else{S.pact=null;splitPot(p.pot||0,S,r)}if(!auto)done();return}
+    if(k==='terminate'){if(p.kind)settleContract('cancelled');else{S.pact=null;splitPot(p.pot||0,S,r);
+        var endTxt='🤝 Your pact with '+r.ic+' '+r.name+' ended'+(auto?' because the missed commitment was left unanswered':' at your request')+(p.pot?': the '+money(p.pot)+' pot was split':'')+'.';
+        if(auto)S.notes.push({l:'warn',t:endTxt});else log(endTxt,'warn')}
+      if(!auto)done();return}
     if(k==='compensate'){r.cash-=n;S.cash+=n}relAdd(r,k==='forgive'?C.forgiveRel:k==='challenge'?C.challengeRel:0);p.problem=null;
     if(e.kind==='study'){p.next=S.day+1;p.session=null}
-    if(!auto){log('📜 Promise response: '+k+'.');done()}
+    if(!auto){log('📜 '+(k==='forgive'?'You forgave '+r.name+': relationship '+sg(C.forgiveRel):k==='challenge'?'You challenged '+r.name+' about it: relationship '+sg(C.challengeRel):r.name+' paid you '+money(n)+' in compensation')+'.');done()}
   }
   function contractTick(){
     var p=S.pact,r=S.rivals[p.i],t=p.terms,C=CONFIG.rivals.contracts;
@@ -4084,7 +4160,6 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     if(S.day>p.until){if(p.kind==='study'&&p.progress<t.study.sessions)p.missed++;return settleContract(p.missed?'incomplete':'kept')}
     if((p.kind==='loyalty'||p.kind==='royalty')&&(!S.flat||S.flat.i!==p.i))return settleContract(p.kind==='loyalty'&&p.noticeDay!=null&&S.day>=p.noticeDay+t.noticeDays?'kept':'incomplete');
     if(p.problem)return;
-    if(p.session&&S.day>p.session.day){p.missed++;relAdd(r,t.missRel);p.session=null;p.next=S.day;}
     if(p.kind==='study'&&p.progress<t.study.sessions&&S.day>=p.next&&!p.session){
       if(rrand()<t.study.cancelChance){var notice=rrand()<t.study.noticeChance,ill=!!r.ill,why=ill?'illness':r.energy<30?'fatigue':'a conflicting work shift';promiseProblem('study',r.name+' cancelled a session because of '+why+'.',notice);if(!notice){var lost=Math.min(S.ap,t.study.minutes);S.ap-=lost;S.notes.push({l:'warn',t:'You lost '+hm(lost)+' waiting for the cancelled session.'})}p.next=S.day+1}
       else p.session={day:S.day,conflict:rrand()<C.conflictChance?['shift','social','fatigue'][Math.floor(rrand()*3)]:null};
@@ -4105,11 +4180,12 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
       h+=arow(k==='study'?'Scheduled joint study':k==='emergency'?'Genuine emergency: help requested':'Honour household priority and contribution',chip('','Due today'),btn('cdo','honour','Honour')+btn('cdo','miss','Miss',1)+(k==='study'?btn('cdo','reschedule','Ask to reschedule',1,p.reschedules>=t.study.maxReschedules):''),' '+note);
       if(conf)h+=arow('Take the competing opportunity',chip('','Counts as a missed session'),btn('cdo','conflict','Choose '+conf,1));
     }
-    h+=arow('End this pact',chip('','Any pot split once'),btn('cdo','end','End pact',1),'Early withdrawal: relationship '+sg(t.missRel)+', stakes refunded.');return h;
+    h+=arow('End this pact',chip('','Any pot split once'),btn('cdo','end','End pact',1),'Early withdrawal: relationship '+sg(t.missRel)+(p.kind==='wealth'?(p.reachedThem!=null&&p.reachedMe==null?'. '+(r?r.name:'Your partner')+' has already reached the target: leaving now gives them the pot.':', stakes refunded. Once your partner reaches the target first, leaving gives them the pot.'):'.'));return h;
   }
   function contractDo(k){
     var p=S.pact;if(!p||!p.kind||p.settled)return refuse('No active contract.');var t=p.terms,r=S.rivals[p.i];
-    if(k==='end'){relAdd(r,t.missRel);settleContract('cancelled');return done()}
+    if(k==='end'){var lost=p.kind==='wealth'&&(wealthProgress(),p.reachedThem!=null&&p.reachedMe==null);relAdd(r,t.missRel);settleContract(lost?'lose':'cancelled');
+      log('📜 You ended '+contractName(p.kind)+' early: relationship '+sg(t.missRel)+(lost?'. '+r.name+' had already reached the target, so the pot is theirs.':p.pot?'. Stakes refunded.':'.'),'warn');return done()}
     if(k==='notice'&&p.kind==='loyalty'){if(p.noticeDay!=null)return;p.noticeDay=S.day;log('📜 Notice given. You may leave or replace your housemate on day '+(S.day+t.noticeDays)+'.');return done()}
     if(!p.session||p.session.day!==S.day||p.problem)return refuse('No obligation is awaiting a decision.');
     if(k==='reschedule'&&p.kind==='study'){
@@ -4155,7 +4231,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     var a=String(arg).split('|'),e=(S.socialEvents||[]).find(function(x){return x.id===+a[0]}),k=a[1],E=CONFIG.rivals.socialEvents;
     if(!e||!e.known||e.done||S.day>e.expires||['confront','forgive','reconcile'].indexOf(k)<0)return refuse('No discovered incident awaits this response.');
     if(k==='confront'&&e.confronted)return refuse('Already confronted.');if(k==='reconcile'&&!e.confronted)return refuse('Confront the incident first.');
-    if(!spendMin(E.minutes,0))return;var r=S.rivals[e.i];if(!r)return;
+    var r=S.rivals[e.i];if(!r)return refuse('That rival is no longer in town.');if(!spendMin(E.minutes,0))return;
     if(k==='confront'){e.confronted=true;relAdd(r,E.confrontRel)}else{relAdd(r,k==='forgive'?E.forgiveRel:E.reconcileRel);e.done=true}
     log('💬 '+r.name+': '+k+'. Relationship '+sg(k==='confront'?E.confrontRel:k==='forgive'?E.forgiveRel:E.reconcileRel)+'.');done();
   }
@@ -4238,12 +4314,26 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
   }
   /* the job worth aiming for: the best pay x days it could be worked, among jobs whose missing qualifications fit in the days left */
   function rivalModHours(t,n){return lesCount(t,n)*lesHours(t,n)}
+  /* clothes: what a rival is dressed for, and the stricter dress its best open, better-paid, qualified role needs ('' = none) */
+  function rivalDressed(r,d){var c=r.clothes||{};return d==='suit'?c.suit>0:d==='smart'?(c.smart>0||c.suit>0):(c.casual>0||c.smart>0||c.suit>0)}
+  function rivalDressUp(r,j){
+    var best=null;
+    Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk,i){
+      if(!rk.dress||rivalDressed(r,rk.dress))return;if(j&&j.c===c&&j.i>=i)return;
+      if(!rivalMeets(r,rk)||kreq(rk)>Math.floor(r.know))return;
+      if(S.closed[c+'_'+i]||shutLeft(bOf(c))>0)return;if(needsExp(rk)&&(r.shiftsAt[bOf(c)]||0)<CONFIG.jobs.experience.shifts)return;
+      var pay=rolePay(c,i);if(j&&pay<=rolePay(j.c,j.i))return;
+      if(!best||pay>best.pay)best={d:rk.dress,pay:pay};
+    })});
+    return best?best.d:'';
+  }
   function rivalTarget(r,daysLeft,perDay){
     var best=null,other=null,otherTrack=null;
     Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk,i){
       var h=0;(rk.q||[]).forEach(function(q){var T=TRACKS[q[0]],end=T.c[q[1]-1];for(var m=r.edu[q[0]]||0;m<end;m++)h+=rivalModHours(q[0],m)});
       if(h>daysLeft*perDay)return;if(kreq(rk)>r.know+h*0.9+6)return;
       var pay=rolePay(c,i),v=pay*Math.max(0,daysLeft-Math.ceil(h/perDay)-1)*careerPreference(r,c,rk);
+      if(rk.dress&&!rivalDressed(r,rk.dress))v-=G(WEAR[rk.dress].p);  /* the clothes the role needs are part of its price */
       if(shutLeft(bOf(c))>0||S.closed[c+'_'+i])v*=CONFIG.rivals.career.closedWeight;
       if(needsExp(rk)&&(r.shiftsAt[bOf(c)]||0)<CONFIG.jobs.experience.shifts)v*=CONFIG.rivals.career.experienceWeight;
       if(!best||v>best.v)best={c:c,i:i,v:v};
@@ -4280,7 +4370,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     var hr=I.byHealth.slice().sort(function(a,b){return b.healthAtLeast-a.healthAtLeast}),hf=1;for(var k=0;k<hr.length;k++)if(r.health>=hr[k].healthAtLeast){hf=hr[k].x||hr[k].chanceX||1;break}
     return Math.min(I.maxChance,Math.max(0,base*I.cutForEveryone-I.minusForEveryone)*hf*Df().ill*trendIll());
   }
-  function rivalNote(r,t,txt){r.log.unshift('Day '+(S.day-1)+': '+txt);r.log=r.log.slice(0,8);if(t)S.notes.push({l:'rem',t:'🏁 '+r.ic+' '+r.name+' '+txt,rv:t===2?S.rivals.indexOf(r):null})}  /* t: 0 log only, 1 news, 2 news you can congratulate them on */
+  function rivalNote(r,t,txt){r.log.unshift('Day '+(S.day-1)+': '+txt);r.log=r.log.slice(0,8);if(t)S.notes.push({l:'rem',t:'🏁 '+r.ic+' '+r.name+' '+txt,rv:t===2?S.rivals.indexOf(r):null,c:'news',g:'r'+S.rivals.indexOf(r),s:txt})}  /* t: 0 log only, 1 news, 2 news you can congratulate them on */
   /* one rival's day (the day that has just ended) */
   function rivalDay(r){
     var K=rivalSkill(r),FDc=CONFIG.food,day=S.day-1,used=CONFIG.rivals.dayOverheadMinutes||0,mistake=rrand()<K.mistakeChance?['meal','study','lazy','clothes','fun'][Math.floor(rrand()*5)]:'',left=gameLen()-day;
@@ -4293,8 +4383,12 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     if(K.plans&&(!r.target||day%3===1))r.target=rivalTarget(r,left,K.studyHours||1);
     /* clothes for the job (or the one aimed for) */
     var j=rivalJob(r),want=(j&&j.rk.dress)||'casual';
+    var dressed=function(d){return rivalDressed(r,d)};
     if(mistake!=='clothes'&&!(r.clothes[want]>0||(want!=='suit'&&r.clothes.suit>0)||(want==='casual'&&r.clothes.smart>0))){var cp=G(WEAR[want].p);if(r.cash<cp&&r.bank>0){var w=Math.min(r.bank,cp-r.cash+20);r.bank-=w;r.cash+=w}if(r.cash>=cp){r.cash-=cp;r.clothes[want]=WEAR[want].w;used+=30}}
-    var dressed=function(d){var c=r.clothes;return d==='suit'?c.suit>0:d==='smart'?(c.smart>0||c.suit>0):(c.casual>0||c.smart>0||c.suit>0)};
+    /* dress for the best better-paid role it already qualifies for, so a dress code never locks a rival out of a job
+       (bought with the rent still covered; no dice) */
+    var up=rivalDressUp(r,j);
+    if(up&&mistake!=='clothes'&&!dressed(up)){var cu=G(WEAR[up].p);if(r.cash+r.bank-cu>=HOUSE.apt.rent){if(r.cash<cu){var wu=Math.min(r.bank,cu-r.cash);r.bank-=wu;r.cash+=wu}r.cash-=cu;r.clothes[up]=WEAR[up].w;used+=30}}
     /* apply for a better job it qualifies for (openings are shared with yours) */
     for(var a=0;a<K.applyTries;a++){
       var val=function(c,i){return (K.usesOutlook?rolePay(c,i):CAREERS[c].ranks[i].pay)*careerPreference(r,c,CAREERS[c].ranks[i])+(r.target&&bOf(c)===bOf(r.target.c)?CONFIG.rivals.career.targetBonus:0)},cp0=j?val(j.c,j.i):0,best=null,alternative=null;  /* the target's workplace is worth a little extra (work experience) */
@@ -6685,7 +6779,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
   /* cards for tonight, in order: the big event (if one starts or a saga chapter plays), then the daily event */
   function pickNight(){
     S.nightFx=[];  /* tonight's storyline chapters, which rivals feel too (rivalNight) */
-    var E=CONFIG.events,cards=[],story=!!S.saga,wasActive=story||macroRunning(),big=null,ind=null;
+    var E=CONFIG.events,cards=[],story=!!S.saga,wasActive=story||macroRunning(),big=null,ind=null,trends0=S.trends.length,saga0=S.saga&&S.saga.id;
     var shockNear=macroRunning()||(S.macroLast>0&&S.day-S.macroLast<=E.storylineGap);  /* a shock running, or ended under storylineGap days ago */
     if(S.ind&&S.ind.day>=S.ind.len){var lastInd=S.ind.id;S.ind=null;  /* the industry-specific storyline's last phase held for one day after its last chapter */
       if(S.indLeft>0){S.indLeft--;var IL=CONFIG.industry,lo=S.day+CONFIG.rivals.industryGapDays,hi=gameLen()-IL.daysBeforeEnd;  /* a rival game has another one (rival dice) */
@@ -6702,6 +6796,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     }
     if(S.ind)ind=indEvent();
     else if(S.indNext>0&&S.day>=S.indNext&&!shockNear){indStart();ind=indEvent()}
+    if(big)S.trends.forEach(function(t,ti){if(ti>=trends0||(t.saga&&(t.saga===saga0||(S.saga&&t.saga===S.saga.id))))t.card=S.day});  /* shown on tonight's card: not repeated in the morning */
     if(big)cards.push(big);
     if(ind)cards.push(ind);
     var daily=dailyPick();if(daily)cards.push(daily);
@@ -6724,7 +6819,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     if(!S.fed)log('No meal today: '+sg(CONFIG.health.nightly.skippedMeal)+' health overnight.','warn');
     snd('day');
     var cards=pickNight();if(!cards.length)cards=[quietCard()];
-    S.pending={rested:home,ev:cards[0],q:cards.slice(1)};  /* any way of going to bed at home counts (the top-bar button too), so the Bungalow's bed bonus applies */
+    S.pending={rested:home,ev:cards[0],q:cards.slice(1),n:cards.length};  /* any way of going to bed at home counts (the top-bar button too), so the Bungalow's bed bonus applies */
     cards.forEach(function(ev){if(ev.done)log('Event: '+ev.title+(ev.fx.length?' ('+ev.fx.join(', ')+')':''),ev.tone==='good'?'good':ev.tone==='bad'?'bad':'')});
     view=null;
     render();
@@ -6748,7 +6843,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
     render();
   }
   function renderEvent(){
-    var ev=S.pending.ev,h='<div class="evtag"><span class="evicon">'+ev.icon+'</span> '+ev.tag+'</div><h2 class="evtitle">'+ev.title+'</h2>';
+    var ev=S.pending.ev,nCards=S.pending.n||0,h='<div class="evtag"><span class="evicon">'+ev.icon+'</span> '+ev.tag+(nCards>1?' <small class="evstep">'+(nCards-(S.pending.q||[]).length)+' of '+nCards+'</small>':'')+'</div><h2 class="evtitle">'+ev.title+'</h2>';
     h+='<div class="say"><b>'+(ev.choice?'Your call':'What happened')+'</b>'+ev.text+'</div>';
     if(ev.story&&ev.hist&&ev.hist.length)h=h.replace('<div class="say">','<div class="hist">'+ev.hist.map(function(x){return '<div>'+x+'</div>'}).join('')+'</div><div class="say">');
     if(ev.story&&!ev.done){
@@ -7509,7 +7604,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
       $('cpMsg').textContent=(opens.length?'New jobs open to you: '+opens.join(', ')+'. ':'')+(close.length?'Closer to: '+close.slice(0,4).join(', ')+' (they also need other qualifications). ':'')+(nxT?'Next up: the '+TT.lv[C.l]+' (tuition '+money(nxF)+', paid when you enrol).':'You have completed the whole pathway!');
       var cn=$('cpNext');cn.hidden=!nxT;if(nxT){cn.textContent='Enrol in the '+TT.lv[C.l]+' · '+money(nxF);cn.disabled=S.cash<nxF||S.expelled>0}
       cp.classList.add('show')}else cp.classList.remove('show');
-    var mo=$('morning');if(S.morning&&!S.over&&!S.pending&&!S.cert){$('mnT').textContent='☀️ Day '+S.day+(maxDays()!==Infinity?' of '+maxDays():'');$('mnSub').textContent='Overnight changes and reminders';$('mnList').innerHTML=S.morning.map(function(x){var cg=x.rv!=null&&S.mode==='rivals'&&S.rivals&&S.rivals[x.rv];return '<li class="'+x.l+'">'+x.t+(cg?' '+(S.cong&&S.cong.d===S.day&&S.cong[x.rv]?'<small>✓ Congratulated</small>':'<button type="button" class="mini" data-cg="'+x.rv+'">🎉 Congratulate · '+hm(CONFIG.rivals.social.congratulate.minutes)+'</button>'+((S.rivals[x.rv].rel||0)<0?' <small>⚠️ on bad terms: an argument costs '+sg(CONFIG.rivals.social.argument.happiness)+' happiness</small>':'')):'')+'</li>'}).join('');mo.classList.add('show')}else mo.classList.remove('show');
+    var mo=$('morning');if(S.morning&&!S.over&&!S.pending&&!S.cert){$('mnT').textContent='☀️ Day '+S.day+(maxDays()!==Infinity?' of '+maxDays():'');$('mnSub').innerHTML=morningTop();$('mnList').innerHTML=morningHtml(S.morning);mo.classList.add('show')}else mo.classList.remove('show');
   }
   /* the top bar: net worth, cash, investments, score, buttons and current pay, plus the Rules text that depends on difficulty */
   function renderHud(){
@@ -8036,7 +8131,7 @@ button[aria-selected=true],button[aria-pressed=true]{box-shadow:inset 0 -3px 0 v
       $('cfgGoal').textContent=money(GOAL);$('cfgGoal2').textContent=money(GOAL);$('cfgRank1').textContent=TIERS[0].ic+' '+TIERS[0].n;
       var up=TIERS.slice(1),last=TIERS[TIERS.length-1];
       var parts=up.map(function(r){return '<b>'+r.ic+' '+r.n+'</b> at '+money(r.v)});
-      $('cfgRanks').innerHTML=(parts.length>1?parts.slice(0,-1).join(', ')+' and '+parts[parts.length-1]:parts[0])+' ('+last.n+' ends a single game; a game with AI rivals goes on to its last day)';
+      $('cfgRanks').innerHTML=(parts.length>1?parts.slice(0,-1).join(', ')+' and '+parts[parts.length-1]:parts[0])+' (ranks are milestones: the game goes on to its last day)';
       var tg=TIERS.map(function(r,i){return r.d?'<b>'+r.ic+' '+r.n+'</b> by day '+Math.min(r.d,CONFIG.time.gameDays||r.d)+' (+'+r.b.toLocaleString()+')':''}).filter(Boolean);
       $('cfgOnTime').parentNode.hidden=!tg.length;
       $('cfgOnTime').innerHTML='<b>Target days:</b> reach a rank by the end of its day for bonus score points: '+(tg.length>1?tg.slice(0,-1).join(', ')+' and '+tg[tg.length-1]:tg[0]||'')+'. A rank reached later still counts, without the bonus.';

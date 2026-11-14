@@ -111,6 +111,7 @@ Everything adjustable lives in the `CONFIG` block near the top of the script: `C
 ---
 
 103. [Housing money and social contracts local update](#103-housing-money-and-social-contracts-local-update)
+104. [Review fixes: rival dress codes, pact loopholes, Rules text, a clearer morning; QA skills](#104-review-fixes-rival-dress-codes-pact-loopholes-rules-text-a-clearer-morning-qa-skills)
 
 ## 1. Jobs: School and Bank
 
@@ -1716,3 +1717,40 @@ The second half of the last rivals step (batch 4b). Everything here is light and
 - All new probabilities, stakes, durations, relationship effects and event frequencies live in CONFIG. Removed obsolete fixed `money.bet.stake`, `politics.pact.pot` and `money.loan.easyAskChance`; saved amounts remain intact. Save v8 preserves active old money records; an old shared bungalow is restored with its housemate at the apartment, with an explanatory note.
 - Updated CODE_MAP, the Word configuration guide and the [configuration supplement](docs/Configuration_Social_Update.md), plus the [test guide](docs/Social_Update_Test_Guide.md).
 - Validation: 49 isolated Node code regression checks passed; inline JavaScript parses and whitespace checks pass. No browser simulations or desktop/mobile UI checks were run, per user instruction. Layout, browser integration, balance and long-run diversity remain unverified. Historical QA reports are unchanged.
+
+
+## 104. Review fixes: rival dress codes, pact loopholes, Rules text, a clearer morning; QA skills
+
+Base: `2926441`. Found by a code review of the build; no CONFIG keys added or removed.
+
+**Gameplay fixes**
+
+- **AI rivals were locked out of every smart- and suit-dress job.** A rival bought clothes only for the job it already held, while its job applications skipped any role it was not already dressed for, so no rival could ever move from a casual role to a smart or suit one. Saved simulations show the effect: medium and expert rivals finished as Nursing Aide in 120 of 120 cases (`QA_Sim_2026-10-31_rival-parity.json`). Now a rival also buys the clothes for the best open, better-paid role it already qualifies for (`rivalDressUp()`, `rivalDressed()`), as long as its rent is still covered, and `rivalTarget()` counts the price of clothes it does not own. No new dice; single games are unchanged.
+  - **Effect on difficulty: large.** In 18 seeded overnight-only games (medium, expert, mixed; the old build against this one, same seeds) planning rivals' final jobs went from Nursing Aide or Data Annotator in every case to Junior Doctor, Specialist Doctor or Chief of Surgery, and their net worth from about $3,000–$20,000 to about $13,000–$63,000. Rival dropouts were the same in both builds. Rivals still converge on the Hospital ladder. `CONFIG.rivals.levels` has **not** been retuned; a rival simulation run is needed to decide that.
+- **Wealth Challenge loophole closed.** Ending the pact early used to refund both stakes even after your partner had reached the target. Now, if your partner has reached the target and you have not, leaving gives them the pot; otherwise stakes are refunded as before. The "End this pact" row says so.
+- **A savings pact no longer ends silently.** When a "partner missed the commitment" problem is left unanswered, the pact still ends and the pot is still split once, and the morning now says so.
+- `socialDecision()` checks the rival exists before spending your time. Removed a duplicated missed-session block in `contractTick()` (no behaviour change).
+
+**Text**
+
+- Rules, the welcome text and the net-worth tooltip no longer say that reaching a rank wins or ends the game: ranks are milestones and the game runs to its last day (as `checkWin()` has done since section 93).
+- Contract endings read in plain words ("kept in full", "ended with missed obligations", "ended early", "you won", "your partner won", "a tie") instead of internal words. Responses to a broken promise say what happened and the relationship change.
+
+**Night cards and the morning pop-up** (presentation only)
+
+- Night cards show "1 of 3" when there is more than one.
+- The morning pop-up starts with how the night went (where you slept, overnight energy, happiness, health and knowledge) and yesterday's earned, spent and net-worth change.
+- Its lines are in three groups, each sorted by urgency: **Do today**, **Overnight**, **Still going on**.
+- One line per topic. An overdue loan, an illness, burnout, rent, being out of clothes and a job tip used to be able to appear twice in different words; the more serious line is kept and the other becomes its detail (`tidyMorning()`, `noteMeta()`).
+- A storyline or economic shock shown on a night card is not repeated that morning. On later mornings it is one short line under Still going on.
+- One rival's news is one line, with one Congratulate button.
+- Long lines show their first sentence, with the rest behind "More" (`noteSplit()`).
+- A note may now carry `c` (group), `k` (topic), `m` (detail), `g`/`s` (rival group and short text). Existing `S.notes.push` lines need no change; older saves load as before. `S.summary.n` holds the overnight change; `S.pending.n` the number of cards; a trend's `card` the day its card was shown.
+- Kept on purpose: the "you lost your home" morning line, because it carries how to get a home again, which the night card does not.
+
+**QA**
+
+- New: `tools/qa/check-morning.js` (night cards and morning pop-up, desktop and phone), `tools/qa/check-rival-careers.js` (dress-code lock, rival dice in single games, a table of rivals' final jobs; it fails on the previous build), `tools/qa/run-all-checks.js` (all six fast checks, one table), `tools/qa/qa-page.js` (shared hooked-page helper).
+- `check-social-rules.js`: 10 new cases for the fixes above (59 in all); it now loads the clothes table.
+- Claude skills in `.claude/skills/`: `dg-quick-checks`, `dg-ui-check`, `dg-sim`, `dg-sim-suite`, `dg-rival-audit`, `dg-bug-hunt`. `.gitignore` now keeps `.claude/skills/` and ignores the rest of `.claude/`.
+- Validation: `run-all-checks.js` passed (social rules 59, regressions 22, personalities 19, daily UI 43 per width, morning 6 per width, rival careers). **Not run:** the full UI check and the bot simulations. Rival balance after the dress fix is unverified.

@@ -71,3 +71,9 @@ Accepted bet messages persist betUntil; legacy messages use the active bet’s u
 
 The phone app button is on the map; `renderStats()` fills the persistent meal/work/study HUD and all completed education pathways. `renderMap()` tags the player, home and workplace, including closures. `rivalBoard()` shows wealth and career-pay bars. `diversifyRivals()` runs at midgame before rival days; optional `avoidCareer`/`avoidTrack` fields guide an identical-path rival toward the best feasible alternative. `CONFIG.rivals.together.flat.noChance`/`noRel` tune declined shared actions; a decline marks the action attempted but costs no time or cash. Rank milestones only log and animate, then play continues until a normal ending.
 
+## QA skills and quick checks
+
+Repo skills in `.claude/skills/` wrap the QA tools: `dg-quick-checks` (run `node tools/qa/run-all-checks.js <folder outside the repo>` after any gameplay, rival or pop-up change), `dg-ui-check`, `dg-sim`, `dg-sim-suite`, `dg-rival-audit` and `dg-bug-hunt`. The rules above still apply: ask before the UI check after a change and before any simulation, and save simulation reports to `docs/`. Add a case to the matching check script with each fix or feature; never skip a failing check.
+
+Morning notes: anything pushed to `S.notes` appears in the morning pop-up, grouped by `noteMeta()` and de-duplicated by topic in `tidyMorning()`. Give a new note `c` and `k` when the same thing can be reported from two places, and do not repeat in the morning what a night card has just shown. Rivals buy the clothes their next role needs (`rivalDressUp()`); keep that when changing `rivalDay()`.
+

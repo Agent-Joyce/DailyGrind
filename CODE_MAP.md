@@ -115,3 +115,12 @@ The new helpers remain inside section 6 before the AI-rivals block; no external 
 Actions `contract`, `cdo`, `promise` and `social` use the existing ACTIONS dispatcher. New social functions use `rrand` only in rival mode; render-only terms, previews and summaries do not draw RNG. Accepted typed contracts use the existing single-player-pact restriction, rather than a second parallel alliance system.
 
 The [test guide](docs/Social_Update_Test_Guide.md) distinguishes the 49 isolated Node checks (`node tools/qa/check-social-rules.js`) from deferred browser integration, UI and simulation work. No browser was launched for these checks.
+
+## Rival clothes, the morning pop-up and the QA skills
+
+**Rival clothes:** `rivalDressed(r, d)` says what a rival is dressed for; `rivalDressUp(r, j)` returns the stricter dress needed by the best open, better-paid role the rival already qualifies for. `rivalDay()` buys the current job's clothes first, then that dress when the rent is still covered. `rivalTarget()` subtracts the price of clothes the rival does not own. Without this a dress code locks rivals out, because applications skip roles they are not dressed for.
+
+**Morning pop-up (section 5, before `rollover`):** `rollover0()` collects `S.notes` and its own reminders, then `tidyMorning()` keeps one note per topic. `noteMeta()` gives a note its group `c` (`act` do today, `news` overnight, `run` still going on) and topic `k` from its text when the push site did not set them; set them at the push site for anything new that could repeat. `morningHtml()` draws the three groups, groups rival news (`g`, `s` from `rivalNote()`), and splits long lines with `noteSplit()`; `morningTop()` draws the sleep and money strip from `S.summary`. `pickNight()` marks trends shown on tonight's card (`t.card`) so the morning does not repeat them, and `S.pending.n` gives the night cards their "1 of N".
+
+**Checks and skills:** `node tools/qa/run-all-checks.js <folder outside the repo>` runs every fast check. `tools/qa/qa-page.js` is the shared helper for new browser checks (`openGame()`; in the page, `__T.ev(code)` runs code inside the game and `QA.seed/newGame/night/morning` drive it). The Claude skills in `.claude/skills/` (`dg-quick-checks`, `dg-ui-check`, `dg-sim`, `dg-sim-suite`, `dg-rival-audit`, `dg-bug-hunt`) describe when and how to run each.
+
