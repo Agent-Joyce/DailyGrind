@@ -83,7 +83,7 @@ Accepted bet messages persist betUntil; legacy messages use the active bet’s u
 
 ## November 2026 interface and rival updates
 
-The phone app button is on the map; `renderStats()` fills the persistent meal/work/study HUD and all completed education pathways. `renderMap()` tags the player, home and workplace, including closures. `rivalBoard()` shows wealth and career-pay bars. `diversifyRivals()` runs at midgame before rival days; optional `avoidCareer`/`avoidTrack` fields guide an identical-path rival toward the best feasible alternative. `CONFIG.rivals.together.flat.noChance`/`noRel` tune declined shared actions; a decline marks the action attempted but costs no time or cash. Rank milestones only log and animate, then play continues until a normal ending.
+The phone app button is on the map; `renderStats()` fills the persistent meal/work/study HUD and all completed education pathways. `renderMap()` tags the player, home and workplace, including closures. `rivalBoard()` shows wealth and career-pay bars. Each rival has an archetype (`CONFIG.rivals.archetypes`, dealt on rival dice, one each; `rivalSkill()` adjusts the level by it and `careerPreference()` weights jobs by its pathway taste); it replaced `diversifyRivals()` (CHANGELOG 109). `CONFIG.rivals.together.flat.noChance`/`noRel` tune declined shared actions; a decline marks the action attempted but costs no time or cash. Rank milestones only log and animate, then play continues until a normal ending.
 
 ## QA skills and quick checks
 

@@ -453,7 +453,7 @@
 
 
   function careerPreference(r,c,rk){
-    var C=CONFIG.rivals.career,p=C.preferences[r.personality]||{},q=rk.q||[],track=q.length?q[0][0]:c;
+    var C=CONFIG.rivals.career,a=archetype(r),p=a&&a.tracks||{},q=rk.q||[],track=q.length?q[0][0]:c;  /* the archetype's taste for the pathway */
     return (p[track]||1)+q.reduce(function(n,v){return n+Math.min(v[1],rivalLv(r,v[0]))*C.educationWeight},0);
   }
   function participantWorth(p){return p===S?worth():rivalWorth(p)}
@@ -681,7 +681,9 @@
   };
   function prepareRival(r,i,seed){
     var keys=Object.keys(CONFIG.rivals.personalities),M=CONFIG.rivals.memory;
+    delete r.avoidCareer;delete r.avoidTrack;delete r.avoidCareers;  /* the midgame career switch was replaced by archetypes (CHANGELOG 109) */
     if(keys.indexOf(r.personality)<0)r.personality=keys[((seed>>>0)+(i||0))%keys.length];
+    var arcs=Object.keys(CONFIG.rivals.archetypes);if(arcs.indexOf(r.archetype)<0)r.archetype=arcs[((seed>>>0)+2*(i||0)+1)%arcs.length];  /* old saves: a fixed pick, no dice; three rivals never share one */
     var f=r.favours;if(!f||typeof f!=='object')f=r.favours={trust:0,owed:0,entries:[]};
     f.trust=Math.max(-M.maxTrust,Math.min(M.maxTrust,Number.isFinite(f.trust)?f.trust:0));
     f.owed=Math.max(0,Math.min(M.maxOwed,Number.isFinite(f.owed)?Math.floor(f.owed):0));
@@ -700,7 +702,7 @@
     f.entries.unshift({key:key,day:S.day});f.entries=f.entries.slice(0,M.maxEntries);return true;
   }
   function memoryLine(r){var f=r.favours,e=f&&f.entries&&f.entries[0];return e?'“'+RIVAL_MEMORIES[e.key]+'”':''}
-  function memoryProfile(r){var P=personality(r),f=r.favours,h='<li>'+personalityLabel(r)+': '+P.about+'</li>';
+  function memoryProfile(r){var P=personality(r),f=r.favours,A=archetype(r),h=(A?'<li>'+archetypeLabel(r)+': '+A.about+'</li>':'')+'<li>'+personalityLabel(r)+': '+P.about+'</li>';
     var ri=S.rivals.indexOf(r);Object.keys(S.rivalRelations||{}).forEach(function(key){var ids=key.split('|').map(Number);if(ids.indexOf(ri)<0)return;var o=S.rivals[ids[0]===ri?ids[1]:ids[0]];if(o)h+='<li>Trust with '+o.name+': '+sg(S.rivalRelations[key])+'</li>'});
     h+='<li>'+loanReliability(r)+'</li>';
     if(f&&f.owed)h+='<li>🤝 Remembers '+f.owed+' favour'+(f.owed===1?'':'s')+' to return. A job introduction may come on a later morning while you are on speaking terms.</li>';
@@ -719,12 +721,20 @@
   function rivalMeets(r,rk){return (rk.q||[]).every(function(q){return rivalLv(r,q[0])>=q[1]})}
   function rivalJob(r){return r.job&&CAREERS[r.job.c]?{c:r.job.c,i:r.job.i,rk:CAREERS[r.job.c].ranks[r.job.i],b:bOf(r.job.c)}:null}
   function rivalWorth(r){return Math.round(r.cash+r.bank+(r.etf||0)+(S.rivals.indexOf(r)<0?0:rivalMoney(S.rivals.indexOf(r))))}
-  function rivalSkill(r){return CONFIG.rivals.levels[r.diff]||CONFIG.rivals.levels.medium}
+  /* a rival's level, adjusted by its archetype (CONFIG.rivals.archetypes): the numbers rivalDay() plays with */
+  function archetype(r){return r&&CONFIG.rivals.archetypes[r.archetype]||null}
+  function archetypeLabel(r){var A=archetype(r);return A?A.icon+' '+A.name:''}
+  function rivalSkill(r){
+    var K=CONFIG.rivals.levels[r.diff]||CONFIG.rivals.levels.medium,A=archetype(r);if(!A)return K;var B=['none','savings','invest'],b=B.indexOf(K.bank);
+    return Object.assign({},K,{shifts:Math.max(Math.min(1,K.shifts),K.shifts+(A.shifts||0)),  /* never below one shift a day: less does not pay the bills */studyHours:K.studyHours*(A.study||1),moraleAim:Math.max(0,Math.min(100,K.moraleAim+(A.morale||0))),
+      bank:b<0?K.bank:B[Math.min(B.length-1,b+(A.bank||0))],social:A.social==null?K.social:A.social});
+  }
   function makeRivals(n,level,cash){
-    var R=CONFIG.rivals,lv=['easy','medium','expert'],out=[],types=Object.keys(R.personalities);
+    var R=CONFIG.rivals,lv=['easy','medium','expert'],out=[],types=Object.keys(R.personalities),arcs=Object.keys(R.archetypes);
     for(var q=types.length-1;q>0;q--){var z=Math.floor(rrand()*(q+1)),tmp=types[q];types[q]=types[z];types[z]=tmp}
+    for(var qa=arcs.length-1;qa>0;qa--){var za=Math.floor(rrand()*(qa+1)),ta=arcs[qa];arcs[qa]=arcs[za];arcs[za]=ta}  /* archetypes: one each, no two alike */
     for(var i=0;i<n;i++){var d=level==='mixed'?lv[i%3]:level,edu={};Object.keys(TRACKS).forEach(function(t){edu[t]=0});
-      out.push({home:'apt',loanHistory:{paid:0,late:0,defaulted:0},personality:types[i%types.length],favours:{trust:0,owed:0,entries:[]},name:R.names[i],ic:R.icons[i],diff:d,cash:cash,bank:0,etf:0,energy:CONFIG.start.energy,happy:70,health:CONFIG.health.start,know:10,edu:edu,
+      out.push({home:'apt',loanHistory:{paid:0,late:0,defaulted:0},personality:types[i%types.length],archetype:arcs[i%arcs.length],favours:{trust:0,owed:0,entries:[]},name:R.names[i],ic:R.icons[i],diff:d,cash:cash,bank:0,etf:0,energy:CONFIG.start.energy,happy:70,health:CONFIG.health.start,know:10,edu:edu,
         job:null,best:null,study:null,target:null,clothes:{casual:CONFIG.clothes.startCasualDays,smart:0,suit:0},shiftsAt:{},shut:0,
         out:null,tier:-1,lowH:0,lowE:0,broke:0,hungry:0,hist:[],log:[],y:cash,life:blankLife(),rankDay:{},bestJob:null,rel:0,rep:CONFIG.rivals.politics.rep.start,drift:0,sabOn:[],sabUsed:0,grudge:0,places:[]})}
     return out;
@@ -746,7 +756,7 @@
     return best?best.d:'';
   }
   function rivalTarget(r,daysLeft,perDay){
-    var best=null,other=null,otherTrack=null;
+    var best=null;
     Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk,i){
       var h=0;(rk.q||[]).forEach(function(q){var T=TRACKS[q[0]],end=T.c[q[1]-1];for(var m=r.edu[q[0]]||0;m<end;m++)h+=rivalModHours(q[0],m)});
       if(h>daysLeft*perDay)return;if(kreq(rk)>r.know+h*0.9+6)return;
@@ -755,24 +765,8 @@
       if(shutLeft(bOf(c))>0||S.closed[c+'_'+i])v*=CONFIG.rivals.career.closedWeight;
       if(needsExp(rk)&&(r.shiftsAt[bOf(c)]||0)<CONFIG.jobs.experience.shifts)v*=CONFIG.rivals.career.experienceWeight;
       if(!best||v>best.v)best={c:c,i:i,v:v};
-      if(c!==r.avoidCareer&&!(r.avoidCareers||[]).includes(c)&&(!other||v>other.v))other={c:c,i:i,v:v};
-      if(c!==r.avoidCareer&&!(r.avoidCareers||[]).includes(c)&&(rk.q||[]).some(function(q){return q[0]!==r.avoidTrack&&rivalLv(r,q[0])<q[1]})&&(!otherTrack||v>otherTrack.v))otherTrack={c:c,i:i,v:v};
     })});
-    var alt=otherTrack||other;return r.avoidCareer&&alt&&best&&alt.v>=best.v*CONFIG.rivals.career.alternativeFloor?alt:best;
-  }
-  /* Midway through a rival game, separate rivals pursuing the same career and qualification.
-     The later rival switches to its strongest feasible alternative and keeps that preference. */
-  function diversifyRivals(){
-    if(S.day-1<Math.ceil(gameLen()/2)||(S.day-1)%CONFIG.rivals.career.recheckDays)return;
-    var seen={},taken=[];S.rivals.forEach(function(r){if(r.out)return;
-      var j=rivalJob(r),track=r.study&&r.study.t||Object.keys(TRACKS).sort(function(a,b){return rivalLv(r,b)-rivalLv(r,a)})[0];
-      var key=(j?j.c+'_'+j.i:'none')+'|'+track;
-      if(seen[key]){r.avoidCareer=j?j.c:seen[key].target&&seen[key].target.c||'';r.avoidTrack=track;r.avoidCareers=taken.slice();
-        r.target=rivalTarget(r,gameLen()-(S.day-1),rivalSkill(r).studyHours||1);
-        if(r.target)rivalNote(r,0,'chose a different career path: '+CAREERS[r.target.c].n+'.')}
-      else if(!seen[key])seen[key]=r;
-      if(j&&taken.indexOf(j.c)<0)taken.push(j.c);if(r.target&&taken.indexOf(r.target.c)<0)taken.push(r.target.c);
-    });
+    return best;
   }
   /* an effect-token string applied to a rival (h, l, e, n, c; a~b rolls on the rivals' dice) */
   function rivalFx(r,str){
@@ -812,16 +806,13 @@
     if(up&&mistake!=='clothes'&&!dressed(up)){var cu=G(WEAR[up].p);if(r.cash+r.bank-cu>=HOUSE.apt.rent){if(r.cash<cu){var wu=Math.min(r.bank,cu-r.cash);r.bank-=wu;r.cash+=wu}r.cash-=cu;r.clothes[up]=WEAR[up].w;used+=30}}
     /* apply for a better job it qualifies for (openings are shared with yours) */
     for(var a=0;a<K.applyTries;a++){
-      var val=function(c,i){return (K.usesOutlook?rolePay(c,i):CAREERS[c].ranks[i].pay)*careerPreference(r,c,CAREERS[c].ranks[i])+(r.target&&bOf(c)===bOf(r.target.c)?CONFIG.rivals.career.targetBonus:0)},cp0=j?val(j.c,j.i):0,best=null,alternative=null;  /* the target's workplace is worth a little extra (work experience) */
+      var val=function(c,i){return (K.usesOutlook?rolePay(c,i):CAREERS[c].ranks[i].pay)*careerPreference(r,c,CAREERS[c].ranks[i])+(r.target&&bOf(c)===bOf(r.target.c)?CONFIG.rivals.career.targetBonus:0)},cp0=j?val(j.c,j.i):0,best=null;  /* the target's workplace is worth a little extra (work experience) */
       Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk,i){
         if(j&&j.c===c&&j.i>=i)return;if(!rivalMeets(r,rk)||kreq(rk)>Math.floor(r.know))return;
         if(S.closed[c+'_'+i]||shutLeft(bOf(c))>0||sabSnagged(r,c+'_'+i,day))return;if(needsExp(rk)&&(r.shiftsAt[bOf(c)]||0)<CONFIG.jobs.experience.shifts)return;
         if(rk.dress&&!dressed(rk.dress))return;if(j&&rolePay(c,i)<rolePay(j.c,j.i))return;var g=val(c,i)-cp0;
         if(g>0&&(!best||g>best.g))best={c:c,i:i,g:g};
-        /* An alternative must be feasible, pay no less than the current role, and be near the best opportunity. */
-        if(r.avoidCareer&&r.target&&c===r.target.c&&c!==r.avoidCareer&&g>=0&&(!alternative||g>alternative.g))alternative={c:c,i:i,g:g};
       })});
-      if(r.avoidCareer&&alternative&&(!best||cp0+alternative.g>=(cp0+best.g)*CONFIG.rivals.career.alternativeFloor))best=alternative;
       if(!best)break;used+=60;
       var pp=Math.max(0.2,Math.min(0.95,0.82-0.05*best.i+r.know/400+(r.happy-50)/300-(r.energy<30?0.1:0)+repInterview(repOf(r))+(rivalPactOf(S.rivals.indexOf(r))?PX().rivalPacts.applyBonus:0)+sabInterview(r,day)));
       if(rrand()<pp){var was=j;r.job={c:best.c,i:best.i};r.took=best.c+'_'+best.i;j=rivalJob(r);rivalNote(r,2,(was&&was.c===best.c?'was promoted to ':'got a new job: ')+j.rk.r+' at the '+NAME[j.b]+'.');
@@ -834,6 +825,8 @@
     var targetRank=r.target&&CAREERS[r.target.c]&&CAREERS[r.target.c].ranks[r.target.i];
     var missing=targetRank&&(targetRank.q||[]).some(function(q){return rivalLv(r,q[0])<q[1]});
     var studyReserve=K.plans&&missing&&mistake!=='study'?Math.min(K.studyHours,CONFIG.burnout.loadMinutes/60)*60:0;
+    /* time kept for class never shuts out the day's first shift (a scholar's long study day would otherwise leave no pay at all) */
+    if(studyReserve&&j)studyReserve=Math.max(0,Math.min(studyReserve,CONFIG.burnout.loadMinutes-effort(j.rk.pay).min));
     var idle=!j||r.shut>0;
     if(r.shut>0)r.shut--;
     else for(var s=0;s<shifts&&j;s++){
@@ -849,7 +842,9 @@
         r.cash+=Math.round(GG.pay*payIdx());r.energy=clamp100(r.energy+GG.energy);r.happy=clamp100(r.happy-workHap(-GG.energy));r.health=clamp100(r.health+workHp(GG.minutes));load+=GG.minutes;used+=GG.minutes;r.gigs=(r.gigs||0)+1}}
     /* study towards the target (or anything, for easy rivals now and then) */
     var tg=r.target&&CAREERS[r.target.c]&&CAREERS[r.target.c].ranks[r.target.i],need=tg?(tg.q||[]).filter(function(q){return rivalLv(r,q[0])<q[1]}):[];
-    if(!K.plans&&!r.study&&rrand()<K.studyChance){var ts=Object.keys(TRACKS).filter(function(t){return (r.edu[t]||0)<totMods(t)});if(ts.length)need=[[ts[Math.floor(rrand()*ts.length)],9]]}
+    if(!K.plans&&!r.study&&rrand()<K.studyChance){var ts=Object.keys(TRACKS).filter(function(t){return (r.edu[t]||0)<totMods(t)});
+      if(ts.length){var tw=(archetype(r)||{}).tracks||{},tot=ts.reduce(function(n,t){return n+(tw[t]||1)},0),pick=rrand()*tot,tt=ts[ts.length-1];  /* any pathway, weighted by the archetype's taste */
+        for(var ti=0;ti<ts.length;ti++){pick-=tw[ts[ti]]||1;if(pick<0){tt=ts[ti];break}}need=[[tt,9]]}}
     if(tg&&r.study&&!need.some(function(q){return q[0]===r.study.t})){(r.pausedStudy||(r.pausedStudy={}))[r.study.t]=r.study;r.study=null}
     if(!r.study&&need.length&&r.pausedStudy&&r.pausedStudy[need[0][0]]){r.study=r.pausedStudy[need[0][0]];delete r.pausedStudy[need[0][0]]}
     if(!r.ill&&mistake!=='study'&&!sabClass(r,day)&&(need.length||r.study)&&rrand()<K.studyChance){
@@ -1715,7 +1710,6 @@
   }
   function rivalTick(){
     if(S.mode!=='rivals'||!S.rivals)return;
-    diversifyRivals();
     S.rivals.forEach(function(r){if(r.out)return;r.y=rivalWorth(r);r.took=null;rivalNight(r,rivalDay(r))});
     /* the job race (CONFIG.rivals.jobRace): a role a rival just took may have no openings left for you today */
     var JR=CONFIG.rivals.jobRace;

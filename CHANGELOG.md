@@ -1900,3 +1900,46 @@ Base: `5ac693b` (§107 plus the roadmap). First full UI check and bot simulation
 - Single-game simulations: [QA_Sim_2026-11-14_package-a-single.md](docs/QA_Sim_2026-11-14_package-a-single.md) ([raw](docs/QA_Sim_2026-11-14_package-a-single.json)): 20 careful + 10 random; careful 20 of 20 reach day 20.
 - Ways to earn (gigs, tutoring, the creator path) compared with jobs by pay an hour: gigs $16–20 against $14–21 for jobs that need no study (capped at 4 runs a day, heavier on energy), tutoring $20–53 once a day (below the jobs its qualification opens), the creator path about $14 an hour over a 20-day game. None dominates a normal job; no change proposed.
 - Not changed: the legacy careful bot leaves 2–4 of 10 rival games early through the same no-clothes spiral after a degree fee; rival difficulty numbers (a retune is proposed to the owner, not applied).
+
+## 109. Rival archetypes: five ways to play, so rivals stop all climbing the Medicine ladder (Package B, item 22)
+
+Base: §108. Rival games only; single games draw no rival dice and are unchanged.
+
+**Why:** every planning rival valued a job by pay × days, and Medicine pays best at every level of study, so medium and expert rivals all ended on the Hospital ladder: in `check-rival-careers.js` 18 of 18 games ended with every surviving planning rival in the same career line. `diversifyRivals()` tried to split them at midgame and did not (the 50-game suite's GAME-01).
+
+**Archetypes** (new `CONFIG.rivals.archetypes`), separate from level (how well a rival plays) and personality (how it treats you). Each rival gets a different one, dealt in `makeRivals()` on the rival dice:
+
+| Archetype | Pathway tastes (`tracks`) | Shifts | Study hours | Money | Happiness aim | Community Centre |
+|---|---|---|---|---|---|---|
+| 🧗 Careerist | Medicine 1.25, Finance 1.1 | +0.25 | ×1 | as level | −5 | as level |
+| 🎓 Scholar | Technology 1.45, Engineering 1.4, Data & AI 1.35, Medicine 0.8 | −0.25 | ×1.25 | as level | as level | as level |
+| 📈 Investor | Finance 1.5, Data & AI 1.2, Medicine 0.8 | as level | ×1 | one step up (none → savings → invest) | as level | as level |
+| 🥂 Socialite | Creative Media 1.55, Sales 1.4, Food & Beverage 1.35, Customer Service 1.35, Medicine 0.75 | −0.25 | ×0.9 | as level | +12 | always |
+| ⚡ Hustler | Logistics 1.55, Green Energy 1.5, Engineering 1.15, Medicine 0.75 | +0.5 | ×0.8 | as level | −5 | as level |
+
+- `rivalSkill(r)` returns the level's numbers adjusted by the archetype; shifts never drop below one a day (less does not pay for food, rent and clothes; an easy scholar or socialite starved at 0.75).
+- `careerPreference()` now weights a job by the archetype's taste for the pathway of its first qualification (plus the existing bonus for levels already held). Easy rivals, which do not plan, pick a pathway at random weighted the same way.
+- The rival's profile shows its archetype above its personality; the start-of-game log lists level, archetype and personality; the Rules text lists the archetypes (from CONFIG).
+- **Removed:** `diversifyRivals()` and the `avoidCareer`/`avoidTrack`/`avoidCareers` fields it set; `CONFIG.rivals.career.preferences` (the personality tastes, now `archetypes.tracks`), `career.alternativeFloor` and `career.recheckDays`. With archetypes, turning the midgame switch off changed the converged games from 2 to 3 of 18, so it no longer earned its code.
+- **Saves:** `prepareRival()` (already run by `MIGRATIONS` for every save) gives an old rival a fixed archetype, `(rivalSeed + 2 × index + 1) mod 5`, so three rivals never share one and no dice are rolled, and deletes the removed fields. `SAVE_VERSION` is unchanged.
+- **Fix found on the way:** a planning rival kept its whole study time out of the day's work limit before choosing shifts. A scholar's longer study day (expert 5h40) left less than one shift, so it earned nothing, could not pay for the course and went bankrupt by day 7. The time kept for class now always leaves room for the first shift.
+
+**Results** (overnight harness: the player only sleeps, 12 games per level, 30 days, three rivals)
+
+| | Before (§108) | After |
+|---|---|---|
+| Games where every planning rival ended in one career line | 18 of 18 | 1 of 18 |
+| Medium net worth, median (10th–90th percentile) | $11,940 ($8,770–$15,679) | $8,999 ($3,639–$18,678) |
+| Expert net worth, median (10th–90th percentile) | $18,270 ($11,582–$23,400) | $12,977 ($4,853–$18,897) |
+| Easy net worth, median | $755 | $1,136 |
+| Rivals out of the race | 0 | 0 |
+
+- Final jobs now spread over the Medicine, Technology, Engineering, Creative Media, Logistics and Green Energy ladders, among others (`check-rival-careers.js`, 6 games per level: 7 Repair Technician, 7 Junior Doctor, 5 Specialist Doctor, 4 Chief of Surgery, 3 Chief Technologist, 3 Brand Director, then 2 each of Social Media Manager, Supply Chain Planner, General Manager, Chief Engineer, Appraiser, Principal Engineer and others). Rivals earn less on average because most no longer take the best-paid ladder; the spread is wider.
+- In mixed games medium now scores slightly above expert on Life Score (96 against 92 points, median): expert works more and is less happy. This is for the held level retune (Package A item 3, deferred by the owner until after Package B), which proposes a higher expert happiness aim.
+
+**QA**
+
+- `check-rival-careers.js`: the career-line count is now a real threshold: it fails when more than a third of games end with every planning rival in one line.
+- `check-social-rules.js`: the two tests of the removed career switch and personality tastes are replaced by two archetype tests (dealt one each, taste changes a job's value; level adjustments, the one-shift floor, and old saves given distinct archetypes without dice).
+- `tools/qa/suite-player.js` records `archetype` in rival snapshots in place of the removed fields; `report-suite.js` reports archetypes in the diversity table, and GAME-01 is now "rivals with different archetypes still finished on one path".
+- Docs: `CODE_MAP.md`, `CLAUDE.md`, `docs/Configuration_Social_Update.md`, `docs/Daily Grind Config Guide.docx` (archetypes row; career settings and tastes rows updated).

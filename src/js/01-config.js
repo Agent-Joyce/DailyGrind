@@ -588,6 +588,18 @@
         reckless:{name:'Reckless',icon:'🎲',about:'Lends readily and loves a bet, but repayment is less reliable.',lend:0.1,repay:-0.15,bet:0.25,tipMult:1,tensionMult:1,grudge:1,race:0,returnChance:0.3,ask:'A short loan. What could possibly go wrong?'},
         vindictive:{name:'Vindictive',icon:'🔥',about:'Slow to lend, remembers refusals, and takes bad blood personally.',lend:-0.15,repay:-0.05,bet:0.05,tipMult:0.7,tensionMult:1.3,grudge:2,race:0.1,returnChance:0.2,ask:'I will remember who was there when I needed help.'}
       },
+      /* Archetypes: how a rival plays, separate from its level (how well) and personality (how it treats you). Dealt at the start
+        on the rivals' dice, one each, no two alike. tracks = weight on a job's value by the pathway of its first qualification
+        (1 = neutral; missing pathways are 1); shifts = added to the level's shifts a day; study = times the level's study hours;
+        bank = steps up the level's money plan (none → savings → invest); morale = added to the level's happiness aim;
+        social = true uses the Community Centre at any level (null = as the level says). */
+      archetypes:{
+        careerist:{name:'Careerist',icon:'🧗',about:'Chases the best-paid ladder and works long hours for it.',tracks:{med:1.25,fin:1.1},shifts:0.25,study:1,bank:0,morale:-5,social:null},
+        scholar:  {name:'Scholar',icon:'🎓',about:'Puts qualifications first: more classes, fewer shifts.',tracks:{tech:1.45,eng:1.4,data:1.35,med:0.8},shifts:-0.25,study:1.25,bank:0,morale:0,social:null},
+        investor: {name:'Investor',icon:'📈',about:'Saves hard and puts money to work in the markets.',tracks:{fin:1.5,data:1.2,med:0.8},shifts:0,study:1,bank:1,morale:0,social:null},
+        socialite:{name:'Socialite',icon:'🥂',about:'Keeps spirits and friendships up, and likes jobs with people.',tracks:{media:1.55,sal:1.4,fnb:1.35,cus:1.35,med:0.75},shifts:-0.25,study:0.9,bank:0,morale:12,social:true},
+        hustler:  {name:'Hustler',icon:'⚡',about:'Works every hour going and climbs practical trades fast.',tracks:{logi:1.55,green:1.5,eng:1.15,med:0.75},shifts:0.5,study:0.8,bank:0,morale:-5,social:null}
+      },
       /* Meaningful deeds change remembered trust, independently of relationship points. Stored history is bounded.
         A help credit can be returned as one job introduction, no earlier than the next day. */
       memory:{maxEntries:5,maxTrust:3,maxOwed:3,lendPerTrust:0.04,lendTrust:1,refuseTrust:-1,repayTrust:1,defaultTrust:-2,helpTrust:1},
@@ -625,9 +637,11 @@
         study:{groupKnowledge:1, groupHappiness:1, groupRel:2, partnerKnowledge:1},
         /* rival cards at night (RIVAL_CARDS): the chance a night has one, and at most one every `gap` nights */
         cards:{chance:0.3, gap:2}},  // which illness a rival catches (they share your illness chance and illness data)
-      /* Career preferences are small utility adjustments; alternatives must retain at least alternativeFloor of the best earning utility. */
-      career:{alternativeFloor:0.9,recheckDays:3,closedWeight:0.75,experienceWeight:0.8,targetBonus:10,
-    preferences:{generous:{med:1.07,cus:1.05,green:1.05},ambitious:{fin:1.08,tech:1.05,data:1.06},reckless:{sal:1.07,fnb:1.04,media:1.07},vindictive:{eng:1.06,tech:1.04,logi:1.05}},educationWeight:0.025},
+      /* How a planning rival values a job: pay x days it could be worked x the archetype's pathway taste (archetypes.tracks), plus
+        educationWeight for each level it already holds towards it; closedWeight / experienceWeight scale a closed workplace or a
+        role it lacks the work experience for; targetBonus favours applying where its target job is. */
+      career:{closedWeight:0.75,experienceWeight:0.8,targetBonus:10,
+    educationWeight:0.025},  // career tastes are in archetypes (tracks)
       /* Accepted terms are snapshotted. Money is scaled by G(); chances are per eligible morning. */
       contracts:{days:6,minutes:10,keepRel:6,missRel:-5,honourRel:2,rewardHappy:3,noticeDays:2,
     wealth:{percent:0.3,min:10,max:2000,reserve:75,growth:0.25,reminderDays:3},

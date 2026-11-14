@@ -96,7 +96,7 @@ Targeted feature checks: node tools/qa/check-personalities.js <folder outside th
 
 **Daily HUD and map:** `renderStats()` and `renderMap()` retain the existing state-to-DOM updates. The illustrated app shell creates the visible status header and numbered town pins, with Today/Town/Life/Rivals views; phone/tablet apps are accessed from the Town map shortcut (`townDevice`) when a working device is owned. Latest rank progression, flatmate refusals and rival path diversity remain.
 
-**Rival path diversity:** `diversifyRivals()` runs at the start of `rivalTick()` from the halfway day onward. It records `avoidCareer` and `avoidTrack` for later rivals on identical paths; `rivalTarget()` prefers the best feasible different career and missing qualification, while job applications prefer an eligible alternative. These fields are optional on older saves.
+**Rival archetypes:** each rival has an `archetype` (`CONFIG.rivals.archetypes`: careerist, scholar, investor, socialite, hustler), dealt one each in `makeRivals()` on the rival dice and given to old saves by `prepareRival()` without dice. `rivalSkill(r)` returns the level's numbers adjusted by the archetype (shifts, study hours, money plan, morale aim, Community Centre); `careerPreference()` weights a job by the archetype's pathway taste (`tracks`), which is what sends rivals down different ladders. `archetype()`, `archetypeLabel()`; the profile (`memoryProfile()`) and the start log show it. The midgame switch `diversifyRivals()` and its `avoidCareer`/`avoidTrack` fields were removed in CHANGELOG 109.
 
 **Rank milestones:** `checkWin()` records ranks and score bonuses but does not show a modal or finish immediately at the top rank; the normal day limit or other endings still finish the game.
 
@@ -130,7 +130,7 @@ The new helpers remain inside section 6 before the AI-rivals block; no external 
 | Broken promises | `promiseProblem`, `promiseRows`, `resolvePromise`; `S.pact.problem` and response expiry |
 | Loans and trust | `loanRecord`, `loanReliability`; `r.loanHistory`; active principal/terms/outstanding balance in Messages |
 | Hidden events | `addSocialEvent`, `socialTick`, `socialRows`, `socialDecision`; `S.socialEvents`, `socialN`, `socialLast`, `rivalRelations`; evidence gates source disclosure |
-| Career utility | `careerPreference`, `rivalTarget`, `diversifyRivals`, application selection in `rivalDay`; feasibility/utility floor and no diversity-driven raw pay cut |
+| Career utility | `careerPreference` (archetype tastes), `rivalTarget`, application selection in `rivalDay`; feasibility/utility floor and no diversity-driven raw pay cut |
 | Bank and portraits | `bankPresetAmount`/`bankQuick`, `interestProjection`; `modernPortraitMinimize`/`modernPortrait` and `characterReopen` |
 | Compatibility | SAVE_VERSION 8 migration adds missing social/residence/history defaults without RNG; legacy money amounts remain; shared-bungalow saves move together to apartment |
 

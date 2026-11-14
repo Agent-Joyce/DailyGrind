@@ -69,7 +69,7 @@ Missed sessions and unanswered obligations affect progress/consequences. A cance
 
 | Prefix and keys | Defaults | Meaning |
 |---|---|---|
-| `career.alternativeFloor`, `recheckDays` | 0.90, 3 | Alternatives must retain at least 90% of best target utility; recheck every 3 days from midgame |
+| `archetypes` (replaces `career.preferences`, `alternativeFloor`, `recheckDays`) | five archetypes | Each rival gets a different archetype; its pathway tastes, shift and study adjustments replace the personality tastes and the midgame career switch (CHANGELOG 109) |
 | `career.closedWeight`, `experienceWeight`, `targetBonus` | 0.75, 0.80, 10 | Current opportunity/experience discounts and target workplace application bonus |
 | `career.preferences`, `educationWeight` | per-personality map, 0.025 | Small preferences plus completed relevant qualifications; remaining study and eligibility still constrain choices |
 | `socialEvents.chance`, `cooldown`, `expiryDays`, `maxHistory` | 0.08, 4, 6, 12 | Shared occasional-event gate, cooldown, discovery/response lifetime, bounded records |

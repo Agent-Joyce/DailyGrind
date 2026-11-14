@@ -31,7 +31,7 @@
   }
   function suiteSnap(){
     var s=G.S;
-    function rival(r){return {name:r.name,diff:r.diff,personality:r.personality,cash:r.cash,bank:r.bank,etf:r.etf,worth:G.rivalWorth(r),job:r.job,edu:r.edu,study:r.study,target:r.target,avoidCareer:r.avoidCareer,avoidTrack:r.avoidTrack,rel:r.rel,rep:r.rep,energy:r.energy,happy:r.happy,health:r.health,know:r.know,out:r.out,life:r.life,favours:r.favours,hist:(r.hist||[]).slice(-4)}}
+    function rival(r){return {name:r.name,diff:r.diff,personality:r.personality,archetype:r.archetype,cash:r.cash,bank:r.bank,etf:r.etf,worth:G.rivalWorth(r),job:r.job,edu:r.edu,study:r.study,target:r.target,rel:r.rel,rep:r.rep,energy:r.energy,happy:r.happy,health:r.health,know:r.know,out:r.out,life:r.life,favours:r.favours,hist:(r.hist||[]).slice(-4)}}
     return {day:s.day,ap:s.ap,over:s.over,mode:s.mode,diff:s.diff,mood:s.townMood,gameDays:G.maxDays(),cash:s.cash,bank:s.bank,worth:G.worth(),score:G.score(),energy:s.energy,happy:s.happy,health:s.health,know:s.know,fed:s.fed,workMin:s.workMin,studyMin:s.studyMin,slept:s.slept,ill:s.ill,home:s.home,homeless:s.homeless,clothes:s.clothes,career:s.career,edu:s.edu,life:s.life,tier:s.tier,medDebt:s.medDebt,arrears:s.arrears,loan:s.loan,inv:s.inv,items:s.items,broken:s.broken,flat:s.flat,pact:s.pact,rpacts:s.rpacts,rloans:s.rloans,bets:s.bets,msgs:s.msgs,incidents:s.incidents,sabOn:s.sabOn,rivalSeed:s.rivalSeed,notes:s.notes,rivals:(s.rivals||[]).map(rival),ending:s.over?$('overTitle').textContent:null,lifeScore:s.mode==='rivals'?G.lifeScore().map(function(p){return {name:p.name,me:!!p.me,place:p.place,pts:p.pts,cats:p.cats}}):null};
   }
   function suiteValidate(){
