@@ -1,6 +1,6 @@
 /* Daily Grind game code. One closure, in this order (search for the numbered banners; CODE_MAP.md has more detail):
      1. CONFIG                   every tunable number
-     2. WORLD TABLES             ranks, difficulty, icons, buildings, homes, items, jobs, School pathways, careers
+     2. WORLD TABLES             ranks, difficulty, icons, buildings, homes, items, jobs, City College pathways, careers
      3. STATE AND SAVES          blank() state, new game, save, load (migrations), game over
      4. PLAYER ACTIONS           sound and feedback, time and money, work, study, shopping, food, bank, walking, gym, leisure, Factory
      5. HEALTH, STRESS, NIGHT    illness, health, burnout, game-over checks, the overnight rollover

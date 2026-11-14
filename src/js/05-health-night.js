@@ -45,7 +45,7 @@
       log('Burnout from long days of work and study: health '+sg(BU.healthHit)+', productivity down for '+dayN(BU.lastsDays)+'.','bad');
     }  /* the warning the day before burnout is in stressList, which the morning notes include */
   }
-  /* the day's work + study line shown at workplaces, School and home */
+  /* the day's work + study line shown at workplaces, City College and home */
   function loadTxt(){var BU=CONFIG.burnout,m=loadMin();return '⏱ Work and study today: <b>'+hm(m)+'</b>. More than '+loadLimitTxt()+' a day for '+dayN(BU.daysInARow)+' running causes burnout'+(S.loadStreak?' (streak: '+S.loadStreak+' of '+BU.daysInARow+')':'')+'.'}
   function stressTick(){
     var nw=worth();
@@ -82,11 +82,11 @@
   }
   function goals(){
     return [
-      ['ate','🍔 Eat a meal before the day ends (Fast Food, Restaurant, or Supermarket food eaten at home)'],
+      ['ate','🍔 Eat a meal before the day ends (Golden Bun, Family Restaurant, or Fresh Market food eaten at home)'],
       ['job','💼 Get a job at the Employment Office (many entry jobs need no degree)'],
-      ['study','📚 Attend a lesson at School (qualifications unlock better jobs)'],
+      ['study','📚 Attend a lesson at City College (qualifications unlock better jobs)'],
       ['worked','🛠️ Work a shift at your workplace (not the Employment Office)'],
-      ['buy','🛍️ Buy an item (Electronics Store, Thrift Store or Clothes Mall)'],
+      ['buy','🛍️ Buy an item (Electronics Store, Second-Hand Shop or Clothes Mall)'],
       ['rent','🏠 Pay your rent (early at home, or it comes out of your cash at the end of day '+RENT_EVERY+')']
     ];
   }
@@ -140,10 +140,10 @@
     if(nw<0)push('bad','💸 In debt ('+money(nw)+'): if your net worth is still under $0 when you end the day, shame costs 8 happiness and 5% energy.');
     else if(nw<CONFIG.shame.nearlyBrokeBelow&&S.day>=CONFIG.shame.nearlyBrokeFromDay)push('warn','💸 Nearly broke ('+money(nw)+'): if your net worth is still under '+money(CONFIG.shame.nearlyBrokeBelow)+' when you end the day, shame costs '+Math.abs(CONFIG.shame.nearlyBrokeHappiness)+' happiness.');
     var left=nextRentWeek()-S.day;
-    if(S.homeless)push('bad','🏚️ No home: you sleep outside every night and cannot rest, cook or use your fridge and gadgets. Apply at the Apartment ('+money(homeFee('apt'))+') or the Bungalow ('+money(homeFee('bung'))+').');
+    if(S.homeless)push('bad','🏚️ No home: you sleep outside every night and cannot rest, cook or use your fridge and gadgets. Apply at the Apartment ('+money(homeFee('apt'))+') or the Villa ('+money(homeFee('bung'))+').');
     else if(left<=1&&S.cash<H.rent&&S.rentPaid!==nextRentWeek())push('bad','🏠 Rent of '+money(H.rent)+' is due '+(left===0?'today':'tomorrow')+' and you only have '+money(S.cash)+' in cash.');
     if(S.enrolled&&S.sinceClass>=3)push('bad','🎓 No lesson for '+S.sinceClass+' days: attend one soon or you may be expelled.');
-    if(S.expelled>0)push('bad','🚫 Expelled from School. You can re-enrol in '+S.expelled+' day'+(S.expelled>1?'s':'')+'.');
+    if(S.expelled>0)push('bad','🚫 Expelled from City College. You can re-enrol in '+S.expelled+' day'+(S.expelled>1?'s':'')+'.');
     if(S.day>=maxDays()-(maxDays()>10?6:1))push('warn','⏳ Only '+(maxDays()-S.day+1)+' day'+(maxDays()-S.day?'s':'')+' left to reach '+money(nextGoal())+'.');
     /* 3.8: warn about food that will not be fresh tomorrow */
     var spoilTonight=0;
@@ -276,14 +276,14 @@
       if(O&&O.chance>0&&S.day>=O.fromDay&&Math.random()<O.chance)S.bankOffer={day:S.day,rate:Math.round((O.rate[0]+Math.random()*(O.rate[1]-O.rate[0]))*10)/10,days:O.days,min:O.min,max:O.max}})();
     healthTick(wasFed);burnTick();
     if(!Object.keys(TRACKS).some(function(t){return inProgress(t)})){S.enrolled=false;S.sinceClass=0}  /* nothing in progress: nothing to skip */
-    if(S.expelled>0){S.expelled--;if(!S.expelled)log('You may enrol at School again.','good')}
+    if(S.expelled>0){S.expelled--;if(!S.expelled)log('You may enrol at City College again.','good')}
     else if(S.enrolled){
       S.sinceClass=S.studied?0:S.sinceClass+1;
       if(S.sinceClass>=5&&(S.sinceClass>=6||Math.random()<0.5)){
         Object.keys(S.edu).forEach(function(t){var k=lvl(t);S.edu[t]=k?TRACKS[t].c[k-1]:0});S.les={};S.enr={};
         S.expelled=6;S.enrolled=false;S.sinceClass=0;S.know=clamp(S.know-10);
-        log('You were expelled from School for not attending. Unfinished levels are lost (−10 knowledge). You can re-enrol in 6 days.','bad');
-      }else if(S.sinceClass>=3)log('School warning: you have skipped lessons for '+S.sinceClass+' days. Attend one soon or you may be expelled.','bad');
+        log('You were expelled from City College for not attending. Unfinished levels are lost (−10 knowledge). You can re-enrol in 6 days.','bad');
+      }else if(S.sinceClass>=3)log('City College warning: you have skipped lessons for '+S.sinceClass+' days. Attend one soon or you may be expelled.','bad');
     }
     S.studied=false;
     if(loanTick())return;
@@ -291,7 +291,7 @@
     var i=Math.floor(S.bank*S.rate/100),invMoved=S.wk&&anyInv()?S.wk.abs:0;
     if(i>0){S.bank+=i;inc(i);log('Your bank paid '+money(i)+' in interest.','good')}
     if(S.homeless){if((S.day-1)%RENT_EVERY===0)log('No rent was due tonight: you have no home.')}
-    else if((S.day-1)%RENT_EVERY===0&&S.rentPaid===S.day-1&&myRent(S.day-1)-(S.rentPaidAmt||h.rent)<=0){log('Rent for day '+(S.day-1)+' was already paid. Mr. Ong tips his hat.','good');S.flags.rent=1}
+    else if((S.day-1)%RENT_EVERY===0&&S.rentPaid===S.day-1&&myRent(S.day-1)-(S.rentPaidAmt||h.rent)<=0){log('Rent for day '+(S.day-1)+' was already paid. Mr. Rahman tips his hat.','good');S.flags.rent=1}
     else if((S.day-1)%RENT_EVERY===0){
       S.flags.rent=1;
       var rentDue=myRent(S.day-1)-(S.rentPaid===S.day-1?(S.rentPaidAmt||h.rent):0);  /* with a flatmate: your half, or all of it when they skipped their share; less anything paid early */
@@ -302,7 +302,7 @@
         /* not enough cash: the shortfall + 10% interest is repaid over 5 days */
         var owe=Math.round(short*1.10);
         if(S.arrears){S.arrears.bal+=owe;S.arrears.days=5;S.arrears.fresh=1}else S.arrears={bal:owe,days:5,fresh:1};
-        log('You could only pay '+money(paid)+' of the '+money(rentDue)+' rent. Mr. Ong put the remaining '+money(short)+' (+10% interest = '+money(owe)+') on a 5-day repayment plan.','bad');
+        log('You could only pay '+money(paid)+' of the '+money(rentDue)+' rent. Mr. Rahman put the remaining '+money(short)+' (+10% interest = '+money(owe)+') on a 5-day repayment plan.','bad');
         S.notes.push({l:'bad',t:'🏠 Rent arrears: you were '+money(short)+' short. You now owe '+money(S.arrears.bal)+', repaid automatically from cash over the next 5 days (with interest).'});
       }
     }
@@ -320,7 +320,7 @@
     var mn=(S.notes||[]).slice(),rw2=nextRentWeek(),rentNext=myRent(rw2);S.notes=[];
     mn.push.apply(mn,moneyBrief(i,invMoved));
     if(tipOn())mn.push({l:'good',c:'run',k:'tip',t:'🤝 Job tip good until the end of day '+S.tip.until+'. Your next interview is easier and never fails for “no openings”.'});
-    if(naked())mn.unshift({l:'bad',c:'act',k:'clothes',t:'👕 You are out of clothes. You can’t work any shift until you buy some (new at the Clothes Mall, or used at the Thrift Store)'+(nakedHap?', and the shame cost you '+Math.abs(nakedHap)+' happiness overnight. It happens again every morning you wake up with nothing to wear.':'.')});
+    if(naked())mn.unshift({l:'bad',c:'act',k:'clothes',t:'👕 You are out of clothes. You can’t work any shift until you buy some (new at the Clothes Mall, or used at the Second-Hand Shop)'+(nakedHap?', and the shame cost you '+Math.abs(nakedHap)+' happiness overnight. It happens again every morning you wake up with nothing to wear.':'.')});
     if(S.newsPlan&&S.newsPlan.tip)mn.push({l:'rem',c:'act',t:'📡 Tip-off: tonight’s headline is expected to be “'+S.newsPlan.n[0]+'” ('+newsHint(S.newsPlan.n)+'). You have today to move your savings and investments at the Bank.'});
     /* a rank target day passed yesterday without the rank */
     (function(){var i=S.tier+1,due=tierDue(i);if(i<TIERS.length&&due&&S.day===due+1&&reachedTier()<i)mn.push({l:'warn',c:'news',t:'⭐ You missed the day-'+due+' target for '+TIERS[i].ic+' '+TIERS[i].n+'. Its +'+TIERS[i].b.toLocaleString()+' on-time bonus is gone. It still counts as a rank if you reach it'+(maxDays()===Infinity?'':' by day '+maxDays())+'.'+(i+1<TIERS.length&&tierDue(i+1)?' Next target: '+TIERS[i+1].n+' by day '+tierDue(i+1)+'.':'')})})();

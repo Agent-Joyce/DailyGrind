@@ -2,7 +2,7 @@
    Needs the test hook (window.__G) that run-sims.ps1 injects before the line "  if(!load())fresh();".
 
    Two players, both driven by real clicks on the page (tiles, #shop buttons, #hudEnd, event buttons, pop-ups):
-     survive : eats every day (cooks meal prep two meals at a time), buys the outfit the job needs as soon as
+     survive : eats every day (cooks meal kit two meals at a time), buys the outfit the job needs as soon as
                clothes run out (withdrawing savings if needed), studies towards the best-paid job reachable in the
                days left, keeps work + study under the burnout line on the last day of a streak, switches jobs when
                the workplace closes, declines risky offers, gets treated when sick, re-applies for a home if it is lost.
@@ -158,7 +158,7 @@
     if(await go('mall'))await click(btn('cbuy',want),'cbuy:'+want);
   }
   function fresh(list,type){return list.filter(function(p){return !p.sp&&(!type||p.t===type)})}
-  /* eat every day: cooked meal (warm, else reheated or cold), else a ready-to-eat meal, else buy and cook meal prep (two at a time), else fast food */
+  /* eat every day: cooked meal (warm, else reheated or cold), else a ready-to-eat rice box, else buy and cook meal kit (two at a time), else fast food */
   async function ensureFed(){
     S=G.S;if(S.fed)return;
     var FD=G.CONFIG.food;

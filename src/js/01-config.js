@@ -122,8 +122,8 @@
         Levels: Certificate, Degree, Honours, Masters
         (not every track has every level; Customer Service is a Certificate only, Sales, Food & Beverage, Creative Media, Green Energy and Logistics stop at Degree; Finance, Technology and Data & AI go Certificate, Degree, Masters).
         An empty list [] means no qualification is needed.
-        One role name is shared (Repair Technician: Thrift Store and Electronics Store); for it, put the
-        card name first, e.g. 'Thrift Store (Workshop): Repair Technician'.
+        One role name is shared (Repair Technician: Second-Hand Shop and Electronics Store); for it, put the
+        card name first, e.g. 'Second-Hand Shop (Workshop): Repair Technician'.
         If a line has a typo, the game keeps the automatic rule for that job and shows
         a red warning in the Daily log when the game loads.
         Add 'knowledge:<number>' as the last item to set the knowledge needed directly.
@@ -143,7 +143,7 @@
   'Chief Engineer':    ['Engineering Masters', 'Technology Degree', 'Finance Certificate'],            // $700
   'Forklift Driver':    ['Engineering Certificate'],                                                    // $110
 
-  // ---- Fast Food ----
+  // ---- Golden Bun ----
   'Crew Member':        [],                                                                              // $70
   'Shift Supervisor':  ['Food & Beverage Certificate'],                                                // $110
   'Store Manager':      ['Food & Beverage Certificate', 'Customer Service Certificate'],                // $180
@@ -152,18 +152,18 @@
   'Grill Cook':        ['Food & Beverage Certificate'],                                                // $120
   'Area Manager':      ['Food & Beverage Degree', 'Finance Certificate'],                              // $220
 
-  // ---- Restaurant ----
+  // ---- Family Restaurant ----
   'Dishwasher':        [],                                                                              // $85
   'Waiter':            ['Customer Service Certificate'],                                                // $105
   'Chef':              ['Food & Beverage Degree'],                                                      // $180
   'Master Chef':        ['Food & Beverage Degree', 'Sales Degree'],                                      // $300
   'Restaurant Manager': ['Food & Beverage Degree', 'Sales Degree', 'Finance Certificate'],              // $310
 
-  // ---- Supermarket ----
+  // ---- Fresh Market ----
   'Shelf Stacker':      [],                                                                            // $75
   'Cashier':            [],                                                                            // $85
   'Store Supervisor':    ['Customer Service Certificate'],                                              // $140
-  'Supermarket Manager': ['Sales Degree', 'Finance Certificate'],                                        // $230
+  'Fresh Market Manager': ['Sales Degree', 'Finance Certificate'],                                        // $230
   'Delivery Driver':    [],                                                                            // $90
   'Product Promoter':    ['Sales Degree'],                                                              // $190
 
@@ -174,13 +174,13 @@
   'Sales Promoter':      ['Customer Service Certificate'],                                              // $150
   'Mall Manager':        ['Sales Degree', 'Finance Degree', 'Technology Certificate'],                  // $320
 
-  // ---- Thrift Store ----
+  // ---- Second-Hand Shop ----
   'Shop Assistant':      [],                                                                            // $70
-  'Thrift Store Manager': ['Customer Service Certificate'],                                              // $140
+  'Second-Hand Shop Manager': ['Customer Service Certificate'],                                              // $140
   'Sorter':              [],                                                                            // $65
-  'Thrift Store (Workshop): Repair Technician': ['Engineering Certificate'],                            // $140
+  'Second-Hand Shop (Workshop): Repair Technician': ['Engineering Certificate'],                            // $140
 
-  // ---- Thrift Store pawn counter and back office (the old Pawn Shop) ----
+  // ---- Second-Hand Shop pawn counter and back office (the old Pawn Shop) ----
   'Counter Assistant':  [],                                                                              // $80
   'Appraiser':          ['Finance Certificate', 'Sales Certificate'],                                    // $170
   'Pawnbroker':        ['Finance Degree', 'Sales Degree'],                                              // $290
@@ -246,7 +246,7 @@
   'Energy Systems Engineer': ['Green Energy Degree', 'Engineering Certificate'],                         // $260
   'Sustainability Manager':  ['Green Energy Degree', 'Engineering Degree', 'Finance Certificate'],       // $340
 
-  // ---- Supermarket (Fulfilment) ----
+  // ---- Fresh Market (Fulfilment) ----
   'Warehouse Picker':           [],                                                                      // $95
   'Dispatch Coordinator':       ['Logistics Certificate'],                                               // $155
   'Supply Chain Planner':       ['Logistics Degree'],                                                    // $230
@@ -309,7 +309,7 @@
       bargainMin:10,        // haggling moves the price by between bargainMin%...
       bargainMax:10,      // ...and bargainMax%
       bargainWinChance:0.5, // chance the price goes DOWN when you haggle (0.5 = 50/50)
-      /* used outfits sold at the Thrift Store (Smart Casual and Business Suit): priceShare of the Mall price above
+      /* used outfits sold at the Second-Hand Shop (Smart Casual and Business Suit): priceShare of the Mall price above
         (before the price index), lasting 'days' days. They meet the same dress codes as new ones; a used suit gives no happiness lift. */
       used:{priceShare:0.3, days:3}
     },
@@ -420,15 +420,15 @@
         junk:true = junk food (counts towards CONFIG.illness.junkMeals);
         healthy:N = a healthy meal that also adds N health.
         minutes = time in minutes (used instead of units); health = health change (junk food only, replaces junkHealth). */
-      burger: {name:'a burger',                minutes:60, cost:8,  energy:6,  happiness:1, junk:true, health:-5},
-      combo:  {name:'a burger combo meal',      minutes:90, cost:15, energy:12, happiness:1, junk:true, health:-8},
-      dinner: {name:'a sit-down dinner',        units:6, cost:40, energy:16, happiness:10, healthy:1},
-      tasting:{name:'the chef’s tasting menu',  units:7, cost:90, energy:18, happiness:22, healthy:2},
-      cafe:   {name:'coffee and cake',          minutes:45, cost:12, energy:3, happiness:6, snack:true},  // snack:true = does not count as your meal
+      burger: {name:'a chicken bun',            minutes:60, cost:8,  energy:6,  happiness:1, junk:true, health:-5},
+      combo:  {name:'a bun and noodle combo',   minutes:90, cost:15, energy:12, happiness:1, junk:true, health:-8},
+      dinner: {name:'a family-style dinner',    units:6, cost:40, energy:16, happiness:10, healthy:1},
+      tasting:{name:'the chef’s banquet set',   units:7, cost:90, energy:18, happiness:22, healthy:2},
+      cafe:   {name:'milk tea and pastry',     minutes:45, cost:12, energy:3, happiness:6, snack:true},  // snack:true = does not count as your meal
       junkHealth:-1,        // health lost each time you eat a junk meal
-      /* Meals from the Supermarket. health = health gained when you eat it at home. */
-      basic:  {name:'Meal prep',                cost:30, energy:20, happiness:3, health:5},  // must be cooked; these are what the cooked meal gives
-      premium:{name:'Ready-to-eat meal',        cost:55, energy:20, happiness:9, health:1},  // ready to eat
+      /* Meals from the Fresh Market. health = health gained when you eat it at home. */
+      basic:  {name:'Rice and veg meal kit',    cost:30, energy:20, happiness:3, health:5},  // must be cooked; these are what the cooked meal gives
+      premium:{name:'Ready-to-eat rice box',    cost:55, energy:20, happiness:9, health:1},  // ready to eat
       buyUnits:2,            // time to buy a meal or a bundle
       bundleSize:3,          // portions in a bundle
       bundleDiscount:0.15,  // bundle saving (0.15 = 15% off)
@@ -441,7 +441,7 @@
         each night outside uses keepDaysFridge / keepDaysRoom days, so moving food in or out keeps the rule fair. */
       keepDaysRoom:3,        // outside the fridge
       keepDaysFridge:6,      // in a working fridge
-      fridgeSpace:5,        // meals a fridge holds (meal prep, ready-to-eat and cooked meals; chips need no fridge)
+      fridgeSpace:5,        // meals a fridge holds (meal kit, ready-to-eat and cooked meals; chips need no fridge)
       /* Cooked meals that spent a night in the fridge are cold. A working microwave reheats one (reheatMinutes);
         without one you can eat it cold (coldHappiness is added to the usual happiness gain). */
       reheatMinutes:30,
@@ -454,7 +454,7 @@
       poisonCost:45,        // clinic bill for food poisoning (before insurance and price changes)
       poisonEnergy:-25,
       poisonHealth:-8,
-      /* A bag of chips: a junk snack, not a meal. Bought at the Supermarket, eaten at home (vitals change when you eat it).
+      /* A bag of chips: a junk snack, not a meal. Bought at the Fresh Market, eaten at home (vitals change when you eat it).
         Never goes off and needs no fridge. maxPerDay = bags you can buy a day, maxStored = bags you can keep at home. */
       chips:{cost:6, units:1, happiness:8, energy:-3, health:-2, eatMinutes:15, maxPerDay:5, maxStored:10},
       /* Skipping meals */
@@ -523,10 +523,10 @@
     },
     housing:{
       /* Housing bubble (the 'Housing bubble bursts' shock and the 'Housing bubble pops' headline):
-        when one starts, there is a loseChance chance you lose your Apartment or Bungalow.
+        when one starts, there is a loseChance chance you lose your Apartment or Villa.
         Without a home: no rent is due, every night counts as sleeping outside, and you cannot rest, cook,
         use the fridge or your gadgets (they stay in storage and still count in net worth). Food at home keeps
-        as if outside the fridge. Apply again at either home: the Apartment asks for aptDeposit, the Bungalow
+        as if outside the fridge. Apply again at either home: the Apartment asks for aptDeposit, the Villa
         its usual move-in fee (both move with prices), and applying takes applyMinutes. */
       loseChance:0.5,
       aptDeposit:150,
@@ -571,7 +571,7 @@
         chapters, illness (CONFIG.illness) and money shame (CONFIG.shame) hit rivals as they hit you. */
       illMix:{cold:0.5, flu:0.35, dengue:0.1, pneu:0.05},
       /* the job race: when a rival of one of these levels gets a job, a 'chance' it took the last opening, so that role has no
-        openings for you the next day ("Maya got there first"); at most maxPerGame times a game, never the same role twice running. */
+        openings for you the next day ("Linh got there first"); at most maxPerGame times a game, never the same role twice running. */
       jobRace:{chance:0.5, maxPerGame:3, levels:['medium','expert']},
       /* relationships with rivals (−100 enemy … +100 friend; labels at friendAt, friendlyAt, rivalAt, enemyAt). Building one always
         costs time: chat and hello when you meet a rival (encounterChance when you walk into a place they frequent, once a day),
@@ -666,7 +666,7 @@
       socialEvents:{chance:0.08,cooldown:4,expiryDays:6,maxHistory:12,discoveryChance:0.45,
     rumourRel:-3,rumourOtherRel:-4,betrayRel:-12,confrontRel:-4,forgiveRel:4,reconcileRel:8,minutes:20},
       lifeEvents:{chance:0.6, outcomes:['h-2~6','h-5 c-15~40','h-4 e-6','h+2~4','h+3 c-10~25','l-2~4','h-3 l-2','e-8 h-2','c+10~30 h+2','h-8 l-3']},
-      names:['Maya','Leo','Sam'], icons:['👩','🧔','🧑'],
+      names:['Linh','Arjun','Jae'], icons:['👩','🧔','🧑'],
       levels:{
         easy:  {mistakeChance:0.25, shifts:1, plans:false, studyHours:1.5, studyChance:0.35, applyTries:1, usesOutlook:false, bank:'none',    moraleAim:20, social:false},
         medium:{mistakeChance:0.03, shifts:2.25, plans:true,  studyHours:4,   studyChance:1,    applyTries:2, usesOutlook:false, bank:'savings', moraleAim:55, social:true},
@@ -785,7 +785,7 @@
         Each run on time adds runStar stars (up to maxStars). Below lateBelowEnergy % energy a run has lateChance of arriving late:
         it pays latePay of the fare and costs lateStar stars (never under minStars). tipChance of a tip between tip[0] and tip[1].
         At most maxRuns a day; runs count as work for the daily work limit and burnout. Rivals with no job, or a closed workplace, do runs too.
-      tutor: tutoring a student at the School, at most perDay a day, needs a completed qualification; pay is by your highest
+      tutor: tutoring a student at the City College, at most perDay a day, needs a completed qualification; pay is by your highest
         level (Certificate, Degree, Honours, Masters).
       creator: the 🎬 Creator app. A post takes `minutes` and `energy` and gains a number of followers between gain[0] and gain[1],
         times (1 + mediaBonus for each Creative Media level), times viralX on a viralChance; at most maxPosts a day.
@@ -850,7 +850,7 @@
         minus:'Burning the candle: 1 extra health lost every night.',
         set:[{k:'sleep.rateX', x:1.25}, {k:'sleep.awayShare', v:0.75}, {k:'health.nightly.always', v:-1}]},
         {id:'frugal', icon:'🪙', name:'Frugal',
-        plus:'Meal prep and ready-to-eat meals cost 30% less, and bundles save 30% instead of 15%.',
+        plus:'Meal kit and ready-to-eat rice boxes cost 30% less, and bundles save 30% instead of 15%.',
         minus:'Cheap tastes: home meals cheer you up less.',
         set:[{k:'food.basic.cost', x:0.7}, {k:'food.premium.cost', x:0.7}, {k:'food.bundleDiscount', v:0.3},
               {k:'food.basic.happiness', v:1}, {k:'food.premium.happiness', v:6}]},
@@ -883,7 +883,7 @@
       $('cfgIll').textContent='you catch '+Object.keys(IM).map(function(k){return nm(k)+' '+pctTxt(IM[k]/tot)}).join(', ')+' of the time. Every illness costs '+Math.abs(CONFIG.health.nightly.sick)+' health a night. '+
         (rest.length?rest.map(nm).join(' and ')+': each night you sleep at home there is a '+pctTxt(HPx.homeRecover)+' chance you recover; if that fails, only the Hospital can cure you. ':'')+
         (hosp.length?hosp.map(nm).join(' and ')+' must be treated at the Hospital.':'')}
-    if($('cfgHousing')){var HZ=CONFIG.housing;$('cfgHousing').textContent='when a housing bubble bursts there is a '+pctTxt(HZ.loseChance)+' chance you lose your home. With no home there is no rent, every night counts as sleeping outside, and you cannot rest, cook, or use your fridge and gadgets (your things are kept in storage). Apply again at the Apartment ('+money(S?G(HZ.aptDeposit):HZ.aptDeposit)+' deposit) or the Bungalow (its move-in fee); applying takes '+hm(HZ.applyMinutes)+'.'}
+    if($('cfgHousing')){var HZ=CONFIG.housing;$('cfgHousing').textContent='when a housing bubble bursts there is a '+pctTxt(HZ.loseChance)+' chance you lose your home. With no home there is no rent, every night counts as sleeping outside, and you cannot rest, cook, or use your fridge and gadgets (your things are kept in storage). Apply again at the Apartment ('+money(S?G(HZ.aptDeposit):HZ.aptDeposit)+' deposit) or the Villa (its move-in fee); applying takes '+hm(HZ.applyMinutes)+'.'}
     if($('cfgBankrupt'))$('cfgBankrupt').textContent='net worth under '+money(BR.netWorthBelow)+' at the end of '+numWord(BR.daysInARow)+' days in a row'+(BR.fromDay>1?' (counted from day '+BR.fromDay+')':'')+'.';
     if($('cfgLoanDefault'))$('cfgLoanDefault').textContent=LN.enabled?'you owe more than '+money(LN.defaultIfOwedAbove)+', or have not repaid your loan in full '+dayN(LN.graceDays)+' after its due date.':'not used (loans are switched off).';
     if($('cfgLoan'))$('cfgLoan').textContent=LN.enabled?'borrow at the Bank in '+money(LN.step)+' steps, up to your credit limit ('+money(LN.baseLimit)+' plus '+LN.limitPerAsset+' × your '+loanAssetsTxt()+', never more than '+money(LN.maxLoan)+'). Pick '+LN.tenures.map(function(t){return dayN(t.days)+' at '+rateTxt(t.rate)+' a day'}).join(', ')+' (simple interest, only for the days you keep it). Repay from cash any day after the one you borrowed (not the same day). After the due date the balance grows '+rateTxt(LN.overdueRate)+' a day'+(LN.overdueCompounds?', compounding':'')+'. One loan at a time, and what you owe counts against your net worth.':'loans are switched off.';

@@ -33,7 +33,7 @@
     ["War disrupts a major gas pipeline","Heating and food-processing costs spike.","p+20~45"],
     ["Rare-earth export curbs pinch gadget makers","Electronics prices climb.","p+12~28"],
     ["Fuel subsidy scrapped overnight","Transport costs jump and goods follow.","p+10~22"],
-    ["Supermarkets blame 'shrinkflation' and rising costs","Smaller packs, higher prices.","p+5~10"],
+    ["Fresh Markets blame 'shrinkflation' and rising costs","Smaller packs, higher prices.","p+5~10"],
     ["Oil glut: crude prices tumble","Fuel is cheaper and so is nearly everything shipped.","p-5~15"],
     ["Bumper harvest floods the food markets","Groceries get a lot cheaper.","p-8~20"],
     ["Consumer demand collapses; retailers slash prices","Bargains everywhere, but shops are worried.","p-10~25"],
@@ -158,7 +158,7 @@
     ["A bus strike is on. Walk the long way home?",[0.7,"The walk clears your head.","h+5 e-5","You get soaked.","e-15 h-3"],[1,"You take a pricey taxi.","c-20"]],
     ["A rumour says your bank may fail. Pull out the cash you have in the bank?",[0.45,"Word spreads and the queue is huge, but you relax knowing you are safe.","h+8","It was only a rumour. You lose a bit of interest.","b-20"],[1,"You stay calm.","h-2"]],
     ["A rich neighbour hires you to wash his car for $40. Accept?",[0.8,"Easy cash.","c+40 e-5","He underpays you.","c+20 e-5"],[1,"You rest.","e+5"]],
-    ["Supermarket offers 'buy two get one free' on drinks. Stock up $30?",[0.7,"You save a lot.","c+15 h+3","They go flat and warm.","c-30"],[1,"You skip it.",""]],
+    ["Fresh Market offers 'buy two get one free' on drinks. Stock up $30?",[0.7,"You save a lot.","c+15 h+3","They go flat and warm.","c-30"],[1,"You skip it.",""]],
     ["A thrift shop wants volunteers for a stock count. Help out?",[0.7,"They give you a $30 voucher.","c+30 h+3","Dusty work, no thanks.","e-10"],[1,"You decline.",""]],
     ["A salesman offers an 'extended warranty' for $40. Take it?",[0.2,"It saves you from an expensive repair.","c+90","Useless. It never covers anything.","c-40"],[1,"You decline.",""]],
     ["An old friend invites you to dinner. Go?",[0.85,"A warm, wonderful evening.","h+15 e+5","They spend the night complaining.","h-5 e-5"],[1,"You stay in.","h-4"]],
@@ -216,20 +216,20 @@
     ["Your ex texts: 'You still have my hoodie.' Pay $10 bus fare to hand it back?",[0.5,"It's ten awkward minutes. Closure, sort of.","c-10 h+3","It turns out the hoodie was never yours. Wasted fare.","c-10 h-3"],[1,"You bag it up and forget about it.",""]],
     ["Your gran wants you to join mahjong night 'as a fourth'. Stay until 1am for free?",[0.5,"You win $15 from her cousin's pot.","c+15 h+4","Gran's lucky tiles beat you on every round.","e-8 h-2"],[1,"You claim you have an early shift.","h-1"]],
     ["Your coworker wants to try a new bubble tea place with a 40-minute queue. Join?",[0.7,"Worth it. Brown sugar pearls, perfect.","c-8 h+4","They sell out of everything right before you reach the counter.","c-8 e-5 h-2"],[1,"You walk past. You will regret this.","h-1"]],
-    ["A stranger on the MRT offers to sell you a durian for $20. Say yes?",[0.4,"It's surprisingly good. You share it with strangers.","c-20 h+5","It smells like a gym bag in the flat for a week.","c-20 h-4"],[1,"You let the durian go to the next stop.",""]],
+    ["A stranger on the train offers to sell you a durian for $20. Say yes?",[0.4,"It's surprisingly good. You share it with strangers.","c-20 h+5","It smells like a gym bag in the flat for a week.","c-20 h-4"],[1,"You let the durian go to the next stop.",""]],
     ["You promised your boss the report by Friday. Stay up all night to finish it?",[0.6,"It's done. Your boss says 'nice' and asks for more.","e-15 h+3 c+20","You fall asleep on the keyboard. The deadline slips.","e-15 h-4"],[1,"You send an apology email at 4pm on Thursday.","h-2"]],
     ["Your aunt wants your opinion on her 'can't-lose' multi-level plan. Listen politely for an hour?",[0.5,"You survive the hour and dodge the sales pitch.","e-6 h+1","She signs you up for a cleaning product kit.","c-40 h-3"],[1,"You nod, smile and check your phone.","h-1"]],
-    ["Your kopitiam uncle offers his secret stock tip over breakfast. Pay $12 for the kopi?",[0.25,"The tip is terrible but the kopi is great.","c-12 h+2","The tip is a company that went bust last year.","c-12 h-2"],[1,"You order teh-C and keep your opinions to yourself.","h+1"]],
+    ["Your tea house uncle offers his secret stock tip over breakfast. Pay $12 for the tea?",[0.25,"The tip is terrible but the tea is great.","c-12 h+2","The tip is a company that went bust last year.","c-12 h-2"],[1,"You order teh-C and keep your opinions to yourself.","h+1"]],
     ["A friend asks if you can help her move house on Sunday. Give up your day off?",[0.9,"You carry 12 boxes and get pizza. Good day.","e-12 h+4","The boxes are all books, and the lift is broken.","e-18 h-3"],[1,"You claim a prior engagement with a sofa.","h-2"]],
     ["Your fitness watch wants one more active minute before bed. Walk around the block?",[0.7,"Ring closed. The watch plays a confetti animation.","e-5 h+3","You get home and your legs file a complaint.","e-5"],[1,"You let the ring stay open. Tomorrow's problem.","h-1"]],
-    ["The HDB lift keeps stopping at every floor. Walk up instead?",[0.5,"Ten flights later, you feel like a new person.","e-10 l+2","You are still on floor 9 when the lift comes back down.","e-10 h-2"],[1,"You wait by the lift and nod at the same neighbour again.","h+1"]],
+    ["The apartment lift keeps stopping at every floor. Walk up instead?",[0.5,"Ten flights later, you feel like a new person.","e-10 l+2","You are still on floor 9 when the lift comes back down.","e-10 h-2"],[1,"You wait by the lift and nod at the same neighbour again.","h+1"]],
     ["A street busker asks you to pay $5 to appear in his video. Do it?",[0.5,"He sings your name. Gloriously embarrassing.","c-5 h+4","The video goes viral for all the wrong reasons.","c-5 h-3"],[1,"You walk past with your head down.",""]],
     ["Your roommate's plant is dying. Pay $8 for plant food and pretend you knew what you were doing?",[0.5,"It perks up. You're a hero to the plant.","c-8 h+2","Nothing changes. The plant gives you a look.","c-8 h-1"],[1,"You quietly apologise to the plant.",""]],
     ["Your laundry has sat in the machine for two days. Pay for the dryer?",[0.7,"Dry, warm and smelling like a hotel.","c-4 h+3","The machine ate a sock and a button.","c-4 h-2"],[1,"You hang it on the balcony and hope for sun.","e-3"]],
     ["Your neighbour's dog has found a hole in the fence and keeps visiting your bins. Pay $35 to fix it?",[0.6,"The dog stays home. Your bins are safe.","c-35 h+3","The dog just digs a second hole.","c-35 h-2"],[1,"You leave the fence and the dog to sort it out.","h-1"]],
     ["Your cousin's startup needs 'a few hundred dollars' for a logo. Invest $50?",[0.3,"The logo becomes a sticker on a laptop that somebody sees.","c-50 h+2","The startup pivots to selling candles.","c-50 h-2"],[1,"You send a like and a thumbs-up emoji.","h+1"]],
     ["Your shoes have a hole in the sole. Pay $20 to get them re-soled?",[0.8,"They're as good as new. Your feet are dry.","c-20 h+2","The cobbler says the shoes are beyond saving.","c-20 h-2"],[1,"You keep walking and let the rain decide.","l-1"]],
-    ["A colleague invites you to a three-hour team lunch at a hawker centre. Go?",[0.7,"You bond over satay and gossip. Great day.","c-12 h+5 n+1","It runs long and you miss your afternoon nap.","c-12 e-8 h-2"],[1,"You eat a packed sandwich at your desk.","e+3"]],
+    ["A colleague invites you to a three-hour team lunch at a food court. Go?",[0.7,"You bond over satay and gossip. Great day.","c-12 h+5 n+1","It runs long and you miss your afternoon nap.","c-12 e-8 h-2"],[1,"You eat a packed sandwich at your desk.","e+3"]],
     ["You have a free weekend. Book a pottery class for $70?",[0.55,"You make a lopsided bowl and feel proud of it.","c-70 h+6 n+2","Your bowl collapses in the kiln. Expensive mud.","c-70 h-3"],[1,"You spend the weekend on the sofa.","e+8"]],
     ["Your landlord says the air-con 'doesn't need servicing yet'. Pay $80 for a service anyway?",[0.5,"The unit hums like new and the room feels cold.","c-80 h+3","The engineer finds a dead rat. Rat-free for now.","c-80 h-1"],[1,"You put a fan on and shut the windows.","e-4"]],
     ["Your phone battery is at 4%. Buy a $25 power bank?",[0.7,"You make it through a long commute. Feels like magic.","c-25 h+3","The power bank is flat too.","c-25 h-2"],[1,"You switch off your phone and read a book.","n+1 h+1"]],
@@ -240,7 +240,7 @@
     ["Your laptop fan is screaming. Spend $60 on a cooling pad?",[0.5,"The fan goes quiet and the laptop runs cooler.","c-60 h+2","The pad stops working after a week.","c-60 h-2"],[1,"You put the laptop on a cushion and hope for the best.","e-2"]],
     ["Your coworker says the office plant needs watering. Volunteer for weekly plant duty?",[0.7,"The plant thrives and everyone thanks you.","h+4 n+1","The plant dies in the first week. You are blamed.","h-4"],[1,"You let someone else sort the plant.","h+1"]],
     ["A street tailor offers to shorten your trousers for $15 while you wait. Accept?",[0.8,"They fit perfectly. People compliment you all week.","c-15 h+4","The tailor mixed up the legs. One is a capri.","c-15 h-4"],[1,"You roll up your trousers and call it a style.","h+1"]],
-    ["Your flatmate offers to split the cost of a $90 karaoke machine. Chip in?",[0.7,"The first night is a hit. Your flatmate sings Mandopop until 2am.","c-45 h+5 e-6","The neighbours complain at 11pm and the machine goes back in the box.","c-45 h-4"],[1,"You say no, and wear headphones from now on.","h-1"]],
+    ["Your flatmate offers to split the cost of a $90 karaoke machine. Chip in?",[0.7,"The first night is a hit. Your flatmate sings pop ballads until 2am.","c-45 h+5 e-6","The neighbours complain at 11pm and the machine goes back in the box.","c-45 h-4"],[1,"You say no, and wear headphones from now on.","h-1"]],
     ["An old classmate wants to borrow your bike for a week. Lend it?",[0.6,"It comes back with a fresh bell and a thank-you note.","h+4 n+1","It comes back with a flat tyre and no explanation.","c-20 h-3"],[1,"You say the bike is 'under repair', even though it isn't.","h-1"]],
     ["You can buy a $12 bottle of wine for a dinner party you forgot about. Buy it?",[0.6,"The wine is decent and the guests love you.","c-12 h+5","The guests bring their own and you feel silly.","c-12 h-2"],[1,"You cook pasta and say you're on a health kick.","e+4 h-1"]],
     ["A toy claw machine takes $5 a play. Try it?",[0.15,"You win a plush penguin and feel like a champion.","c-5 h+4","You lose all five dollars and the penguin laughs at you.","c-5 h-3"],[1,"You walk on, dignity intact.","h+1"]],
@@ -480,7 +480,7 @@
   }
   function replyHouse(m,yes){
     var r=S.rivals[m.i],old=flatmate(),F=TG().flat;
-    if(!r||r.out||r.home==='bung')return refuse('This invitation is no longer available. Bungalows cannot be shared.');
+    if(!r||r.out||r.home==='bung')return refuse('This invitation is no longer available. Villas cannot be shared.');
     if(yes&&old===r)return refuse('You already share a home.');
     if(yes&&!loyaltyAllows())return;
     if(!spendMin(yes?F.inviteMinutes:MX().noMinutes,0))return;
@@ -1268,7 +1268,7 @@
   function sabCatch(base,used){var Z=SBX();return Math.min(Z.maxCaught,base+Z.perUse*(used||0))}
   function burglaryRisk(h){var B=CONFIG.rivals.politics.theft.burglary;return S.mode==='rivals'&&B.homes.indexOf(h)>=0?B.chance:0}
   function myHitsOn(i){return (S.sabMine||[]).filter(function(m){return m.i===i&&m.day===S.day}).length}
-  /* what a move did, and what an attempt was: n = the target ("Leo", "you"), q = their possessive ("Leo’s", "your") */
+  /* what a move did, and what an attempt was: n = the target ("Arjun", "you"), q = their possessive ("Arjun’s", "your") */
   function sabDid(k,n,q){return {rumour:'spread a rumour about '+n,online:'posted rumours about '+n+' online',badmouth:'bad-mouthed '+n+' around town',cls:'took the last seat in '+q+' class',boss:'talked '+n+' down to '+(q==='your'?'your':'their')+' boss',snag:'snagged '+q+' opening',prank:'kept '+n+' up with late-night prank calls'}[k]}
   function sabTry(k,n,q){return {rumour:'spread a rumour about '+n,online:'post rumours about '+n+' online',badmouth:'bad-mouth '+n+' around town',cls:'take the last seat in '+q+' class',boss:'talk '+n+' down to '+(q==='your'?'your':'their')+' boss',snag:'snag '+q+' opening',prank:'prank-call '+n}[k]}
   /* the moves that fit a target: by you (t is a rival) or at you (t === S) */
@@ -1299,7 +1299,7 @@
     if(!canSabotage())return refuse('Nobody sabotages anyone in a friendly town.');
     if(myHitsOn(i)>=Z.yourHitsPerRivalPerDay)return refuse('You have already gone after '+r.name+' '+Z.yourHitsPerRivalPerDay+' times today.');
     if((S.sabUsed||0)>=Z.maxPerGame)return refuse('You have used up your '+Z.maxPerGame+' schemes for this game.');
-    if(sabMovesFor(r,S).indexOf(k)<0)return refuse(k==='boss'?'You need to work at the same place as '+r.name+'.':k==='cls'?r.name+' isn’t enrolled at School.':k==='snag'?r.name+' isn’t after a job right now.':k==='prank'?'You need a phone or tablet.':'You can’t do that to '+r.name+' right now.');
+    if(sabMovesFor(r,S).indexOf(k)<0)return refuse(k==='boss'?'You need to work at the same place as '+r.name+'.':k==='cls'?r.name+' isn’t enrolled at City College.':k==='snag'?r.name+' isn’t after a job right now.':k==='prank'?'You need a phone or tablet.':'You can’t do that to '+r.name+' right now.');
     if(k==='online'&&!(handheld()||pcHere()))return refuse('You need a phone, tablet or your computer at home to post online.');
     if(!spendMin(m.minutes,m.cost?G(m.cost):0))return;
     var v0=vitSnap(),ch=sabCatch(m.caught,S.sabUsed);S.sabUsed=(S.sabUsed||0)+1;
@@ -1352,7 +1352,7 @@
   }
   /* cash going missing overnight: a flatmate on bad terms first, then a burglar */
   function theftTick(){
-    var TH=PX().theft,F=TH.flatmate,B=TH.burglary,fm=flatmate(),fi=fm?S.flat.i:null,tip=' 🔒 Keep your money in the bank (thieves can’t reach it), or move to the Classy Bungalow for better security.';
+    var TH=PX().theft,F=TH.flatmate,B=TH.burglary,fm=flatmate(),fi=fm?S.flat.i:null,tip=' 🔒 Keep your money in the bank (thieves can’t reach it), or move to the Garden Villa for better security.';
     if(S.cash<=0)return;
     var share=function(o){return o.min+rrand()*(o.max-o.min)},pct=function(a,c){return Math.round(a/c*100)+'% of your cash'};
     if(fm&&moodX().sabotage>0&&(fm.rel||0)<F.below&&rrand()<F.chance*moodX().sabotage*(F.personality[fm.personality]||1)){
@@ -1475,7 +1475,7 @@
     if(S.homeless||S.home==='bung'||!atHome()||view!==S.home)return '';
     var F=TG().flat,X=CONFIG.rivals.social,r=flatmate(),h='';
     if(!r){
-      h+=psec('flat','🏠 A flatmate',chip('','Rent split in half'),'Apartments allow two occupants; bungalows allow only one. Invite a rival to share your apartment: rent is split in half on rent day. They need to be at least 🙂 friendly ('+X.friendlyAt+') and willing (experts are the choosiest); a no costs '+Math.abs(F.inviteNoRel)+' relationship. Living together lifts or drags both your moods each night, depending on how you get on, and some rent days a flatmate skips their share.');
+      h+=psec('flat','🏠 A flatmate',chip('','Rent split in half'),'Apartments allow two occupants; villas allow only one. Invite a rival to share your apartment: rent is split in half on rent day. They need to be at least 🙂 friendly ('+X.friendlyAt+') and willing (experts are the choosiest); a no costs '+Math.abs(F.inviteNoRel)+' relationship. Living together lifts or drags both your moods each night, depending on how you get on, and some rent days a flatmate skips their share.');
       S.rivals.forEach(function(q,i){if(q.out)return;h+=arow(q.ic+' Invite '+q.name+' to move in',chip('time',hm(F.inviteMinutes))+chip('',relLabel(q.rel||0))+chip('','Rent '+money(Math.ceil(HOUSE[S.home].rent/2))+' each'),btn('flat',String(i),'Invite',1))});
       return h;
     }
@@ -1497,7 +1497,7 @@
     var i=+arg,r=S.rivals&&S.rivals[i],F=TG().flat;
     if(!r||r.out)return refuse('That rival is out of the race.');
     if(flatmate())return refuse('You already share your home with '+flatmate().name+'.');
-    if(S.home==='bung'||r.home==='bung')return refuse('Bungalows allow one occupant; sharing needs an apartment.');
+    if(S.home==='bung'||r.home==='bung')return refuse('Villas allow one occupant; sharing needs an apartment.');
     if(S.homeless||!atHome())return refuse('You can only invite someone into your own home, from home.');
     if(!spendMin(F.inviteMinutes,0))return;
     var v0=vitSnap(),why=(r.rel||0)<F.flatFrom?'you aren’t close enough yet':rrand()>=pick(F.willing,r.diff,0.5)?'they’d rather keep their own place':'';
@@ -1919,7 +1919,7 @@
       [["Rates hit a 15-year high","Housing and stock markets cool sharply.","r+0.1 h-3"],
        ["Firms freeze hiring","Higher borrowing costs force firms to cut back.","w-0.3 h-2"],
        ["Side hustle","A neighbour pays $45 to help repaint a flat. Take it?","",[1,"Easy money.","c+45 e-8"],[1,"You rest.","e+4"]],
-       ["Shoppers switch to cheaper brands","Supermarket own-brands sell out.","p-0.5 h-1"],
+       ["Shoppers switch to cheaper brands","Fresh Market own-brands sell out.","p-0.5 h-1"],
        ["Savings rates are the best in years","Savers finally get a reward.","r+0.05 h+1"]],
       [["Inflation finally cools","Price rises slow for the first time in months.","p-1 h+3"],
        ["Central bank pauses its rate hikes","Markets cheer the pause.","r-0.1 h+3"],
@@ -1999,9 +1999,9 @@
       [["Drought hits the region’s rice bowl","Farmers report their worst harvest in decades.","p+1.5 h-2"],
        ["Neighbour country bans rice exports","Importers scramble for new suppliers.","p+2"],
        ["Heatwave scorches vegetable farms","Fresh greens are scarce at the wet market.","p+1 h-2"]],
-      [["Rice prices up 30%","Hawkers raise the price of chicken rice.","p+2 h-3"],
+      [["Rice prices up 30%","Stall owners raise the price of rice plates.","p+2 h-3"],
        ["Panic buying at supermarkets","Shoppers clear the shelves of rice and noodles.","p+1 h-3"],
-       ["Hawkers struggle to keep prices down","Some stalls close early when they run out of ingredients.","p+1 h-2"],
+       ["Stall owners struggle to keep prices down","Some stalls close early when they run out of ingredients.","p+1 h-2"],
        ["Food banks see record queues","Volunteers work double shifts.","h-3"],
        ["Bulk buy?","The supermarket sells a 10kg sack of rice for $35, still at the old price. Buy it?","",[0.8,"Prices keep climbing. You saved money.","c-35 c+20 h+3","Prices fall next week. Oh well.","c-35 h-2"],[1,"You buy what you need.",""]]],
       [["Food prices hit a record","Even instant noodles cost more.","p+2.5 h-3"],
@@ -2069,7 +2069,7 @@
        ["Taxi queues everywhere","It is hard to get a ride.","e-3"],
        ["Tour guide for a day","A tour company needs a local guide this Saturday. $80. Do it?","",[0.8,"Fun day, generous tips.","c+100 e-14 h+5","Tough group, no tips.","c+80 e-18"],[1,"You keep your weekend.",""]]],
       [["Hotels charge record rates","Rooms cost triple on weekends.","p+1"],
-       ["Locals complain about crowds","The hawker queue is an hour long.","h-3"],
+       ["Locals complain about crowds","The street-food queue is an hour long.","h-3"],
        ["Shops extend opening hours","More shifts for everyone.","w+0.4"],
        ["Rent out your room?","A tourist offers $90 for two nights in your spare room. Accept?","",[0.7,"A polite guest who leaves a thank-you note.","c+90 h+3","A noisy guest. You sleep badly.","c+90 e-8 h-3"],[1,"You keep your privacy.",""]]],
       [["Peak season ends","Crowds thin out and prices ease.","p-0.5 h+2"],
@@ -2096,7 +2096,7 @@
        ["Flash floods close major roads","Buses are diverted and traffic crawls.","e-4"],
        ["Weather agency issues a red alert","More storms are coming.","h-2"]],
       [["Low-lying shops flooded","Shopkeepers sweep out muddy water.","p+1 h-2"],
-       ["Supermarket deliveries delayed","Fresh food is scarce.","p+1.5"],
+       ["Fresh Market deliveries delayed","Fresh food is scarce.","p+1.5"],
        ["Factories in the industrial park shut","Machines are under water.","w-0.3"],
        ["Insurance claims flood in","Insurers warn premiums will rise.","h-2"],
        ["Help a flooded shop","The minimart downstairs needs help moving stock to higher shelves. Help?","",[1,"The owner gives you a bag of groceries as thanks.","e-10 e+8 h+6"],[1,"You stay dry indoors.",""]]],
@@ -2131,7 +2131,7 @@
        ["Shops see more spending","Consumers feel confident.","h+2 p+0.5"],
        ["Cash vouchers in the mail","Households get $50 to spend locally.","c+50 h+3"],
        ["Training subsidies expanded","Courses get cheaper.","n+1 h+2"],
-       ["Voucher deal","A hawker centre doubles vouchers today. Spend $10 for $20 of food?","",[1,"Two days of delicious meals.","c-10 e+10 h+4"],[1,"You save your money.",""]]],
+       ["Voucher deal","A food court doubles vouchers today. Spend $10 for $20 of food?","",[1,"Two days of delicious meals.","c-10 e+10 h+4"],[1,"You save your money.",""]]],
       [["Economists warn of overheating","Prices start to rise faster.","p+1"],
        ["Interest rates tick up","The central bank leans against inflation.","r+0.05"],
        ["Unemployment at a record low","Everyone seems to have work.","w+0.4 h+3"],
@@ -2188,7 +2188,7 @@
        ["Freight rates fall","Shipping costs head back to normal.","p-1"],
        ["Shelves refill","The shortages end.","p-1 h+3"]]]},
     {id:'auto',ic:'🤖',n:'Automation wave',term:'Automation: machines and software doing tasks that people used to do.',len:[5,8],eff:{w:-0.2,mkt:0.25,lay:0.03},ph:[
-      [["Supermarket chain installs self-checkouts","Cashier jobs are cut.","h-2"],
+      [["Fresh Market chain installs self-checkouts","Cashier jobs are cut.","h-2"],
        ["Banks replace tellers with apps","Branches shrink.","h-2"],
        ["AI assistant goes viral","It writes, codes and draws.","n+1"]],
       [["Warehouses run on robots","Night shifts disappear.","w-0.3 h-2"],
@@ -2271,12 +2271,12 @@
       [["Bird flu found at poultry farms","Millions of chickens are culled.","h-3"],
        ["Egg prices jump","Shoppers buy fewer eggs.","p+1"],
        ["Health ministry urges caution","Wash hands, avoid live poultry markets.","n+1"]],
-      [["Chicken rice prices rise","Hawkers pass on the cost.","p+1 h-2"],
+      [["Rice plate prices rise","Stall owners pass on the cost.","p+1 h-2"],
        ["Some human cases reported","Hospitals are on alert.","h-3"],
        ["Schools stop field trips to farms","Precautions everywhere.","h-1"],
        ["Masks return to public transport","Many commuters cover up.","h-1"],
        ["Get a flu jab?","The clinic offers a flu vaccination for $20. Get one?","",[1,"A sore arm, and peace of mind.","c-20 l+3 h+2"],[1,"You skip it.",""]]],
-      [["Poultry imports banned","Supermarkets limit chicken.","p+1.5 h-2"],
+      [["Poultry imports banned","Fresh Markets limit chicken.","p+1.5 h-2"],
        ["Vegetarian dishes in demand","Restaurants change menus.","h+1"],
        ["Clinic queues grow","Doctors are busy.","h-2"],
        ["Try a vegetarian week","A friend challenges you to eat vegetarian for a week. Accept?","",[0.8,"You feel lighter and save money.","c+15 l+3 h+3","You miss chicken terribly.","h-3"],[1,"You stick to your usual meals.",""]]],
@@ -2295,7 +2295,7 @@
       [["Opening ceremony dazzles","Fireworks light up the sky.","h+5"],
        ["Home team wins gold","The whole city cheers.","h+6"],
        ["Bars packed for every match","Late nights everywhere.","e-3 h+2"],
-       ["Last-minute ticket","A friend has a spare ticket to the final for $60. Go?","",[0.8,"An electric atmosphere. Worth every cent.","c-60 h+12 e-6","Your seat has a pillar in front of it.","c-60 h+2 e-6"],[1,"You watch at a hawker centre with strangers.","h+4"]]],
+       ["Last-minute ticket","A friend has a spare ticket to the final for $60. Go?","",[0.8,"An electric atmosphere. Worth every cent.","c-60 h+12 e-6","Your seat has a pillar in front of it.","c-60 h+2 e-6"],[1,"You watch at a food court with strangers.","h+4"]]],
       [["Closing ceremony","The games end on a high.","h+4"],
        ["Visitors fly home","Hotels and streets quieten down.","p-0.5 h+1"],
        ["The stadium becomes a public sports centre","Free sessions for residents.","h+2 l+1"]]]},
@@ -2345,7 +2345,7 @@
   var IW={fac:{b:['factory']},line:{r:['Line Worker','Forklift Driver']},esales:{c:['elec']},repair:{r:['Repair Technician']},
     etech:{c:['elec2']},btech:{r:['Tech Developer']},bank:{r:['Teller','Internal Auditor','Market Risk Analyst']},
     deliv:{r:['Delivery Rider','Delivery Driver','Delivery & Install']},crew:{r:['Crew Member','Kitchen Hand']},
-    tills:{r:['Cashier','Shelf Stacker']},sup:{r:['Store Supervisor','Supermarket Manager','IT Support Lead']},
+    tills:{r:['Cashier','Shelf Stacker']},sup:{r:['Store Supervisor','Fresh Market Manager','IT Support Lead']},
     med:{b:['hosp'],t:'med'},hsup:{r:['Hospital Porter','Cleaner']},eat:{b:['resto','fast']},fnb:{b:['resto','fast'],t:'fnb'},
     mall:{b:['mall']},thrift:{c:['thrift','thrift2']},appr:{r:['Appraiser','Pawnbroker']},pawn:{c:['pawn','pawn2']},gym:{b:['gym']},eng:{r:['Technician','Design Engineer','Senior Engineer','Project Lead','Principal Engineer','Chief Engineer']}};
   function ie(w,lab,pay,hire,cut){var e={w:IW[w],lab:lab,pay:pay||0};if(hire)e.hire=hire;if(cut)e.cut=cut;return e}
@@ -2396,7 +2396,7 @@
         ['Delivery settles down','Fees go up and orders fall back.','h+1'],
         ['Crew shifts return','People drift back to eating in.','h+1']]}]},
     {id:'checkout',ic:'🧾',n:'Self-checkout rollout',term:'Labour-saving technology: machines that let a business serve the same customers with fewer staff.',
-      rum:'The Supermarket is trialling self-checkout machines. Till and shelf jobs may be at risk.',
+      rum:'The Fresh Market is trialling self-checkout machines. Till and shelf jobs may be at risk.',
       hit:'Cashiers and shelf stackers are at risk; supervisors and IT support are in demand.',ph:[
       {on:[ie('tills','Cashiers and shelf stackers',-0.5,'freeze')],c:[
         ['Self-checkouts arrive','Ten machines appear where three tills used to be.','h-1'],
@@ -2442,21 +2442,21 @@
         ['Diners return','Restaurants fill up again, a new hygiene sticker in every window.','h+1']]}]},
     {id:'mall',ic:'🛍️',n:'Online shopping hits the mall',term:'Disruption: a new way of selling that takes customers from an established industry.',
       rum:'Online shops are undercutting the Clothes Mall. Mall jobs may be at risk; second-hand may boom.',
-      hit:'Clothes Mall jobs are hit; Thrift Store jobs are in demand.',ph:[
-      {on:[ie('mall','Clothes Mall jobs',-0.5,'freeze'),ie('thrift','Thrift Store jobs',0.5,'open')],c:[
+      hit:'Clothes Mall jobs are hit; Second-Hand Shop jobs are in demand.',ph:[
+      {on:[ie('mall','Clothes Mall jobs',-0.5,'freeze'),ie('thrift','Second-Hand Shop jobs',0.5,'open')],c:[
         ['Online fashion sale','A big online store sells clothes at half the mall’s prices.','h+1'],
         ['Quiet mall corridors','Footfall drops for a second week.','h-1']]},
-      {on:[ie('mall','Clothes Mall jobs',-1,'freeze'),ie('thrift','Thrift Store jobs',1,'open')],c:[
+      {on:[ie('mall','Clothes Mall jobs',-1,'freeze'),ie('thrift','Second-Hand Shop jobs',1,'open')],c:[
         ['Mall shops close floors','The top floor is roped off.','h-2'],
-        ['Second-hand is in','Thrift shopping goes viral and the Thrift Store needs more hands.','h+1']]},
-      {on:[ie('mall','Clothes Mall jobs',-1,'freeze',1),ie('thrift','Thrift Store jobs',1,'open')],c:[
+        ['Second-hand is in','Thrift shopping goes viral and the Second-Hand Shop needs more hands.','h+1']]},
+      {on:[ie('mall','Clothes Mall jobs',-1,'freeze',1),ie('thrift','Second-Hand Shop jobs',1,'open')],c:[
         ['Layoffs at the mall','Boutiques cut staff to survive.','h-3'],
-        ['Queues at the Thrift Store','The sorting room cannot keep up.','h+1']]},
-      {on:[ie('mall','Clothes Mall jobs',-0.5),ie('thrift','Thrift Store jobs',0.5)],c:[
+        ['Queues at the Second-Hand Shop','The sorting room cannot keep up.','h+1']]},
+      {on:[ie('mall','Clothes Mall jobs',-0.5),ie('thrift','Second-Hand Shop jobs',0.5)],c:[
         ['The mall fights back','Free returns and weekend events bring some shoppers back.','h+1'],
-        ['The thrift craze cools','Thrift Store pay settles back down.','']]}]},
+        ['The thrift craze cools','Second-Hand Shop pay settles back down.','']]}]},
     {id:'gold',ic:'🪙',n:'Gold rush',term:'Commodity cycle: raw-material prices boom and bust, and the jobs that depend on them follow.',
-      rum:'Gold prices are climbing fast. Appraisers at the Thrift Store’s pawn counter may be in demand.',
+      rum:'Gold prices are climbing fast. Appraisers at the Second-Hand Shop’s pawn counter may be in demand.',
       hit:'Appraisers and pawnbrokers are in demand, then every pawn counter job is at risk.',ph:[
       {on:[ie('appr','Appraisers and pawnbrokers',0.5,'open')],c:[
         ['Gold hits a record','Everyone digs out old jewellery to sell.','h+1'],
@@ -2597,7 +2597,7 @@
   var TWISTS=[['Later, a friend thanks you for being sensible.','h+3'],['You spend the saved time reading something useful.','n+2'],['On the way home you find $10 on the ground.','c+10'],['Still, you can’t stop wondering what might have been.','h-3'],['The decision costs you a bit of sleep.','e-5'],['Someone buys you a coffee for no reason.','e+5 h+2'],
     ['Your mum calls just to say she is proud of you.','h+4'],['A stranger holds the lift door for you. Small things.','h+2'],['You catch the bus just as it pulls up.','e+3'],['A song you love comes on the radio.','h+3'],['You notice a hole in your sock. It bugs you all evening.','h-2'],
     ['You step in a puddle on the way home.','h-2 e-2'],['A street cat follows you halfway home.','h+3'],['You remember a useful tip from an old teacher.','n+1'],['Your neighbour shares a plate of curry puffs.','e+4 h+2'],['You forget your umbrella and get caught in a drizzle.','h-2'],
-    ['A friend sends you a meme that makes you laugh out loud.','h+3'],['You overthink it on the MRT ride home.','h-2'],['The hawker gives you an extra-large portion.','e+5'],['You get a good night’s sleep for once.','e+5'],['You stub your toe on the doorframe.','h-2 l-1'],
+    ['A friend sends you a meme that makes you laugh out loud.','h+3'],['You overthink it on the train ride home.','h-2'],['The stall owner gives you an extra-large portion.','e+5'],['You get a good night’s sleep for once.','e+5'],['You stub your toe on the doorframe.','h-2 l-1'],
     ['Your phone battery dies at the worst moment.','h-3'],['You find an old voucher in your wallet.','c+8'],['A coworker asks for your advice. You feel useful.','h+3'],['You spend the evening tidying your room. It feels great.','h+3 e-2'],['A mosquito keeps you up half the night.','e-4'],
     ['You learn a new word from a podcast.','n+1'],['A kid on the bus waves at you.','h+2'],['You treat yourself to a cold drink.','c-2 e+3 h+2'],['Your favourite show releases a new episode.','h+3']];
   var STORIES={
@@ -2725,8 +2725,8 @@
       c:{x:'The scratches look like a lock was cut off. Is it stolen?',o:[
         {t:'Walk away',o:[[10,'Better safe than sorry.','h+2']]},
         {t:'Buy it cheap anyway ($50)',o:[[4,'Nothing happens. You have a bike.','c-50 h-2 c+30'],[6,'The owner spots it a week later. The police take it back.','c-50 h-10']]}]}}},
-    hawkerauntie:{ic:'🍜',t:'The hawker auntie',s:{
-      a:{x:'Your favourite hawker auntie looks exhausted. Her helper quit and the lunch queue is huge.',o:[
+    hawkerauntie:{ic:'🍜',t:'The street-food auntie',s:{
+      a:{x:'Your favourite street-food auntie looks exhausted. Her helper quit and the lunch queue is huge.',o:[
         {t:'Offer to help for an hour',o:[[6,'You take orders and clear trays. She is grateful.','e-10 h+6','b'],[4,'You mix up three orders. She laughs it off.','e-10 h+2','b']]},
         {t:'Just order and leave a tip',o:[[10,'She smiles and gives you an extra egg.','c-5 e+6 h+3']]}]},
       b:{x:'She offers you a weekend shift for $60 a day while she finds a new helper.',o:[
@@ -2747,7 +2747,7 @@
         {t:'Deliver it as written',sk:'happy',o:[[6,'People laugh and cry in the right places. Your cousin hugs you.','h+12'],[4,'You rush it, but it is sweet.','h+5']]},
         {t:'Improvise a joke',o:[[4,'The whole hall roars. A legend is born.','h+14'],[6,'The joke lands badly with the grandparents.','h-6']]}]}}},
     vendingmachine:{ic:'🥤',t:'The vending machine',s:{
-      a:{x:'The vending machine at the MRT station swallowed your $5 note and gave nothing back.',o:[
+      a:{x:'The vending machine at the train station swallowed your $5 note and gave nothing back.',o:[
         {t:'Call the number on the machine',o:[[5,'A cheerful operator promises a refund to your account.','e-3','b'],[5,'You are on hold for 20 minutes.','e-6','b']]},
         {t:'Give it a thump',o:[[3,'Two drinks fall out! Justice.','e+5 h+4'],[7,'Nothing. A station officer gives you a look.','h-4']]}]},
       b:{x:'The operator asks you to fill in an online form with a photo of the machine.',o:[
@@ -2768,7 +2768,7 @@
       b:{x:'He finished all 42 km! He shows you the medal and the bill: $84.',o:[
         {t:'Pay up proudly',o:[[10,'He tells the whole office you are generous.','c-84 h+8']]},
         {t:'Ask to pay half now, half later',o:[[6,'He agrees. You pay $84 over two weeks.','c-84 h+3'],[4,'He looks disappointed but agrees.','c-84 h-2']]},
-        {t:'Admit you can’t afford it',o:[[6,'He laughs and says to buy him a kopi sometime.','h+2'],[4,'He says not to worry, but it stings.','h-5']]}]}}},
+        {t:'Admit you can’t afford it',o:[[6,'He laughs and says to buy him a tea sometime.','h+2'],[4,'He says not to worry, but it stings.','h-5']]}]}}},
     phonerepair:{ic:'📱',t:'A cracked phone',s:{
       a:{x:'You drop your phone and the screen shatters. The official shop quotes $180.',o:[
         {t:'Pay the official shop ($180)',o:[[10,'Good as new, with a warranty.','c-180 h+3']]},
@@ -2804,12 +2804,12 @@
       b:{x:'At closing, the owner says the tips jar is full. “Split it, or take double pay to work Sunday too?”',o:[
         {t:'Split the tips',o:[[10,'$80 pay and $35 in tips.','c+115 h+4']]},
         {t:'Work Sunday too',o:[[6,'Another huge day. $240 in total.','c+240 e-18 h+3'],[4,'Sunday is dead. You take home $160 and sore feet.','c+160 e-14']]}]}}},
-    kopiclub:{ic:'☕',t:'The kopitiam regulars',s:{
-      a:{x:'The old uncles at the kopitiam invite you to join their morning chess game.',o:[
+    kopiclub:{ic:'☕',t:'The tea house regulars',s:{
+      a:{x:'The old uncles at the tea house invite you to join their morning chess game.',o:[
         {t:'Play a game',sk:'know',o:[[5,'You win! The uncles demand a rematch.','h+5 n+1','b'],[5,'You lose badly. They give you advice.','n+2 h+1','b']]},
         {t:'Just watch and chat',o:[[10,'You hear forty years of neighbourhood gossip.','h+4']]}]},
-      b:{x:'One uncle says he used to run a hardware business and offers you some career advice over kopi.',o:[
-        {t:'Listen and buy the kopi ($3)',o:[[7,'His advice is surprisingly sharp.','c-3 n+4 h+3'],[3,'He mostly complains about his son-in-law.','c-3 h+2']]},
+      b:{x:'One uncle says he used to run a hardware business and offers you some career advice over tea.',o:[
+        {t:'Listen and buy the tea ($3)',o:[[7,'His advice is surprisingly sharp.','c-3 n+4 h+3'],[3,'He mostly complains about his son-in-law.','c-3 h+2']]},
         {t:'Say you need to go',o:[[10,'He waves you off with a grin.','']]}]}}},
     exam:{ic:'📝',t:'A friend’s exam notes',s:{
       a:{x:'A friend who just finished a finance diploma offers you her notes for $25.',o:[
@@ -2834,10 +2834,10 @@
     carpool:{ic:'🚙',t:'The carpool group',s:{
       a:{x:'A coworker drives past your block and offers a carpool for $5 a day.',o:[
         {t:'Join the carpool',o:[[6,'Faster than the bus and good chats.','c-5 e+4 h+3','b'],[4,'He sings along to the radio. Loudly.','c-5 e+4 h-2','b']]},
-        {t:'Keep commuting alone',o:[[10,'You stick with your podcast and the MRT.','n+1']]}]},
+        {t:'Keep commuting alone',o:[[10,'You stick with your podcast and the train.','n+1']]}]},
       b:{x:'He asks if you could drive his car one week while he is on leave, and pick up two others.',o:[
         {t:'Agree',o:[[7,'The others pay you $40 for the week.','c+40 e-6 h+3'],[3,'You scrape a pillar in the carpark. $60 repair.','c-60 h-6']]},
-        {t:'Decline',o:[[10,'You go back to the MRT for a week.','']]}]}}},
+        {t:'Decline',o:[[10,'You go back to the train for a week.','']]}]}}},
     staircase:{ic:'🪜',t:'Stair challenge',s:{
       a:{x:'Your block is running a stair-climb challenge for charity: 25 floors, $10 entry.',o:[
         {t:'Enter ($10)',o:[[6,'You reach the top. Lungs burning, but proud.','c-10 e-12 h+6 l+2','b'],[4,'You stop at floor 14 and take the lift.','c-10 e-8 h-1']]},
@@ -2861,13 +2861,13 @@
         {t:'Say you are at capacity',o:[[10,'She understands and remembers you for later.','h+1']]}]}}},
     cooking:{ic:'🍳',t:'A cooking class',s:{
       a:{x:'A community centre offers a Saturday cooking class: local dishes on a budget, $30.',o:[
-        {t:'Sign up ($30)',o:[[6,'You learn to make a mean chicken rice.','c-30 n+2 h+5','b'],[4,'You burn the rice. The instructor is kind.','c-30 n+1 h+1','b']]},
+        {t:'Sign up ($30)',o:[[6,'You learn to make a mean fried rice.','c-30 n+2 h+5','b'],[4,'You burn the rice. The instructor is kind.','c-30 n+1 h+1','b']]},
         {t:'Watch a cooking video',o:[[10,'You try one recipe. Edible.','h+2']]}]},
       b:{x:'You invite friends over to show off your new skills.',o:[
         {t:'Cook for everyone ($25 ingredients)',o:[[7,'They ask for the recipe and bring dessert next time.','c-25 h+10 e+8'],[3,'Too much salt. Everyone drinks a lot of water.','c-25 h+2']]},
         {t:'Cook just for yourself',o:[[10,'Cheap, tasty meals for days.','e+10 l+2']]}]}}},
     mrtlost:{ic:'🚇',t:'A tourist asks for help',s:{
-      a:{x:'A lost tourist family at the MRT station asks how to reach the Botanic Gardens.',o:[
+      a:{x:'A lost tourist family at the train station asks how to reach the city gardens.',o:[
         {t:'Walk them to the right platform',o:[[7,'They are so grateful they invite you for a coffee.','e-4 h+6','b'],[3,'You miss your own train.','e-6 h+3']]},
         {t:'Point at the map',o:[[10,'They thank you and head off.','h+1']]}]},
       b:{x:'Over coffee, the father says he runs a travel blog and needs a local guide for one day.',o:[
@@ -2942,7 +2942,7 @@
         {t:'Sign up',o:[[2,'Some of it is useful, sort of.','c-300 n+4 h-3'],[8,'It is mostly fluff. You feel cheated.','c-300 h-10']]},
         {t:'Walk out',o:[[10,'You feel very wise.','h+4']]}]}}},
     buskers:{ic:'🎸',t:'Busking for fun',s:{
-      a:{x:'A friend who plays guitar wants you to busk with him at the MRT for an evening.',o:[
+      a:{x:'A friend who plays guitar wants you to busk with him at the train for an evening.',o:[
         {t:'Join him',sk:'happy',o:[[6,'People stop and sing along.','e-8 h+6','b'],[4,'Nobody stops. You laugh about it.','e-8 h+2']]},
         {t:'Watch and record a video',o:[[10,'His video gets a few hundred views.','h+3']]}]},
       b:{x:'At the end of the night you count the guitar case.',o:[
@@ -2981,7 +2981,7 @@
         {t:'Pay your even share ($40)',o:[[7,'Keeps the peace. Friends notice and treat you next time.','c-40 h+3'],[3,'You stew about it all the way home.','c-40 h-4']]},
         {t:'Ask to pay for what you ate ($15)',o:[[6,'Everyone agrees. No problem.','c-15 h+2'],[4,'One friend rolls her eyes.','c-15 h-3']]},
         {t:'Admit you are short this week',o:[[6,'A friend covers you. You owe her one.','h-1'],[4,'It is embarrassing, but nobody minds much.','h-4']]}]}}},
-    reunion:{ic:'🏫',t:'School reunion',s:{
+    reunion:{ic:'🏫',t:'City College reunion',s:{
       a:{x:'Your secondary school class is holding a ten-year reunion. Tickets are $45.',o:[
         {t:'Go ($45)',o:[[6,'Old friends, old jokes. A wonderful night.','c-45 h+10 e-6','b'],[4,'Everyone talks about their promotions.','c-45 h-4 e-6','b']]},
         {t:'Skip it',o:[[7,'You see the photos online. Looks fun.','h-1'],[3,'You feel a pang of regret.','h-4']]}]},
@@ -3015,7 +3015,7 @@
         {t:'Ignore it',o:[[10,'The credits expire.','h-2']]}]}}},
     returnbottle:{ic:'♻️',t:'Recycling drive',s:{
       a:{x:'The town council will pay 10 cents for every can returned this month.',o:[
-        {t:'Collect cans from the block',o:[[6,'Neighbours help. You raise $25.','c+25 e-8 h+3'],[4,'Only $8 worth. But the void deck is cleaner.','c+8 e-8 h+2']]},
+        {t:'Collect cans from the block',o:[[6,'Neighbours help. You raise $25.','c+25 e-8 h+3'],[4,'Only $8 worth. But the ground-floor common area is cleaner.','c+8 e-8 h+2']]},
         {t:'Return only your own',o:[[10,'A few dollars, done.','c+3']]}]}}},
     techsupport:{ic:'🖥️',t:'Fixing a neighbour’s computer',s:{
       a:{x:'The old man next door says his computer is “broken” and asks if you know about these things.',o:[
@@ -3036,7 +3036,7 @@
         {t:'Take both bookings',o:[[7,'$240 for two weekends of work.','c+240 e-18 h+4'],[3,'One cancels. Still $120.','c+120 e-10']]},
         {t:'Turn them down',o:[[10,'You keep it a hobby.','h+2']]}]}}},
     shoplift:{ic:'🛒',t:'Unpaid item',s:{
-      a:{x:'At home you notice the supermarket did not charge you for a $12 bottle of olive oil.',o:[
+      a:{x:'At home you notice the Fresh Market did not charge you for a $12 bottle of olive oil.',o:[
         {t:'Go back and pay',o:[[7,'The cashier is touched. She gives you a discount voucher.','c-12 c+5 h+5'],[3,'Nobody seems to care, but you feel honest.','c-12 h+3']]},
         {t:'Keep it',o:[[7,'Free olive oil.','h-2'],[3,'You feel guilty every time you cook.','h-5']]}]}}},
     rainydaygame:{ic:'🎲',t:'Board game café',s:{
@@ -3312,7 +3312,7 @@
     if(!S.fed)log('No meal today: '+sg(CONFIG.health.nightly.skippedMeal)+' health overnight.','warn');
     snd('day');
     var cards=pickNight();if(!cards.length)cards=[quietCard()];
-    S.pending={rested:home,ev:cards[0],q:cards.slice(1),n:cards.length};  /* any way of going to bed at home counts (the top-bar button too), so the Bungalow's bed bonus applies */
+    S.pending={rested:home,ev:cards[0],q:cards.slice(1),n:cards.length};  /* any way of going to bed at home counts (the top-bar button too), so the Villa's bed bonus applies */
     cards.forEach(function(ev){if(ev.done)log('Event: '+ev.title+(ev.fx.length?' ('+ev.fx.join(', ')+')':''),ev.tone==='good'?'good':ev.tone==='bad'?'bad':'')});
     view=null;
     render();
@@ -3490,10 +3490,10 @@
     var fresh=F.filter(function(p){return !p.sp}).length,pickable=cap>0&&fresh>cap;
     var cards=function(test){var h='';F.forEach(function(p,i){if(test(p))h+=foodCard(p,i,pickable)});return h};
     var inF=cards(function(p){return p.f}),out=cards(function(p){return !p.f&&!p.sp}),bad=cards(function(p){return p.sp});
-    var t=shelf('🔌 Belongings',ks.length?'':'none yet',ks.length?'<div class="room">'+ks.map(function(k){return '<div class="thing'+(S.broken[k]?' brk':'')+'"><span>'+ITEMS[k].ic+'</span><small>'+ITEMS[k].n+(S.broken[k]?' · broken':'')+'</small></div>'}).join('')+'</div>':'<p class="room empty">Buy things at the Electronics Store or Thrift Store.</p>');
+    var t=shelf('🔌 Belongings',ks.length?'':'none yet',ks.length?'<div class="room">'+ks.map(function(k){return '<div class="thing'+(S.broken[k]?' brk':'')+'"><span>'+ITEMS[k].ic+'</span><small>'+ITEMS[k].n+(S.broken[k]?' · broken':'')+'</small></div>'}).join('')+'</div>':'<p class="room empty">Buy things at the Electronics Store or Second-Hand Shop.</p>');
     t+=shelf('🧊 Fridge',cap?inFridge()+' / '+cap+' · '+FD.keepDaysFridge+' days':(S.items.fridge||S.items.fridgeold)?'broken':'none',
       inF?'<div class="room">'+inF+'</div>'+(pickable?'<p class="room empty">More food than space: the meals closest to going off go in first. Use the buttons to choose.</p>':''):cap?'<p class="room empty">Empty.</p>':'');
-    if(out||!cap)t+=shelf('🌡️ Counter',FD.keepDaysRoom+' days',out?'<div class="room">'+out+'</div>':'<p class="room empty">Empty. Buy meals at the Supermarket.</p>');
+    if(out||!cap)t+=shelf('🌡️ Counter',FD.keepDaysRoom+' days',out?'<div class="room">'+out+'</div>':'<p class="room empty">Empty. Buy meals at the Fresh Market.</p>');
     if(bad)t+=shelf('🤢 Spoiled',sg(FD.spoiledHealth)+' health each',' <div class="room">'+bad+'</div>');
     if(S.chips)t+=shelf('🥔 Snacks',S.chips+' / '+FD.chips.maxStored,'<div class="room"><div class="thing"><span>🥔</span><small><b>Bag of chips</b> × '+S.chips+'</small></div></div>');
     if((S.tickets||[]).length)t+=shelf('🎟️ Lottery tickets','','<div class="room">'+S.tickets.map(function(x){return '<div class="thing"><span>🎟️</span><small>Draw day '+x.draw+'</small></div>'}).join('')+'</div>');

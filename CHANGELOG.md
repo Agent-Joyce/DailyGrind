@@ -2011,3 +2011,16 @@ No rule, CONFIG, save or dice change. In the game's story the AI rivals are the 
 - **Ending (rival games):** `lifeTable()` is now "The reunion dinner". An Auntie reads out each Life Score category ("In Wealth, Cousin Leo came first ($…). You came 2nd…"), then the scoreboard and the full table as before. Wording depends only on `lifeScore()`; it rolls no dice. The ending title (Bankrupt, Time's up, …) is unchanged, so the simulation bots still read it. Single games keep their old end screen.
 - Added `.wl-tag` and `.reunion .auntie` styles; a case in `tools/qa/check-ux.js`.
 - The rival names themselves (Maya, Leo, Sam) change in 18g.
+
+## 109. Pan-Asian names for places, shopkeepers, food and rivals
+
+Names and wording only. No rule, CONFIG number, dice or save-format change; place keys, event ids, qualification names and job lines are unchanged, so old saves load. Approved as a before → after table.
+
+- **Places** (the 16 pictures and their functions are unchanged): School → City College, Supermarket → Fresh Market, Fast Food → Golden Bun, Restaurant → Family Restaurant, Low-End Apartment → Budget Apartments, Thrift Store → Second-Hand Shop, Classy Bungalow → Garden Villa (Bungalow → Villa elsewhere). Employment Office, Bank, Electronics Store, Clothes Mall, Hospital, Factory, Community Centre, Gym and Park keep their names. Career-line labels and the two manager titles that carried a building name follow (Fresh Market Manager, Second-Hand Shop Manager); the saved record of a best role from an old save may still show the old title.
+- **Shopkeepers:** Ms. Chen (Employment Office), Professor Sharma, Mr. Nguyen, Auntie Mai, Uncle Joon, Chef Somchai, Mr. Rahman (landlord), Mrs. Santos, Ms. Dewi, Coach Minho. Kenji, Mei, Dr. Lee, Foreman Raj, Auntie Lin and the estate agent are unchanged.
+- **Food** (`CONFIG.food` names): a chicken bun, a bun and noodle combo, a family-style dinner, the chef's banquet set, milk tea and pastry, Rice and veg meal kit (was Meal prep), Ready-to-eat rice box.
+- **Rivals** (`CONFIG.rivals.names`): Maya, Leo, Sam → Linh, Arjun, Jae. The QA scripts that used the old names were updated.
+- **Country-specific wording removed from events:** MRT → train, HDB lift → apartment lift, hawker centre/queue → food court / street-food queue, kopitiam/kopi → tea house/tea, chicken rice → rice plates / fried rice, Mandopop → pop ballads, void deck → ground-floor common area, Botanic Gardens → the city gardens. Internal ids such as `hawkerauntie`, `kopiclub` and the `hawker` map art key stay.
+- `tools/qa/check-ux.js` has a case for the place and rival names and scans `index.html` for the old wording.
+- Owed: the text still needs a cultural reader (ROADMAP, Package D), and `docs/Daily Grind Config Guide.docx` still lists the old food and rival names.
+

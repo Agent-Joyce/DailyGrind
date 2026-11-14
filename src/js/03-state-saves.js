@@ -9,7 +9,7 @@
     rollOpenings();planNews();loc='apt';view=null;last=null;
     $('log').innerHTML='';S.logs=[];
     $('over').classList.remove('show');$('welcome').classList.add('show');
-    log('Day 1 begins. You rent the Low-End Apartment and own '+(CONFIG.clothes.startCasualDays>0?'one set of '+WEAR.casual.n+' (good for '+CONFIG.clothes.startCasualDays+' day'+(CONFIG.clothes.startCasualDays===1?'':'s')+')':'no work clothes yet, so buy some at the Clothes Mall')+'. Rent is due at the end of day '+RENT_EVERY+'.');
+    log('Day 1 begins. You rent the Budget Apartments and own '+(CONFIG.clothes.startCasualDays>0?'one set of '+WEAR.casual.n+' (good for '+CONFIG.clothes.startCasualDays+' day'+(CONFIG.clothes.startCasualDays===1?'':'s')+')':'no work clothes yet, so buy some at the Clothes Mall')+'. Rent is due at the end of day '+RENT_EVERY+'.');
     render();
   }
 
@@ -70,7 +70,7 @@
     ['industry-specific storylines: a game saved before them gets one, if there is still time in the window', function(s){
       if(s.indNext==null&&!s.ind){var L=CONFIG.industry,last=(s.mode==='rivals'?CONFIG.rivals.gameDays:CONFIG.time.gameDays)-L.daysBeforeEnd,d=Math.max((s.day||1)+1,indDay());
         s.indNext=d<=last&&!s.over?d:0;s.indId=INDUSTRY[Math.floor(Math.random()*INDUSTRY.length)].id}}],
-    ['Pawn Shop merged into the Thrift Store: a closure and work experience there move to the Thrift Store', function(s){
+    ['Pawn Shop merged into the Second-Hand Shop: a closure and work experience there move to the Second-Hand Shop', function(s){
       if(s.shut&&s.shut.pawn){s.shut.thrift=Math.max(s.shut.thrift||0,s.shut.pawn);delete s.shut.pawn}
       if(s.shiftsAt&&s.shiftsAt.pawn){s.shiftsAt.thrift=(s.shiftsAt.thrift||0)+s.shiftsAt.pawn;delete s.shiftsAt.pawn}}],
     ['fields added since the save was made get their starting values from blank()', function(s,b){Object.keys(b).forEach(function(k){if(s[k]===undefined)s[k]=b[k]})}],
@@ -91,14 +91,14 @@
     ['rival personalities, archetypes and favour memories (stable for old saves, without rolling dice)', function(s){(s.rivals||[]).forEach(function(r,i){prepareRival(r,i,s.rivalSeed)});s.ver=Math.max(s.ver||0,5)}],
     ['v5 to v6: reputation for rivals in games saved before town politics (no dice rolled)', function(s){(s.rivals||[]).forEach(function(r){if(!Number.isFinite(r.rep))r.rep=CONFIG.rivals.politics.rep.start;if(r.drift==null)r.drift=0});if(!CONFIG.rivals.politics.moods[s.townMood])s.townMood=CONFIG.rivals.politics.defaultMood;s.ver=Math.max(s.ver||0,6)}],
     ['v6 to v7: sabotage records for rivals in games saved before sabotage (no dice rolled)', function(s){(s.rivals||[]).forEach(function(r){if(!Array.isArray(r.sabOn))r.sabOn=[];if(!Number.isFinite(r.sabUsed))r.sabUsed=0;if(!Number.isFinite(r.grudge))r.grudge=0});s.ver=Math.max(s.ver||0,7)}],
-    ['v7 to v8: social contracts and loan reliability (no random draws)', function(s){(s.rivals||[]).forEach(function(r){if(!r.home)r.home='apt';if(!r.loanHistory)r.loanHistory={paid:0,late:0,defaulted:0}});if(s.home==='bung'&&s.flat){s.home='apt';s.notes.push({l:'rem',t:'Your shared household was restored at the apartment: bungalows now allow one occupant. Your housemate and belongings are retained.'})}s.ver=Math.max(s.ver||0,8)}],
+    ['v7 to v8: social contracts and loan reliability (no random draws)', function(s){(s.rivals||[]).forEach(function(r){if(!r.home)r.home='apt';if(!r.loanHistory)r.loanHistory={paid:0,late:0,defaulted:0}});if(s.home==='bung'&&s.flat){s.home='apt';s.notes.push({l:'rem',t:'Your shared household was restored at the apartment: villas now allow one occupant. Your housemate and belongings are retained.'})}s.ver=Math.max(s.ver||0,8)}],
     ['new investments, qualifications and outfits added to the nested lists', function(s,b){['inv','edu','clothes'].forEach(function(k){Object.keys(b[k]).forEach(function(q){if(s[k][q]===undefined)s[k][q]=b[k][q]})})}]
   ];
   /* brings stored data up to date in place; returns what the player should be told about */
   function migrateSave(d){var b=blank(),out={lostJob:null};MIGRATIONS.forEach(function(m){m[1](d.S,b,out)});return out}
   /* puts a migrated save into play: state, where you are, the daily log and the screen */
   function hydrate(d,out){
-    if(d.loc==='pawn')d.loc='thrift';if(d.view==='pawn')d.view='thrift';  /* the Pawn Shop is now the Thrift Store's pawn counter */
+    if(d.loc==='pawn')d.loc='thrift';if(d.view==='pawn')d.view='thrift';  /* the Pawn Shop is now the Second-Hand Shop's pawn counter */
     PREV=null;S=d.S;applyPayVar();loc=LOCS.some(function(l){return l[0]===d.loc})?d.loc:S.home;view=d.view&&panels[d.view]?d.view:null;last=d.last||null;
     if(!S.logs)S.logs=[];
     $('log').innerHTML='';

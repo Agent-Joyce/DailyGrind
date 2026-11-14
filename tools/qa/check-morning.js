@@ -36,13 +36,13 @@ const out=outDir(process.argv[2],'dg-morning-check');
       const act=[];let cur='';m.rows.forEach(r=>{if(r.head)cur=r.text;else if(cur==='Do today')act.push(r.cls)});
       const sev={bad:0,warn:1,rem:2,good:3};ok(act.every((c,i)=>i===0||sev[act[i-1]]<=sev[c]),'Do today is not sorted by urgency: '+act.join());QA.closeMorning()});
     test('a job tip is announced once, not again as a reminder',()=>{
-      QA.seed(4);QA.newGame('single');quiet();T.ev("S.day=5;S.tip={until:7};S.notes.push({l:'good',t:'🤝 👩 Maya tipped you off about an opening: your next job interview is easier (until the end of day 7).'})");
+      QA.seed(4);QA.newGame('single');quiet();T.ev("S.day=5;S.tip={until:7};S.notes.push({l:'good',t:'🤝 👩 Linh tipped you off about an opening: your next job interview is easier (until the end of day 7).'})");
       QA.night();const m=QA.morning();ok(m,'no morning');ok(lines(m).filter(r=>/job tip|tipped you off/i.test(r.text)).length===1,'the tip appears '+lines(m).filter(r=>/job tip|tipped you off/i.test(r.text)).length+' times');QA.closeMorning()});
     test('one rival’s news is one line with one Congratulate button',()=>{
-      QA.seed(6);QA.newGame('rivals','easy',31);quiet();T.ev("S.day=5;rivalDay=function(){return 0};rivalNight=function(){};var r=S.rivals[0];S.notes=[];rivalNote(r,2,'was promoted to Chef at the Restaurant.');rivalNote(r,2,'earned a Food & Beverage Degree.');rivalNote(S.rivals[1],1,'fell ill with a cold.')");
+      QA.seed(6);QA.newGame('rivals','easy',31);quiet();T.ev("S.day=5;rivalDay=function(){return 0};rivalNight=function(){};var r=S.rivals[0];S.notes=[];rivalNote(r,2,'was promoted to Chef at the Family Restaurant.');rivalNote(r,2,'earned a Food & Beverage Degree.');rivalNote(S.rivals[1],1,'fell ill with a cold.')");
       T.ev("var keep=S.notes.slice();var rt=rivalTick;rivalTick=function(){S.notes.push.apply(S.notes,keep);keep=[]};S.notes=[]");
-      QA.night();const m=QA.morning();ok(m,'no morning');const maya=lines(m).filter(r=>/Maya/.test(r.all)&&/promoted|Degree/.test(r.all));
-      ok(maya.length===1,'Maya has '+maya.length+' lines');ok(/promoted/.test(maya[0].all)&&/Degree/.test(maya[0].all),'the grouped line lost an item');ok(maya[0].cg.length===1&&maya[0].cg[0]===0,'Congratulate buttons: '+JSON.stringify(maya[0].cg));
+      QA.night();const m=QA.morning();ok(m,'no morning');const maya=lines(m).filter(r=>/Linh/.test(r.all)&&/promoted|Degree/.test(r.all));
+      ok(maya.length===1,'Linh has '+maya.length+' lines');ok(/promoted/.test(maya[0].all)&&/Degree/.test(maya[0].all),'the grouped line lost an item');ok(maya[0].cg.length===1&&maya[0].cg[0]===0,'Congratulate buttons: '+JSON.stringify(maya[0].cg));
       const b=document.querySelector('#mnList [data-cg="0"]');b.click();ok(T.ev("S.cong&&S.cong[0]"),'Congratulate did nothing')});
     test('the morning pop-up fits the screen and scrolls inside its card',()=>{const card=document.querySelector('#morning .card'),r=card.getBoundingClientRect();
       ok(r.left>=0&&r.right<=window.innerWidth+1,'the card is wider than the screen');ok(card.scrollWidth<=card.clientWidth+1,'sideways scrolling inside the card');

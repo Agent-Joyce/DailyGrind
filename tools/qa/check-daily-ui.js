@@ -19,7 +19,7 @@ ok(document.getElementById('dailyProgress').textContent.includes('Eaten today')&
 ok(document.getElementById('appTime').className==='time-warning','under eight hours is orange');s.ap=179;T.render();ok(document.getElementById('appTime').className==='time-urgent','under three hours is red');
 const dark=+document.documentElement.style.getPropertyValue('--day-shade');s.ap=1440;T.render();ok(dark>0&&+document.documentElement.style.getPropertyValue('--day-shade')===0,'dimming resets in the morning');
 ok(document.querySelector('.tile[data-loc=apt] .tags').textContent.includes('You are here')&&document.querySelector('.tile[data-loc=apt] .tags').textContent.includes('apartment'),'current location and apartment markers');ok(document.querySelector('.tile[data-loc=fast]').classList.contains('work-closed'),'closed workplace marker');
-s.home='bung';T.render();ok(document.querySelector('.tile[data-loc=bung] .tags').textContent.includes('bungalow'),'bungalow marker');s.home='apt';
+s.home='bung';T.render();ok(document.querySelector('.tile[data-loc=bung] .tags').textContent.includes('villa'),'villa marker');s.home='apt';
 document.querySelector('[data-dg-screen=life]').click();ok(document.querySelectorAll('.education-paths>span').length===Object.keys(T.TRACKS).length&&document.querySelector('.education-paths').textContent.includes('Certificate'),'highest completed qualification for every pathway');
 ok(!document.querySelector('#lifeShortcuts [data-dg-device]'),'phone removed from Life shortcuts');
 T.loc='fast';T.view=null;T.render();ok(document.getElementById('hudEnd').getAttribute('aria-label')==='Bunk outside'&&document.getElementById('hudEnd').classList.contains('warn'),'outside sleep label');

@@ -1,6 +1,6 @@
   /* ==================================================================
      2. WORLD TABLES
-     Values derived from CONFIG plus the fixed tables: ranks, difficulty, icons, buildings, homes, items, jobs, School pathways, careers.
+     Values derived from CONFIG plus the fixed tables: ranks, difficulty, icons, buildings, homes, items, jobs, City College pathways, careers.
      ================================================================== */
   var MAX_AP=CONFIG.time.dayMinutes, RENT_EVERY=CONFIG.time.rentEveryDays, GOAL=0, WALK=CONFIG.time.walkMinutes;
   /* time: S.ap is minutes left today. Activity costs are written in 'units'; M() turns units into minutes using CONFIG.time. */
@@ -86,9 +86,9 @@
   var money=function(n){return (n<0?'-$':'$')+Math.abs(n).toLocaleString()};
   var clamp=function(n){return Math.max(0,Math.min(100,n))};
 
-  var LOCS=[['jobs','💼','Employment Office'],['school','🎓','School'],['bank','🏦','Bank'],['market','🛒','Supermarket'],
-    ['fast','🍔','Fast Food'],['resto','🍝','Restaurant'],['elec','💻','Electronics Store'],['mall','🛍️','Clothes Mall'],
-    ['apt','🏢','Low-End Apartment'],['hosp','🏥','Hospital'],['factory','🏭','Factory'],['thrift','👕','Thrift Store'],['comm','🤝','Community Centre'],['bung','🏡','Classy Bungalow'],['gym','🏋️','Gym'],['park','🌳','Park']];
+  var LOCS=[['jobs','💼','Employment Office'],['school','🎓','City College'],['bank','🏦','Bank'],['market','🛒','Fresh Market'],
+    ['fast','🍔','Golden Bun'],['resto','🍝','Family Restaurant'],['elec','💻','Electronics Store'],['mall','🛍️','Clothes Mall'],
+    ['apt','🏢','Budget Apartments'],['hosp','🏥','Hospital'],['factory','🏭','Factory'],['thrift','👕','Second-Hand Shop'],['comm','🤝','Community Centre'],['bung','🏡','Garden Villa'],['gym','🏋️','Gym'],['park','🌳','Park']];
   /* Shared illustrated map geometry (3:2 aspect); travel uses these same positions. */
   var TOWN_SPRITES={"jobs":"@img(town-jobs.webp)","school":"@img(town-school.webp)","bank":"@img(town-bank.webp)","market":"@img(town-market.webp)","fast":"@img(town-fast.webp)","resto":"@img(town-resto.webp)","elec":"@img(town-elec.webp)","mall":"@img(town-mall.webp)","apt":"@img(town-apt.webp)","hosp":"@img(town-hosp.webp)","factory":"@img(town-factory.webp)","thrift":"@img(town-thrift.webp)","comm":"@img(town-comm.webp)","bung":"@img(town-bung.webp)","gym":"@img(town-gym.webp)","park":"@img(town-park.webp)"};
   var TOWN_LAYOUT={jobs:[23,24],school:[53,15],bank:[72,27],market:[88,46],fast:[35,42],resto:[60,48],elec:[18,65],mall:[50,68],apt:[14,44],hosp:[80,67],factory:[87,85],thrift:[33,83],comm:[39,23],bung:[70,88],gym:[62,70],park:[11,87]};
@@ -116,8 +116,8 @@
     if(S.chips)li.push('<li><span>🥔</span>Chips × '+S.chips+'</li>');
     if((S.tickets||[]).length)li.push('<li><span>🎟️</span>Lottery ticket × '+S.tickets.length+'</li>');
     var pw=Object.keys(S.pawned||{}).filter(function(k){return ITEMS[k]});
-    return (li.length?'<ul>'+li.join('')+'</ul>':'<p style="margin:0">Nothing yet. Buy things at the Electronics Store or Thrift Store, and meals at the Supermarket.</p>')+
-      (pw.length?'<p>Pawned at the Thrift Store: '+pw.map(function(k){return ITEMS[k].n}).join(', ')+'.</p>':'')+(S.homeless&&ks.length?'<p>Your things are in storage until you have a home again.</p>':'');
+    return (li.length?'<ul>'+li.join('')+'</ul>':'<p style="margin:0">Nothing yet. Buy things at the Electronics Store or Second-Hand Shop, and meals at the Fresh Market.</p>')+
+      (pw.length?'<p>Pawned at the Second-Hand Shop: '+pw.map(function(k){return ITEMS[k].n}).join(', ')+'.</p>':'')+(S.homeless&&ks.length?'<p>Your things are in storage until you have a home again.</p>':'');
   }
   function comfortMult(){return 1+(CONFIG.sleep.comfortBonus||0)*comfortItems().length}
   function restRate(){return HOUSE[S.home].rate*comfortMult()*(CONFIG.sleep.rateX||1)}  /* energy % per hour of rest */
@@ -200,28 +200,28 @@
       {r:'Project Lead',pay:400,t:'eng',l:4,dress:'suit'},
       {r:'Principal Engineer',pay:480,t:'eng',l:5,dress:'suit'},
       {r:'Chief Engineer',pay:700,t:'eng',l:5,dress:'suit'}]},
-    fast:{n:'Fast Food',ranks:[
+    fast:{n:'Golden Bun',ranks:[
       {r:'Crew Member',pay:70,t:'',l:0},
       {r:'Shift Supervisor',pay:110,t:'fnb',l:1,dress:'casual'},
       {r:'Store Manager',pay:180,t:'fnb',l:2,dress:'casual'}]},
-    resto:{n:'Restaurant',ranks:[
+    resto:{n:'Family Restaurant',ranks:[
       {r:'Dishwasher',pay:85,t:'',l:0,dress:'casual'},
       {r:'Waiter',pay:105,t:'cus',l:1,dress:'casual'},
       {r:'Chef',pay:180,t:'fnb',l:2,dress:'casual'},
       {r:'Master Chef',pay:300,t:'fnb',l:3,dress:'suit'}]},
-    market:{n:'Supermarket',ranks:[
+    market:{n:'Fresh Market',ranks:[
       {r:'Shelf Stacker',pay:75,t:'',l:0},
       {r:'Cashier',pay:85,t:'',l:0,dress:'casual'},
       {r:'Store Supervisor',pay:140,t:'cus',l:1,dress:'casual'},
-      {r:'Supermarket Manager',pay:230,t:'sal',l:2,dress:'suit'}]},
+      {r:'Fresh Market Manager',pay:230,t:'sal',l:2,dress:'suit'}]},
     mall:{n:'Clothes Mall',ranks:[
       {r:'Sales Clerk',pay:95,t:'',l:0,dress:'casual'},
       {r:'Visual Merchandiser',pay:150,t:'cus',l:1,dress:'casual'},
       {r:'Boutique Manager',pay:250,t:'sal',l:2,dress:'suit'}]},
-    thrift:{n:'Thrift Store',ranks:[
+    thrift:{n:'Second-Hand Shop',ranks:[
       {r:'Shop Assistant',pay:70,t:'',l:0},
-      {r:'Thrift Store Manager',pay:140,t:'cus',l:1,dress:'casual'}]},
-    pawn:{n:'Thrift Store (Pawn counter)',b:'thrift',ranks:[
+      {r:'Second-Hand Shop Manager',pay:140,t:'cus',l:1,dress:'casual'}]},
+    pawn:{n:'Second-Hand Shop (Pawn counter)',b:'thrift',ranks:[
       {r:'Counter Assistant',pay:80,t:'',l:0,dress:'casual'},
       {r:'Appraiser',pay:170,t:'fin',l:1,dress:'casual'},
       {r:'Pawnbroker',pay:290,t:'fin',l:2,dress:'suit'}]},
@@ -254,23 +254,23 @@
     /* second job line at each workplace (more openings) */
     factory2:{n:'Factory (Logistics)',b:'factory',ranks:[
       {r:'Forklift Driver',pay:110,t:'',l:0,dress:'casual'}]},
-    fast2:{n:'Fast Food (Kitchen)',b:'fast',ranks:[
+    fast2:{n:'Golden Bun (Kitchen)',b:'fast',ranks:[
       {r:'Kitchen Hand',pay:65,t:'',l:0},
       {r:'Delivery Rider',pay:80,t:'',l:0,dress:'casual'},
       {r:'Grill Cook',pay:120,t:'fnb',l:1,dress:'casual'},
       {r:'Area Manager',pay:220,t:'fnb',l:2,dress:'smart'}]},
     resto2:{n:'Restaurant (Management)',b:'resto',ranks:[
       {r:'Restaurant Manager',pay:310,t:'fnb',l:3,dress:'suit'}]},
-    market2:{n:'Supermarket (Delivery & Promotions)',b:'market',ranks:[
+    market2:{n:'Fresh Market (Delivery & Promotions)',b:'market',ranks:[
       {r:'Delivery Driver',pay:90,t:'',l:0,dress:'casual'},
       {r:'Product Promoter',pay:190,t:'sal',l:2,dress:'smart'}]},
     mall2:{n:'Clothes Mall (Promotions)',b:'mall',ranks:[
       {r:'Sales Promoter',pay:150,t:'cus',l:1,dress:'smart'},
       {r:'Mall Manager',pay:320,t:'sal',l:2,dress:'suit'}]},
-    thrift2:{n:'Thrift Store (Workshop)',b:'thrift',ranks:[
+    thrift2:{n:'Second-Hand Shop (Workshop)',b:'thrift',ranks:[
       {r:'Sorter',pay:65,t:'',l:0},
       {r:'Repair Technician',pay:140,t:'eng',l:1,dress:'casual'}]},
-    pawn2:{n:'Thrift Store (Back office)',b:'thrift',ranks:[
+    pawn2:{n:'Second-Hand Shop (Back office)',b:'thrift',ranks:[
       {r:'Security Guard',pay:95,t:'',l:0,dress:'casual'},
       {r:'Bookkeeper',pay:150,t:'fin',l:1,dress:'smart'}]},
     hosp2:{n:'Hospital (Support)',b:'hosp',ranks:[
@@ -298,7 +298,7 @@
       {r:'EV Charging Technician',pay:175,t:'green',l:1,dress:'casual'},
       {r:'Energy Systems Engineer',pay:260,t:'green',l:2,dress:'smart'},
       {r:'Sustainability Manager',pay:340,t:'green',l:2,dress:'suit'}]},
-    market3:{n:'Supermarket (Fulfilment)',b:'market',ranks:[
+    market3:{n:'Fresh Market (Fulfilment)',b:'market',ranks:[
       {r:'Warehouse Picker',pay:95,t:'',l:0,dress:'casual'},
       {r:'Dispatch Coordinator',pay:155,t:'logi',l:1,dress:'casual'},
       {r:'Supply Chain Planner',pay:230,t:'logi',l:2,dress:'smart'},
@@ -401,14 +401,14 @@
   function expShort(c,rk){return needsExp(rk)&&shiftsAt(c)<CONFIG.jobs.experience.shifts}
   function expTxt(c){var n=CONFIG.jobs.experience.shifts;return n+' shift'+(n===1?'':'s')+' worked at the '+NAME[bOf(c)]+' (you have '+Math.min(n,shiftsAt(c))+')'}
   function bOf(c){return CAREERS[c].b||c}
-  function sleepLabel(){return 'Sleep at '+(S.home==='bung'?'Bungalow':'Apartment')}
+  function sleepLabel(){return 'Sleep at '+(S.home==='bung'?'Villa':'Apartment')}
   function myJob(){var c=Object.keys(S.career)[0];return c&&CAREERS[c]&&cur(c)?{c:c,b:bOf(c),rk:cur(c)}:null}
   function shutLeft(b){return (S.shut&&S.shut[b])||0}
   function shutSum(){var n=0;Object.keys(S.shut||{}).forEach(function(b){n+=S.shut[b]||0});return n}
   /* each morning about a quarter of roles have no openings; an industry-specific storyline freezes or opens up its roles */
   function rollOpenings(){S.closed={};Object.keys(CAREERS).forEach(function(c){CAREERS[c].ranks.forEach(function(rk,i){
     var x=indRole(c,i),p=x&&x.open?0:x&&x.freeze?CONFIG.industry.freezeShare:0.25;if(Math.random()<p)S.closed[c+'_'+i]=1})})}
-  /* meals out and Supermarket meals, built from CONFIG.food */
+  /* meals out and Fresh Market meals, built from CONFIG.food */
   var FD=CONFIG.food,TREATS={},GROC={};
   [['snack','burger'],['meal','combo'],['dine','dinner'],['feast','tasting'],['cafe','cafe']].forEach(function(p){var c=FD[p[1]];
     TREATS[p[0]]={n:c.name,ap:c.units,min:c.minutes||0,cost:c.cost,en:c.energy,hap:c.happiness,junk:c.junk?1:0,good:c.healthy||0,hp:c.health,snack:c.snack?1:0}});
@@ -446,8 +446,8 @@
   function hasDress(req){var c=S.clothes;return req==='suit'?c.suit>0:req==='smart'?(c.smart>0||c.suit>0):(c.casual>0||c.smart>0||c.suit>0)}
   /* no clothes at all: no shift away from home until you buy some */
   function naked(){return !hasDress('casual')}
-  var NAKED='You have no clothes to wear. Buy some at the Clothes Mall, or used ones at the Thrift Store, before you can work a shift.';
-  /* used Smart Casual or Business Suit from the Thrift Store (CONFIG.clothes.used) */
+  var NAKED='You have no clothes to wear. Buy some at the Clothes Mall, or used ones at the Second-Hand Shop, before you can work a shift.';
+  /* used Smart Casual or Business Suit from the Second-Hand Shop (CONFIG.clothes.used) */
   function usedPrice(k){return G(WEAR[k].p*CONFIG.clothes.used.priceShare)}
   function buyUsed(k){
     var U=CONFIG.clothes.used,pr=usedPrice(k);

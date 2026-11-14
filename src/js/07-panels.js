@@ -14,8 +14,8 @@
   function house(h){
     var H=HOUSE[h], cur=S.home===h&&!S.homeless, f=homeFee(h), SL=CONFIG.sleep, rr0=restRate();
     var about=(h==='apt'?'Cheap and cramped.':'Quiet street, big garden, soft bed.')+' Rent is '+money(H.rent)+' '+everyDays(RENT_EVERY)+'. Resting here restores '+H.rate+'% energy an hour and a night’s sleep '+(CONFIG.sleep.perHour[h]||H.rate)+'% for each hour left in the day, '+pctTxt(CONFIG.sleep.comfortBonus)+' more for each comfort item at home (TV, console, fridge, coffee machine, computer)'+(H.hap?'. The bed adds +'+H.hap+' happiness each night you sleep here':'')+'.'+(h==='bung'?' The agent only lets to people with a steady job.':'');
-    var bz=burglaryRisk(h),head=psec('about',(cur?'🏠 Your home':'🏠 To rent'),chip('cash',(cur&&flatmate()?money(myRent())+' (your half)':money(H.rent))+' / '+RENT_EVERY+' days')+chip('energy',H.rate+'%/h rest')+chip('energy',(CONFIG.sleep.perHour[h]||H.rate)+'%/h sleep')+(bz?chip('','🔓 Break-ins: '+pctTxt(bz)+' a night','warn'):''),about+(bz?' Break-ins happen here: on about '+pctTxt(bz)+' of nights a burglar may take some of the cash you keep at home (never your bank savings). The Bungalow is secure.':''));
-    if(!cur)return boxed((S.homeless?'<p class="bad arow-n">🏚️ <b>No home.</b> You lost the '+NAME[S.home]+' in the housing bubble. Apply here to move back in.</p>':'')+head+arow(S.homeless?'Apply to rent':'Move in',(f?chip('cash',money(f)+(h==='apt'&&S.homeless?' deposit':'')):chip('','No move-in fee'))+(S.homeless?chip('time',hm(CONFIG.housing.applyMinutes)):''),btn('home',h,S.homeless?'Apply':'Move in',0,h==='bung'&&!!S.flat),h==='bung'&&S.flat?'Ask your housemate to move out at your apartment first. Bungalows have one occupant.':''));
+    var bz=burglaryRisk(h),head=psec('about',(cur?'🏠 Your home':'🏠 To rent'),chip('cash',(cur&&flatmate()?money(myRent())+' (your half)':money(H.rent))+' / '+RENT_EVERY+' days')+chip('energy',H.rate+'%/h rest')+chip('energy',(CONFIG.sleep.perHour[h]||H.rate)+'%/h sleep')+(bz?chip('','🔓 Break-ins: '+pctTxt(bz)+' a night','warn'):''),about+(bz?' Break-ins happen here: on about '+pctTxt(bz)+' of nights a burglar may take some of the cash you keep at home (never your bank savings). The Villa is secure.':''));
+    if(!cur)return boxed((S.homeless?'<p class="bad arow-n">🏚️ <b>No home.</b> You lost the '+NAME[S.home]+' in the housing bubble. Apply here to move back in.</p>':'')+head+arow(S.homeless?'Apply to rent':'Move in',(f?chip('cash',money(f)+(h==='apt'&&S.homeless?' deposit':'')):chip('','No move-in fee'))+(S.homeless?chip('time',hm(CONFIG.housing.applyMinutes)):''),btn('home',h,S.homeless?'Apply':'Move in',0,h==='bung'&&!!S.flat),h==='bung'&&S.flat?'Ask your housemate to move out at your apartment first. Villas have one occupant.':''));
     var F=S.food,cnt=function(t,test){return F.filter(function(p){return p.t===t&&(!test||test(p))}).length};
     var nb=cnt('basic',function(p){return !p.sp}),np=cnt('prem',function(p){return !p.sp}),nw=cnt('cook',function(p){return !p.sp&&!p.cold}),ncold=cnt('cook',function(p){return !p.sp&&p.cold});
     var nbs=cnt('basic',function(p){return p.sp}),nps=cnt('prem',function(p){return p.sp}),ncs=cnt('cook',function(p){return p.sp}),nsp=nbs+nps+ncs,full=homeFull(),mw=owns('microwave');
@@ -25,22 +25,22 @@
     if(S.ill)t+='<p class="bad arow-n">🤒 <b>'+cap(illShort(ILL[S.ill.k]))+': no work.</b> '+illCure()+'</p>';
     /* --- your things: the shelves only when there is something on them --- */
     var empty=!Object.keys(S.items).some(function(k){return S.items[k]})&&!F.length&&!S.chips&&!(S.tickets||[]).length;
-    t+=psec('things','📦 Your things',empty?chip('','Nothing yet'):'','Buy belongings at the Electronics Store or Thrift Store, and meals at the Supermarket. A fridge holds '+FD.fridgeSpace+' meals and keeps them '+FD.keepDaysFridge+' days; food outside it keeps '+FD.keepDaysRoom+' days, counting the day you buy or cook it. Food that runs out turns spoiled.');
+    t+=psec('things','📦 Your things',empty?chip('','Nothing yet'):'','Buy belongings at the Electronics Store or Second-Hand Shop, and meals at the Fresh Market. A fridge holds '+FD.fridgeSpace+' meals and keeps them '+FD.keepDaysFridge+' days; food outside it keeps '+FD.keepDaysRoom+' days, counting the day you buy or cook it. Food that runs out turns spoiled.');
     if(!empty)t+=room();
     /* --- computer: the Bank and Jobs apps at home --- */
     var pcOk=owns('computer');
-    t+=psec('pc','💻 Computer',pcOk?chip('','Online at home','ok'):chip('',S.items.computer||S.items.computerold?'Broken':'No computer','warn'),'With a working computer at home you can use the Bank app (savings, investments, offers) and the Jobs app (the Employment Office job board, apply online) without walking. Buy one at the Electronics Store, or a used one at the Thrift Store.')+
+    t+=psec('pc','💻 Computer',pcOk?chip('','Online at home','ok'):chip('',S.items.computer||S.items.computerold?'Broken':'No computer','warn'),'With a working computer at home you can use the Bank app (savings, investments, offers) and the Jobs app (the Employment Office job board, apply online) without walking. Buy one at the Electronics Store, or a used one at the Second-Hand Shop.')+
       arow('Bank and job hunt from home',pcOk?chip('','🏦 Savings & investments')+chip('','💼 Job board')+chip('','No walk','ok'):chip('','Needs a working computer','warn'),btn('pc','','Open',0,!pcOk));
     /* --- kitchen --- */
     var mealCh=function(g,hap){return chip('time',hm(FD.eatMinutes))+chip('energy','+'+g.en+'%')+chip('happy',sg(hap))+chip('health',sg(g.hp))};
     t+=psec('kitchen','🍳 Kitchen',chip('',S.fed?'✓ Eaten today':'No meal yet',S.fed?'ok':'warn')+chip('','Meals '+S.homeMeals+'/'+FD.homeMealsPerDay),
-      'A meal at home counts as today’s meal; you can eat up to '+FD.homeMealsPerDay+' a day here. Meal prep must be cooked: the first meal takes '+hm(FD.cookFirst)+', each extra one '+hm(FD.cookExtra)+' more, and cooking costs '+Math.abs(FD.cookEnergy)+'% energy for every 3 hours. A cooked meal that spent a night in the fridge is cold: reheat it with a microwave ('+hm(FD.reheatMinutes)+') or eat it cold ('+sg(FD.coldHappiness)+' happiness). Spoiled food costs '+Math.abs(FD.spoiledHealth)+' health and has a '+pctTxt(FD.spoiledPoisonChance)+' chance of food poisoning. Chips are junk food: '+CONFIG.illness.junkMeals+' junk servings in 5 days raise your illness risk.');
-    if(!(nb+np+nw+ncold+nsp+(S.chips||0)))t+='<p class="arow-n">No food at home. Buy meals at the Supermarket.</p>';
+      'A meal at home counts as today’s meal; you can eat up to '+FD.homeMealsPerDay+' a day here. Meal kit must be cooked: the first meal takes '+hm(FD.cookFirst)+', each extra one '+hm(FD.cookExtra)+' more, and cooking costs '+Math.abs(FD.cookEnergy)+'% energy for every 3 hours. A cooked meal that spent a night in the fridge is cold: reheat it with a microwave ('+hm(FD.reheatMinutes)+') or eat it cold ('+sg(FD.coldHappiness)+' happiness). Spoiled food costs '+Math.abs(FD.spoiledHealth)+' health and has a '+pctTxt(FD.spoiledPoisonChance)+' chance of food poisoning. Chips are junk food: '+CONFIG.illness.junkMeals+' junk servings in 5 days raise your illness risk.');
+    if(!(nb+np+nw+ncold+nsp+(S.chips||0)))t+='<p class="arow-n">No food at home. Buy meals at the Fresh Market.</p>';
     if(nw)t+=arow('🍲 Cooked meal × '+nw,mealCh(GROC.basic,GROC.basic.hap),btn('eatc','','Eat 1',0,full));
     if(ncold)t+=arow('🥶 Cold meal × '+ncold,mealCh(GROC.basic,GROC.basic.hap+FD.coldHappiness),'<span class="btnrow">'+(mw?btn('eatc','heat','Reheat & eat 1 · '+hm(FD.eatMinutes+FD.reheatMinutes),0,full):'')+btn('eatc','cold','Eat 1 cold',mw?1:0,full)+'</span>');
     if(np)t+=arow('🍱 Ready-to-eat × '+np,mealCh(GROC.prem,GROC.prem.hap),btn('eatp','','Eat 1',0,full));
     if(nb+nbs){var cb='';for(var n=1;n<=nb+nbs;n++)cb+=btn('cook',String(n),'Cook '+n+' · '+hm(cookMin(n)));  /* every Cook button looks the same */
-      t+=arow('🥕 Meal prep × '+nb+(nbs?' + '+nbs+' spoiled':''),chip('energy',sg(cookEn(cookMin(1)))+'% per 3h')+chip('','Keeps '+FD.keepDaysRoom+'d · '+FD.keepDaysFridge+'d in fridge'),'<span class="btnrow">'+cb+'</span>')}
+      t+=arow('🥕 Meal kit × '+nb+(nbs?' + '+nbs+' spoiled':''),chip('energy',sg(cookEn(cookMin(1)))+'% per 3h')+chip('','Keeps '+FD.keepDaysRoom+'d · '+FD.keepDaysFridge+'d in fridge'),'<span class="btnrow">'+cb+'</span>')}
     if(S.chips)t+=arow('🥔 Chips × '+S.chips,chip('time',hm(FD.chips.eatMinutes))+chip('happy',sg(FD.chips.happiness))+chip('energy',sg(FD.chips.energy)+'%')+chip('health',sg(FD.chips.health))+chip('','Junk','warn'),btn('eatchips','','Eat 1'));
     if(ncs+nps){var spb='';if(ncs)spb+=btn('eatc','sp','Eat 1 cooked',1,full);if(nps)spb+=btn('eatp','sp','Eat 1 ready meal',1,full);
       t+=arow('<span class="bad">🤢 Spoiled food × '+(ncs+nps)+'</span>',chip('health',sg(FD.spoiledHealth),'warn')+chip('',pctTxt(FD.spoiledPoisonChance)+' poisoning','warn'),'<span class="btnrow">'+spb+'</span>')}
@@ -73,14 +73,14 @@
     return boxed(t);
   }
 
-  /* the Thrift Store's own cards: used clothes and second-hand gadgets */
+  /* the Second-Hand Shop's own cards: used clothes and second-hand gadgets */
   function thriftSec(){var U=CONFIG.clothes.used;
     return psec('used','👕 Used clothes',chip('time',hm(M(CONFIG.clothes.buyUnits))+' to buy'),'Second-hand Smart Casual and Business Suits at '+pctTxt(U.priceShare)+' of the Clothes Mall price. They meet the same dress codes as new ones but only last '+U.days+' days (new ones last '+WEAR.smart.w+' to '+WEAR.suit.w+'), and a used suit gives no happiness lift. Buying replaces the outfit of the same kind you already have. No haggling here.')+
         ['smart','suit'].map(function(k){var have=S.clothes[k];
           return arow('Used '+WEAR[k].n+' · '+money(usedPrice(k)),chip('','Lasts '+U.days+' days')+(have?chip('','Yours: '+have+'d left',have<=1?'warn':'ok'):''),btn('ubuy',k,'Buy'))}).join('')+
       psec('shop','🛍️ Second-hand',chip('time',hm(M(2))+' to buy'),'Cheaper than new. Second-hand devices break down more often; repair them at the Electronics Store.'+shopInfo('thrift'))+shop('thrift');
   }
-  /* the Thrift Store's Sell & pawn counter (the old Pawn Shop): Sal pays for your things and keeps your tickets */
+  /* the Second-Hand Shop's Sell & pawn counter (the old Pawn Shop): Sal pays for your things and keeps your tickets */
   function pawnSec(){
     var h='',n=0,t='';
     Object.keys(ITEMS).forEach(function(k){

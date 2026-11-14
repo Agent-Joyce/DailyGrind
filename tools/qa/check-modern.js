@@ -18,8 +18,8 @@ const out=outDir(process.argv[2],'dg-modern-check');
     function click(act,arg){const b=document.querySelector('#shop [data-act="'+act+'"]'+(arg!=null?'[data-arg="'+arg+'"]':''));ok(b,'no '+act+' button');ok(!b.disabled,act+' button is disabled');b.click();const g=document.getElementById('pvGo');if(g&&g.offsetParent)g.click()}
     const NEW={data:'Data & AI',media:'Creative Media',green:'Green Energy',logi:'Logistics'};
     const ROLES=['Data Analyst','Data Scientist','UX Designer','Machine Learning Lead','Fraud Analyst','Content Assistant','Social Media Manager','Brand Director','Solar Installer','EV Charging Technician','Energy Systems Engineer','Sustainability Manager','Warehouse Picker','Dispatch Coordinator','Supply Chain Planner','Regional Logistics Manager'];
-    test('the School lists the four new pathways and each one enrols and finishes a module by clicks',()=>{
-      Object.keys(NEW).forEach(t=>{start();go('school');ok(document.getElementById('shop').textContent.indexOf(NEW[t])>=0,NEW[t]+' is not on the School screen');
+    test('the City College lists the four new pathways and each one enrols and finishes a module by clicks',()=>{
+      Object.keys(NEW).forEach(t=>{start();go('school');ok(document.getElementById('shop').textContent.indexOf(NEW[t])>=0,NEW[t]+' is not on the City College screen');
         const cash=T.ev("S.cash");click('enrol',t);ok(T.ev("S.cash")<cash,'enrolling in '+NEW[t]+' cost nothing');ok(T.ev("inProgress('"+t+"')"),NEW[t]+' did not start');
         for(let i=0;i<6&&T.ev("S.edu."+t)<1;i++){T.ev("S.ap=1440;S.energy=100;S.studyMin=0;S.workMin=0");go('school');click('class',t)}
         ok(T.ev("S.edu."+t)===1,'the first '+NEW[t]+' module did not complete')})});
@@ -56,7 +56,7 @@ const out=outDir(process.argv[2],'dg-modern-check');
     test('a rival whose workplace is closed does delivery runs',()=>{start('rivals');T.ev("var r=S.rivals[0];r.job={c:'fast',i:0};r.shut=2;r.cash=500;r.clothes.casual=5;r.energy=90;var c0=r.cash;rivalDay(r);window.__g=[r.gigs||0,r.cash,c0]");ok(window.__g[0]>0,'no gig runs recorded')});
     test('the phone lists both new apps and the screens fit',()=>{start();T.ev("loc=S.home;appFrom='phone';view='phone';render()");const t=document.getElementById('shop').textContent;ok(/Gigs app/.test(t)&&/Creator app/.test(t),'apps missing from the phone');
       ['gigsapp','creatorapp'].forEach(k=>{app(k);ok(document.documentElement.scrollWidth<=window.innerWidth+1,k+' scrolls sideways');ok(!/NaN|undefined/.test(document.getElementById('shop').textContent),k+' shows NaN or undefined')});
-      go('school');ok(document.documentElement.scrollWidth<=window.innerWidth+1,'the School scrolls sideways')});
+      go('school');ok(document.documentElement.scrollWidth<=window.innerWidth+1,'the City College scrolls sideways')});
     return done});
    if(errors.length)throw Error('Script errors: '+errors.join(' | '));
    console.log(viewport.width+'px: '+res.length+' modern-content checks passed');res.forEach(x=>console.log('PASS '+x));total+=res.length;

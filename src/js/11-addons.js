@@ -224,7 +224,7 @@
     }
     function pvTitle(b){
       var ns=b.closest('.nowstudy,.ns-row'),nb=ns&&ns.querySelector('.ns-h b,.arow-t b');
-      if(nb)return 'Go to class: '+nb.textContent.trim();  /* the Study button at School */
+      if(nb)return 'Go to class: '+nb.textContent.trim();  /* the Study button at City College */
       var o=b.closest('.opt'),at=o&&o.querySelector('.arow-t');if(at)return at.textContent.replace(/\s+/g,' ').trim();  /* compact rows: just the name, not the chips and note */
       var o=b.closest('.opt'),t=o&&o.firstElementChild?o.firstElementChild.cloneNode(true):null;
       if(t){[].forEach.call(t.querySelectorAll('small'),function(x){x.parentNode.removeChild(x)});var s=t.textContent.replace(/\s+/g,' ').trim();if(s)return s}
@@ -468,7 +468,7 @@
     var j=myJob(),steps=[
       {k:'job',done:!!j,go:'jobs',t:'Get a job',far:'Walk to the Employment Office and pick a job you can apply for.',near:'Press Apply on a job without a lock. An interview takes an hour.',sel:'#shop [data-act="apply"]:not([disabled])'},
       {k:'work',done:!!S.flags.worked,go:j?j.b:'jobs',t:'Work your first shift',far:'Go to '+(j?'the '+NAME[j.b]:'your workplace')+' and work a shift.',near:'Press the Work button. A shift earns money and uses time and energy.',sel:'#shop [data-act="work"]:not([disabled])'},
-      {k:'eat',done:!!S.fed||S.day>1,go:'fast',t:'Eat something',far:'You need one meal a day. Fast Food is the quickest; the Supermarket is cheaper if you cook at home.',near:'Order a meal here. Each row shows what it does to your energy, happiness and health.',sel:'#shop [data-act="treat"]:not([disabled])'},
+      {k:'eat',done:!!S.fed||S.day>1,go:'fast',t:'Eat something',far:'You need one meal a day. Golden Bun is the quickest; the Fresh Market is cheaper if you cook at home.',near:'Order a meal here. Each row shows what it does to your energy, happiness and health.',sel:'#shop [data-act="treat"]:not([disabled])'},
       {k:'sleep',done:S.day>1,go:S.homeless?'':S.home,t:'Go home and sleep',far:'Head home when you are done for the day. Sleeping at home gives the most rest.',near:'Press Sleep at the top to end the day. Whatever time is left becomes rest.',sel:'#hudEnd'}
     ];
     /* a step stays done once done, so losing the job overnight does not send the guide back to step 1 */
@@ -556,7 +556,7 @@
     var currentWork=myJob();var el=$('townDirectory'),key=loc+'|'+S.day+'|'+S.ap+'|'+S.home+'|'+S.homeless;
     if(el.dataset.key===key)return;el.dataset.key=key;
     var rows=LOCS.slice().sort(function(a,b){return dist(loc,a[0])-dist(loc,b[0])});
-    el.innerHTML='<div class="town-directory-top"><h2>Where to next?</h2><span class="sub">16 places</span></div><input id="destinationSearch" class="destination-search" type="search" placeholder="Find a place…" aria-label="Find a destination" value="'+modernEsc(modernSearch)+'"><div class="destinations">'+rows.map(function(l){var here=l[0]===loc,closed=shutLeft(l[0]);return '<button type="button" class="destination'+(here?' current':'')+'" data-dg-go="'+l[0]+'"><span aria-hidden="true">'+modernIcon({jobs:'work',school:'study',bank:'bank',fast:'food',resto:'food',hosp:'health',apt:'life',bung:'life',park:'tree',gym:'gym',elec:'device',comm:'rivals'}[l[0]]||'shop')+'</span><div><b>'+modernEsc(l[2])+'</b><small>'+(here?'You are here':hm(dist(loc,l[0])*WALK)+' walk')+(currentWork&&currentWork.b===l[0]?' · Your work':'')+(l[0]===S.home&&!S.homeless?' · Your '+(S.home==='bung'?'bungalow':'apartment'):'')+(closed?' · Closed':'')+'</small></div></button>'}).join('')+'</div><p id="destinationEmpty" class="dest-empty" hidden>No places match your search.</p>';modernFilterPlaces();
+    el.innerHTML='<div class="town-directory-top"><h2>Where to next?</h2><span class="sub">16 places</span></div><input id="destinationSearch" class="destination-search" type="search" placeholder="Find a place…" aria-label="Find a destination" value="'+modernEsc(modernSearch)+'"><div class="destinations">'+rows.map(function(l){var here=l[0]===loc,closed=shutLeft(l[0]);return '<button type="button" class="destination'+(here?' current':'')+'" data-dg-go="'+l[0]+'"><span aria-hidden="true">'+modernIcon({jobs:'work',school:'study',bank:'bank',fast:'food',resto:'food',hosp:'health',apt:'life',bung:'life',park:'tree',gym:'gym',elec:'device',comm:'rivals'}[l[0]]||'shop')+'</span><div><b>'+modernEsc(l[2])+'</b><small>'+(here?'You are here':hm(dist(loc,l[0])*WALK)+' walk')+(currentWork&&currentWork.b===l[0]?' · Your work':'')+(l[0]===S.home&&!S.homeless?' · Your '+(S.home==='bung'?'villa':'apartment'):'')+(closed?' · Closed':'')+'</small></div></button>'}).join('')+'</div><p id="destinationEmpty" class="dest-empty" hidden>No places match your search.</p>';modernFilterPlaces();
   }
   function modernAmountLimit(c){
     var id=c.dataset.bankId,withdraw=modernBankMode==='withdraw',v=id==='amt'?S.bank:S.inv[id.replace('amt_','')].v;
@@ -645,7 +645,7 @@
     var j=myJob(),work=j&&j.b,closed=work&&shutLeft(work)>0;
     document.querySelectorAll('.tile').forEach(function(t){var k=t.dataset.loc,you=k===loc,home=k===S.home&&!S.homeless,job=k===work;
       t.classList.toggle('workplace',job);t.classList.toggle('work-closed',job&&closed);t.classList.toggle('homeplace',home);
-      var tags=(you?'<span class="tag you">📍 You are here</span>':'')+(job?'<span class="tag '+(closed?'closed':'job')+'">'+(closed?'🔒 Work closed':'💼 Your work')+'</span>':'')+(home?'<span class="tag home">🏠 Your '+(k==='bung'?'bungalow':'apartment')+'</span>':'');t.querySelector('.tags').innerHTML=tags;
+      var tags=(you?'<span class="tag you">📍 You are here</span>':'')+(job?'<span class="tag '+(closed?'closed':'job')+'">'+(closed?'🔒 Work closed':'💼 Your work')+'</span>':'')+(home?'<span class="tag home">🏠 Your '+(k==='bung'?'villa':'apartment')+'</span>':'');t.querySelector('.tags').innerHTML=tags;
       var tl=document.querySelector('.town-label[data-for="'+k+'"]');if(tl){tl.classList.toggle('here',you);tl.classList.toggle('tagged',you||job||home)}
       t.setAttribute('aria-label',NAME[k]+(you?', you are here':'')+(home?', your home':'')+(job?', your workplace'+(closed?', closed today':''):'')+', '+hm(dist(loc,k)*WALK)+' walk');
     });
@@ -688,7 +688,7 @@
     var texts={today:['Make today count.','A little progress goes a long way.'],life:['Your life, in balance.','Money, home and everything you are building.'],rivals:S.mode==='rivals'?['Your cousins.','Your mother has opinions about how each of them is doing.']:['Meet your cousins.','Play with AI rivals and they will turn up. Same twenty-four hours for everyone.']},txt=texts[modernScreen]||texts.today;
     $('screenHeading').innerHTML='<span class="eyebrow">'+(modernScreen==='rivals'?'The family comparison':modernScreen==='life'?'Your progress':'Day '+S.day+' · '+modernEsc(Df().n))+'</span><h1>'+txt[0]+'</h1><p>'+txt[1]+'</p>';
     var j=myJob(),track=Object.keys(TRACKS).find(function(t){return inProgress(t)}),device=handheld()||pcHere();
-    $('todayQuick').innerHTML=modernQuick('💼',j?'Go to work':'Find your first job',j?j.rk.r+' · '+money(payInfo().v)+'/shift':'Explore the Employment Office','data-dg-go="'+(j?j.b:'jobs')+'"',false,true)+modernQuick('📚',track?'Continue your course':'Build your skills',track?TRACKS[track].n:'Explore learning pathways','data-dg-go="school"')+modernQuick('🍽',S.fed?'Plan your next meal':'Time for a meal',S.fed?'You have eaten today':'Visit Fast Food or the Supermarket','data-dg-go="fast"')+modernQuick('🏠','Head home',S.homeless?'Find somewhere to live':'Rest, cook and recharge','data-dg-go="'+S.home+'"');
+    $('todayQuick').innerHTML=modernQuick('💼',j?'Go to work':'Find your first job',j?j.rk.r+' · '+money(payInfo().v)+'/shift':'Explore the Employment Office','data-dg-go="'+(j?j.b:'jobs')+'"',false,true)+modernQuick('📚',track?'Continue your course':'Build your skills',track?TRACKS[track].n:'Explore learning pathways','data-dg-go="school"')+modernQuick('🍽',S.fed?'Plan your next meal':'Time for a meal',S.fed?'You have eaten today':'Visit Golden Bun or the Fresh Market','data-dg-go="fast"')+modernQuick('🏠','Head home',S.homeless?'Find somewhere to live':'Rest, cook and recharge','data-dg-go="'+S.home+'"');
     var goal=Math.max(0,nextGoal()-worth());$('todayFocus').innerHTML='<div><b>'+(goal?money(goal)+' to your next rank':'You reached the top rank')+'</b><span>'+(S.fed?'Meal sorted. Make time to recharge.':'Remember to eat before ending your day.')+'</span></div><span aria-hidden="true">↗</span>';
     $('lifeShortcuts').innerHTML=modernQuick('🏦','Manage your money',device?'Savings and investments':'Visit the Bank in town',device?'data-dg-app="bankapp"':'data-dg-go="bank"');
     $('rivalIntro').textContent=S.mode==='rivals'?'Open a profile to see personality, relationships and remembered favours.':'You are playing a solo game. Start a game with AI rivals to meet your cousins.';

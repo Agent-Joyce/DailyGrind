@@ -2,7 +2,7 @@
    Needs the test hook (window.__G) injected before the line "  if(!load())fresh();".
 
    What it does, at whatever width the page is shown (run it once at desktop width and once at phone width):
-     1. Sets up a game with something to press everywhere: cash, savings, a job at the Fast Food, a School course in
+     1. Sets up a game with something to press everywhere: cash, savings, a job at the Golden Bun, a City College course in
         progress, belongings, food and chips at home, all outfits.
      2. Every building: walks there with a real tile click, checks the panel's layout, then presses every enabled button
         in it, one at a time, putting the game back exactly as it was before each press.
@@ -188,7 +188,7 @@
   /* ---------- situations the main game does not have: each starts from the main game, adds one situation,
     checks that its buttons are there, and presses everything in that building ---------- */
   /* three rivals for the rival-game situations (the fields the screens read) */
-  function uiRivals(){return [['Maya','👩','easy',-30],['Leo','🧔','medium',20],['Sam','🧑','expert',55]].map(function(x,i){return {personality:['generous','vindictive','reckless'][i],favours:{trust:i?1:-2,owed:i?1:0,entries:[{day:3,key:i?'soup':'refused'}]},name:x[0],ic:x[1],diff:x[2],rel:x[3],cash:300,bank:0,etf:0,job:null,y:300,
+  function uiRivals(){return [['Linh','👩','easy',-30],['Arjun','🧔','medium',20],['Jae','🧑','expert',55]].map(function(x,i){return {personality:['generous','vindictive','reckless'][i],favours:{trust:i?1:-2,owed:i?1:0,entries:[{day:3,key:i?'soup':'refused'}]},name:x[0],ic:x[1],diff:x[2],rel:x[3],cash:300,bank:0,etf:0,job:null,y:300,
     log:[],out:null,edu:{},clothes:{casual:3,smart:0,suit:0},shiftsAt:{},hist:[],know:10,happy:60,health:80,energy:70,tier:-1,rankDay:{},bestJob:null,life:{h:[60],l:[80],crisis:0,unwell:0,best:null},places:['fast']}})}
   var SITUATIONS=[
     {name:'sick with a cold or the flu, with medical bills',bld:'hosp',need:['treat_ill','paydebt','checkup','insure'],
@@ -201,7 +201,7 @@
       mod:function(S){S.arrears={bal:120,days:4,fresh:0}}},
     {name:'a loan to repay',bld:'bank',need:['repay','repayall'],
       mod:function(S){S.loan={borrowed:500,principal:500,interest:12,taken:S.day-1,tenure:5,rate:4,due:S.day+4}  /* taken yesterday: the game blocks repaying on the day you borrow */}},
-    {name:'a pawned TV to redeem (Thrift Store pawn counter)',bld:'thrift',need:['redeem','sell'],
+    {name:'a pawned TV to redeem (Second-Hand Shop pawn counter)',bld:'thrift',need:['redeem','sell'],
       mod:function(S){S.items.tv=0;delete S.broken.tv;S.pawned.tv={w:S.day,g:75}}},
     {name:'an industry-specific storyline at its peak (Employment Office outlook and board chips)',bld:'jobs',need:['apply'],
       mod:function(S){S.ind={id:'robots',day:3,len:5,sw:0.4,ph:2,last:'',used:[]};S.indNext=0}},
@@ -222,8 +222,8 @@
     {name:'a friend’s job tip (Community Centre), at the Employment Office',bld:'jobs',need:['apply'],
       mod:function(S){S.tip={until:S.day+2};S.career={}}},
     {name:'a rival took the last opening (job race), at the Employment Office',bld:'jobs',need:['apply'],
-      mod:function(S){S.mode='rivals';S.career={};var k=null;Object.keys(G.CAREERS).some(function(c){if(G.CAREERS[c].ranks[0]&&!(G.CAREERS[c].ranks[0].q||[]).length){k=c+'_0';return true}});if(k){S.closed[k]=1;S.raced={};S.raced[k]='Maya'}}},
-    {name:'meeting a rival (encounter card), at the Fast Food',bld:'fast',need:['meet'],
+      mod:function(S){S.mode='rivals';S.career={};var k=null;Object.keys(G.CAREERS).some(function(c){if(G.CAREERS[c].ranks[0]&&!(G.CAREERS[c].ranks[0].q||[]).length){k=c+'_0';return true}});if(k){S.closed[k]=1;S.raced={};S.raced[k]='Linh'}}},
+    {name:'meeting a rival (encounter card), at the Golden Bun',bld:'fast',need:['meet'],
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.enc={day:S.day,i:1,loc:'fast',done:false}}},
     {name:'calling rivals from home',bld:'apt',need:['rcall'],
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.home='apt';S.homeless=0;S.rcalled=null}},
@@ -241,7 +241,7 @@
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.home='apt';S.homeless=0;S.flat={i:2,since:S.day,hd:S.day,here:false,did:null}}},
     {name:'no flatmate yet (invite rows)',bld:'apt',need:['flat'],
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.home='apt';S.homeless=0;S.flat=null}},
-    {name:'a study group at School (a friendly rival on the same pathway)',bld:'school',need:['class'],
+    {name:'a study group at City College (a friendly rival on the same pathway)',bld:'school',need:['class'],
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();var t=Object.keys(S.enr||{})[0]||'sal';S.rivals[1].study={t:t,lv:0,h:0};S.rivals[1].rel=20}},
     {name:'a friend to make a pact with (Messages)',bld:'msgsapp',need:['pact'],
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.townMood='competitive';S.rep=60;S.pact=null;S.rpacts=[];S.asked=null;S.cash=Math.max(S.cash,400)}},
@@ -384,7 +384,7 @@
     else{if(!/Computer/.test(p.textContent))note('BAD TEXT','Belongings list','does not list the computer the player owns');layout('Belongings list',p.closest('.grp')||p);await shot('status')}
     /* a game with AI rivals: the town leaderboard on the status page, one rival's story opened */
     restore(null);G.S.mode='rivals';
-    G.S.rivals=[['Maya','👩','easy',640,null],['Leo','🧔','medium',2380,{c:'hosp',i:1}],['Sam','🧑','expert',5120,{c:'bank',i:2}]].map(function(x,i){return {personality:['generous','ambitious','vindictive'][i],favours:{trust:1,owed:1,entries:[{day:3,key:'soup'}]},name:x[0],ic:x[1],diff:x[2],cash:x[3],bank:0,etf:0,job:x[4],y:x[3]-90,
+    G.S.rivals=[['Linh','👩','easy',640,null],['Arjun','🧔','medium',2380,{c:'hosp',i:1}],['Jae','🧑','expert',5120,{c:'bank',i:2}]].map(function(x,i){return {personality:['generous','ambitious','vindictive'][i],favours:{trust:1,owed:1,entries:[{day:3,key:'soup'}]},name:x[0],ic:x[1],diff:x[2],cash:x[3],bank:0,etf:0,job:x[4],y:x[3]-90,
       log:['Day 3: got a new job.','Day 2: reached Comfortable.'],out:x[2]==='easy'?{day:9,why:'gave up'}:null,edu:{},clothes:{},shiftsAt:{},hist:[],know:12,happy:60,health:80,energy:70,tier:0,rankDay:{0:4},bestJob:x[4]?{r:'Nurse',pay:210}:null,life:{h:[60,55],l:[80,82],crisis:1,best:null}}});
     G.view=null;G.render();var rb=$('rivBox');
     if(!rb||rb.hidden)note('MISSING','status page (rivals)','no town leaderboard in a game with AI rivals');

@@ -201,7 +201,7 @@
     log('You passed the interview! You are now a '+rk.r+' at the '+who+' ('+money(Math.round(rolePay(c,i)*payIdx()))+' a shift). Work your shifts at the '+NAME[CAREERS[c].b||c]+'.','good');
     done();
   }
-  /* 'a burger' -> 'Burger', 'the chef’s tasting menu' -> 'Chef’s tasting menu' */
+  /* 'a chicken bun' -> 'Chicken bun', 'the chef’s banquet set' -> 'Chef’s banquet set' */
   function cap(n){n=String(n).replace(/^(a|an|the) /i,'');return n.charAt(0).toUpperCase()+n.slice(1)}
   function treatHp(t){return t.junk?(t.hp!=null?t.hp:FD.junkHealth):0}
   function treatShown(t){return treatHp(t)+(t.good||0)}  /* health the meal really adds: junk penalty or healthy-meal bonus */
@@ -249,7 +249,7 @@
     S.les[t]=0;S.edu[t]++;S.know=clamp(S.know+2+q.i);
     log('Module complete: "'+T.m[n]+'" ('+T.n+' '+T.lv[q.i]+', module '+q.k+' of '+q.of+(vitTxt(v0)?'; last lesson and module: '+vitTxt(v0):'')+').','good');
     if(lvl(t)>lv0){var ED=CONFIG.education,lvN=T.lv[lvl(t)-1],v1=vitSnap();S.know=clamp(S.know+((ED.certKnowledge||{})[lvN]||0));S.happy=clamp(S.happy+((ED.certHappiness||{})[lvN]||0));var bon=vitTxt(v1);
-      log('Qualification earned: '+T.n+' '+T.lv[lvl(t)-1]+'!'+(bon?' Bonus: '+bon+'.':'')+(S.edu[t]<tot?' To continue to the '+T.lv[lvl(t)]+', enrol again at School (tuition '+money(qualFee(t,S.edu[t]))+').':' You have finished the whole pathway.'),'good');S.cert={t:t,l:lvl(t),d:S.day,mods:T.L[lvl(t)-1].slice()};if(bon)forceToast.push({txt:'🎓 '+T.lv[lvl(t)-1]+' bonus: '+bon,cls:'good'});addWin('🎓 '+T.n+' '+T.lv[lvl(t)-1]);snd('win')}
+      log('Qualification earned: '+T.n+' '+T.lv[lvl(t)-1]+'!'+(bon?' Bonus: '+bon+'.':'')+(S.edu[t]<tot?' To continue to the '+T.lv[lvl(t)]+', enrol again at City College (tuition '+money(qualFee(t,S.edu[t]))+').':' You have finished the whole pathway.'),'good');S.cert={t:t,l:lvl(t),d:S.day,mods:T.L[lvl(t)-1].slice()};if(bon)forceToast.push({txt:'🎓 '+T.lv[lvl(t)-1]+' bonus: '+bon,cls:'good'});addWin('🎓 '+T.n+' '+T.lv[lvl(t)-1]);snd('win')}
     done();
   }
   /* treatment: nothing to pay now. Usually you are warded all of tomorrow; the bill is charged the morning after release. */
@@ -314,7 +314,7 @@
     if(a.bal<=0)S.arrears=null;done();
   }
   function nap(){
-    if(!atHome())return refuse(S.homeless?'You have no home to rest in. Apply at the Apartment or the Bungalow.':'You can only rest at home.');
+    if(!atHome())return refuse(S.homeless?'You have no home to rest in. Apply at the Apartment or the Villa.':'You can only rest at home.');
     var SL=CONFIG.sleep;
     if(!spendMin(SL.napMinutes,0))return;
     var g=Math.round(SL.napMinutes/60*restRate()),v0=vitSnap();S.energy=clamp(S.energy+g);S.happy=clamp(S.happy+SL.napHappiness);
@@ -336,16 +336,16 @@
     if(!spend(FD.buyUnits,cost))return;
     for(var i=0;i<FD.bundleSize;i++)S.food.push({t:k,u:0});
     fridgeSync();
-    log('You bought a '+FD.bundleSize+'-day bundle of '+(k==='prem'?'ready-to-eat meals':'meal prep')+' for '+money(cost)+'.'+fridgeNote()+(k==='basic'?' Cook it at home.':''));
+    log('You bought a '+FD.bundleSize+'-day bundle of '+(k==='prem'?'ready-to-eat rice boxes':'meal kit')+' for '+money(cost)+'.'+fridgeNote()+(k==='basic'?' Cook it at home.':''));
     done();
   }
   /* junk food: cheering but unhealthy. 3+ servings in 5 days raises illness risk */
   function junkCount(){return (S.junk||[]).filter(function(d){return S.day-d<5}).length}
   function eatJunk(){if(!S.junk)S.junk=[];S.junk.push(S.day);S.junk=S.junk.filter(function(d){return S.day-d<5})}
-  /* chips: bought at the Supermarket (CONFIG.food.chips limits), eaten at home; vitals change only when eaten */
+  /* chips: bought at the Fresh Market (CONFIG.food.chips limits), eaten at home; vitals change only when eaten */
   function chips(){
     var CH=FD.chips;
-    if((S.chipsDay||0)>=CH.maxPerDay)return refuse('The Supermarket sells '+numWord(CH.maxPerDay)+' bags of chips a day per customer. Come back tomorrow.');
+    if((S.chipsDay||0)>=CH.maxPerDay)return refuse('The Fresh Market sells '+numWord(CH.maxPerDay)+' bags of chips a day per customer. Come back tomorrow.');
     if((S.chips||0)>=CH.maxStored)return refuse('You already have '+CH.maxStored+' bags of chips at home. Eat some first.');
     if(!spend(CH.units,G(CH.cost)))return;
     S.chips=(S.chips||0)+1;S.chipsDay=(S.chipsDay||0)+1;
@@ -355,7 +355,7 @@
   function eatChips(){
     var CH=FD.chips;
     if(!atHome())return refuse(S.homeless?'Your chips are in storage until you have a home again.':'Your chips are at home.');
-    if(!S.chips)return refuse('You have no chips at home. Buy some at the Supermarket.');
+    if(!S.chips)return refuse('You have no chips at home. Buy some at the Fresh Market.');
     if(!spendMin(CH.eatMinutes,0))return;
     S.chips--;
     var v0=vitSnap();S.happy=clamp(S.happy+CH.happiness);S.energy=clamp(S.energy+CH.energy);S.health=clamp(S.health+CH.health);eatJunk();
@@ -384,10 +384,10 @@
     if(!spend(FD.buyUnits,cost))return;
     S.food.push({t:k,u:0});
     fridgeSync();
-    log('You bought '+(k==='prem'?'a ready-to-eat meal':'meal prep')+' for '+money(cost)+'.'+fridgeNote()+(k==='basic'?' Cook it at home.':''));
+    log('You bought '+(k==='prem'?'a ready-to-eat rice box':'meal kit')+' for '+money(cost)+'.'+fridgeNote()+(k==='basic'?' Cook it at home.':''));
     done();
   }
-  /* meal prep must be cooked (choose how many meals to cook); ready-to-eat meals need no cooking.
+  /* meal kit must be cooked (choose how many meals to cook); ready-to-eat rice boxes need no cooking.
     Food keeps longer in a fridge (CONFIG.food.keepDays*). */
   function cookMin(n){return FD.cookFirst+(n-1)*FD.cookExtra}
   /* vital costs that scale with time (CONFIG): cooking, lessons, self-study, walking and work */
@@ -433,9 +433,9 @@
   }
   function cook(n){
     n=Math.max(1,Math.floor(+n||1));
-    /* fresh meal prep is cooked first (fewest days left first); spoiled prep makes spoiled meals */
+    /* fresh meal kit is cooked first (fewest days left first); spoiled prep makes spoiled meals */
     var preps=S.food.filter(function(p){return p.t==='basic'}).sort(function(a,b){return ((a.sp?1:0)-(b.sp?1:0))||(foodLeft(a)-foodLeft(b))});
-    if(!preps.length)return refuse(S.food.some(function(p){return p.t==='prem'})?'Ready-to-eat meals need no cooking: just eat them. Buy meal prep to cook.':'You have no meal prep. Buy some at the Supermarket first.');
+    if(!preps.length)return refuse(S.food.some(function(p){return p.t==='prem'})?'Ready-to-eat rice boxes need no cooking: just eat them. Buy meal kit to cook.':'You have no meal kit. Buy some at the Fresh Market first.');
     n=Math.min(n,preps.length);
     if(!spendMin(cookMin(n),0))return;
     var v0=vitSnap();S.energy=clamp(S.energy+cookEn(cookMin(n)));
@@ -446,7 +446,7 @@
     for(var k=0;k<good;k++)S.food.push({t:'cook',u:0});
     for(var k2=0;k2<bad;k2++)S.food.push({t:'cook',u:FD.keepDaysFridge,sp:1});
     fridgeSync();S.flags.cooked=1;
-    if(bad)log('You cooked '+bad+' portion'+(bad>1?'s':'')+' of spoiled meal prep anyway. '+(bad>1?'They are':'It is')+' still spoiled: eating '+(bad>1?'them':'it')+' will cost you '+Math.abs(FD.spoiledHealth)+' health a meal.','warn');
+    if(bad)log('You cooked '+bad+' portion'+(bad>1?'s':'')+' of spoiled meal kit anyway. '+(bad>1?'They are':'It is')+' still spoiled: eating '+(bad>1?'them':'it')+' will cost you '+Math.abs(FD.spoiledHealth)+' health a meal.','warn');
     if(good)log('You cooked '+good+' meal'+(good>1?'s':'')+' in '+hm(cookMin(n))+vitPar(v0)+'. Eat '+(good>1?'them':'it')+' now, or keep '+(good>1?'them':'it')+' at home.'+fridgeNote()+(owns('fridge')?' Meals from the fridge are cold the next day: '+(owns('microwave')?'your microwave reheats one in '+hm(FD.reheatMinutes)+'.':'without a microwave you eat them cold ('+sg(FD.coldHappiness)+' happiness).'):''),'good');
     done();
   }
@@ -456,7 +456,7 @@
   function eatCooked(arg){
     var sp=arg==='sp',cold=arg==='heat'||arg==='cold';
     var i=sp?spoiledIdx('cook'):nextFood('cook',function(p){return !!p.cold===cold});
-    if(i<0)return refuse(sp?'You have no spoiled meals.':cold?'You have no cold cooked meals.':S.food.some(function(p){return p.t==='cook'&&!p.sp})?'Your cooked meals are cold from the fridge. Reheat one or eat it cold.':S.food.some(function(p){return p.t==='cook'})?'Your only cooked meals have gone off. Eat them anyway, or throw them out.':'You have no cooked meals. Cook some meal prep first.');
+    if(i<0)return refuse(sp?'You have no spoiled meals.':cold?'You have no cold cooked meals.':S.food.some(function(p){return p.t==='cook'&&!p.sp})?'Your cooked meals are cold from the fridge. Reheat one or eat it cold.':S.food.some(function(p){return p.t==='cook'})?'Your only cooked meals have gone off. Eat them anyway, or throw them out.':'You have no cooked meals. Cook some meal kit first.');
     if(arg==='heat'&&!owns('microwave'))return refuse('You need a working microwave to reheat food. Eat it cold, or buy one at the Electronics Store.');
     if(homeFull())return refuse('You are full: '+numWord(FD.homeMealsPerDay)+' home meal'+(FD.homeMealsPerDay===1?'':'s')+' a day is plenty.');
     if(!spendMin(FD.eatMinutes+(arg==='heat'?FD.reheatMinutes:0),0))return;
@@ -468,13 +468,13 @@
   }
   function eatPrem(arg){
     var sp=arg==='sp',i=sp?spoiledIdx('prem'):nextFood('prem');
-    if(i<0)return refuse(sp?'You have no spoiled ready-to-eat meals.':'You have no fresh ready-to-eat meals. Buy some at the Supermarket.');
+    if(i<0)return refuse(sp?'You have no spoiled ready-to-eat rice boxes.':'You have no fresh ready-to-eat rice boxes. Buy some at the Fresh Market.');
     if(homeFull())return refuse('You are full: '+numWord(FD.homeMealsPerDay)+' home meal'+(FD.homeMealsPerDay===1?'':'s')+' a day is plenty.');
     if(!spendMin(FD.eatMinutes,0))return;
     var p=S.food.splice(i,1)[0],g=GROC.prem;S.homeMeals++;fridgeSync();
-    if(p.sp)return (eatSpoiled('a ready-to-eat meal',g),done());
+    if(p.sp)return (eatSpoiled('a ready-to-eat rice box',g),done());
     var v0=vitSnap();S.energy=clamp(S.energy+g.en);S.happy=clamp(S.happy+g.hap);S.fed=true;S.flags.ate=1;eatGood(g.hp);
-    log('You ate a ready-to-eat meal at home, no cooking needed'+vitPar(v0)+'.','good');
+    log('You ate a ready-to-eat rice box at home, no cooking needed'+vitPar(v0)+'.','good');
     done();
   }
   /* knowledge per self-study session: the best device you own (CONFIG.selfStudy.gain) */
@@ -708,14 +708,14 @@
   function bubbleHit(){
     if(S.homeless||Math.random()>=CONFIG.housing.loseChance)return '';
     var h=S.home;S.homeless=1;
-    log('The housing bubble burst and you lost your home: the landlord sold the '+NAME[h]+'. Your things are kept in storage. Apply again at the Apartment or the Bungalow.','bad');
-    S.notes.push({l:'bad',t:'🏚️ You lost your home in the housing bubble. Until you apply again (Apartment '+money(homeFee('apt'))+' deposit, Bungalow '+money(homeFee('bung'))+', '+hm(CONFIG.housing.applyMinutes)+'), no rent is due, you sleep outside, and you cannot rest, cook or use your fridge and gadgets.'});
+    log('The housing bubble burst and you lost your home: the landlord sold the '+NAME[h]+'. Your things are kept in storage. Apply again at the Apartment or the Villa.','bad');
+    S.notes.push({l:'bad',t:'🏚️ You lost your home in the housing bubble. Until you apply again (Apartment '+money(homeFee('apt'))+' deposit, Villa '+money(homeFee('bung'))+', '+hm(CONFIG.housing.applyMinutes)+'), no rent is due, you sleep outside, and you cannot rest, cook or use your fridge and gadgets.'});
     return 'You lost the '+NAME[h];
   }
   function moveHome(h){
     var f=homeFee(h),re=S.homeless;
     if(h!==S.home&&!loyaltyAllows())return;
-    if(h==='bung'&&S.flat)return refuse('Ask your apartment housemate to move out first. Bungalows allow one occupant.');
+    if(h==='bung'&&S.flat)return refuse('Ask your apartment housemate to move out first. Villas allow one occupant.');
     if(h==='bung'&&!Object.keys(S.career).length)return refuse('The estate agent wants proof of steady work. Get a job through the Employment Office first.');
     if(S.cash<f)return refuse((re?'Applying costs ':'Moving in costs ')+money(f)+'. You have '+money(S.cash)+'.');
     if(re){if(!spendMin(CONFIG.housing.applyMinutes,f))return}else S.cash-=f;
