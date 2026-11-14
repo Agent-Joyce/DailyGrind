@@ -179,6 +179,11 @@
     var a=b.dataset.act,g=b.dataset.arg;
     toastAll=true;try{shopAct(a,g,b)}finally{toastAll=false}
   });
+  /* the Rivals tab's move buttons (rivalMoves) run the same ACTIONS as the panels do */
+  $('rivList').addEventListener('click',function(e){
+    if(S.over||S.pending)return;var b=e.target.closest('[data-rmove]');if(!b||b.disabled)return;
+    var p=b.dataset.rmove.split('|');toastAll=true;try{shopAct(p[0],p.slice(1).join('|'),b)}finally{toastAll=false}
+  });
   /* ---------- ACTIONS: every panel button (data-act) in one table ----------
     run(arg, button)  what the button does (arg is its data-arg)
     kind              its colour in the day bar under the clock (work, study, gym, rest, food, health, fun; anything else is "errand")

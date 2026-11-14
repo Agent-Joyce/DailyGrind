@@ -314,6 +314,7 @@ details.more>summary{display:inline-flex;align-items:center;gap:6px;list-style:n
 .thing span{font-size:1.5rem;line-height:1}.thing small{font-size:.64rem;line-height:1.1;margin-top:2px}.thing.brk{border-color:var(--red);opacity:.65}
 
 .reunion .auntie{list-style:none;margin:6px 0 10px;padding:0}.reunion .auntie li{margin:5px 0;line-height:1.35}
+.rmoves{margin:8px 0 2px;text-align:left}.rmoves .rm-h{font-weight:700;margin:2px 0 4px}.rmoves .arow{margin:4px 0}
 /* end-of-day pop-up */
 #evwrap{position:absolute;inset:0;z-index:3000;display:flex;align-items:center;justify-content:center;padding:16px;background:radial-gradient(circle at 50% 50%,rgba(10,18,24,.45),rgba(10,18,24,.78));backdrop-filter:blur(3px);animation:evfade .35s ease-out}
 #evwrap[hidden]{display:none}
@@ -5604,6 +5605,38 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
     return S.rivals.map(function(r,i){if(r.out)return '';var c=calledToday(i);
       return arow((home?'':'<input type="checkbox" data-rsel="'+i+'" aria-label="Add '+r.name+' to a group call"'+(c?' disabled':'')+'> ')+r.ic+' Call '+r.name,chip('time',hm(mins))+chip('happy',sg(hap))+argueChip()+chip('',relLabel(r.rel||0))+(c?chip('','✓ Called today','ok'):''),btn('rcall',String(i),'Call',home?1:0,!!c),'','chance')}).join('');  /* a call can always end in an argument */
   }
+  /* every move you can make on one rival, for the Rivals tab (ROADMAP Package C item 15). The same chips as the phone apps;
+     a button either runs the action (data-rmove: call, bet) or opens the right app or place (data-dg-app, data-dg-go). Draws only; rolls no dice. */
+  function rivalMoves(i){
+    var r=S.rivals&&S.rivals[i];if(!r||r.out||S.over)return '';
+    var X=CONFIG.rivals.social,M=MX(),L=M.loan,B=M.bet,P=PX().pact,F=TG().flat,rel=r.rel||0,dev=handheld()||pcHere(),h='';
+    var mv=function(act,arg,label,off,alt){return '<button type="button" class="btn'+(alt===0?'':' alt')+'" data-rmove="'+act+'|'+arg+'"'+(off?' disabled':'')+'>'+label+'</button>'};
+    var go=function(loc,label){return '<button type="button" class="btn alt" data-dg-go="'+loc+'">'+label+'</button>'};
+    var app=function(k,label,off){return '<button type="button" class="btn alt" data-dg-app="'+k+'"'+(dev&&!off?'':' disabled')+'>'+label+'</button>'};
+    var nodev=dev?'':'Needs a phone or tablet, or your computer at home. ';
+    var e=S.enc,here=e&&e.day===S.day&&!e.done&&e.i===i,pl=(r.places||[]).map(function(k){return NAME[k]}).filter(Boolean);
+    h+=arow('🗣️ Chat or say hello',chip('time',hm(X.chat.minutes))+chip('','Relationship '+sg(X.chat.rel))+(rel<0?argueChip():'')+(here?chip('','Here today','ok'):''),here?go(e.loc,'Walk to '+NAME[e.loc]):'',
+      here?r.name+' is at the '+NAME[e.loc]+' today. Walk there to talk.':'You can talk when you meet by chance'+(pl.length?'; lately they have been at: '+pl.join(', '):' at the places they use')+'.',rel<0?'chance':'');
+    var c=calledToday(i);
+    h+=arow('📞 Call '+r.name,chip('time',hm(X.call.phoneMinutes))+chip('happy',sg(X.call.phoneHappiness))+argueChip()+chip('',relLabel(rel))+(c?chip('','✓ Called today','ok'):''),mv('rcall',i,'Call',!!c||!handheld()),handheld()?'':'Needs a phone or tablet. At home you can call from the 📞 Calls screen.','chance');
+    var unread=(S.msgs||[]).filter(function(m){return m.i===i&&!m.st});
+    if(unread.length)h+=arow('💬 '+r.name+' has messaged you',chip('','Answer by day '+unread[0].until,'warn'),app('msgsapp','Open Messages'),nodev);
+    var owe=rloan(i,'out'),asked=askedToday('l'+i);
+    h+=arow('💬 Ask '+r.name+' for a loan',chip('time',hm(M.replyMinutes))+chip('',relLabel(rel))+(rel<L.borrowFrom?chip('','Needs a closer friendship','warn'):'')+(owe?chip('','You still owe them','warn'):asked?chip('','✓ Asked today','ok'):''),app('msgsapp','Open Messages',!!owe||!!asked),nodev+'Pick an amount in the Messages app.');
+    var st=betStake(i);
+    h+=arow('🎲 Offer '+r.name+' a bet',chip('time',hm(M.replyMinutes))+chip('cash','−'+money(st)+' stake')+(rbet(i)?chip('','Bet running','ok'):askedToday('b'+i)?chip('','✓ Offered today','ok'):''),mv('rbet',i,'Offer bet',!!rbet(i)||!!askedToday('b'+i)||!canStake(S,st,B)||!canStake(r,st,B)));
+    if(ally()===r)h+=arow('🤝 Allied with '+r.name+' until day '+S.pact.until,chip('','Renew, end or change terms in Messages'),app('msgsapp','Open Messages'),nodev);
+    else if(!S.pact&&!hasAlly(i)){
+      if(rel>=P.need)h+=arow('🤝 Propose a pact to '+r.name,chip('time',hm(P.minutes))+chip('',relLabel(rel))+chip('','Chance '+pctTxt(pactChance(r)))+(askedToday('p'+i)?chip('','✓ Asked today','ok'):''),app('msgsapp','Open Messages',!!askedToday('p'+i)),nodev+'Plain, with a pot or a specific pact: choose in Messages.');
+      else h+=arow('🤝 Pacts',chip('','Needs relationship '+P.need+'+ (now '+sg(rel)+')','warn'),'','Build the friendship with chats and calls first.');
+    }
+    if(flatmate()===r)h+=arow('🏠 Your flatmate',chip('',S.flat.hd===S.day?(S.flat.here?'Home today':'Out today'):'Rent split in half'),go(S.home,'Go home'),'Cook, hang out, do chores or clear the air from your home.');
+    else if(!flatmate()&&!S.homeless&&S.home==='apt'&&r.home!=='bung'&&rel>=F.flatFrom)h+=arow('🏠 Invite '+r.name+' to move in',chip('time',hm(F.inviteMinutes))+chip('','Rent '+money(Math.ceil(HOUSE[S.home].rent/2))+' each'),go(S.home,'Go home'),'You can only invite someone from your own home.');
+    if(canSabotage()){var Z=SBX(),left=Z.maxPerGame-(S.sabUsed||0);
+      h+=arow('🗯️ Schemes against '+r.name,chip('','Schemes left '+Math.max(0,left)+'/'+Z.maxPerGame,left>0?'':'warn')+chip('','Risk of being caught','warn'),app('msgsapp','Online',left<=0)+go('comm','Town talk'),nodev+'Online in Messages, or in person at the '+NAME.comm+'.','chance')}
+    if((S.incidents||[]).some(function(x){return !x.done}))h+=arow('🔎 Who did it?',chip('','Unsolved setbacks','warn'),go('comm','Go to the '+NAME.comm),'Accuse someone at the '+NAME.comm+'.','chance');
+    return '<div class="rmoves"><div class="rm-h">What you can do now</div>'+h+'</div>';
+  }
   /* congratulate a rival on this morning's news: 15 minutes, once a morning per rival */
   function congratulate(i){
     var r=S.rivals&&S.rivals[i],X=CONFIG.rivals.social.congratulate;if(!r||S.over)return;
@@ -8002,13 +8035,15 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
     var P=lifeScore();
     var reminder=$('wealthChallengeReminder');if(!reminder){reminder=document.createElement('p');reminder.id='wealthChallengeReminder';box.appendChild(reminder)}reminder.innerHTML=wealthReminder().replace(/<\/?li>/g,'');reminder.hidden=!reminder.innerHTML;
     $('rivSub').textContent='· Life Score · day '+Math.min(S.day,maxDays())+' of '+maxDays()+' · '+moodX().icon+' '+moodX().name;
+    var wasOpen=[].map.call($('rivList').querySelectorAll(':scope>details'),function(d){return d.open});  /* a button inside a card repaints the list: keep the cards open */
     $('rivList').innerHTML=P.map(function(p){
       var job=p.me?(myJob()?myJob().rk.r:'No job'):p.out?'Out: '+p.out.why+' (day '+p.out.day+')':(rivalJob(p.r)?rivalJob(p.r).rk.r:'No job');
       var d=p.r?rivalWorth(p.r)-p.r.y:0;
       var line='<span>'+ordinal(p.place)+'</span>'+rivalFace(p.r)+'<span class="rn"><strong>'+modernEsc(p.name)+'</strong>'+(p.r?' <small class="rival-meta">'+modernEsc(p.r.diff+' · '+personality(p.r).name+' · '+relLabel(p.r.rel||0))+'</small>':'')+'<small>Reputation '+Math.round(p.rep)+(((p.r&&ally()===p.r)||(p.me&&ally()))?' · '+(p.me?'Allied with '+modernEsc(ally().name):'Your ally'):'')+'</small><small>'+modernEsc(job)+' · '+money(p.worth)+(d?' <span class="'+(d>0?'up':'dn')+'">'+(d>0?'▲':'▼')+money(Math.abs(d))+'</span>':'')+'</small></span><b>'+p.pts+' pts</b>';
       var cats=Object.keys(p.cats).map(function(k){var x=p.cats[k];return LIFE_CATS[k].ic+' '+ordinal(x.place)+' ('+x.txt+')'}).join(' · ');
-      return '<details><summary class="rivrow'+(p.me?' me':'')+'">'+line+'</summary><ul>'+(p.me?politicsLis(-1):'')+(p.r?memoryProfile(p.r)+'<li>Relationship '+sg(p.r.rel||0)+' ('+relLabel(p.r.rel||0)+')'+(p.r.drift?' · overnight '+sg(p.r.drift):'')+'</li>'+politicsLis(S.rivals.indexOf(p.r))+moneyLis(S.rivals.indexOf(p.r))+(flatmate()===p.r?'<li>🏠 Your flatmate'+(S.flat.hd===S.day?(S.flat.here?' · home today':' · out today'):'')+'</li>':'')+(studyPartners(S.lastTrack).indexOf(p.r)>=0?'<li>📚 Studying the same pathway as you</li>':''):'')+'<li>'+cats+'</li>'+(p.r?(p.r.log.length?p.r.log.map(function(l){return '<li>'+l+'</li>'}).join(''):'<li>Nothing to report yet.</li>'):'')+'</ul></details>';
+      return '<details><summary class="rivrow'+(p.me?' me':'')+'">'+line+'</summary><ul>'+(p.me?politicsLis(-1):'')+(p.r?memoryProfile(p.r)+'<li>Relationship '+sg(p.r.rel||0)+' ('+relLabel(p.r.rel||0)+')'+(p.r.drift?' · overnight '+sg(p.r.drift):'')+'</li>'+politicsLis(S.rivals.indexOf(p.r))+moneyLis(S.rivals.indexOf(p.r))+(flatmate()===p.r?'<li>🏠 Your flatmate'+(S.flat.hd===S.day?(S.flat.here?' · home today':' · out today'):'')+'</li>':'')+(studyPartners(S.lastTrack).indexOf(p.r)>=0?'<li>📚 Studying the same pathway as you</li>':''):'')+'<li>'+cats+'</li>'+(p.r?(p.r.log.length?p.r.log.map(function(l){return '<li>'+l+'</li>'}).join(''):'<li>Nothing to report yet.</li>'):'')+'</ul>'+(p.r?rivalMoves(S.rivals.indexOf(p.r)):'')+'</details>';
     }).join('');
+    [].forEach.call($('rivList').querySelectorAll(':scope>details'),function(d,k){if(wasOpen[k])d.open=true});
   }
   function moneyLis(i){return (S.rloans||[]).filter(function(l){return l.i===i}).map(function(l){return '<li>💬 '+(l.dir==='in'?'Owes you '+money(l.owe):'You owe '+money(l.owe))+' (due day '+l.due+')</li>'}).join('')+(S.bets||[]).filter(function(b){return b.i===i}).map(function(b){return '<li>🎲 Bet of '+money(b.stake)+' each until day '+b.until+'</li>'}).join('')}
   function renderOverviewCards(){
@@ -8302,6 +8337,11 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
     var b=e.target.closest('[data-act]'); if(!b)return;
     var a=b.dataset.act,g=b.dataset.arg;
     toastAll=true;try{shopAct(a,g,b)}finally{toastAll=false}
+  });
+  /* the Rivals tab's move buttons (rivalMoves) run the same ACTIONS as the panels do */
+  $('rivList').addEventListener('click',function(e){
+    if(S.over||S.pending)return;var b=e.target.closest('[data-rmove]');if(!b||b.disabled)return;
+    var p=b.dataset.rmove.split('|');toastAll=true;try{shopAct(p[0],p.slice(1).join('|'),b)}finally{toastAll=false}
   });
   /* ---------- ACTIONS: every panel button (data-act) in one table ----------
     run(arg, button)  what the button does (arg is its data-arg)

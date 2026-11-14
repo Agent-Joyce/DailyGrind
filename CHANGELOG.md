@@ -2024,3 +2024,13 @@ Names and wording only. No rule, CONFIG number, dice or save-format change; plac
 - `tools/qa/check-ux.js` has a case for the place and rival names and scans `index.html` for the old wording.
 - Owed: the text still needs a cultural reader (ROADMAP, Package D), and `docs/Daily Grind Config Guide.docx` still lists the old food and rival names.
 
+## 110. The Rivals tab shows every move
+
+No rule, CONFIG or save change, and no new dice: the rows only read the same functions the phone apps use.
+
+- Each rival's card on the Rivals tab (the Overview scoreboard) now ends with **What you can do now**: chat or say hello (with where they are today, or where you tend to meet them), call, ask for a loan, offer a bet, propose a pact (or open the pact card if you are allied), invite to move in (or go home to your flatmate), schemes (online or Town talk) and "Who did it?" when there are unsolved setbacks. Each row has the same chips as the phone app row (time, happiness, relationship, argument risk, cash).
+- Buttons that can run on the spot do so: **Call** (needs a phone or tablet, as before) and **Offer bet**. The rest open the right place: **Open Messages** (loans, pacts, specific pacts, online schemes), **Go home**, **Walk to** the place a rival is at, **Town talk** at the Community Centre. Rows are greyed with the reason when you cannot do the move now (no device, already asked today, not friendly enough).
+- A card stays open after you press one of its buttons (the scoreboard used to close every card on each repaint).
+- New code: `rivalMoves(i)` (section 6, beside `callRows`), the `rivList` click handler for `data-rmove` buttons (section 10), a few `.rmoves` styles. The action preview (🔎) does not cover these buttons; the chips on each row show the cost instead.
+- `tools/qa/check-ux.js`: a case that opens a card, checks every move is listed, presses Call, checks the card stays open and Call greys out, opens Messages, and checks Call is disabled without a phone.
+

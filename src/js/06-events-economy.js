@@ -1728,6 +1728,38 @@
     return S.rivals.map(function(r,i){if(r.out)return '';var c=calledToday(i);
       return arow((home?'':'<input type="checkbox" data-rsel="'+i+'" aria-label="Add '+r.name+' to a group call"'+(c?' disabled':'')+'> ')+r.ic+' Call '+r.name,chip('time',hm(mins))+chip('happy',sg(hap))+argueChip()+chip('',relLabel(r.rel||0))+(c?chip('','✓ Called today','ok'):''),btn('rcall',String(i),'Call',home?1:0,!!c),'','chance')}).join('');  /* a call can always end in an argument */
   }
+  /* every move you can make on one rival, for the Rivals tab (ROADMAP Package C item 15). The same chips as the phone apps;
+     a button either runs the action (data-rmove: call, bet) or opens the right app or place (data-dg-app, data-dg-go). Draws only; rolls no dice. */
+  function rivalMoves(i){
+    var r=S.rivals&&S.rivals[i];if(!r||r.out||S.over)return '';
+    var X=CONFIG.rivals.social,M=MX(),L=M.loan,B=M.bet,P=PX().pact,F=TG().flat,rel=r.rel||0,dev=handheld()||pcHere(),h='';
+    var mv=function(act,arg,label,off,alt){return '<button type="button" class="btn'+(alt===0?'':' alt')+'" data-rmove="'+act+'|'+arg+'"'+(off?' disabled':'')+'>'+label+'</button>'};
+    var go=function(loc,label){return '<button type="button" class="btn alt" data-dg-go="'+loc+'">'+label+'</button>'};
+    var app=function(k,label,off){return '<button type="button" class="btn alt" data-dg-app="'+k+'"'+(dev&&!off?'':' disabled')+'>'+label+'</button>'};
+    var nodev=dev?'':'Needs a phone or tablet, or your computer at home. ';
+    var e=S.enc,here=e&&e.day===S.day&&!e.done&&e.i===i,pl=(r.places||[]).map(function(k){return NAME[k]}).filter(Boolean);
+    h+=arow('🗣️ Chat or say hello',chip('time',hm(X.chat.minutes))+chip('','Relationship '+sg(X.chat.rel))+(rel<0?argueChip():'')+(here?chip('','Here today','ok'):''),here?go(e.loc,'Walk to '+NAME[e.loc]):'',
+      here?r.name+' is at the '+NAME[e.loc]+' today. Walk there to talk.':'You can talk when you meet by chance'+(pl.length?'; lately they have been at: '+pl.join(', '):' at the places they use')+'.',rel<0?'chance':'');
+    var c=calledToday(i);
+    h+=arow('📞 Call '+r.name,chip('time',hm(X.call.phoneMinutes))+chip('happy',sg(X.call.phoneHappiness))+argueChip()+chip('',relLabel(rel))+(c?chip('','✓ Called today','ok'):''),mv('rcall',i,'Call',!!c||!handheld()),handheld()?'':'Needs a phone or tablet. At home you can call from the 📞 Calls screen.','chance');
+    var unread=(S.msgs||[]).filter(function(m){return m.i===i&&!m.st});
+    if(unread.length)h+=arow('💬 '+r.name+' has messaged you',chip('','Answer by day '+unread[0].until,'warn'),app('msgsapp','Open Messages'),nodev);
+    var owe=rloan(i,'out'),asked=askedToday('l'+i);
+    h+=arow('💬 Ask '+r.name+' for a loan',chip('time',hm(M.replyMinutes))+chip('',relLabel(rel))+(rel<L.borrowFrom?chip('','Needs a closer friendship','warn'):'')+(owe?chip('','You still owe them','warn'):asked?chip('','✓ Asked today','ok'):''),app('msgsapp','Open Messages',!!owe||!!asked),nodev+'Pick an amount in the Messages app.');
+    var st=betStake(i);
+    h+=arow('🎲 Offer '+r.name+' a bet',chip('time',hm(M.replyMinutes))+chip('cash','−'+money(st)+' stake')+(rbet(i)?chip('','Bet running','ok'):askedToday('b'+i)?chip('','✓ Offered today','ok'):''),mv('rbet',i,'Offer bet',!!rbet(i)||!!askedToday('b'+i)||!canStake(S,st,B)||!canStake(r,st,B)));
+    if(ally()===r)h+=arow('🤝 Allied with '+r.name+' until day '+S.pact.until,chip('','Renew, end or change terms in Messages'),app('msgsapp','Open Messages'),nodev);
+    else if(!S.pact&&!hasAlly(i)){
+      if(rel>=P.need)h+=arow('🤝 Propose a pact to '+r.name,chip('time',hm(P.minutes))+chip('',relLabel(rel))+chip('','Chance '+pctTxt(pactChance(r)))+(askedToday('p'+i)?chip('','✓ Asked today','ok'):''),app('msgsapp','Open Messages',!!askedToday('p'+i)),nodev+'Plain, with a pot or a specific pact: choose in Messages.');
+      else h+=arow('🤝 Pacts',chip('','Needs relationship '+P.need+'+ (now '+sg(rel)+')','warn'),'','Build the friendship with chats and calls first.');
+    }
+    if(flatmate()===r)h+=arow('🏠 Your flatmate',chip('',S.flat.hd===S.day?(S.flat.here?'Home today':'Out today'):'Rent split in half'),go(S.home,'Go home'),'Cook, hang out, do chores or clear the air from your home.');
+    else if(!flatmate()&&!S.homeless&&S.home==='apt'&&r.home!=='bung'&&rel>=F.flatFrom)h+=arow('🏠 Invite '+r.name+' to move in',chip('time',hm(F.inviteMinutes))+chip('','Rent '+money(Math.ceil(HOUSE[S.home].rent/2))+' each'),go(S.home,'Go home'),'You can only invite someone from your own home.');
+    if(canSabotage()){var Z=SBX(),left=Z.maxPerGame-(S.sabUsed||0);
+      h+=arow('🗯️ Schemes against '+r.name,chip('','Schemes left '+Math.max(0,left)+'/'+Z.maxPerGame,left>0?'':'warn')+chip('','Risk of being caught','warn'),app('msgsapp','Online',left<=0)+go('comm','Town talk'),nodev+'Online in Messages, or in person at the '+NAME.comm+'.','chance')}
+    if((S.incidents||[]).some(function(x){return !x.done}))h+=arow('🔎 Who did it?',chip('','Unsolved setbacks','warn'),go('comm','Go to the '+NAME.comm),'Accuse someone at the '+NAME.comm+'.','chance');
+    return '<div class="rmoves"><div class="rm-h">What you can do now</div>'+h+'</div>';
+  }
   /* congratulate a rival on this morning's news: 15 minutes, once a morning per rival */
   function congratulate(i){
     var r=S.rivals&&S.rivals[i],X=CONFIG.rivals.social.congratulate;if(!r||S.over)return;
