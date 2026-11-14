@@ -300,7 +300,10 @@
       await click(document.querySelector('#rivCount [data-rc="'+(QA.rivalCount||3)+'"]'),'rivals:count');
       await click(document.querySelector('#rivLevel [data-rl="'+QA.rivals+'"]'),'rivals:level');
     }
-    await click($('welcomeGo'),'popup:start');
+    if(QA.difficulty&&QA.difficulty!=='normal')await click(document.querySelector('#diffsWrap [data-diff="'+QA.difficulty+'"]'),'popup:start:'+QA.difficulty);  /* Easy and Hard start the game straight away */
+    else await click($('welcomeGo'),'popup:start');
+    rep.difficulty=QA.difficulty||'normal';
+    if(QA.start==='broke'){var s0=G.S;s0.cash=G.G(20);s0.bank=0;s0.clothes.casual=1;s0.food=[];rep.start='broke';G.render()}  /* a hard-times scenario set through the hook, not natural play */
     var pb=$('previewBtn');
     if(mode==='survive'&&/on/.test(pb.textContent))pb.click();
     if(mode==='random'&&/off/.test(pb.textContent))pb.click();
