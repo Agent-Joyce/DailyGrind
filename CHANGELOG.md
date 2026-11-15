@@ -2100,3 +2100,13 @@ Base: `d00f221` (§117 and the other chat's §113–116). Numbered 122 because �
 The bot now has less time for study and morale (calls fell from 15–19 a game to 6–10), so it ends as a Senior Nurse rather than a Junior Doctor and still places 3rd–4th on happiness. Three games at one level only: rerun expert and mixed rival games before judging the level balance.
 
 **QA:** `check-social-rules.js` has a new case (sleep happiness stops at 12 hours and is unchanged below it; 62 in all). Docs: `CLAUDE.md` (sleep convention), `docs/Daily Grind Config Guide.docx` (new sleep-happiness row; the rivals' errand row now 360).
+
+## 114. Rivals notice who leads, who is in trouble and who helped them (Package B, item 21)
+
+Base: §113. Rival games only. The three modifiers sit in `CONFIG.rivals.awareness`; no rival decision function was rewritten.
+
+- **Sabotage:** medium and expert rivals are `leaderSabotage` (1.5) times as likely to sabotage whoever leads the Life Score (`leaderIdx()`; a tie has no leader). Expert rivals also pick the leader first among rivals they can hit (`leaderFirst`), where before they took the one just ahead.
+- **Asking for help:** when a rival short of rent money (plus `loan.askBuffer`) is among those who could ask to borrow, it asks before the others; among several, the one who trusts you most (`troubleFirst`).
+- **Betrayal:** each point of remembered trust a rival holds for a partner cuts its betrayal chance by `helpedBetray` (0.2), never below `helpedFloor` (0.4) of the base chance (`helpedMult()`).
+- **Not done:** the job race is not changed. It only ever targets you and its chance is computed inside `rivalTick()`, which another chat owns; a leader modifier belongs there.
+- Rules text (`cfgRivals`), `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated. `check-personalities.js` has three new cases. No simulation was run.

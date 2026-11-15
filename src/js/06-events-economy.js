@@ -1038,6 +1038,8 @@
     var ask=free.filter(function(i){var r=S.rivals[i];return !rloan(i,'in')&&(!r.lastLoanAsk||today-r.lastLoanAsk>=L.cooldown)&&rrand()<(r.cash+r.bank<HOUSE[r.home||'apt'].rent+L.askBuffer?L.distressChance:L.askChance)});
     var st=0,bet=free.filter(function(i){var r=S.rivals[i],v=betStake(i);return !rbet(i)&&canStake(S,v,M.bet)&&canStake(r,v,M.bet)&&rrand()<rivalChance(r,pick(M.bet.accept,r.diff,0.5),'bet')});
     var k=ask.length?'borrow':bet.length?'bet':'',pool=k==='borrow'?ask:bet;if(!k)return;
+    var W=CONFIG.rivals.awareness,tr=function(i){return S.rivals[i].favours&&S.rivals[i].favours.trust||0},dist=function(i){var q=S.rivals[i];return W&&W.levels.indexOf(q.diff)>=0&&q.cash+q.bank<HOUSE[q.home||'apt'].rent+L.askBuffer};
+    var tf=k==='borrow'&&W&&W.troubleFirst?pool.filter(dist):[];if(tf.length)pool=tf.sort(function(a,b){return tr(b)-tr(a)}).slice(0,1);  /* a rival in trouble asks first, from you if it trusts you most */
     var i=pool[Math.floor(rrand()*pool.length)],r=S.rivals[i],m={id:(S.msgN=(S.msgN||0)+1),i:i,k:k,day:today,until:today+M.messageDays-1,amt:st,back:0,st:null};
     if(k==='bet')m.amt=betStake(i);
     if(k==='borrow'){r.lastLoanAsk=today;m.amt=Math.round(G(L.min+rrand()*(L.max-L.min))/10)*10;m.back=Math.round(m.amt*(1+L.interest))}
@@ -1154,8 +1156,12 @@
   function startPact(i,stake){var r=S.rivals[i],P=PX().pact;if(!r||r.out||S.pact||hasAlly(i)||(stake&&(!canStake(S,stake,P)||!canStake(r,stake,P))))return false;if(stake){S.cash-=stake;r.cash-=stake}S.pact={i:i,since:S.day,until:S.day+P.days-1,pot:stake*2};return true}
   function splitPot(pot,a,b){var h=Math.floor(pot/2);a.cash+=h;b.cash+=pot-h}  /* a and b are S or a rival (both have cash) */
   /* the betrayal chance tonight for rival r */
+  /* awareness (CONFIG.rivals.awareness): a rival you helped (trust above 0) is less likely to betray; bounded below by helpedFloor */
+  function helpedMult(r){var W=CONFIG.rivals.awareness,t=r.favours&&r.favours.trust||0;if(!W||W.levels.indexOf(r.diff)<0||t<=0)return 1;return Math.max(W.helpedFloor,1-t*W.helpedBetray)}
+  /* the Life Score leader's index: -1 is you, otherwise a rival's index; null when no one leads alone or no lead is known */
+  function leaderIdx(P){P=P||lifeScore();var top=null,tie=false;P.forEach(function(p){if(top==null||p.pts>top.pts){top=p;tie=false}else if(p.pts===top.pts)tie=true});return !top||tie?null:top.me?-1:S.rivals.indexOf(top.r)}
   function betrayChance(r){var B=PX().betray,pm=B.personality[r.personality]||1;if(r.personality==='vindictive'&&!((r.favours&&r.favours.trust)<0))pm=1;
-    return pick(B.chance,r.diff,0.04)*moodX().betray*pm*(r.diff==='expert'&&gameLen()-(S.day-1)<=B.lateDays?B.lateMult:1)}
+    return pick(B.chance,r.diff,0.04)*moodX().betray*pm*helpedMult(r)*(r.diff==='expert'&&gameLen()-(S.day-1)<=B.lateDays?B.lateMult:1)}
   /* you propose: pact 'i' (plain) or 'i|pot' */
   function proposePact(arg){
     var a=String(arg).split('|'),i=+a[0],withPot=a[1]==='pot',r=S.rivals&&S.rivals[i],P=PX().pact,st=withPot?potStake(i):0;
@@ -1322,13 +1328,13 @@
       var P=lifeScore(),pts={};P.forEach(function(p){pts[p.me?-1:S.rivals.indexOf(p.r)]=p.pts});
       var late=gameLen()-(today-1)<=R.expertLastDays,hitsOnYou=0;
       var wants=function(r,ti){var ahead=pts[ti]>pts[S.rivals.indexOf(r)];return r.diff==='easy'||(r.diff==='medium'&&ahead)||(r.diff==='expert'&&ahead&&late)};
-      var base=function(r){return pick(R.chance,r.diff,0.03)*moodX().sabotage*(R.personality[r.personality]||1)};
+      var W=CONFIG.rivals.awareness,lead=W?leaderIdx(P):null,base=function(r,ti){return pick(R.chance,r.diff,0.03)*moodX().sabotage*(R.personality[r.personality]||1)*(W&&ti!=null&&ti===lead&&W.levels.indexOf(r.diff)>=0?W.leaderSabotage:1)};
       S.rivals.forEach(function(r,ri){
         if(r.out||(r.sabUsed||0)>=Z.maxPerGame)return;
         /* at you */
         if(hitsOnYou<Z.hitsOnYouPerDay&&wants(r,-1)&&ally()!==r&&(r.rel||0)<CONFIG.rivals.social.friendAt){
           var g=r.grudge&&today<=r.grudge+1?(r.personality==='vindictive'?C.vindictiveGrudge:C.grudgeMult):1;
-          if(rrand()<base(r)*((r.rel||0)<0?R.enemyMult:1)*g){var ks=sabMovesFor(S,r),k=ks[Math.floor(rrand()*ks.length)],ch=sabCatch(pick(R.caught,r.diff,0.3),r.sabUsed);r.sabUsed=(r.sabUsed||0)+1;hitsOnYou++;
+          if(rrand()<base(r,-1)*((r.rel||0)<0?R.enemyMult:1)*g){var ks=sabMovesFor(S,r),k=ks[Math.floor(rrand()*ks.length)],ch=sabCatch(pick(R.caught,r.diff,0.3),r.sabUsed);r.sabUsed=(r.sabUsed||0)+1;hitsOnYou++;
             if(rrand()<ch){repAdd(r,C.rep);relAdd(r,C.rel);S.notes.push({l:'warn',t:'🕵️ '+r.ic+' '+r.name+' was caught trying to '+sabTry(k,'you','your')+'. It didn’t work. Their reputation '+sg(C.rep)+', your relationship with them '+sg(C.rel)+'.'})}
             else{var e=sabLand(S,k,ri,true);var inc={id:e.id,kind:'sab',k:k,by:ri,day:today,eid:e.id,done:false};S.incidents.push(inc);
               S.notes.push({l:'bad',t:'📉 '+({rumour:'Someone has been spreading a rumour about you: interview chances '+Math.round(M.rumour.interview*100)+' points until the end of day '+e.until+'.',online:'Someone has been posting rumours about you online: interview chances '+Math.round(M.online.interview*100)+' points until the end of day '+e.until+'.',badmouth:'Someone has been bad-mouthing you around town: reputation '+sg(M.badmouth.rep)+'.',cls:'Someone booked the last seat in your class: no lesson for you today.',boss:'Someone has been talking you down to your boss: your shifts pay '+Math.round((1-M.boss.pay)*100)+'% less until the end of day '+e.until+'.',snag:'Someone had a word with the hiring manager: no openings for your next rank until the end of day '+e.until+'.',prank:'Prank calls kept you up half the night: energy '+sg(M.prank.energy)+'%.'}[k])+' You weren’t told who. Accuse someone at the Community Centre if you think you know.'})}
@@ -1336,8 +1342,9 @@
         }
         /* at another rival: the one just ahead (easy: anyone) */
         var others=S.rivals.map(function(o,oi){return oi}).filter(function(oi){var o=S.rivals[oi];return oi!==ri&&!o.out&&!(rivalPactOf(ri)&&(rivalPactOf(ri).a===oi||rivalPactOf(ri).b===oi))&&!(o.hitBy&&o.hitBy.d===today&&o.hitBy.n>=Z.rivalHitsPerDay)&&wants(r,oi)});
-        if(!others.length||rrand()>=base(r))return;
+        if(!others.length||rrand()>=base(r,others.indexOf(lead)>=0?lead:null))return;
         if(r.diff!=='easy')others.sort(function(x,y){return pts[x]-pts[y]});
+        if(W&&W.leaderFirst.indexOf(r.diff)>=0&&others.indexOf(lead)>0){others.splice(others.indexOf(lead),1);others.unshift(lead)}  /* experts go for the leader */
         var ti=r.diff==='easy'?others[Math.floor(rrand()*others.length)]:others[0],t=S.rivals[ti],ks2=sabMovesFor(t,r),k2=ks2[Math.floor(rrand()*ks2.length)],ch2=sabCatch(pick(R.caught,r.diff,0.3),r.sabUsed);
         r.sabUsed=(r.sabUsed||0)+1;t.hitBy={d:today,n:(t.hitBy&&t.hitBy.d===today?t.hitBy.n:0)+1};
         if(rrand()<ch2){repAdd(r,C.rep);S.notes.push({l:'rem',t:'🕵️ '+r.ic+' '+r.name+' was caught trying to '+sabTry(k2,t.ic+' '+t.name,t.name+'’s')+' (reputation '+sg(C.rep)+').'})}

@@ -617,6 +617,12 @@
         close:{happiness:6, health:1, education:1, rep:6}, defendFrom:0.8,
         moraleLift:15, studyHours:1.5, gymClass:'spin', repPactChance:0.15,
         newsGap:3},  // a rival's aim (r.aim, shown on its profile) is in the morning news when it changes, at most once in newsGap days
+      /* Awareness of the player and each other (medium and expert rivals; everything is a bounded modifier on an existing chance).
+        leaderSabotage: x a rival's sabotage chance against whoever leads the Life Score (you or a rival; the lead is held by points);
+        leaderFirst: levels whose sabotage on other rivals goes for the leader before the one just ahead;
+        troubleFirst: a rival short of rent money asks to borrow before the others, from the one who trusts you most (messages);
+        helpedBetray: each point of trust a rival holds for a partner cuts its betrayal chance by this much, down to at least helpedFloor x the chance. */
+      awareness:{levels:['medium','expert'], leaderSabotage:1.5, leaderFirst:['expert'], troubleFirst:true, helpedBetray:0.2, helpedFloor:0.4},
       /* A rival's slips (the level's mistakeChance is the most it can be): the chance is mistakeChance x (floor + (1 − floor) x strain),
         strain being the worst of: tired (energy from tired[0] down to tired[1]: skips class), broke (cash and savings under brokeRents
         rents: skips a meal) and unhappy (happiness from unhappy[0] down to unhappy[1]: skips a shift). With no strain it skips its fun. */

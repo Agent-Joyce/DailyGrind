@@ -71,6 +71,8 @@ Missed sessions and unanswered obligations affect progress/consequences. A cance
 |---|---|---|
 | `archetypes` (replaces `career.preferences`, `alternativeFloor`, `recheckDays`) | five archetypes | Each rival gets a different archetype; its pathway tastes, shift and study adjustments replace the personality tastes and the midgame career switch (CHANGELOG 109) |
 | `aims` | expert only (medium removed in CHANGELOG 117); close happiness 6, health 1, education 1, rep 6; defendFrom 0.8 | Planning rivals spend each day on the Life Score place closest to gain, and late in the game defend one (CHANGELOG 110) |
+| `aims` | expert only (medium removed in CHANGELOG 113); close happiness 6, health 1, education 1, rep 6; defendFrom 0.8 | Planning rivals spend each day on the Life Score place closest to gain, and late in the game defend one (CHANGELOG 110) |
+| `awareness` | medium and expert; leaderSabotage 1.5; leaderFirst expert; troubleFirst; helpedBetray 0.2; helpedFloor 0.4 | Rivals sabotage the Life Score leader more, ask for help when short of money, and betray those who helped them less (CHANGELOG 114) |
 | `mistakes` | floor 0.5; tired 55→20; brokeRents 2; unhappy 45→15 | A rival's slips follow its state (tired skips class, broke skips a meal, unhappy skips a shift); the level's mistakeChance is the most (CHANGELOG 111) |
 | `career.closedWeight`, `experienceWeight`, `targetBonus` | 0.75, 0.80, 10 | Current opportunity/experience discounts and target workplace application bonus |
 | `career.preferences`, `educationWeight` | per-personality map, 0.025 | Small preferences plus completed relevant qualifications; remaining study and eligibility still constrain choices |
