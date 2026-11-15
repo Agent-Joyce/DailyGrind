@@ -2124,3 +2124,18 @@ Base: §114. Rival games only (encounters exist only there); the dice are the ri
   - 🗣️ **Gossip about a third rival** (one row per rival still in, 15 min): they like it by personality for +4 and the pair's trust (`S.rivalRelations`) falls by 6; otherwise −4 with them.
 - Replies are text tables in `CONFIG.rivals.talk.say`. Rules text, `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated. `check-personalities.js` has five new cases. No UI check or simulation was run.
 
+## 116. Shared and contested moments: timed cards on the Today screen (Package C, item 14)
+
+Base: §115. Rival games only. A card is dealt each morning on the rivals' dice (`rrand()`); the choices and the town contest roll use the player's dice. Single games never deal one.
+
+- **New:** `CONFIG.rivals.moments`, `S.moment` and `S.momN` (defaults come from `blank()`, no migration needed), a `#momentBox` on the Today screen (also at the top of any building panel) with the minutes left, and the action `mom`.
+- **Deal** (`momentDeal()`, end of `rollover`): about half the days from day 2, one card, at most three of each kind a game, and only kinds that make sense now. It is announced in the morning notes.
+- **Cards:**
+  - 🏁 **Contested opening:** you and a rival want the same role (a promotion in your line, or a better-paid job you qualify for). *Interview now* gives the interview head start (like a friend's tip) and runs the normal interview; missing it closes the role for you that day and shows "taken by", like a lost job race.
+  - 🧑‍🍳 **Cover a shift:** the rival pays you (from their cash), you spend 3h and 10 energy, they remember it. Saying no or letting it lapse is remembered as a refusal.
+  - 📚 **Group project:** needs a course in progress; 1h30 for knowledge, happiness and relationship.
+  - 🏆 **Town contest:** entry fee, 1h, win chance 30% + knowledge/200 (at most 80%), prize, reputation and happiness.
+- **Deadlines** are in minutes of the day (window 4 to 7 hours). A card that runs out is settled with no dice by `momentExpire()` (called from `done()`); one left at bedtime goes into the morning notes.
+- **Rival logic:** untouched. Rivals' own days do not change; only your relationship and memories with them do.
+- Rules text, `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated. `check-personalities.js` has seven new cases. No UI check or simulation was run; the UI check would need a `SITUATIONS` entry for a moment card (not added, per the instruction not to run it).
+

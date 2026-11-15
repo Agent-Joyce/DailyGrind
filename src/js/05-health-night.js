@@ -245,7 +245,7 @@
     ovHidden=false;  /* a new day shows the overview again */
     if(S.over)return;
     FLASH={e:S.energy,h:S.happy,l:S.health,k:Math.floor(S.know),until:Date.now()+2500};setTimeout(function(){render()},2600);
-    S.pending=null;
+    momentExpire(true);S.pending=null;
     var h=HOUSE[S.home];
     S.day++;S.ap=MAX_AP;S.offer={};S.barg={};S.raced={};rollOpenings();  /* S.raced: roles a rival took overnight (the job race, set in rivalTick) */
     ['casual','smart','suit'].forEach(function(k){
@@ -330,6 +330,7 @@
     S.today=null;T0();
     lottoDraw();
     planNews();
+    momentDeal();  /* today's timed card (rival games; rival dice) */
     var mn=(S.notes||[]).slice(),rw2=nextRentWeek(),rentNext=myRent(rw2);S.notes=[];
     mn.push.apply(mn,moneyBrief(i,invMoved));
     if(tipOn())mn.push({l:'good',c:'run',k:'tip',t:'🤝 Job tip good until the end of day '+S.tip.until+'. Your next interview is easier and never fails for “no openings”.'});

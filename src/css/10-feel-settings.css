@@ -15,3 +15,5 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
 /* phones: toasts sit above the navigation, two at most, so they never cover the header or the guide */
 @media(max-width:640px){#toasts{top:auto;bottom:calc(var(--foot) + 8px);left:10px;right:10px;width:auto;flex-direction:column-reverse}#toasts .toast:nth-child(n+3){display:none}}
 @media(prefers-reduced-motion:reduce){.chg-up b,.chg-dn b,.coin-pop,#daySweep.run{animation:none}}
+
+.moment:not([hidden]){margin-bottom:8px}.moment .pbox{border-color:var(--accent,#c8861a)}

@@ -111,6 +111,7 @@
         (sm2.best?'<span class="bestday">🏆 Best day yet</span>':'')+
         ((sm2.wins||[]).length?'<div class="wins" title="'+sm2.wins.join(' | ').replace(/"/g,'&quot;')+'">Wins: '+sm2.wins.map(function(x){return x.replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c]})}).join(' · ')+'</div>':'')+
         (sm2.hits.length?'<div class="hits" title="'+sm2.hits.join(' | ').replace(/"/g,'&quot;')+'">What hurt: '+sm2.hits.map(function(x){return x.replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c]})}).join(' · ')+'</div>':'');}
+    (function(){var h=momentCard(),mb=$('momentBox');mb.hidden=!h;mb.innerHTML=h})();
     var al=stressList(),wa=$('warn');
     wa.hidden=!al.length;
     wa.innerHTML=al.slice(0,2).map(function(x){return '<div class="al '+x.l+'">'+x.t+'</div>'}).join('')+(al.length>2?'<div class="al more" title="'+al.slice(2).map(function(x){return x.t}).join(' | ').replace(/"/g,'&quot;')+'">+'+(al.length-2)+' more warning'+(al.length>3?'s':'')+'</div>':'');
@@ -168,7 +169,7 @@
       $('result').textContent='';$('result').className='result';  /* news from a button is a toast now (see TOASTS) */
       var keep={},open={};[].forEach.call($('shopBody').querySelectorAll('input[id]'),function(i){keep[i.id]=i.value});
       [].forEach.call($('shopBody').querySelectorAll('details[open][data-sec]'),function(d){open[d.dataset.sec]=1});  /* an ⓘ you opened stays open after an action */
-      $('shopBody').innerHTML=encounterCard()+workSection(view)+panels[view]();
+      $('shopBody').innerHTML=momentCard()+encounterCard()+workSection(view)+panels[view]();
       Object.keys(keep).forEach(function(id){var i=$(id);if(i)i.value=keep[id]});
       [].forEach.call($('shopBody').querySelectorAll('details[data-sec]'),function(d){if(open[d.dataset.sec])d.open=true});
       if(S.over)$('shop').querySelectorAll('button').forEach(function(b){b.disabled=true});

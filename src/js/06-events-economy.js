@@ -1727,6 +1727,87 @@
     log((res.backfire?'🗯️ You '+what+' and it turned into an argument':'🗣️ You '+what)+vitPar(v0)+': '+relTxt(r,res)+'.'+(line?' “'+line+'”':''),res.d<0||bad?'warn':'good');
     done();
   }
+  /* ---------- moments: one timed card a day on the Today screen (CONFIG.rivals.moments; rival games) ----------
+    S.moment {k, i (rival), day, until (minutes since the day began), id (contest: the role), pay}. Dealt each morning on rival dice
+    (momentDeal); you answer with your own choices (momentDo); one you miss resolves in momentExpire (no dice). */
+  function momentLeft(m){return m.until-(MAX_AP-S.ap)}
+  function momentOpening(){
+    var jb=myJob(),pay0=jb?rolePay(jb.c,S.career[jb.c]):0,out=[];
+    Object.keys(CAREERS).forEach(function(c){var i=S.career[c]!=null?S.career[c]+1:0,rk=CAREERS[c].ranks[i];
+      if(!rk||(jb&&jb.c!==c&&rolePay(c,i)<=pay0)||S.closed[c+'_'+i]||shutLeft(bOf(c))>0||!meets(rk)||kreq(rk)>Math.floor(S.know)||expShort(c,rk))return;out.push(c+'_'+i)});
+    return out;
+  }
+  function momentDeal(){
+    var X=CONFIG.rivals.moments;S.moment=null;
+    if(S.mode!=='rivals'||!S.rivals||!X||S.day<X.firstDay||rrand()>=X.chance)return;
+    var live=S.rivals.map(function(r,i){return i}).filter(function(i){return !S.rivals[i].out});if(!live.length)return;
+    var n=S.momN||(S.momN={}),kinds=[];
+    ['contest','cover','project','town'].forEach(function(k){if((n[k]||0)>=X.maxPerGame)return;
+      var ok=k==='contest'?!tipOn()&&momentOpening().length>0:k==='cover'?live.some(function(i){var r=S.rivals[i];return rivalJob(r)&&r.cash>=coverPay(r)}):k==='project'?Object.keys(TRACKS).some(inProgress):true;
+      if(ok)kinds.push(k)});
+    if(!kinds.length)return;
+    var k=kinds[Math.floor(rrand()*kinds.length)],pool=k==='cover'?live.filter(function(i){var r=S.rivals[i];return rivalJob(r)&&r.cash>=coverPay(r)}):live,i=pool[Math.floor(rrand()*pool.length)],m={k:k,i:i,day:S.day,until:(MAX_AP-S.ap)+X.window[k]};
+    if(k==='contest'){var o=momentOpening();m.id=o[Math.floor(rrand()*o.length)]}
+    if(k==='cover')m.pay=coverPay(S.rivals[i]);
+    n[k]=(n[k]||0)+1;S.moment=m;
+    S.notes.push({l:'rem',t:'⏳ '+S.rivals[i].ic+' '+S.rivals[i].name+': '+({contest:'you both want the same opening',cover:'asks you to cover a shift',project:'wants you in a group project',town:'a town contest is on'}[k])+'. See the card on the Today screen: it is open for '+hm(X.window[k])+'.'});
+  }
+  function momentText(m){
+    var r=S.rivals[m.i],X=CONFIG.rivals.moments;if(!r)return null;
+    if(m.k==='contest'){var c=m.id.split('_'),rk=CAREERS[c[0]].ranks[+c[1]];return {ic:'🏁',t:'Same opening, same morning',q:r.name+' is going for '+rk.r+' at the '+NAME[bOf(c[0])]+' too. Get to the interview first and it goes your way: your next interview is easier and has an opening. Wait, and they take it.',
+      yes:'Interview now',yc:chip('time','1h interview')+chip('','Easier interview')+chip('','Relationship with '+r.name+' '+sg(X.contest.interviewRel),'warn'),no:'Let them',nc:chip('','Closes for you today')+chip('','Relationship '+sg(X.contest.missRel),'warn')}}
+    if(m.k==='cover'){var j=rivalJob(r);return {ic:'🧑‍🍳',t:'Cover a shift now',q:r.name+' cannot make their shift'+(j?' as '+j.rk.r:'')+' and asks you to cover it for '+money(m.pay)+'.',
+      yes:'Cover it',yc:chip('time',hm(X.cover.minutes))+chip('good','+'+money(m.pay))+chip('energy',sg(X.cover.energy))+chip('','Relationship '+sg(X.cover.rel)),no:'Say no',nc:chip('','Relationship '+sg(X.cover.refuseRel),'warn')}}
+    if(m.k==='project')return {ic:'📚',t:'Group project at the School',q:r.name+' needs one more for a group project that is due today.',
+      yes:'Join in',yc:chip('time',hm(X.project.minutes))+chip('know','+'+X.project.know+' 🧠')+chip('happy',sg(X.project.happiness))+chip('','Relationship '+sg(X.project.rel)),no:'Skip it',nc:chip('','Relationship '+sg(X.project.missRel),'warn')};
+    return {ic:'🏆',t:'Town contest',q:'A quiz and bake-off at the Community Centre today; '+r.name+' has entered. A prize for the winner.',
+      yes:'Enter',yc:chip('time',hm(X.town.minutes))+chip('cost','−'+money(G(X.town.fee)))+chip('good','Prize '+money(G(X.town.prize)))+chip('','Reputation '+sg(X.town.rep)),no:'Not today',nc:''};
+  }
+  function momentCard(){
+    var m=S.moment;if(S.mode!=='rivals'||!m||m.day!==S.day||S.over||momentLeft(m)<=0)return '';
+    var t=momentText(m);if(!t)return '';var left=momentLeft(m);
+    return boxed(psec('mom',t.ic+' '+t.t,chip('time',hm(left)+' left'),t.q)+
+      arow('✅ '+t.yes,t.yc,btn('mom','yes',t.yes),'',m.k==='town'||m.k==='contest'?'chance':'')+arow('✖️ '+t.no,t.nc,btn('mom','no',t.no,1)));
+  }
+  function momentDo(a){
+    var m=S.moment,X=CONFIG.rivals.moments,r=m&&S.rivals[m.i];
+    if(!m||m.day!==S.day||momentLeft(m)<=0||!r)return refuse('That is no longer on offer.');
+    var v0=vitSnap();
+    if(a==='no'){momentMiss(m,false);return done()}
+    if(m.k==='contest'){
+      if(S.ap<60)return refuse('Not enough time left today (the interview takes 1h).');
+      S.moment=null;if(!tipOn())S.tip={until:S.day};  /* the head start: easier, and never "no openings" */
+      relAdd(r,X.contest.interviewRel);log('🏁 You rushed to the interview before '+r.name+' could: relationship with '+r.name+' '+sg(X.contest.interviewRel)+'.','good');
+      return apply(m.id);
+    }
+    if(m.k==='cover'){var C=X.cover;if(S.energy<30)return refuse('You are too tired to cover a shift.');if(r.cash<m.pay)return refuse(r.name+' cannot pay for it any more.');if(!spendMin(C.minutes,0))return;
+      S.moment=null;S.cash+=m.pay;inc(m.pay);r.cash-=m.pay;S.energy=Math.max(0,S.energy+C.energy);var res=relGain(r,C.rel);remember(r,'cover',CONFIG.rivals.memory.helpTrust,true);if(PX().rep.help)repAdd(S,PX().rep.help);if(res.backfire)argue();
+      log('🧑‍🍳 You covered '+r.name+'’s shift for '+money(m.pay)+vitPar(v0)+': '+relTxt(r,res)+'.','good');return done()}
+    if(m.k==='project'){var P=X.project;if(!spendMin(P.minutes,0))return;S.moment=null;applyFx('n+'+P.know);S.happy=clamp(S.happy+P.happiness);var res2=relGain(r,P.rel);if(res2.backfire)argue();
+      log('📚 You finished the group project with '+r.name+vitPar(v0)+': '+relTxt(r,res2)+'.','good');return done()}
+    var T=X.town,fee=G(T.fee);if(S.cash<fee)return refuse('The entry fee is '+money(fee)+'.');if(!spendMin(T.minutes,fee))return;S.moment=null;
+    var win=Math.random()<Math.min(T.max,T.base+S.know/T.knowledgeDiv);
+    if(win){var pz=G(T.prize);S.cash+=pz;inc(pz);S.happy=clamp(S.happy+T.happiness);repAdd(S,T.rep);relAdd(r,-1);log('🏆 You won the town contest: '+money(pz)+' and a name around town'+vitPar(v0)+'.','good')}
+    else{S.happy=clamp(S.happy+T.loseHappiness);relAdd(r,1);log('🏆 You took part in the town contest and '+r.name+' won it. A good day out anyway'+vitPar(v0)+'.','')}
+    done();
+  }
+  /* a card you declined, let run out during the day, or left at bedtime: no dice, only what the config says.
+    during the day the result is logged at once; at bedtime (night) it goes into the morning notes */
+  function momentMiss(m,night){
+    var X=CONFIG.rivals.moments,r=S.rivals&&S.rivals[m.i];S.moment=null;if(!r)return;
+    var msg='',tone='warn';
+    if(m.k==='contest'){var c=m.id.split('_');if(!night){S.closed[m.id]=1;S.raced=S.raced||{};S.raced[m.id]=r.name}relAdd(r,X.contest.missRel);msg='🏁 '+r.ic+' '+r.name+' got to the interview first'+(night?'':': no openings for '+CAREERS[c[0]].ranks[+c[1]].r+' at the '+NAME[bOf(c[0])]+' today')+' (relationship '+sg(X.contest.missRel)+').'}
+    else if(m.k==='cover'){relAdd(r,X.cover.refuseRel);remember(r,'no_cover',CONFIG.rivals.memory.refuseTrust,false);msg='🧑‍🍳 '+r.name+' had to call in sick: nobody covered (relationship '+sg(X.cover.refuseRel)+').'}
+    else if(m.k==='project'){relAdd(r,X.project.missRel);msg='📚 The group project with '+r.name+' went ahead without you (relationship '+sg(X.project.missRel)+').'}
+    else{msg='🏆 The town contest came and went without you.';tone='rem';if(night)return}
+    if(night)S.notes.push({l:tone,t:msg});else log(msg,tone==='rem'?'':'warn');
+  }
+  /* time ran out during the day (called by done()), or the day is ending (force) */
+  function momentExpire(force){
+    var m=S.moment;if(!m||S.over)return;
+    if(!force&&m.day===S.day&&momentLeft(m)>0)return;
+    momentMiss(m,!!force||m.day!==S.day);
+  }
   /* calls: from home (no phone needed, costs what a family call costs) or by phone anywhere (one rival or a group) */
   function calledToday(i){return S.rcalled&&S.rcalled.d===S.day&&S.rcalled[i]}
   function callRoll(){var R=CONFIG.rivals.social.call.roll,x=rrand();for(var i=0;i<R.length;i++){x-=R[i][1];if(x<0)return R[i][0]}return R[R.length-1][0]}

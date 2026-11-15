@@ -641,6 +641,18 @@
           teaseLose:{generous:'It came out wrong and you both went quiet.', ambitious:'They did not find it funny.', reckless:'They did not take the joke well.', vindictive:'They did not laugh. They will not forget it.'},
           gossipWin:{generous:'They listened politely.', ambitious:'They filed it away.', reckless:'They wanted every detail.', vindictive:'They loved it.'},
           gossipLose:{generous:'They did not want to hear it.', ambitious:'They changed the subject.', reckless:'They told you to mind your own business.', vindictive:'They thought less of you for it.'}}},
+      /* Moments: one timed card a day on the Today screen (rival games; dealt each morning on the rivals' dice, played with your choices).
+        chance: that a day has one; firstDay: the earliest day; maxPerGame: most of each kind a game; window: minutes you have (counted from the
+        start of the day) for contest (an opening you and a rival both want: go to the interview first and it is easier; miss it and they get there first),
+        cover (a rival asks you to cover their shift: minutes, their pay, relationship), project (a group project at the School: minutes, knowledge,
+        happiness, relationship) and town (a town contest: entry fee, minutes, win chance base + knowledge/knowledgeDiv, prize, reputation, happiness).
+        Missing a card costs: contest a relationship loss and the opening closed to you for the day (like a lost job race), cover a refusal, project a small loss. */
+      moments:{chance:0.5, firstDay:2, maxPerGame:3,
+        window:{contest:360, cover:300, project:240, town:420},
+        contest:{interviewRel:-2, missRel:-3},
+        cover:{minutes:180, energy:-10, rel:8, refuseRel:-2},
+        project:{minutes:90, know:2, happiness:2, rel:6, missRel:-2},
+        town:{fee:10, minutes:60, base:0.3, knowledgeDiv:200, max:0.8, prize:60, rep:3, happiness:4, loseHappiness:1}},
       /* A rival's slips (the level's mistakeChance is the most it can be): the chance is mistakeChance x (floor + (1 − floor) x strain),
         strain being the worst of: tired (energy from tired[0] down to tired[1]: skips class), broke (cash and savings under brokeRents
         rents: skips a meal) and unhappy (happiness from unhappy[0] down to unhappy[1]: skips a shift). With no strain it skips its fun. */
