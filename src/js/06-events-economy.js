@@ -823,13 +823,15 @@
   function rivalInvest(r){
     var F=FG().invest,list=F.products[r.archetype]||['etf'],risk=F.risk[r.archetype]!=null?F.risk[r.archetype]:0.15,worth0=Math.max(1,rivalWorth(r));
     ['etf','hf','cry'].forEach(function(k){var cap=F.maxShare[k]*worth0;if(r[k]>cap){var ex=r[k]-Math.max(0,cap);r.bank+=ex;r[k]-=ex}});  /* take profits: a holding grown past its cap goes back to savings */
+    var tot=function(){return (r.etf||0)+(r.hf||0)+(r.cry||0)};
+    ['cry','hf','etf'].forEach(function(k){var over=tot()-F.maxTotal*worth0;if(over>0&&r[k]>0){var ex=Math.min(r[k],over);r.bank+=ex;r[k]-=ex}});  /* and all three together stay under maxTotal, the riskiest sold first */
     list.forEach(function(k){
       var score=expRet(k)-risk*VOL[k],held=k==='fd'?(r.fd||0):(r[k]||0);
       if(k!=='fd'&&held>0&&score<S.rate-F.sellMargin){r.bank+=held;r[k]=0;held=0}
       var avail=r.bank-F.keepBank;
       if(score>S.rate+F.margin&&avail>=F.minMove){
         if(k==='fd'){if(!(r.fd>0)){var a=Math.round(avail*F.share);r.bank-=a;r.fd=a;r.fdLock=S.day-1+F.fdDays}}
-        else{var room=Math.max(0,F.maxShare[k]*worth0-held),m=Math.round(Math.min(avail*F.share,room));if(m>=F.minMove){r.bank-=m;r[k]=held+m}}}
+        else{var room=Math.max(0,Math.min(F.maxShare[k]*worth0-held,F.maxTotal*worth0-((r.etf||0)+(r.hf||0)+(r.cry||0)))),m=Math.round(Math.min(avail*F.share,room));if(m>=F.minMove){r.bank-=m;r[k]=held+m}}}
     });
   }
   /* a bank loan to pay a course fee that blocks a clearly better role */
