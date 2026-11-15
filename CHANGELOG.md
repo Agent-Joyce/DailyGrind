@@ -1989,3 +1989,10 @@ Base: §110. Rival games only; single games unchanged.
 - Effect on difficulty: with `floor` 0.5, easy rivals slip on about 17% of days instead of 25% (four seeded mixed games), medium about 4% and expert about 1% (their `mistakeChance` is 3% and 2%; few slips either way). Part of the held level retune.
 
 **QA:** `check-social-rules.js` has a new case (the slip follows the strain, never exceeds `mistakeChance`, logs its reason; the plan reads as saving, about to start or studying; 61 in all). Docs: `CODE_MAP.md`, `docs/Configuration_Social_Update.md`, `docs/Daily Grind Config Guide.docx` (new `mistakes` row; `aims.newsGap`; the levels row).
+
+## 112. Rivals no longer go hungry with money in the bank
+
+Base: §111. Rival games only.
+
+- A rival ate only from cash in hand, first thing in the day. A rival whose cash went on the rent overnight while its savings sat in the bank skipped meals, and three in a row is the hospital: an expert Junior Doctor with about $500 left the race this way on day 22 (expert seed 5 in the §110 simulations). Now `rivalDay()` draws a meal's price from savings when cash is short, and a rival that still could not eat in the morning eats after the day's pay.
+- Overnight harness, 25 games each: hungry rival-days with savings or investments over $30 went from 1 to 0 (expert) and 0 to 0 (medium); the two left in mixed games are deliberate "skipped a meal to save money" slips (§111). No new dice.

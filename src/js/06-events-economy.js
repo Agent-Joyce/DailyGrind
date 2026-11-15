@@ -803,6 +803,7 @@
     if(r.focus&&AM){K=Object.assign({},K);if(r.focus==='happiness')K.moraleAim=Math.max(K.moraleAim,r.aimHappy||0);if(r.focus==='education')K.studyHours+=AM.studyHours}  /* today's Life Score focus (aimTick) */
     /* eat */
     var meal=Math.round(G(FDc.basic.cost)*(1-(FDc.bundleDiscount||0)));
+    if(mistake!=='meal'&&r.cash<meal&&r.bank>0){var wm=Math.min(r.bank,meal-r.cash);r.bank-=wm;r.cash+=wm}  /* savings pay for a meal before hunger does */
     if(mistake!=='meal'&&r.cash>=meal){r.cash-=meal;r.energy=clamp100(r.energy+FDc.basic.energy);r.happy=clamp100(r.happy+FDc.basic.happiness);r.health=clamp100(r.health+FDc.basic.health);r.hungry=0;used+=90}
     else r.hungry++;
     /* aim (medium, expert) */
@@ -854,6 +855,8 @@
     if(idle&&!r.ill&&mistake!=='lazy'&&dressed('casual')){var GG=CONFIG.side.gig;
       for(var gi=0;gi<Math.min(GG.maxRuns,Math.ceil(K.shifts)+1)&&r.energy+GG.energy>=25&&load+GG.minutes<=CONFIG.time.maxWorkMinutes;gi++){
         r.cash+=Math.round(GG.pay*payIdx());r.energy=clamp100(r.energy+GG.energy);r.happy=clamp100(r.happy-workHap(-GG.energy));r.health=clamp100(r.health+workHp(GG.minutes));load+=GG.minutes;used+=GG.minutes;r.gigs=(r.gigs||0)+1}}
+    /* no money for breakfast: eat after the day's pay instead */
+    if(r.hungry&&mistake!=='meal'&&r.cash>=meal){r.cash-=meal;r.energy=clamp100(r.energy+FDc.basic.energy);r.happy=clamp100(r.happy+FDc.basic.happiness);r.health=clamp100(r.health+FDc.basic.health);r.hungry=0;used+=90}
     /* study towards the target (or anything, for easy rivals now and then) */
     var tg=r.target&&CAREERS[r.target.c]&&CAREERS[r.target.c].ranks[r.target.i],need=tg?(tg.q||[]).filter(function(q){return rivalLv(r,q[0])<q[1]}):[];
     if(!K.plans&&!r.study&&rrand()<K.studyChance){var ts=Object.keys(TRACKS).filter(function(t){return (r.edu[t]||0)<totMods(t)});
