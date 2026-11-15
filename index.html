@@ -1645,14 +1645,14 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
           minus risk x its daily swing beats the savings rate by margin, and sold when it falls sellMargin under it; share of the savings move each time (never
           more than maxShare of net worth in one product); fixed deposits lock for fdDays and are never sold early.
         loan: a planning rival with no loan that cannot pay a course fee for a role paying payGain times its job borrows the shortfall (in steps, tenure by index
-          from CONFIG.loan.tenures, limit as yours) and repays when it can; not repaid graceDays after the due date it is out of the race, as you would be. */
+          from CONFIG.loan.tenures, limit as yours; its net worth after the fee must stay above keepWorth) and repays when it can; not repaid graceDays after the due date it is out of the race, as you would be. */
       fullGame:{
         meals:{poorRents:1, treatBelow:40, treatKeepRents:3},
         home:{moveRents:6, backRents:1},
         invest:{keepBank:300, share:0.5, minMove:100, margin:0.1, sellMargin:0.3, maxShare:{etf:0.5, hf:0.3, cry:0.1}, fdDays:4,
           products:{careerist:['etf'], scholar:['fd'], investor:['fd','etf','hf'], socialite:['etf'], hustler:['etf','hf','cry']},
           risk:{careerist:0.15, scholar:0.2, investor:0.05, socialite:0.15, hustler:0.02}},
-        loan:{on:true, payGain:1.3, tenure:2}},
+        loan:{on:true, payGain:1.3, tenure:2, keepWorth:300}},
       /* Awareness of the player and each other (medium and expert rivals; everything is a bounded modifier on an existing chance).
         leaderSabotage: x a rival's sabotage chance against whoever leads the Life Score (you or a rival; the lead is held by points);
         leaderFirst: levels whose sabotage on other rivals goes for the leader before the one just ahead;
@@ -4813,7 +4813,7 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
   }
   /* a bank loan to pay a course fee that blocks a clearly better role */
   function rivalBorrow(r,tg,fee,keep,j){
-    var F=FG().loan,L=CONFIG.loan;if(!F||!F.on||!L.enabled||r.loan||!j||tg.pay<j.rk.pay*F.payGain)return;
+    var F=FG().loan,L=CONFIG.loan;if(!F||!F.on||!L.enabled||r.loan||!j||tg.pay<j.rk.pay*F.payGain||rivalWorth(r)-fee<F.keepWorth)return;  /* a loan solves a cash shortage, not insolvency: net worth after the fee must stay above keepWorth, or the bankrupt rule would end the rival */
     var assets=r.cash+r.bank+(r.etf||0)+(r.hf||0)+(r.cry||0)+(r.fd||0),limit=Math.floor(Math.min(L.maxLoan,L.baseLimit+L.limitPerAsset*assets)/L.step)*L.step;
     var need=Math.ceil((keep+fee-r.cash-r.bank)/L.step)*L.step;if(need<=0)need=L.step;  /* the savings are drawn first */
     if(need>limit)return;
