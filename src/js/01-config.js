@@ -550,7 +550,7 @@
       /* a friend's job tip lasts 'days' days (counting today): the next interview gets passBonus added to its pass
         chance and never fails for "no openings". It is used up by that interview, pass or fail. */
       tip:       {days:3, passBonus:0.3},
-      /* The safety net (CHANGELOG 111): once a game (perGame), when you have no clothes at all and cannot afford the cheapest way to get
+      /* The safety net (CHANGELOG 116): once a game (perGame), when you have no clothes at all and cannot afford the cheapest way to get
         some (new Casual Clothes or a used outfit, counting cash and savings), and/or you have had no meal today, have none at home and cannot
         afford the cheapest meal out, the centre gives you what you lack. It takes 'minutes'. Clothes: a set of Casual Clothes with clothesDays
         days of wear. Meal: mealEnergy % energy and mealHappiness happiness, and it counts as today's meal. enabled:false turns it off.

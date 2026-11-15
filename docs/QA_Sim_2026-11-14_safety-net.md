@@ -1,4 +1,7 @@
-# QA simulation: Community Centre safety net (CHANGELOG 111)
+# QA simulation: Community Centre safety net (CHANGELOG 116)
+
+
+> **Rebase note (15 November):** after these runs the branch was rebased onto the moved base branch (Package A and B work). The commit hashes below are the pre-rebase ones: base \`0cc6d7b\` is now \`af2c530\`, and the safety-net build is now \`484f07a\` (plus the sim bot change \`c4b30de\`). The results were **not** re-run on the rebased code, so they measure the safety net on the earlier base, before the base branch's rival and bot changes.
 
 Date 14 November 2026. Single games only (no AI rivals).
 
@@ -7,7 +10,7 @@ Date 14 November 2026. Single games only (no AI rivals).
 | | Commit | Notes |
 |---|---|---|
 | Base | `0cc6d7b` | Before the safety net |
-| New | `fee9c77` | CHANGELOG §111 plus the sim bot change below |
+| New | `fee9c77` | CHANGELOG §116 plus the sim bot change below |
 
 - Players: 20 careful (seeds 1 to 20) and 10 random (seeds 101 to 110) per build, single mode, default difficulty.
 - Command: `node tools/qa/run-sims.js <folder> 20 10 1 101 [base page]`. Raw results: `QA_Sim_2026-11-14_safety-net.json` (`base.results`, `new.results`).

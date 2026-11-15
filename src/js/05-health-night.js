@@ -144,7 +144,7 @@
     if(S.medDebt>0)push('bad','🧾 Medical bill arrears: '+money(S.medDebt)+' owed, '+money(medInstal())+' due tomorrow morning (late fee if you can’t pay). Pay more at the Hospital.');
     if(S.hungry>=1&&!S.fed)push('bad','🍽 '+S.hungry+' day'+(S.hungry>1?'s':'')+' without a meal and none yet today: '+FD.hungryDaysToHospital+' in a row puts you in hospital.');
     else if(!S.fed&&S.ap<M(15))push('warn','🍽 No meal yet today. Eat before you end the day.');
-    /* earlier, specific warnings for the two ways a bad run snowballs: no meal you can pay for, and no clothes you can pay for (CHANGELOG 111) */
+    /* earlier, specific warnings for the two ways a bad run snowballs: no meal you can pay for, and no clothes you can pay for (CHANGELOG 116) */
     (function(){var N=safetyNeeds(),have=S.cash+S.bank,help=function(ok){return N.on&&ok?(N.left>0?' The Community Centre can help once this game.':' (The Community Centre has already helped you once.)'):''};
       if(!S.fed&&!(S.food||[]).some(function(p){return !p.sp})&&have<safetyCheapMeal())push('bad','🍽 You cannot afford a meal: the cheapest is '+money(safetyCheapMeal())+' and you have '+money(have)+' in cash and savings. Work a shift first, or sell something at the Second-Hand Shop.'+help(true));
       if(naked())push('bad','👕 You are out of clothes: no shift away from home until you have some (the cheapest is '+money(safetyCheapClothes())+(have<safetyCheapClothes()?', and you have '+money(have)+' in cash and savings':'')+').'+help(have<safetyCheapClothes()));

@@ -274,7 +274,7 @@
     {name:'a broken promise to answer (a cancelled study session)',bld:'msgsapp',need:['promise','cdo'],
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.townMood='competitive';S.rpacts=[];S.asked=null;
         S.pact={i:1,kind:'study',since:S.day-2,until:S.day+3,pot:0,stake:0,terms:uiTerms(S),progress:1,missed:0,next:S.day+1,reschedules:0,reachedMe:null,reachedThem:null,
-          problem:{kind:'study',text:'Leo cancelled a session because of fatigue.',notice:false,day:S.day,expires:S.day+2}}}}
+          problem:{kind:'study',text:'Arjun cancelled a session because of fatigue.',notice:false,day:S.day,expires:S.day+2}}}}
   ];
   /* a contract's fixed terms, as contractTerms() builds them (it is not exposed to the check) */
   function uiTerms(S){var C=G.CONFIG.rivals.contracts,cp=function(o){return JSON.parse(JSON.stringify(o))};

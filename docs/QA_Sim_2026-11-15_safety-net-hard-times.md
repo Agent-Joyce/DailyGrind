@@ -1,4 +1,7 @@
-# QA simulation: safety net under hard times (CHANGELOG 111)
+# QA simulation: safety net under hard times (CHANGELOG 116)
+
+
+> **Rebase note (15 November):** after these runs the branch was rebased onto the moved base branch (Package A and B work). The commit hashes below are the pre-rebase ones: base \`0cc6d7b\` is now \`af2c530\`, and the safety-net build is now \`484f07a\` (plus the sim bot change \`c4b30de\`). The results were **not** re-run on the rebased code, so they measure the safety net on the earlier base, before the base branch's rival and bot changes.
 
 Date 15 November 2026. Follow-up to [QA_Sim_2026-11-14_safety-net.md](QA_Sim_2026-11-14_safety-net.md), whose normal-difficulty games never reached the safety net.
 
