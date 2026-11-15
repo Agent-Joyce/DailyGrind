@@ -5,9 +5,12 @@
    Ask the user before running simulations (CLAUDE.md), and save the report to docs/QA_Sim_<date>_<change>.md/.json.
 
    Usage (from the repo folder):
-     node tools/qa/run-sims.js <folder outside the repo> [survive=20] [random=10] [surviveSeed=1] [randomSeed=101] [page] [--no-comm] [--rivals=level] [--rival-count=n]
+     node tools/qa/run-sims.js <folder outside the repo> [survive=20] [random=10] [surviveSeed=1] [randomSeed=101] [page] [--no-comm] [--rivals=level] [--rival-count=n] [--difficulty=easy|normal|hard] [--start=broke]
    --no-comm: the careful player does not use the Community Centre (to measure what it adds to morale).
    --rivals=easy|medium|expert|mixed [--rival-count=1..3]: play games with AI rivals (30 days); each result lists the rivals.
+   --difficulty=easy|normal|hard: start every game at that difficulty (default normal; Easy and Hard start from the Custom game drawer).
+   --start=broke: a hard-times start for testing safety nets: about $20 in cash, no savings, one day of clothes left and no food at home.
+     It is set through the test hook after the game starts, so it is a scenario, not natural play; the report and results record it.
    page: another copy of index.html to run instead (for example the base build when comparing two builds).
    Seeds replay the same games as long as index.html has not changed. */
 const fs=require('fs'),path=require('path');
@@ -15,6 +18,9 @@ let pw;try{pw=require('playwright')}catch(e){pw=require('/opt/node22/lib/node_mo
 const here=__dirname,repo=path.resolve(here,'..','..');
 const argv=process.argv.slice(2),flags=argv.filter(a=>a.startsWith('--')),noComm=flags.includes('--no-comm');
 const rv=(flags.find(a=>a.startsWith('--rivals='))||'').split('=')[1]||'',rvCount=+((flags.find(a=>a.startsWith('--rival-count='))||'').split('=')[1]||3);
+const diffArg=(flags.find(a=>a.startsWith('--difficulty='))||'').split('=')[1]||'normal',startArg=(flags.find(a=>a.startsWith('--start='))||'').split('=')[1]||'';
+if(['easy','normal','hard'].indexOf(diffArg)<0)throw new Error('--difficulty must be easy, normal or hard');
+if(startArg&&startArg!=='broke')throw new Error('--start must be broke');
 const [outArg,sv='20',rn='10',ss='1',rs='101',page]=argv.filter(a=>!a.startsWith('--'));
 if(!outArg)throw new Error('Usage: node tools/qa/run-sims.js <folder outside the repo> [survive] [random] [surviveSeed] [randomSeed] [page]');
 const out=path.resolve(outArg);
@@ -30,7 +36,7 @@ const hook='  window.__G={get S(){return S},set S(v){S=v},get loc(){return loc},
   'hasDress:hasDress,price:price,qualFee:qualFee,lesCount:lesCount,lesHours:lesHours,inProgress:inProgress,expShort:expShort,'+
   'shutLeft:shutLeft,myJob:myJob,dist:dist,homeFee:homeFee,maxDays:maxDays,rivalWorth:rivalWorth,lifeScore:lifeScore};';
 src=src.replace(marker,hook+'\n'+marker);
-const cfg=`<script>window.__QA={survive:${+sv},random:${+rn},surviveSeed:${+ss},randomSeed:${+rs},noComm:${noComm},rivals:${JSON.stringify(rv)},rivalCount:${rvCount}};</script><script src="sim.js"></script>`;
+const cfg=`<script>window.__QA={survive:${+sv},random:${+rn},surviveSeed:${+ss},randomSeed:${+rs},noComm:${noComm},rivals:${JSON.stringify(rv)},rivalCount:${rvCount},difficulty:${JSON.stringify(diffArg)},start:${JSON.stringify(startArg)}};</script><script src="sim.js"></script>`;
 const at=src.lastIndexOf('</body>');src=src.slice(0,at)+cfg+'\n'+src.slice(at);
 fs.writeFileSync(path.join(out,'index.html'),src);
 fs.copyFileSync(path.join(here,'sim.js'),path.join(out,'sim.js'));
@@ -43,7 +49,7 @@ fs.copyFileSync(path.join(here,'sim.js'),path.join(out,'sim.js'));
   await pg.waitForFunction(()=>window.__QA_RESULTS,null,{timeout:1800000,polling:1000});
   const res=await pg.evaluate(()=>window.__QA_RESULTS);
   fs.writeFileSync(path.join(out,'results.json'),JSON.stringify(res,null,1));
-  console.log(`${res.length} games (survive ${sv} from seed ${ss}, random ${rn} from seed ${rs}${noComm?', --no-comm':''}${rv?', rivals '+rv+' x'+rvCount:''}); page errors: ${errs.length?errs.join(' | '):'none'}`);
+  console.log(`${res.length} games (survive ${sv} from seed ${ss}, random ${rn} from seed ${rs}${noComm?', --no-comm':''}${rv?', rivals '+rv+' x'+rvCount:''}${diffArg!=='normal'?', '+diffArg:''}${startArg?', start '+startArg:''}); page errors: ${errs.length?errs.join(' | '):'none'}`);
   res.forEach(r=>console.log(r.mode,r.seed,'day',r.lastDay,r.ending,'$'+r.netWorth,r.rank,r.job,r.vitals,JSON.stringify(r.morale||{}),Object.keys(r.issues).map(k=>k+(r.issues[k]>1?' x'+r.issues[k]:'')).join('; ')));
   console.log('Results in '+path.join(out,'results.json'));
   await br.close();

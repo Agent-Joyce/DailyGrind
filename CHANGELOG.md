@@ -111,6 +111,10 @@ Everything adjustable lives in the `CONFIG` block near the top of the script: `C
 ---
 
 103. [Housing money and social contracts local update](#103-housing-money-and-social-contracts-local-update)
+104. [Review fixes: rival dress codes, pact loopholes, Rules text, a clearer morning; QA skills](#104-review-fixes-rival-dress-codes-pact-loopholes-rules-text-a-clearer-morning-qa-skills)
+105. [Modern pathways and jobs; gig delivery, tutoring and the creator path](#105-modern-pathways-and-jobs-gig-delivery-tutoring-and-the-creator-path)
+106. [Source split into src/ with a build; an installable, offline website build](#106-source-split-into-src-with-a-build-an-installable-offline-website-build)
+107. [Interface: compact header, button levels, a guided first day, game feel and settings](#107-interface-compact-header-button-levels-a-guided-first-day-game-feel-and-settings)
 
 ## 1. Jobs: School and Bank
 
@@ -1716,3 +1720,439 @@ The second half of the last rivals step (batch 4b). Everything here is light and
 - All new probabilities, stakes, durations, relationship effects and event frequencies live in CONFIG. Removed obsolete fixed `money.bet.stake`, `politics.pact.pot` and `money.loan.easyAskChance`; saved amounts remain intact. Save v8 preserves active old money records; an old shared bungalow is restored with its housemate at the apartment, with an explanatory note.
 - Updated CODE_MAP, the Word configuration guide and the [configuration supplement](docs/Configuration_Social_Update.md), plus the [test guide](docs/Social_Update_Test_Guide.md).
 - Validation: 49 isolated Node code regression checks passed; inline JavaScript parses and whitespace checks pass. No browser simulations or desktop/mobile UI checks were run, per user instruction. Layout, browser integration, balance and long-run diversity remain unverified. Historical QA reports are unchanged.
+
+
+## 104. Review fixes: rival dress codes, pact loopholes, Rules text, a clearer morning; QA skills
+
+Base: `2926441`. Found by a code review of the build; no CONFIG keys added or removed.
+
+**Gameplay fixes**
+
+- **AI rivals were locked out of every smart- and suit-dress job.** A rival bought clothes only for the job it already held, while its job applications skipped any role it was not already dressed for, so no rival could ever move from a casual role to a smart or suit one. Saved simulations show the effect: medium and expert rivals finished as Nursing Aide in 120 of 120 cases (`QA_Sim_2026-10-31_rival-parity.json`). Now a rival also buys the clothes for the best open, better-paid role it already qualifies for (`rivalDressUp()`, `rivalDressed()`), as long as its rent is still covered, and `rivalTarget()` counts the price of clothes it does not own. No new dice; single games are unchanged.
+  - **Effect on difficulty: large.** In 18 seeded overnight-only games (medium, expert, mixed; the old build against this one, same seeds) planning rivals' final jobs went from Nursing Aide or Data Annotator in every case to Junior Doctor, Specialist Doctor or Chief of Surgery, and their net worth from about $3,000–$20,000 to about $13,000–$63,000. Rival dropouts were the same in both builds. Rivals still converge on the Hospital ladder. `CONFIG.rivals.levels` has **not** been retuned; a rival simulation run is needed to decide that.
+- **Wealth Challenge loophole closed.** Ending the pact early used to refund both stakes even after your partner had reached the target. Now, if your partner has reached the target and you have not, leaving gives them the pot; otherwise stakes are refunded as before. The "End this pact" row says so.
+- **A savings pact no longer ends silently.** When a "partner missed the commitment" problem is left unanswered, the pact still ends and the pot is still split once, and the morning now says so.
+- `socialDecision()` checks the rival exists before spending your time. Removed a duplicated missed-session block in `contractTick()` (no behaviour change).
+
+**Text**
+
+- Rules, the welcome text and the net-worth tooltip no longer say that reaching a rank wins or ends the game: ranks are milestones and the game runs to its last day (as `checkWin()` has done since section 93).
+- Contract endings read in plain words ("kept in full", "ended with missed obligations", "ended early", "you won", "your partner won", "a tie") instead of internal words. Responses to a broken promise say what happened and the relationship change.
+
+**Night cards and the morning pop-up** (presentation only)
+
+- Night cards show "1 of 3" when there is more than one.
+- The morning pop-up starts with how the night went (where you slept, overnight energy, happiness, health and knowledge) and yesterday's earned, spent and net-worth change.
+- Its lines are in three groups, each sorted by urgency: **Do today**, **Overnight**, **Still going on**.
+- One line per topic. An overdue loan, an illness, burnout, rent, being out of clothes and a job tip used to be able to appear twice in different words; the more serious line is kept and the other becomes its detail (`tidyMorning()`, `noteMeta()`).
+- A storyline or economic shock shown on a night card is not repeated that morning. On later mornings it is one short line under Still going on.
+- One rival's news is one line, with one Congratulate button.
+- Long lines show their first sentence, with the rest behind "More" (`noteSplit()`).
+- A note may now carry `c` (group), `k` (topic), `m` (detail), `g`/`s` (rival group and short text). Existing `S.notes.push` lines need no change; older saves load as before. `S.summary.n` holds the overnight change; `S.pending.n` the number of cards; a trend's `card` the day its card was shown.
+- Kept on purpose: the "you lost your home" morning line, because it carries how to get a home again, which the night card does not.
+
+**QA**
+
+- New: `tools/qa/check-morning.js` (night cards and morning pop-up, desktop and phone), `tools/qa/check-rival-careers.js` (dress-code lock, rival dice in single games, a table of rivals' final jobs; it fails on the previous build), `tools/qa/run-all-checks.js` (all six fast checks, one table), `tools/qa/qa-page.js` (shared hooked-page helper).
+- `check-social-rules.js`: 10 new cases for the fixes above (59 in all); it now loads the clothes table.
+- Claude skills in `.claude/skills/`: `dg-quick-checks`, `dg-ui-check`, `dg-sim`, `dg-sim-suite`, `dg-rival-audit`, `dg-bug-hunt`. `.gitignore` now keeps `.claude/skills/` and ignores the rest of `.claude/`.
+- Validation: `run-all-checks.js` passed (social rules 59, regressions 22, personalities 19, daily UI 43 per width, morning 6 per width, rival careers). **Not run:** the full UI check and the bot simulations. Rival balance after the dress fix is unverified.
+
+
+## 105. Modern pathways and jobs; gig delivery, tutoring and the creator path
+
+Base: section 104. Approved by the owner before editing (pathway names, levels, modules, roles, pay and the three mechanics). No building was added or renamed; the map and its pictures are unchanged.
+
+**Four new School pathways** (house defaults for modules, lessons and hours: Certificate 4h, Degree 16h, Masters 22h of study in all)
+
+| Pathway | Key | Levels | Certificate fee | Modules |
+|---|---|---|---|---|
+| Data & AI | `data` | Certificate, Degree, Masters | $60 | Spreadsheets & SQL, Statistics Basics · Data Analysis, Data Visualisation, Machine Learning Models, Data Engineering · Generative AI, MLOps, AI Ethics & Governance, Data Science Thesis |
+| Creative Media | `media` | Certificate, Degree | $45 | Visual Design Basics, Short-Form Video · Brand & Content Strategy, UX Design, Motion Graphics, Portfolio Project |
+| Green Energy | `green` | Certificate, Degree | $50 | Electrical Safety, Solar Basics · Solar & Storage Systems, EV Charging Systems, Energy Auditing, Green Building Project |
+| Logistics | `logi` | Certificate, Degree | $45 | Warehouse Operations, Delivery Routing · Inventory Planning, Supply Chain Analytics, Customs & Trade, Fleet Management |
+
+- New `CONFIG.education.certFee` entries: `data:60, media:45, green:50, logi:45`. `blank()` `edu` has the four keys; older saves start them at 0 (checked).
+- `CONFIG.rivals.career.preferences` gained one small taste each: generous `green`, ambitious `data`, reckless `media`, vindictive `logi`.
+
+**Sixteen new roles in five new job lines** (new lines only, so no saved job changes position; the proposal listed 15 by miscount, the roles are as proposed)
+
+| Job line | Role | Base pay | Needs | Dress |
+|---|---|---|---|---|
+| Electronics Store (Digital Studio) `elec4` | Data Analyst | $165 | Data & AI Certificate | casual |
+| | Data Scientist | $240 | Data & AI Degree + Technology Certificate | smart |
+| | UX Designer | $245 | Creative Media Degree + Technology Certificate | smart |
+| | Machine Learning Lead | $430 | Data & AI Masters + Technology Degree | suit |
+| Bank (Analytics) `bank2` | Fraud Analyst | $235 | Data & AI Degree + Finance Certificate | smart |
+| Clothes Mall (Studio) `mall3` | Content Assistant | $140 | Creative Media Certificate | casual |
+| | Social Media Manager | $215 | Creative Media Degree | smart |
+| | Brand Director | $320 | Creative Media Degree + Sales Degree | suit |
+| Factory (Green Energy) `factory3` | Solar Installer | $150 | Green Energy Certificate | casual |
+| | EV Charging Technician | $175 | Green Energy Certificate + Engineering Certificate | casual |
+| | Energy Systems Engineer | $260 | Green Energy Degree + Engineering Certificate | smart |
+| | Sustainability Manager | $340 | Green Energy Degree + Engineering Degree + Finance Certificate | suit |
+| Supermarket (Fulfilment) `market3` | Warehouse Picker | $95 | none | casual |
+| | Dispatch Coordinator | $155 | Logistics Certificate | casual |
+| | Supply Chain Planner | $230 | Logistics Degree | smart |
+| | Regional Logistics Manager | $330 | Logistics Degree + Data & AI Certificate + Finance Certificate | suit |
+
+- The game now has 11 pathways and 87 roles. Rivals can study the new pathways and take the new roles (they read the same tables).
+- Table check: no new rule breaks. Two new cross-line warnings of the kind the tables already had: Dispatch Coordinator ($155, 4h study) pays more than Store Supervisor ($140, 9h) at the Supermarket; Machine Learning Lead ($430, 38h) pays more than Sales Director ($350, 48h) at the Electronics Store. The older break (Principal Engineer over Project Lead) is left as it is at the owner's request and listed as KNOWN by the checker.
+
+**Three ways to earn outside a job** (new `CONFIG.side`; pay follows wages, prices and your productivity, with no knowledge bonus)
+
+- **📦 Gigs app** (`CONFIG.side.gig`; a working phone or tablet). A delivery run: 1h, −6% energy, no interview, no dress code beyond having clothes. Fare $16 at 4 stars, +$4 a star (so $20 at 5). Each run on time +0.1 ★ (start 4, top 5, floor 1). Under 35% energy a run has a 35% chance of arriving late: 60% of the fare and −0.4 ★. 20% chance of a $2–6 tip. At most 4 runs a day. Runs count towards the daily work limit and burnout.
+- **🧑‍🏫 Tutoring** at the School (`CONFIG.side.tutor`): 1h30, −5% energy, +1 happiness, once a day, needs a completed qualification. Pay by your highest level: Certificate $30, Degree $50, Honours $65, Masters $80.
+- **🎬 Creator app** (`CONFIG.side.creator`; phone, tablet or the computer at home). A post: 1h30, −6% energy, +20 to 60 followers, +50% for each Creative Media level, 10% chance of going viral (×4); at most 2 posts a day. Each night sponsors pay $0.05 a follower, give or take 50%. A day without a post loses 3% of your followers. The sponsors' line appears in the morning pop-up under Overnight.
+- **Rivals:** a rival with no job, or whose workplace is closed, does delivery runs at the 4-star fare (no dice). Tutoring and the creator path are for the player only in this round.
+- New state: `S.gig {stars, d, runs, total}`, `S.tutorDay`, `S.creator {f, d, posts, last, earned}` (in `blank()`; older saves get the defaults). New actions `gig`, `tutor`, `post`; new app screens `gigsapp`, `creatorapp`.
+- Dice: the new actions roll only when used, and the night rolls for sponsors only once you have followers. A new game now rolls a fee variation for four more pathways and a pay variation for sixteen more roles, so seeded simulations no longer match earlier reports.
+
+**QA**
+
+- New: `tools/qa/check-tables.js` (pathway and job rules from the game's own tables; `--list` prints them all) and `tools/qa/check-modern.js` (11 checks at each of two widths: enrol and finish a module in each new pathway, an older save, applying for all 16 roles, gig fares, lateness, limits, tutoring, followers, sponsors, the rival gig, layout). Both are in `run-all-checks.js`, which now runs eight scripts; all pass.
+- **Not run:** the full UI check and the bot simulations. Balance of the new roles and of the three ways to earn is untested against a playing bot.
+
+
+## 106. Source split into src/ with a build; an installable, offline website build
+
+No gameplay, CONFIG or visual change.
+
+- **`src/` is now the source of truth; `index.html` is generated.** The page shell is `src/index.html`; the stylesheet is six files in `src/css/`; the script is thirteen files in `src/js/`, cut at its twelve numbered sections and still joined into one closure; the nineteen embedded pictures are real files in `src/img/` (the sixteen town pictures are identical to those in `assets/illustrated-town-v2/`).
+- **`node tools/build.js`** (no dependencies) writes the single-file `index.html` and the website build in `dist/` (`index.html`, `app.css`, `app.js`, `img/`, `manifest.webmanifest`, `icons/`, `sw.js`; not committed). `--check` fails when `index.html` is not what `src/` builds.
+- **Proof of no change:** the first rebuild was byte-for-byte identical to the previous `index.html` (`cmp`).
+- **The Google Fonts link is gone.** It loaded Bricolage Grotesque, but a later style rule sets the page font to `Inter` with system fallbacks, so that font was never shown. No font is embedded; the look is unchanged and the game no longer contacts another site. Whether to ship a real brand font is a design decision for the UI phase.
+- **Website build, installable and offline:** a web app manifest, three icons drawn from the brand mark (`tools/make-icons.js`), and a service worker that caches the build's files, answers cache-first, and replaces the cache when a new build is deployed. It is registered only in the website build and only over http(s); the single file is unaffected. Saves stay in `localStorage`. Inside itch.io's frame the offline cache works, but "install as an app" is offered only on your own site.
+- **Sizes:** single file 2,255 KB (as before). Website build: page 24 KB, styles 104 KB, script 791 KB, pictures and icons about 1,000 KB, loaded separately and cached.
+- **QA:** new `tools/qa/check-build.js` (12 checks: the build check, no outside links, and at 1280 and 390 px the site starts a game with no errors or missing files, requests nothing from another site, loads its pictures, has a valid manifest and icons, and reloads with the network off). It is the first of nine scripts in `run-all-checks.js`; all pass. New skill `dg-build`. **Not run:** the full UI check and the bot simulations.
+- **For the owner:** the account-level skills `daily-grind-add-pathway`, `daily-grind-edit-jobs` and `daily-grind-checks` still say to edit `index.html`; they need to say "edit `src/js/01-config.js` and `src/js/02-world.js`, then run `node tools/build.js`".
+
+
+## 107. Interface: compact header, button levels, a guided first day, game feel and settings
+
+No rule or CONFIG change. Everything here is presentation: it spends no time or money and rolls no dice.
+
+**Compact header**
+
+- Two rows. On a phone about 92px tall (was about 200): day, time left, cash and the buttons; then energy, health and mood with icons, and today's meal, work and study as short chips. On desktop 104px (was 156).
+- Net worth progress towards the next rank is the header's bottom edge. On a phone the net worth line and alert count are not in the header: net worth is on Today and Life, and alerts show as a red badge on the Today tab.
+- On a phone the logo is left off the header, Controls is a ⚙ button, and "Bunk outside" reads "Sleep out" (the full label stays for screen readers).
+- The three vitals moved into their own group (`.app-vitals`).
+
+**Town map**
+
+- Place names are drawn in one layer above every building (`#townLabels`), so a neighbouring picture or pin no longer covers a name. Phones still show names in the list below the map.
+
+**Buttons: three levels**
+
+- Main actions are solid teal. Secondary ones (Back, Decline, small and utility buttons, places, tabs not in use, quick cards other than the suggested one) are outlined. Risky ones (Reset, betray, end a pact, move a flatmate out, sabotage, terminate) use a warning colour, and "Sleep outside" is amber.
+- Removed the two rules that painted every button teal with `!important`, and one that forced header labels on.
+
+**Welcome screen**
+
+- Two large buttons: **Start playing** (Normal) and **Play against AI rivals** (three medium rivals, Competitive town). A ticked box, "Guide me through my first day". Mode, rival options, Easy and Hard and the starting trait are in a **Custom game** drawer; the rules tiles are in **How the game works**.
+- `#welcomeGo` is still the Normal start button and `#diffs`, `#modes`, `#rivCount`, `#rivLevel`, `#rivMood`, `#traitBox` keep their ids.
+
+**Guided first day** (`S.coach = {on, step, did}`; `coachNow()`, `coachPaint()`)
+
+- Four steps, each finished by doing it in the game: get a job, work a shift, eat, sleep at home. A bar at the top of the panel says what to do, offers "Take me there" (an ordinary walk, with its usual time), and highlights the place on the map or the button to press. A step stays done once done. "Skip guide" or the closing message turns it off; the First-week checklist is unchanged.
+
+**Game feel** (`src/js/11-feel.js`)
+
+- Cash, energy, health and mood in the header count up or down and flash green or red when they change. Pay of $10 or more shows a small burst of coins. A short "☀ Day N" sweep plays when the night ends; it cannot block taps.
+- Sounds for what just happened: pay, spending, a meal, a lesson, a qualification or rank, a new day, and a soft tap on buttons. All synthesised; there is no music.
+- Phone vibration on the same events.
+- Motion is off when the device asks for reduced motion, when the setting says so, and in automated browsers (so checks read settled numbers; `localStorage dailyGrind.forceMotion = 1` turns it on for a test).
+
+**Settings** (the Controls menu, now headed Settings; saved in `localStorage dailyGrind.settings`)
+
+- New: Vibration on/off (shown only where the browser supports it), Motion on/reduced, Text size normal/large/larger (panels and pop-ups scale; header and navigation stay put). Sound, action preview, rules, the log and Reset were already there.
+
+**Toasts on a phone** sit above the navigation, two at most, so they no longer cover the header or the guide.
+
+**Not built from this round's scope:** merging several toasts from one action into one, quieter chips, a separate settings sheet, and music. The old hidden header and most older style layers are still there; only the rules this work replaced were removed.
+
+**QA**
+
+- New `tools/qa/check-ux.js` (the welcome screen, both start buttons, the whole guided day by real clicks, skip and reload, header height and overlaps, button levels, settings, count-up and day sweep with motion on and off, phone toasts): 21 checks over two widths. `check-daily-ui.js` updated for the header and button levels. `run-all-checks.js` now runs ten scripts; all pass.
+- `run-uicheck.js`, `run-suite.js` and `sim.js` open the Custom game drawer and untick the guide before starting; the exact clicks they make were verified on the new screen.
+- **Not run:** the full UI check and the bot simulations. No real phone was used; phone results are Chromium at 390×844.
+
+## 108. Package A: the UI check and simulations after §104–107, and the fixes they found
+
+Base: `5ac693b` (§107 plus the roadmap). First full UI check and bot simulations since §103.
+
+**Fixes**
+
+- **Planning rivals starved when their clothes ran out.** A rival with no clothes can neither work nor take delivery runs, and buys new ones only with cash in hand, so it went bankrupt or was hospitalised for hunger around day 9–17. In the first simulations about a third of medium and expert rivals dropped out this way. Three routes led there: a course fee that kept back only the rent plus $80, a last-day purchase put off because rent was due that night, and paying for treatment after days off sick. Now `rivalDay()` replaces an outfit on its last day whenever it can afford one (clothes come before the rent: a short rent shortfall is earned back the next day), and a course fee or a treatment keeps back the price of the next outfit (`rivalDressDays()`). Rival dice only; single games are unchanged. In 75 seeded overnight games (25 each of medium, expert, mixed) no rival now drops out; before, 5 of 6 medium games had a dropout.
+- **Script error from the bank screen.** Pressing Deposit or Withdraw on a product card that is not on show (the random bot can; a person cannot) called the amount painter on a card with no amount controls (`modernSetAmount()` now skips such a card).
+- **Buttons off the phone screen.** The four answers to a broken promise (Forgive, Challenge, Request, Terminate) and the three for a contract session due today now wrap on a phone (`.btnrow`).
+
+**QA tools**
+
+- `tools/qa/check-rival-careers.js` fails when a planning rival goes two mornings running without clothes (32 such mornings on the base build, 0 now).
+- `tools/qa/uicheck.js`: five new situations (a delivery run in the Gigs app, the Creator app with followers, tutoring with a qualification, a Study Buddies contract with a session due and a competing shift, a broken promise). The button-colour rule now accepts the three button levels of §107 (it flagged every secondary and risky button, 3,837 notes) and reads the colour the button settles on, not mid-fade. The Gigs and Creator apps are treated as screens, not places, between presses.
+
+**Results** (reports in `docs/`)
+
+- UI check: [QA_UI_2026-11-14_package-a.md](docs/QA_UI_2026-11-14_package-a.md) ([raw](docs/QA_UI_2026-11-14_package-a.json)). Final run: 0 issues at 1280×800 and 390×844 (916 presses, 39 situations each), reload checks clean. Phone results are Chromium emulation.
+- Rival simulations: [QA_Sim_2026-11-14_package-a-rivals.md](docs/QA_Sim_2026-11-14_package-a-rivals.md) ([raw](docs/QA_Sim_2026-11-14_package-a-rivals.json)): 10 careful games each at medium, expert and mixed, three rivals, on the base and the fixed build. Rivals out of the race: 22 of 90 before, 0 of 90 after.
+- Single-game simulations: [QA_Sim_2026-11-14_package-a-single.md](docs/QA_Sim_2026-11-14_package-a-single.md) ([raw](docs/QA_Sim_2026-11-14_package-a-single.json)): 20 careful + 10 random; careful 20 of 20 reach day 20.
+- Ways to earn (gigs, tutoring, the creator path) compared with jobs by pay an hour: gigs $16–20 against $14–21 for jobs that need no study (capped at 4 runs a day, heavier on energy), tutoring $20–53 once a day (below the jobs its qualification opens), the creator path about $14 an hour over a 20-day game. None dominates a normal job; no change proposed.
+- Not changed: the legacy careful bot leaves 2–4 of 10 rival games early through the same no-clothes spiral after a degree fee; rival difficulty numbers (a retune is proposed to the owner, not applied).
+
+## 109. Rival archetypes: five ways to play, so rivals stop all climbing the Medicine ladder (Package B, item 22)
+
+Base: §108. Rival games only; single games draw no rival dice and are unchanged.
+
+**Why:** every planning rival valued a job by pay × days, and Medicine pays best at every level of study, so medium and expert rivals all ended on the Hospital ladder: in `check-rival-careers.js` 18 of 18 games ended with every surviving planning rival in the same career line. `diversifyRivals()` tried to split them at midgame and did not (the 50-game suite's GAME-01).
+
+**Archetypes** (new `CONFIG.rivals.archetypes`), separate from level (how well a rival plays) and personality (how it treats you). Each rival gets a different one, dealt in `makeRivals()` on the rival dice:
+
+| Archetype | Pathway tastes (`tracks`) | Shifts | Study hours | Money | Happiness aim | Community Centre |
+|---|---|---|---|---|---|---|
+| 🧗 Careerist | Medicine 1.25, Finance 1.1 | +0.25 | ×1 | as level | −5 | as level |
+| 🎓 Scholar | Technology 1.45, Engineering 1.4, Data & AI 1.35, Medicine 0.8 | −0.25 | ×1.25 | as level | as level | as level |
+| 📈 Investor | Finance 1.5, Data & AI 1.2, Medicine 0.8 | as level | ×1 | one step up (none → savings → invest) | as level | as level |
+| 🥂 Socialite | Creative Media 1.55, Sales 1.4, Food & Beverage 1.35, Customer Service 1.35, Medicine 0.75 | −0.25 | ×0.9 | as level | +12 | always |
+| ⚡ Hustler | Logistics 1.55, Green Energy 1.5, Engineering 1.15, Medicine 0.75 | +0.5 | ×0.8 | as level | −5 | as level |
+
+- `rivalSkill(r)` returns the level's numbers adjusted by the archetype; shifts never drop below one a day (less does not pay for food, rent and clothes; an easy scholar or socialite starved at 0.75).
+- `careerPreference()` now weights a job by the archetype's taste for the pathway of its first qualification (plus the existing bonus for levels already held). Easy rivals, which do not plan, pick a pathway at random weighted the same way.
+- The rival's profile shows its archetype above its personality; the start-of-game log lists level, archetype and personality; the Rules text lists the archetypes (from CONFIG).
+- **Removed:** `diversifyRivals()` and the `avoidCareer`/`avoidTrack`/`avoidCareers` fields it set; `CONFIG.rivals.career.preferences` (the personality tastes, now `archetypes.tracks`), `career.alternativeFloor` and `career.recheckDays`. With archetypes, turning the midgame switch off changed the converged games from 2 to 3 of 18, so it no longer earned its code.
+- **Saves:** `prepareRival()` (already run by `MIGRATIONS` for every save) gives an old rival a fixed archetype, `(rivalSeed + 2 × index + 1) mod 5`, so three rivals never share one and no dice are rolled, and deletes the removed fields. `SAVE_VERSION` is unchanged.
+- **Fix found on the way:** a planning rival kept its whole study time out of the day's work limit before choosing shifts. A scholar's longer study day (expert 5h40) left less than one shift, so it earned nothing, could not pay for the course and went bankrupt by day 7. The time kept for class now always leaves room for the first shift.
+
+**Results** (overnight harness: the player only sleeps, 12 games per level, 30 days, three rivals)
+
+| | Before (§108) | After |
+|---|---|---|
+| Games where every planning rival ended in one career line | 18 of 18 | 1 of 18 |
+| Medium net worth, median (10th–90th percentile) | $11,940 ($8,770–$15,679) | $8,999 ($3,639–$18,678) |
+| Expert net worth, median (10th–90th percentile) | $18,270 ($11,582–$23,400) | $12,977 ($4,853–$18,897) |
+| Easy net worth, median | $755 | $1,136 |
+| Rivals out of the race | 0 | 0 |
+
+- Final jobs now spread over the Medicine, Technology, Engineering, Creative Media, Logistics and Green Energy ladders, among others (`check-rival-careers.js`, 6 games per level: 7 Repair Technician, 7 Junior Doctor, 5 Specialist Doctor, 4 Chief of Surgery, 3 Chief Technologist, 3 Brand Director, then 2 each of Social Media Manager, Supply Chain Planner, General Manager, Chief Engineer, Appraiser, Principal Engineer and others). Rivals earn less on average because most no longer take the best-paid ladder; the spread is wider.
+- In mixed games medium now scores slightly above expert on Life Score (96 against 92 points, median): expert works more and is less happy. This is for the held level retune (Package A item 3, deferred by the owner until after Package B), which proposes a higher expert happiness aim.
+
+**QA**
+
+- `check-rival-careers.js`: the career-line count is now a real threshold: it fails when more than a third of games end with every planning rival in one line.
+- `check-social-rules.js`: the two tests of the removed career switch and personality tastes are replaced by two archetype tests (dealt one each, taste changes a job's value; level adjustments, the one-shift floor, and old saves given distinct archetypes without dice).
+- `tools/qa/suite-player.js` records `archetype` in rival snapshots in place of the removed fields; `report-suite.js` reports archetypes in the diversity table, and GAME-01 is now "rivals with different archetypes still finished on one path".
+- Docs: `CODE_MAP.md`, `CLAUDE.md`, `docs/Configuration_Social_Update.md`, `docs/Daily Grind Config Guide.docx` (archetypes row; career settings and tastes rows updated).
+
+## 110. Rivals play to win the Life Score (Package B, item 20)
+
+Base: §109. Rival games only; no new dice (single games unchanged).
+
+**Why:** a planning rival chose its day to maximise pay × days, but a rival game is won on eight Life Score categories, so rivals never tried for the places they were closest to.
+
+**How it works** (new `CONFIG.rivals.aims`; `aimTick()`, `rivalStanding()`)
+
+- Once a night, first in `rivalTick()`, each medium and expert rival (`aims.levels`) works out its place in every category from `lifeScore()` and the gap to the player just ahead and just behind (`rivalStanding()`, stored as `r.standing`).
+- It picks one focus for the day (`r.focus`): the category among happiness, health, education and reputation where the player just ahead is within `aims.close` (average happiness 6, unwell nights 1, qualification levels 1, reputation 6) and moving up is worth the most points for the gap. From `defendFrom` (80% of the game, the last fifth) it also weighs defending a place that the player just behind is that close to. Wealth and career stay its normal play. Easy rivals do not play for places.
+- Levers, all existing game numbers: **happiness** sets the day's happiness aim `moraleLift` (15) above the average it needs to pass or keep, so it makes calls, walks and Community Centre visits (`rivalDay()` morale block); **education** adds `studyHours` (1.5) to the day's lessons; **health** takes the `gymClass` (Spin) at the Gym at its normal price, with the rent and next outfit still covered (rivals did not use the Gym before; a rival there can now be met at the Gym); **reputation** adds `repPactChance` (0.15) to the nightly chance of a pact between rivals and makes that rival the one who proposes.
+- `r.aim` holds a short phrase ("chasing 2nd place in happiness", "defending 1st place in education", or "working towards Junior Doctor") for item 24 to show.
+- The Rules text says which levels play to win and from when they defend (from CONFIG).
+
+**Results** (overnight harness: the player only sleeps, 12 games per level, 30 days, three rivals; §109 → now)
+
+| | Medium | Expert | Mixed (expert / medium / easy) |
+|---|---|---|---|
+| Median Life Score points | 75 → 82 | 83 → 87 | 92 / 96 / 45 → 103 / 90 / 49 |
+| Average happiness (median) | 86 → 92 | 83 → 89 | 82 / 84 → 93 / 96 |
+| Median net worth | $8,999 → $10,230 | $12,977 → $12,191 | $7,065 → $6,371 |
+| Days with a focus | 84% | 86% | 57% (easy has none) |
+
+- Focus days by category (medium, 1,080 rival-days): happiness 585, education 279, reputation 44, health 0; a health place is rarely within one unwell night.
+- Expert now places above medium again in mixed games, which the §109 archetypes had reversed.
+
+**QA:** `check-social-rules.js` has a new case (a close happiness place becomes the focus with the right phrase and aim, a far one does not, easy rivals have no focus, and `aimTick()` rolls no dice; 60 in all). Docs: `CODE_MAP.md`, `docs/Configuration_Social_Update.md`, `docs/Daily Grind Config Guide.docx` (new `aims` row).
+
+## 111. Explainable rivals: what each rival is aiming for, and slips that follow its state (Package B, item 24)
+
+Base: §110. Rival games only; single games unchanged.
+
+**Aims**
+
+- Every rival now has an aim in words (`r.aim`, set each night by `aimTick()`). A medium or expert rival with a Life Score place in reach says what it is chasing or defending (§110). Otherwise, and for easy rivals, `rivalPlanAim()` gives the plan: "studying for the Medicine Certificate", "saving for the Creative Media Degree" (the next course fee is more than its cash and savings after the rent), "about to start the Logistics Certificate", "working towards Junior Doctor", "working as a Sales Clerk" or "looking for work".
+- The aim is the first line of the rival's profile (🧭 Aim, in `memoryProfile()`, which the Rivals tab card and the Overview profile show).
+- A change of aim goes into the morning news ("🏁 👩 Maya is saving for the Creative Media Degree."), at most once in `aims.newsGap` (3) days for each rival and never for the first aim of the game. In four seeded mixed games this was 54 lines over 116 mornings, under one a morning; the lines carry topic `aim<i>` so the morning pop-up keeps one per rival.
+
+**Slips follow state** (new `CONFIG.rivals.mistakes`; `rivalStrain()`, `rivalMistake()`)
+
+- Before, a rival had a flat `mistakeChance` of a bad day and then picked one of five slips at random (a skipped meal, class, shift, clothes or fun). Now the level's `mistakeChance` is the most it can be: the chance is `mistakeChance × (floor + (1 − floor) × strain)`, and the slip is the strain behind it. Tired (energy from 55 down to 20) skips class; broke (cash and savings under two rents) skips a meal; unhappy (happiness from 45 down to 15) skips a shift. With no strain the slip is skipping its fun. Skipping clothes is no longer a slip (it led into the no-clothes spiral of §108).
+- The rival's log says why ("skipped class: too tired."). One rival die a day for slips, where there were one or two.
+- Effect on difficulty: with `floor` 0.5, easy rivals slip on about 17% of days instead of 25% (four seeded mixed games), medium about 4% and expert about 1% (their `mistakeChance` is 3% and 2%; few slips either way). Part of the held level retune.
+
+**QA:** `check-social-rules.js` has a new case (the slip follows the strain, never exceeds `mistakeChance`, logs its reason; the plan reads as saving, about to start or studying; 61 in all). Docs: `CODE_MAP.md`, `docs/Configuration_Social_Update.md`, `docs/Daily Grind Config Guide.docx` (new `mistakes` row; `aims.newsGap`; the levels row).
+
+## 112. Rivals no longer go hungry with money in the bank
+
+Base: §111. Rival games only.
+
+- A rival ate only from cash in hand, first thing in the day. A rival whose cash went on the rent overnight while its savings sat in the bank skipped meals, and three in a row is the hospital: an expert Junior Doctor with about $500 left the race this way on day 22 (expert seed 5 in the §110 simulations). Now `rivalDay()` draws a meal's price from savings when cash is short, and a rival that still could not eat in the morning eats after the day's pay.
+- Overnight harness, 25 games each: hungry rival-days with savings or investments over $30 went from 1 to 0 (expert) and 0 to 0 (medium); the two left in mixed games are deliberate "skipped a meal to save money" slips (§111). No new dice.
+
+**Simulations after §109–§110, with the bot's clothes reserve** (`tools/qa/sim.js`, commit `37fdc37`: the careful bot keeps the next outfit's price back from course fees and replaces clothes on their last day, as rivals do since §108). Report: [QA_Sim_2026-11-15_bot-clothes-rival-strategies.md](docs/QA_Sim_2026-11-15_bot-clothes-rival-strategies.md) ([raw](docs/QA_Sim_2026-11-15_bot-clothes-rival-strategies.json)), build `6990c46` against the Package A results on `69abb92`. The bot no longer drops out (8 of 30 rival games before, 0 now), wins 1–2 of 10 at each level and places 2nd at the median; rivals end in 17–19 distinct jobs per level (9–13 before); in mixed games expert (90 points) > medium (69) > easy (42). The one rival that left the race (hunger with money in the bank) is fixed above.
+
+## 113. The cousins hook (text only)
+
+No rule, CONFIG, save or dice change. In the game's story the AI rivals are the cousins and classmates your mother compares you to.
+
+- **Tagline:** "Beat your cousins before the reunion dinner." under the title on the welcome screen, and in place of "Your town. Your next chapter." in the app header.
+- **Welcome and Custom drawer:** the rival-game buttons now say "three cousins, a scoreboard for the reunion dinner".
+- **Rivals tab:** in a rival game the heading is "Your cousins." with "Your mother has opinions about how each of them is doing."; the eyebrow is "The family comparison". A single game says "Meet your cousins." and explains how to get them. The portrait card says "Meet your cousin".
+- **Overview:** "Town leaderboard" is now "Cousins' scoreboard".
+- **Rival news:** morning notes and the start-of-game log call them "Cousin <name>" (`rivalNote`, `morningHtml`; only the text prefix changed, not the rival logic).
+- **Ending (rival games):** `lifeTable()` is now "The reunion dinner". An Auntie reads out each Life Score category ("In Wealth, Cousin Leo came first ($…). You came 2nd…"), then the scoreboard and the full table as before. Wording depends only on `lifeScore()`; it rolls no dice. The ending title (Bankrupt, Time's up, …) is unchanged, so the simulation bots still read it. Single games keep their old end screen.
+- Added `.wl-tag` and `.reunion .auntie` styles; a case in `tools/qa/check-ux.js`.
+- The rival names themselves (Maya, Leo, Sam) change in 18g.
+
+## 114. Pan-Asian names for places, shopkeepers, food and rivals
+
+Names and wording only. No rule, CONFIG number, dice or save-format change; place keys, event ids, qualification names and job lines are unchanged, so old saves load. Approved as a before → after table.
+
+- **Places** (the 16 pictures and their functions are unchanged): School → City College, Supermarket → Fresh Market, Fast Food → Golden Bun, Restaurant → Family Restaurant, Low-End Apartment → Budget Apartments, Thrift Store → Second-Hand Shop, Classy Bungalow → Garden Villa (Bungalow → Villa elsewhere). Employment Office, Bank, Electronics Store, Clothes Mall, Hospital, Factory, Community Centre, Gym and Park keep their names. Career-line labels and the two manager titles that carried a building name follow (Fresh Market Manager, Second-Hand Shop Manager); the saved record of a best role from an old save may still show the old title.
+- **Shopkeepers:** Ms. Chen (Employment Office), Professor Sharma, Mr. Nguyen, Auntie Mai, Uncle Joon, Chef Somchai, Mr. Rahman (landlord), Mrs. Santos, Ms. Dewi, Coach Minho. Kenji, Mei, Dr. Lee, Foreman Raj, Auntie Lin and the estate agent are unchanged.
+- **Food** (`CONFIG.food` names): a chicken bun, a bun and noodle combo, a family-style dinner, the chef's banquet set, milk tea and pastry, Rice and veg meal kit (was Meal prep), Ready-to-eat rice box.
+- **Rivals** (`CONFIG.rivals.names`): Maya, Leo, Sam → Linh, Arjun, Jae. The QA scripts that used the old names were updated.
+- **Country-specific wording removed from events:** MRT → train, HDB lift → apartment lift, hawker centre/queue → food court / street-food queue, kopitiam/kopi → tea house/tea, chicken rice → rice plates / fried rice, Mandopop → pop ballads, void deck → ground-floor common area, Botanic Gardens → the city gardens. Internal ids such as `hawkerauntie`, `kopiclub` and the `hawker` map art key stay.
+- `tools/qa/check-ux.js` has a case for the place and rival names and scans `index.html` for the old wording.
+- Owed: the text still needs a cultural reader (ROADMAP, Package D), and `docs/Daily Grind Config Guide.docx` still lists the old food and rival names.
+
+## 115. The Rivals tab shows every move
+
+No rule, CONFIG or save change, and no new dice: the rows only read the same functions the phone apps use.
+
+- Each rival's card on the Rivals tab (the Overview scoreboard) now ends with **What you can do now**: chat or say hello (with where they are today, or where you tend to meet them), call, ask for a loan, offer a bet, propose a pact (or open the pact card if you are allied), invite to move in (or go home to your flatmate), schemes (online or Town talk) and "Who did it?" when there are unsolved setbacks. Each row has the same chips as the phone app row (time, happiness, relationship, argument risk, cash).
+- Buttons that can run on the spot do so: **Call** (needs a phone or tablet, as before) and **Offer bet**. The rest open the right place: **Open Messages** (loans, pacts, specific pacts, online schemes), **Go home**, **Walk to** the place a rival is at, **Town talk** at the Community Centre. Rows are greyed with the reason when you cannot do the move now (no device, already asked today, not friendly enough).
+- A card stays open after you press one of its buttons (the scoreboard used to close every card on each repaint).
+- New code: `rivalMoves(i)` (section 6, beside `callRows`), the `rivList` click handler for `data-rmove` buttons (section 10), a few `.rmoves` styles. The action preview (🔎) does not cover these buttons; the chips on each row show the cost instead.
+- `tools/qa/check-ux.js`: a case that opens a card, checks every move is listed, presses Call, checks the card stays open and Call greys out, opens Messages, and checks Call is disabled without a phone.
+
+## 116. Softer death spiral: emergency help at the Community Centre, earlier warnings
+
+Gameplay change for the player. It rolls no dice. **Rivals are exempt:** they have their own rules for clothes and meals (`rivalDressUp`, `rivalDay`), which this round does not touch, and the other chat owns rival logic.
+
+- **Emergency help** (new `CONFIG.community.safetyNet`: `enabled` true, `perGame` 1, `minutes` 30, `clothesDays` 3, `mealEnergy` 12, `mealHappiness` 3). Once a game, at the Community Centre, a player who has **no clothes at all and cannot afford the cheapest way to get some** (new Casual Clothes or a used outfit; cash and savings both count) and/or **has had no meal today, has none at home and cannot afford the cheapest meal out** is given what they lack: a set of Casual Clothes lasting 3 days, and/or a hot meal (+12% energy, +3 happiness, counts as the day's meal). It takes 30 minutes and gives only what is missing; it does nothing for someone who can afford the fix. New action `safety`, `safetyNeeds()` and `safetyNet()` (section 4), `safetyRow()` (always shown on the Community Centre screen, greyed unless it applies).
+- **Earlier, specific warnings** in `stressList()`: "You cannot afford a meal" (with the cheapest price and what you have), "You are out of clothes" (with the cheapest fix), and "Your last clothes wear out in N days and you cannot afford new ones yet". Each mentions the Community Centre when help is left. The morning "out of clothes" note says it too.
+- **Save:** new `S.safetyUsed` (defaults to 0 through `blank()`; no migration step or version change needed).
+- Rules text (`cfgComm`) describes it; `docs/Daily Grind Config Guide.docx` has a new row for `safetyNet`, and its old food, place and rival names are updated for CHANGELOG 114.
+- Checks: a case in `tools/qa/check-ux.js` (greyed when you can afford things or have eaten and have clothes; works once; gives exactly what is lacking; the warnings mention the centre; savings count). **Simulation** (20 careful + 10 random single games, base vs new, [report](docs/QA_Sim_2026-11-14_safety-net.md)): identical endings; the careful bot never qualified for the help, so the sample cannot show the benefit. `tools/qa/sim.js` now tries the help when stuck. **Hard-times runs** (`--start=broke` and `--difficulty=hard`, 20 careful games each, [report](docs/QA_Sim_2026-11-15_safety-net-hard-times.md)): 36 of 40 games finished with the help against 21 of 40 without; hospital endings 15 to 0. New sim options `--difficulty` and `--start=broke` in `run-sims.js`. **Re-run after the rebase** (same scenarios, base `ebf0b99` against `210eb50`, [report](docs/QA_Sim_2026-11-15_safety-net-rerun-after-rebase.md)): both builds now finish 20 of 20 careful games in every scenario, so the earlier gap came from the older base and is not the net's effect on current code; the net still removes 2 of the 3 "could not eat" flags in the broke and hard runs, and normal difficulty is unchanged.
+
+## 117. Rival level retune (Package A item 3, after Package B)
+
+Base: §116 (renumbered from 113 when merged with the safety-net branch). Approved by the owner ("retune with the latest report"); based on [QA_Sim_2026-11-15_bot-clothes-rival-strategies.md](docs/QA_Sim_2026-11-15_bot-clothes-rival-strategies.md), the latest report with rival games, and an overnight sweep on the current build. Rival games only.
+
+**What the report showed:** the careful bot won 1 of 10 games against medium rivals, the default rival game, and 2 of 10 against expert: medium was about as hard as expert. The bot placed last on happiness at every level, because medium and expert rivals both played for Life Score places (§110) and kept their happiness around 92. Easy rivals were no threat (median $1,306, 42 points), and 11 of 30 expert rivals finished above $15,000 (most $47,630).
+
+**Changes**
+
+| Setting | Was | Now | Why |
+|---|---|---|---|
+| `rivals.aims.levels` | `['medium','expert']` | `['expert']` | Playing for places is now what makes an expert an expert; medium rivals still plan their careers |
+| `rivals.levels.easy.shifts` | 1 | 1.25 | A little more presence |
+| `rivals.levels.easy.mistakeChance` | 0.25 | 0.2 | |
+| `rivals.levels.expert.shifts` | 3 | 2.75 | Fewer runaway fortunes |
+
+The Rules text names the levels that play to win from CONFIG, so it now says expert only.
+
+**Effect** (overnight harness: the player only sleeps, 12 games per level, 30 days, three rivals; before → after)
+
+| | Before | After |
+|---|---|---|
+| Easy median net worth | $1,822 | $2,094 |
+| Medium median net worth / average happiness | $9,528 / 92 | $10,331 / 88 |
+| Expert median net worth (10th–90th percentile) | $13,466 ($3,520–$22,378) | $12,320 ($3,108–$20,053) |
+| Expert rivals over $15,000 / highest | 15 of 36 / $38,641 | 12 of 36 / $33,706 |
+| Mixed games, median Life Score points (expert / medium / easy) | 90 / 87 / 51 | 100 / 87 / 49 |
+| Rivals out of the race | 0 | 0 |
+
+Not yet measured against the playing bot; a rival simulation on this build is the check.
+
+**QA:** the playing-to-win case in `check-social-rules.js` now uses expert rivals and asserts that medium and easy rivals have no focus. Docs: `docs/Daily Grind Config Guide.docx` (levels and aims rows), `docs/Configuration_Social_Update.md`.
+
+## 122. Sleep parity: rivals' days are longer, sleep happiness counts at most 12 hours, the bot sleeps about 7 hours
+
+Base: `d00f221` (§117 and the other chat's §113–116). Numbered 122 because §118–121 are in use on `claude/roadmap-b21-b23-c13-c14`. Asked for by the owner after the sleep measurement in [QA_Sim_2026-11-15_sleep-parity.md](docs/QA_Sim_2026-11-15_sleep-parity.md) ([raw](docs/QA_Sim_2026-11-15_sleep-parity.json)).
+
+**Why:** the careful bot placed last on happiness in every rival game. Rivals use the player's formulas, but a medium rival slept about 11h41 a night (its day was 11½ hours of work, study, meals and 3 hours of errands) against the bot's 5h16. Sleep happiness had no cap, so rivals gained about 10 happiness a night more.
+
+**Changes**
+
+- **Sleep happiness counts at most 12 hours** (new `CONFIG.sleep.maxHappinessHours: 12`), for you and the rivals: `sleepHap()` counts full hours up to the cap. Energy (`sleep.maxEnergy`) and health (`health.sleep.max`) were already capped. The Rules line "Every night" now says "1.5 happiness a full hour, for at most 12 hours" (new `cfgSleepHap`, from CONFIG), and the home's sleep note says "for up to 12 hours".
+- **Rivals' days are longer:** `CONFIG.rivals.dayOverheadMinutes` 180 → 360 (walking, shopping, cooking and errands), so a medium rival now sleeps about 8 hours instead of about 11½.
+- **The careful bot goes to bed with about 7 hours left** (`tools/qa/sim.js`, `SLEEP_MIN` 420, was 300 + the walk home). It changes the yardstick, not the game.
+
+**Effect** (3 careful games, seeds 1–3, medium rivals; before → after)
+
+| | Before | After |
+|---|---|---|
+| Bot: average sleep / sleep happiness a night | 5h16 / +7.3 | 6h56 / +9.8 |
+| Rivals: average sleep / sleep happiness a night | 11h41 / +17.1 | 8h15 / +11.8 |
+| Gap in sleep happiness a night | 9.8 | 2.0 |
+| Bot: average Life Score place / net worth | 1.7 / $8,584–$16,887 | 3 / $8,566–$8,685 |
+
+The bot now has less time for study and morale (calls fell from 15–19 a game to 6–10), so it ends as a Senior Nurse rather than a Junior Doctor and still places 3rd–4th on happiness. Three games at one level only: rerun expert and mixed rival games before judging the level balance.
+
+**QA:** `check-social-rules.js` has a new case (sleep happiness stops at 12 hours and is unchanged below it; 62 in all). Docs: `CLAUDE.md` (sleep convention), `docs/Daily Grind Config Guide.docx` (new sleep-happiness row; the rivals' errand row now 360).
+
+## 123. Rivals notice who leads, who is in trouble and who helped them (Package B, item 21)
+
+Base: §122. Rival games only. The three modifiers sit in `CONFIG.rivals.awareness`; no rival decision function was rewritten.
+
+- **Sabotage:** medium and expert rivals are `leaderSabotage` (1.5) times as likely to sabotage whoever leads the Life Score (`leaderIdx()`; a tie has no leader). Expert rivals also pick the leader first among rivals they can hit (`leaderFirst`), where before they took the one just ahead.
+- **Asking for help:** when a rival short of rent money (plus `loan.askBuffer`) is among those who could ask to borrow, it asks before the others; among several, the one who trusts you most (`troubleFirst`).
+- **Betrayal:** each point of remembered trust a rival holds for a partner cuts its betrayal chance by `helpedBetray` (0.2), never below `helpedFloor` (0.4) of the base chance (`helpedMult()`).
+- **Not done:** the job race is not changed. It only ever targets you and its chance is computed inside `rivalTick()`, which another chat owns; a leader modifier belongs there.
+- Rules text (`cfgRivals`), `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated. `check-personalities.js` has three new cases. No simulation was run.
+
+## 124. Conversations with intent: five topics when you meet a rival (Package C, item 13)
+
+Base: §123. Rival games only (encounters exist only there); the dice are the rivals' (`rrand()`), so single games are untouched.
+
+- **Removed:** `CONFIG.rivals.social.chat` and `.hello` (a flat chat and a hello). **Added:** `CONFIG.rivals.talk` (times, relationship changes, win chances and the reply text); `social.ignore` stays.
+- **Topics** (`encounterCard()`, `rivalMeet(k)`; all through `relGain()` and `remember()`):
+  - 💼 **Ask about their work** (20 min, +4, +1 happiness): the reply comes from their archetype; if you have no job lead and are not on bad terms they may give you one (25% × their personality's `tipMult`).
+  - 🎁 **Share your job lead** (only with one active, 15 min, +10): you lose it; they remember it (`tipped`, trust +1) and owe you a favour.
+  - 🙏 **Ask for the favour they owe** (only when one is owed and you have no lead, 10 min): spends the favour for a guaranteed lead, like the morning return but on request.
+  - 😜 **Tease** (10 min): win chance by personality (generous 85%, reckless 75%, ambitious 50%, vindictive 30%, 20 points lower on bad terms): +5, or −6 and an argument.
+  - 🗣️ **Gossip about a third rival** (one row per rival still in, 15 min): they like it by personality for +4 and the pair's trust (`S.rivalRelations`) falls by 6; otherwise −4 with them.
+- The Rivals tab's “Chat or say hello” row (§115) is now “Talk: work, a lead, a favour, a tease or gossip” and reads its chips from `CONFIG.rivals.talk`; `check-ux.js` looks for the new label.
+- Replies are text tables in `CONFIG.rivals.talk.say`. Rules text, `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated. `check-personalities.js` has five new cases. No UI check or simulation was run.
+
+## 125. Shared and contested moments: timed cards on the Today screen (Package C, item 14)
+
+Base: §124. Rival games only. A card is dealt each morning on the rivals' dice (`rrand()`); the choices and the town contest roll use the player's dice. Single games never deal one.
+
+- **New:** `CONFIG.rivals.moments`, `S.moment` and `S.momN` (defaults come from `blank()`, no migration needed), a `#momentBox` on the Today screen (also at the top of any building panel) with the minutes left, and the action `mom`.
+- **Deal** (`momentDeal()`, end of `rollover`): about half the days from day 2, one card, at most three of each kind a game, and only kinds that make sense now. It is announced in the morning notes.
+- **Cards:**
+  - 🏁 **Contested opening:** you and a rival want the same role (a promotion in your line, or a better-paid job you qualify for). *Interview now* gives the interview head start (like a friend's tip) and runs the normal interview; missing it closes the role for you that day and shows "taken by", like a lost job race.
+  - 🧑‍🍳 **Cover a shift:** the rival pays you (from their cash), you spend 3h and 10 energy, they remember it. Saying no or letting it lapse is remembered as a refusal.
+  - 📚 **Group project:** needs a course in progress; 1h30 for knowledge, happiness and relationship.
+  - 🏆 **Town contest:** entry fee, 1h, win chance 30% + knowledge/200 (at most 80%), prize, reputation and happiness.
+- **Deadlines** are in minutes of the day (window 4 to 7 hours). A card that runs out is settled with no dice by `momentExpire()` (called from `done()`); one left at bedtime goes into the morning notes.
+- **Rival logic:** untouched. Rivals' own days do not change; only your relationship and memories with them do.
+- Rules text, `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated. `check-personalities.js` has seven new cases. No UI check or simulation was run; the UI check would need a `SITUATIONS` entry for a moment card (not added, per the instruction not to run it).
+
+## 126. Rivals use the whole game: meals, gym, homes, investments and loans (Package B, item 23)
+
+Base: §125. Rival games only; single games unchanged. New `CONFIG.rivals.fullGame`; every price, return and loan term still comes from the game's own tables (`FOOD`, `CONFIG.gym`, `HOUSE`, `expRet()`, `CONFIG.loan`).
+
+- **Meals by need** (`rivalEat()`): a rival short of money (under one rent) or unable to pay for the rice kit eats the cheap bun instead of going hungry; one that is unhappy (under 40) with three rents spare treats itself to the family dinner. Both second-chance meals (the breakfast it could not afford) use it too.
+- **Gym:** a rival with poor health takes the cheapest class (as the health focus took its chosen class), when rent and the next outfit are covered.
+- **Home** (`rivalHome()`): planning rivals without you as flatmate move to the villa when they hold its fee plus six rents, and back to the apartment under one rent. Rent and the night's energy follow the home. Not modelled for rivals: the villa's happiness.
+- **Investments** (`rivalInvest()`): rivals whose level invests hold products by archetype (careerist and socialite ETF, scholar fixed deposit, investor deposit, ETF and hedge fund, hustler ETF, hedge fund and crypto). A product is bought when its expected return minus risk × its daily swing beats the savings rate; sold when it falls under. Products grow nightly on rival dice with the game's own caps; fixed deposits lock four days. All count in `rivalWorth()`.
+- **Bank loans** (`rivalBorrow()`, `rivalLoanTick()`): a planning rival that cannot pay a course fee for a role paying 1.3 times its job borrows the shortfall at the 10-day tenure, with your credit limit, but only if its net worth after the fee stays above `keepWorth` ($300), because a loan fixes a cash shortage, not insolvency (the first version let broke rivals borrow and 16 of 30 medium and 19 of 30 expert rivals went bankrupt in the simulation); it repays when it can, owes interest and overdue interest like you, and is out of the race five days after the due date. The debt counts against its net worth.
+- Rules text, `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated; `check-personalities.js` has five new cases. No UI check or simulation was run: rival outcomes will move, so a rival simulation is advised before merging.
+- **Simulation:** [`docs/QA_Sim_2026-11-15_rivals-full-game.md`](docs/QA_Sim_2026-11-15_rivals-full-game.md). Medium is close to the base; expert rivals are clearly stronger (the careful bot wins 0 of 10, base 2), likely from investing, and need a retune before merging.
+- **Take profits:** each night `rivalInvest()` sells any ETF, hedge fund or crypto holding above `maxShare` × the rival's net worth back to savings before buying (the cap used to apply only when buying, so holdings compounded unchecked: one expert rival went from $779 to $76,891 in ten days). No new dice. `check-personalities.js` has a case; the loan test was updated for `keepWorth`.
+- **Tighter investing caps:** a hot market (mood +4 for days) let one investor compound $779 into $76,891 in ten days. Limits are now `share` 0.25, `maxShare` ETF 0.25, hedge fund 0.15, crypto 0.05, and a new `maxTotal` 0.35 across the three; anything above is sold back to savings each night, the riskiest first. `check-personalities.js` has the total-exposure case.
+- **No loans for expert rivals** (`CONFIG.rivals.fullGame.loan.levels`: easy and medium only). In the expert simulation a $212 loan let one rival start Medicine four days sooner and reach the top doctor role by day 26, and the richest rival ended at $65,184 (base $35,300); raising `payGain` to 1.6 or 2 changed nothing. Final simulation (10 careful games a level): the bot wins 1, 4 and 1 of 10 against medium, mixed and expert rivals (base 3, 2, 2); medium rivals are richer than on the base. See the report linked above.
+- **UI check fix:** the contested-opening card's time chip read “1h interview”, which the UI check could not compare with the real 60 minutes; it now reads “1h” with the “Easier interview” chip beside it.
+

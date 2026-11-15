@@ -2,7 +2,7 @@
    Needs the test hook (window.__G) injected before the line "  if(!load())fresh();".
 
    What it does, at whatever width the page is shown (run it once at desktop width and once at phone width):
-     1. Sets up a game with something to press everywhere: cash, savings, a job at the Fast Food, a School course in
+     1. Sets up a game with something to press everywhere: cash, savings, a job at the Golden Bun, a City College course in
         progress, belongings, food and chips at home, all outfits.
      2. Every building: walks there with a real tile click, checks the panel's layout, then presses every enabled button
         in it, one at a time, putting the game back exactly as it was before each press.
@@ -60,7 +60,7 @@
   function closeOver(){[].forEach.call(document.querySelectorAll('.over.show'),function(o){o.classList.remove('show')})}
   var bankChoice=null;
   function restore(where){
-    G.S=JSON.parse(base);S=G.S;G.loc=where&&['phone','pc','bankapp','jobsapp','callsapp','msgsapp'].indexOf(where)<0?where:baseLoc;G.view=where||null;  /* device and app screens are not places */
+    G.S=JSON.parse(base);S=G.S;G.loc=where&&['phone','pc','bankapp','jobsapp','callsapp','msgsapp','gigsapp','creatorapp'].indexOf(where)<0?where:baseLoc;G.view=where||null;  /* device and app screens are not places */
     closeOver();$('toasts').innerHTML='';G.render();if(bankChoice&&(where==='bank'||where==='bankapp')){var tab=document.querySelector('[data-dg-product="'+bankChoice.id+'"]');if(tab)tab.click();var mode=document.querySelector('.bk-card:not([hidden]) [data-dg-mode="'+bankChoice.mode+'"]');if(mode)mode.click()}$('toasts').innerHTML='';
   }
 
@@ -97,7 +97,8 @@
       if(!visible(el)||el.closest('[hidden]'))return;var r=el.getBoundingClientRect();
       if(r.right>W+1||r.left<-1)note('OVERFLOW',where,'"'+(el.textContent||'').trim().slice(0,40)+'" goes off the screen');
       var box=el.closest('.pbox,.grp,.card,.cert,.evcard');if(box&&box!==el){var b=box.getBoundingClientRect();if(r.right>b.right+1||r.left<b.left-1)note('OVERFLOW',where,'"'+(el.textContent||'').trim().slice(0,40)+'" sticks out of its card')}
-      if(el.tagName==='BUTTON'&&!el.disabled&&!el.classList.contains('tile')&&document.getElementById('appTop')){var probe=document.createElement('span');probe.style.background='var(--teal)';document.body.appendChild(probe);var teal=getComputedStyle(probe).backgroundColor;probe.remove();if(getComputedStyle(el).backgroundColor!==teal)note('BUTTON COLOR',where,'clickable button is not teal: '+el.textContent.trim().slice(0,40))}
+      if(el.tagName==='BUTTON'&&!el.disabled&&!el.classList.contains('tile')&&document.getElementById('appTop')){var tr=el.style.transition;el.style.transition='none';var bg=getComputedStyle(el).backgroundColor;el.style.transition=tr;  /* .btn fades its background for 0.15s: read the colour it settles on */
+        if(levelColours().indexOf(bg)<0)note('BUTTON COLOR',where,'clickable button is none of the three button levels (main, secondary, risky): '+el.textContent.trim().slice(0,40))}
       if(el.tagName==='BUTTON'&&el.scrollWidth>el.clientWidth+2&&getComputedStyle(el).overflow!=='visible')note('CLIPPED',where,'button "'+el.textContent.trim().slice(0,40)+'"');
     });
     [].forEach.call(root.querySelectorAll('.arow'),function(row){
@@ -107,6 +108,9 @@
         bs.slice(i+1).forEach(function(c){if(hit(rb,c.getBoundingClientRect()))note('OVERLAP',where,'buttons "'+b.textContent.trim().slice(0,20)+'" and "'+c.textContent.trim().slice(0,20)+'" overlap')})});
     });
   }
+  /* the three button levels of CHANGELOG 107 (src/css/08-buttons.css): main teal, secondary, risky (danger, or warn for sleeping outside) */
+  var levelCache=null;
+  function levelColours(){if(levelCache)return levelCache;levelCache=['--teal','--btn2-bg','--danger','--warn-bg'].map(function(v){var p=document.createElement('span');p.style.background='var('+v+')';document.body.appendChild(p);var c=getComputedStyle(p).backgroundColor;p.remove();return c});return levelCache}
   function popupFits(where){
     [].forEach.call(document.querySelectorAll('.over.show'),function(o){var c=o.firstElementChild;if(!c)return;var r=c.getBoundingClientRect();
       if(r.width>innerWidth+1)note('OVERFLOW',where,'pop-up is wider than the screen');
@@ -184,7 +188,7 @@
   /* ---------- situations the main game does not have: each starts from the main game, adds one situation,
     checks that its buttons are there, and presses everything in that building ---------- */
   /* three rivals for the rival-game situations (the fields the screens read) */
-  function uiRivals(){return [['Maya','👩','easy',-30],['Leo','🧔','medium',20],['Sam','🧑','expert',55]].map(function(x,i){return {personality:['generous','vindictive','reckless'][i],favours:{trust:i?1:-2,owed:i?1:0,entries:[{day:3,key:i?'soup':'refused'}]},name:x[0],ic:x[1],diff:x[2],rel:x[3],cash:300,bank:0,etf:0,job:null,y:300,
+  function uiRivals(){return [['Linh','👩','easy',-30],['Arjun','🧔','medium',20],['Jae','🧑','expert',55]].map(function(x,i){return {personality:['generous','vindictive','reckless'][i],favours:{trust:i?1:-2,owed:i?1:0,entries:[{day:3,key:i?'soup':'refused'}]},name:x[0],ic:x[1],diff:x[2],rel:x[3],cash:300,bank:0,etf:0,job:null,y:300,
     log:[],out:null,edu:{},clothes:{casual:3,smart:0,suit:0},shiftsAt:{},hist:[],know:10,happy:60,health:80,energy:70,tier:-1,rankDay:{},bestJob:null,life:{h:[60],l:[80],crisis:0,unwell:0,best:null},places:['fast']}})}
   var SITUATIONS=[
     {name:'sick with a cold or the flu, with medical bills',bld:'hosp',need:['treat_ill','paydebt','checkup','insure'],
@@ -197,7 +201,7 @@
       mod:function(S){S.arrears={bal:120,days:4,fresh:0}}},
     {name:'a loan to repay',bld:'bank',need:['repay','repayall'],
       mod:function(S){S.loan={borrowed:500,principal:500,interest:12,taken:S.day-1,tenure:5,rate:4,due:S.day+4}  /* taken yesterday: the game blocks repaying on the day you borrow */}},
-    {name:'a pawned TV to redeem (Thrift Store pawn counter)',bld:'thrift',need:['redeem','sell'],
+    {name:'a pawned TV to redeem (Second-Hand Shop pawn counter)',bld:'thrift',need:['redeem','sell'],
       mod:function(S){S.items.tv=0;delete S.broken.tv;S.pawned.tv={w:S.day,g:75}}},
     {name:'an industry-specific storyline at its peak (Employment Office outlook and board chips)',bld:'jobs',need:['apply'],
       mod:function(S){S.ind={id:'robots',day:3,len:5,sw:0.4,ph:2,last:'',used:[]};S.indNext=0}},
@@ -218,9 +222,21 @@
     {name:'a friend’s job tip (Community Centre), at the Employment Office',bld:'jobs',need:['apply'],
       mod:function(S){S.tip={until:S.day+2};S.career={}}},
     {name:'a rival took the last opening (job race), at the Employment Office',bld:'jobs',need:['apply'],
-      mod:function(S){S.mode='rivals';S.career={};var k=null;Object.keys(G.CAREERS).some(function(c){if(G.CAREERS[c].ranks[0]&&!(G.CAREERS[c].ranks[0].q||[]).length){k=c+'_0';return true}});if(k){S.closed[k]=1;S.raced={};S.raced[k]='Maya'}}},
-    {name:'meeting a rival (encounter card), at the Fast Food',bld:'fast',need:['meet'],
+      mod:function(S){S.mode='rivals';S.career={};var k=null;Object.keys(G.CAREERS).some(function(c){if(G.CAREERS[c].ranks[0]&&!(G.CAREERS[c].ranks[0].q||[]).length){k=c+'_0';return true}});if(k){S.closed[k]=1;S.raced={};S.raced[k]='Linh'}}},
+    {name:'meeting a rival (encounter card), at the Golden Bun',bld:'fast',need:['meet'],
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.enc={day:S.day,i:1,loc:'fast',done:false}}},
+    {name:'meeting a rival with a job lead to share (talk topics)',bld:'fast',need:['meet'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.enc={day:S.day,i:1,loc:'fast',done:false};S.tip={until:S.day+2}}},
+    {name:'meeting a rival who owes you a favour (talk topics)',bld:'fast',need:['meet'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.tip=null;S.rivals[1].favours.owed=1;S.rivals[1].rel=20;S.enc={day:S.day,i:1,loc:'fast',done:false}}},
+    {name:'a timed card: a group project',bld:'fast',need:['mom'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.moment={k:'project',i:1,day:S.day,until:(1440-S.ap)+240}}},
+    {name:'a timed card: cover a shift',bld:'fast',need:['mom'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.rivals[1].cash=500;S.moment={k:'cover',i:1,day:S.day,until:(1440-S.ap)+300,pay:30}}},
+    {name:'a timed card: the town contest',bld:'fast',need:['mom'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.cash=Math.max(S.cash,200);S.moment={k:'town',i:1,day:S.day,until:(1440-S.ap)+420}}},
+    {name:'a timed card: a contested opening',bld:'fast',need:['mom'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.career={};S.know=Math.max(S.know,40);var k=null;Object.keys(G.CAREERS).some(function(c){if(G.CAREERS[c].ranks[0]&&!(G.CAREERS[c].ranks[0].q||[]).length){k=c+'_0';return true}});if(k)S.moment={k:'contest',i:1,day:S.day,until:(1440-S.ap)+360,id:k}}},
     {name:'calling rivals from home',bld:'apt',need:['rcall'],
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.home='apt';S.homeless=0;S.rcalled=null}},
     {name:'the Calls app (one rival or a group)',bld:'callsapp',need:['rcall'],
@@ -237,7 +253,7 @@
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.home='apt';S.homeless=0;S.flat={i:2,since:S.day,hd:S.day,here:false,did:null}}},
     {name:'no flatmate yet (invite rows)',bld:'apt',need:['flat'],
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.home='apt';S.homeless=0;S.flat=null}},
-    {name:'a study group at School (a friendly rival on the same pathway)',bld:'school',need:['class'],
+    {name:'a study group at City College (a friendly rival on the same pathway)',bld:'school',need:['class'],
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();var t=Object.keys(S.enr||{})[0]||'sal';S.rivals[1].study={t:t,lv:0,h:0};S.rivals[1].rel=20}},
     {name:'a friend to make a pact with (Messages)',bld:'msgsapp',need:['pact'],
       mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.townMood='competitive';S.rep=60;S.pact=null;S.rpacts=[];S.asked=null;S.cash=Math.max(S.cash,400)}},
@@ -257,8 +273,25 @@
     {name:'out of clothes, buying used ones',bld:'thrift',need:['ubuy'],
       mod:function(S){S.clothes={casual:0,smart:0,suit:0}}},
     {name:'out of clothes with a job (shift disabled, "No clothes" chip)',bld:'fast',need:[],
-      mod:function(S){S.clothes={casual:0,smart:0,suit:0};S.career={fast:0};S.jobName='Crew Member';S.shut={};S.ill=null}}
+      mod:function(S){S.clothes={casual:0,smart:0,suit:0};S.career={fast:0};S.jobName='Crew Member';S.shut={};S.ill=null}},
+    {name:'the Gigs app with a rating and runs left (a delivery run)',bld:'gigsapp',need:['gig'],
+      mod:function(S){S.items.phone=1;delete S.broken.phone;S.ill=null;S.energy=60;S.workMin=0;S.gig={stars:4.2,d:S.day,runs:1,total:6}}},
+    {name:'the Creator app with followers (a post, tonight’s sponsors)',bld:'creatorapp',need:['post'],
+      mod:function(S){S.items.phone=1;delete S.broken.phone;S.ill=null;S.workMin=0;S.creator={f:1250,d:S.day,posts:0,last:S.day-1,earned:84}}},
+    {name:'tutoring with a completed qualification (School)',bld:'school',need:['tutor'],
+      mod:function(S){var t=Object.keys(G.TRACKS)[0];S.edu[t]=Math.max(S.edu[t]||0,G.TRACKS[t].c[0]);S.tutorDay=null;S.ill=null;S.workMin=0}},
+    {name:'a typed contract (Study Buddies) with a session due today and a competing shift',bld:'msgsapp',need:['cdo'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.townMood='competitive';S.rpacts=[];S.asked=null;
+        S.pact={i:1,kind:'study',since:S.day-2,until:S.day+3,pot:0,stake:0,terms:uiTerms(S),progress:1,missed:0,next:S.day,reschedules:0,reachedMe:null,reachedThem:null,session:{day:S.day,conflict:'shift'}}}},
+    {name:'a broken promise to answer (a cancelled study session)',bld:'msgsapp',need:['promise','cdo'],
+      mod:function(S){S.mode='rivals';S.rivals=uiRivals();S.items.phone=1;delete S.broken.phone;S.townMood='competitive';S.rpacts=[];S.asked=null;
+        S.pact={i:1,kind:'study',since:S.day-2,until:S.day+3,pot:0,stake:0,terms:uiTerms(S),progress:1,missed:0,next:S.day+1,reschedules:0,reachedMe:null,reachedThem:null,
+          problem:{kind:'study',text:'Arjun cancelled a session because of fatigue.',notice:false,day:S.day,expires:S.day+2}}}}
   ];
+  /* a contract's fixed terms, as contractTerms() builds them (it is not exposed to the check) */
+  function uiTerms(S){var C=G.CONFIG.rivals.contracts,cp=function(o){return JSON.parse(JSON.stringify(o))};
+    return {days:C.days,minutes:C.minutes,keepRel:C.keepRel,missRel:C.missRel,honourRel:C.honourRel,rewardHappy:C.rewardHappy,noticeDays:C.noticeDays,
+      study:cp(C.study),emergency:cp(C.emergency),royalty:cp(C.royalty),target:Math.ceil(G.worth()*1.25),stake:0,reminderDays:C.wealth.reminderDays}}
   async function situation(x){
     var keep=base,S0=JSON.parse(base);x.mod(S0);base=JSON.stringify(S0);
     try{
@@ -363,7 +396,7 @@
     else{if(!/Computer/.test(p.textContent))note('BAD TEXT','Belongings list','does not list the computer the player owns');layout('Belongings list',p.closest('.grp')||p);await shot('status')}
     /* a game with AI rivals: the town leaderboard on the status page, one rival's story opened */
     restore(null);G.S.mode='rivals';
-    G.S.rivals=[['Maya','👩','easy',640,null],['Leo','🧔','medium',2380,{c:'hosp',i:1}],['Sam','🧑','expert',5120,{c:'bank',i:2}]].map(function(x,i){return {personality:['generous','ambitious','vindictive'][i],favours:{trust:1,owed:1,entries:[{day:3,key:'soup'}]},name:x[0],ic:x[1],diff:x[2],cash:x[3],bank:0,etf:0,job:x[4],y:x[3]-90,
+    G.S.rivals=[['Linh','👩','easy',640,null],['Arjun','🧔','medium',2380,{c:'hosp',i:1}],['Jae','🧑','expert',5120,{c:'bank',i:2}]].map(function(x,i){return {personality:['generous','ambitious','vindictive'][i],favours:{trust:1,owed:1,entries:[{day:3,key:'soup'}]},name:x[0],ic:x[1],diff:x[2],cash:x[3],bank:0,etf:0,job:x[4],y:x[3]-90,
       log:['Day 3: got a new job.','Day 2: reached Comfortable.'],out:x[2]==='easy'?{day:9,why:'gave up'}:null,edu:{},clothes:{},shiftsAt:{},hist:[],know:12,happy:60,health:80,energy:70,tier:0,rankDay:{0:4},bestJob:x[4]?{r:'Nurse',pay:210}:null,life:{h:[60,55],l:[80,82],crisis:1,best:null}}});
     G.view=null;G.render();var rb=$('rivBox');
     if(!rb||rb.hidden)note('MISSING','status page (rivals)','no town leaderboard in a game with AI rivals');

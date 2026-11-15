@@ -3,6 +3,28 @@
 Where things are in `index.html`, and how to make the common changes safely. Line numbers move, so this map uses the
 **numbered section banners** in the script (search for `1. CONFIG`, `7. PANELS`, …) and the names below.
 
+## Where the source is
+
+Edit `src/` and run `node tools/build.js`; `index.html` is generated (see CLAUDE.md, "Source and build").
+
+| File | Holds |
+|---|---|
+| `src/index.html` | The page shell: head, markup, pop-ups. The lines `/*@css*/` and `/*@js*/` are where the build puts the stylesheet and the script. |
+| `src/css/01-base.css` | Colours and themes, base, buttons, the town map |
+| `src/css/02-panels-overview.css` | Panel cards, the notice board, the overview, narrow windows |
+| `src/css/03-popups-bank.css` | End-of-day and morning pop-ups, certificates, the bank |
+| `src/css/04-addons-responsive.css` | Clock, toasts, preview, recap, traits, phones and tablets |
+| `src/css/05-app-shell.css` | The illustrated app shell (header, navigation, interiors) |
+| `src/css/06-dusk-illustrated.css` | Dusk theme, illustrated town, portraits, final overrides |
+| `src/js/00-open.js` | The closure's opening and contents comment |
+| `src/js/01-config.js` … `12-start.js` | Script sections 1 to 12 of the table below, one file each (`02-world`, `03-state-saves`, `04-actions`, `05-health-night`, `06-events-economy`, `07-panels`, `08-art-dialogue`, `09-render`, `10-map-input`, `11-addons`, `12-start`) |
+| `src/img/` | Pictures, written in source as `@img(name)` |
+| `src/pwa/` | `manifest.webmanifest`, `icons/`, `sw.js` (site build only) |
+| `tools/build.js` | The build; `--check` compares `index.html` with what `src/` builds |
+| `tools/make-icons.js` | Redraws the app icons from the brand mark |
+
+Later CSS files win over earlier ones, as later rules did in the single stylesheet.
+
 ## The file
 
 `index.html` has three parts, in this order:
@@ -43,7 +65,7 @@ Where things are in `index.html`, and how to make the common changes safely. Lin
 
 **Device and app screens** are screens, not places: `view` changes and `loc` does not (`APPS` lists them). The 📱 Phone apps button on the town map (`openDevice('phone')`, needs a working phone or tablet) and the 💻 Computer card at home (`openDevice('pc')`, needs a working computer and being at home) open a home screen (`appHome`) with two apps, opened by `openApp()`: `bankapp` is `panels.bank(true)` (the Bank screen without the loan card) and `jobsapp` is `panels.jobs()` (the Employment Office board; applying works the same). Changes to those panels show in the apps too.
 
-**AI rivals** (section 6, before the macro shocks): `makeRivals()`, `rivalDay()` and `rivalNight()` (one rival's day and night), `rivalTick()` (called from `rollover`; it also runs the job race, `S.raced`, and friends' tips), relationships (`relLabel()`, `relGain()` with tension, `argue()` (an argument's happiness cost), `maybeEncounter()`/`encounterCard()`/`rivalMeet()`, `rivalCall()`/`callRows()` and the `callsapp` screen, `congratulate()`), money between players (`settleMoney()`, `rivalMsgTick()`, `replyMsg()`, `askBorrow()`, `offerBet()`, `msgsPanel()` and the `msgsapp` screen, `rivalMoney()` for net worth; `CONFIG.rivals.money`), living and studying together (`flatmate()`, `myRent(day)`, `flatShare()`, `flatTick()`, `flatRows()`, `flatDo()`, `inviteFlat()`, `kickFlat()`, `studyPartners()`, `studyGroup()`, `RIVAL_CARDS`, `rivalCard()`, `rivalCardDone()`; `CONFIG.rivals.together`), town politics (`moodX()`, `repAdd()`, `repInterview()`, `ally()`, `proposePact()`, `renewPact()`, `endPact()`, `betrayPact()`, `pactOfferMsg()`, `driftTick()`, `pactTick()`, `rivalBetraysYou()`, `rivalPactsTick()`, `pactRows()`, `politicsLis()`; `CONFIG.rivals.politics`), sabotage and theft (`sabotage()`, `sabLand()`, `sabHas()`, `sabTick()`, `theftTick()`, `accuse()`, `whoRows()`, `sabRows()`, `sabLis()`; `CONFIG.rivals.politics.sabotage`, `.theft`), `rrand()` (the rivals' own dice), the Life Score (`LIFE_CATS` for the categories, `lifeSample()` / `sampleNight()`, `lifeScore()`, `lifeTable()`; add a category by adding it to `LIFE_CATS` and `CONFIG.rivals.scoring.categories`), `rivalBoard()` (section 9, the Overview leaderboard). Tune them in `CONFIG.rivals.levels`. Read the game length through `gameLen()`.
+**AI rivals** (section 6, before the macro shocks): `makeRivals()`, `rivalDay()` and `rivalNight()` (one rival's day and night), `rivalTick()` (called from `rollover`; it also runs the job race, `S.raced`, and friends' tips), relationships (`relLabel()`, `relGain()` with tension, `argue()` (an argument's happiness cost), `maybeEncounter()`/`encounterCard()`/`rivalMeet()`, `rivalCall()`/`callRows()` and the `callsapp` screen, `congratulate()`), money between players (`settleMoney()`, `rivalMsgTick()`, `replyMsg()`, `askBorrow()`, `offerBet()`, `msgsPanel()` and the `msgsapp` screen, `rivalMoney()` for net worth; `CONFIG.rivals.money`), living and studying together (`flatmate()`, `myRent(day)`, `flatShare()`, `flatTick()`, `flatRows()`, `flatDo()`, `inviteFlat()`, `kickFlat()`, `studyPartners()`, `studyGroup()`, `RIVAL_CARDS`, `rivalCard()`, `rivalCardDone()`; `CONFIG.rivals.together`), town politics (`moodX()`, `repAdd()`, `repInterview()`, `ally()`, `proposePact()`, `renewPact()`, `endPact()`, `betrayPact()`, `pactOfferMsg()`, `driftTick()`, `pactTick()`, `rivalBetraysYou()`, `rivalPactsTick()`, `pactRows()`, `politicsLis()`; `CONFIG.rivals.politics`), sabotage and theft (`sabotage()`, `sabLand()`, `sabHas()`, `sabTick()`, `theftTick()`, `accuse()`, `whoRows()`, `sabRows()`, `sabLis()`; `CONFIG.rivals.politics.sabotage`, `.theft`), `rrand()` (the rivals' own dice), the Life Score (`LIFE_CATS` for the categories, `lifeSample()` / `sampleNight()`, `lifeScore()`, `lifeTable()`; add a category by adding it to `LIFE_CATS` and `CONFIG.rivals.scoring.categories`), `rivalBoard()` (section 9, the Overview leaderboard). Tune them in `CONFIG.rivals.levels`. Read the game length through `gameLen()`. `safetyNeeds()`/`safetyNet()` (section 4) and `safetyRow()` (section 5) are the once-a-game emergency help at the Community Centre (`CONFIG.community.safetyNet`). `rivalMoves(i)` lists every move you can make on one rival (the Rivals tab card, drawn by `rivalBoard()`; buttons use `data-rmove` for actions, `data-dg-app`/`data-dg-go` for apps and places). `lifeTable()` is the reunion-dinner ending.
 
 **Add a building**: a `LOCS` entry, a position in `TOWN_LAYOUT` and an entry in `SCENE_KEYS`, art in `ART`, lines in `GREET`, a panel in `panels`, and walking distance (`ORDER` or `dist()`).
 
@@ -74,7 +96,19 @@ Targeted feature checks: node tools/qa/check-personalities.js <folder outside th
 
 **Daily HUD and map:** `renderStats()` and `renderMap()` retain the existing state-to-DOM updates. The illustrated app shell creates the visible status header and numbered town pins, with Today/Town/Life/Rivals views; phone/tablet apps are accessed from the Town map shortcut (`townDevice`) when a working device is owned. Latest rank progression, flatmate refusals and rival path diversity remain.
 
-**Rival path diversity:** `diversifyRivals()` runs at the start of `rivalTick()` from the halfway day onward. It records `avoidCareer` and `avoidTrack` for later rivals on identical paths; `rivalTarget()` prefers the best feasible different career and missing qualification, while job applications prefer an eligible alternative. These fields are optional on older saves.
+**Playing to win (CHANGELOG 110):** `aimTick()` runs first in `rivalTick()`: for each planning rival (`CONFIG.rivals.aims.levels`) `rivalStanding(r, lifeScore())` gives its place and the gaps to the players just ahead and behind in each category, and the cheapest place to gain (or, late, to keep) becomes `r.focus` (`happiness`, `health`, `education`, `rep`) with a phrase in `r.aim`. `rivalDay()` acts on it: a happiness aim (`r.aimHappy`), extra study hours, a Gym class; `rivalPactsTick()` lets a reputation-focused rival start a pact. No dice.
+
+**Awareness (CHANGELOG 123):** `CONFIG.rivals.awareness`. `leaderIdx()` finds the Life Score leader (−1 = you); `sabTick()` multiplies sabotage chances against it and sends experts at it first; `rivalMsgTick()` lets a rival short of rent money ask to borrow first; `helpedMult()` lowers `betrayChance()` for trusted partners. The job race has no leader modifier yet.
+
+**Conversations (CHANGELOG 124):** `encounterCard()` lists the topics (work, share a lead, favour owed, tease, gossip per rival, ignore) and `rivalMeet(k)` runs one from `CONFIG.rivals.talk`; outcomes use `relGain()`, `remember()` (`tipped`) and `S.rivalRelations`.
+
+**Moments (CHANGELOG 125):** `momentDeal()` (end of `rollover`, rival dice) sets `S.moment`; `momentCard()` draws it in `#momentBox` and at the top of building panels; `momentDo()` (action `mom`) plays it; `momentMiss()`/`momentExpire()` settle it (from `done()` and at the start of `rollover`). Tuned by `CONFIG.rivals.moments`.
+
+**Whole game (CHANGELOG 126):** `rivalEat()`, `rivalHome()`, `rivalInvest()`, `rivalBorrow()` and `rivalLoanTick()` (all in section 6, tuned by `CONFIG.rivals.fullGame`) are called from `rivalDay()` and `rivalNight()`. Extra rival fields: `hf`, `cry`, `fd`, `fdLock`, `loan` (all default to nothing, so old saves load).
+
+**Explainable rivals (CHANGELOG 111):** every rival has `r.aim` (from `aimTick()`; `rivalPlanAim()` words the plan when no place is in reach: saving for, about to start or studying for its next qualification, working towards a role). `memoryProfile()` shows it first on the rival's profile; a change goes into the morning news (topic `aim<i>`) at most once in `aims.newsGap` days. A rival's slips come from `rivalMistake()`, which scales the level's `mistakeChance` by `rivalStrain()` (tired, broke, unhappy; `CONFIG.rivals.mistakes`) and logs why.
+
+**Rival archetypes:** each rival has an `archetype` (`CONFIG.rivals.archetypes`: careerist, scholar, investor, socialite, hustler), dealt one each in `makeRivals()` on the rival dice and given to old saves by `prepareRival()` without dice. `rivalSkill(r)` returns the level's numbers adjusted by the archetype (shifts, study hours, money plan, morale aim, Community Centre); `careerPreference()` weights a job by the archetype's pathway taste (`tracks`), which is what sends rivals down different ladders. `archetype()`, `archetypeLabel()`; the profile (`memoryProfile()`) and the start log show it. The midgame switch `diversifyRivals()` and its `avoidCareer`/`avoidTrack` fields were removed in CHANGELOG 109.
 
 **Rank milestones:** `checkWin()` records ranks and score bonuses but does not show a modal or finish immediately at the top rank; the normal day limit or other endings still finish the game.
 
@@ -108,10 +142,36 @@ The new helpers remain inside section 6 before the AI-rivals block; no external 
 | Broken promises | `promiseProblem`, `promiseRows`, `resolvePromise`; `S.pact.problem` and response expiry |
 | Loans and trust | `loanRecord`, `loanReliability`; `r.loanHistory`; active principal/terms/outstanding balance in Messages |
 | Hidden events | `addSocialEvent`, `socialTick`, `socialRows`, `socialDecision`; `S.socialEvents`, `socialN`, `socialLast`, `rivalRelations`; evidence gates source disclosure |
-| Career utility | `careerPreference`, `rivalTarget`, `diversifyRivals`, application selection in `rivalDay`; feasibility/utility floor and no diversity-driven raw pay cut |
+| Career utility | `careerPreference` (archetype tastes), `rivalTarget`, application selection in `rivalDay`; feasibility/utility floor and no diversity-driven raw pay cut |
 | Bank and portraits | `bankPresetAmount`/`bankQuick`, `interestProjection`; `modernPortraitMinimize`/`modernPortrait` and `characterReopen` |
 | Compatibility | SAVE_VERSION 8 migration adds missing social/residence/history defaults without RNG; legacy money amounts remain; shared-bungalow saves move together to apartment |
 
 Actions `contract`, `cdo`, `promise` and `social` use the existing ACTIONS dispatcher. New social functions use `rrand` only in rival mode; render-only terms, previews and summaries do not draw RNG. Accepted typed contracts use the existing single-player-pact restriction, rather than a second parallel alliance system.
 
 The [test guide](docs/Social_Update_Test_Guide.md) distinguishes the 49 isolated Node checks (`node tools/qa/check-social-rules.js`) from deferred browser integration, UI and simulation work. No browser was launched for these checks.
+
+## Rival clothes, the morning pop-up and the QA skills
+
+**Rival clothes:** `rivalDressed(r, d)` says what a rival is dressed for; `rivalDressUp(r, j)` returns the stricter dress needed by the best open, better-paid role the rival already qualifies for. `rivalDay()` buys the current job's clothes first, then that dress when the rent is still covered. `rivalTarget()` subtracts the price of clothes the rival does not own. Without this a dress code locks rivals out, because applications skip roles they are not dressed for.
+
+**Morning pop-up (section 5, before `rollover`):** `rollover0()` collects `S.notes` and its own reminders, then `tidyMorning()` keeps one note per topic. `noteMeta()` gives a note its group `c` (`act` do today, `news` overnight, `run` still going on) and topic `k` from its text when the push site did not set them; set them at the push site for anything new that could repeat. `morningHtml()` draws the three groups, groups rival news (`g`, `s` from `rivalNote()`), and splits long lines with `noteSplit()`; `morningTop()` draws the sleep and money strip from `S.summary`. `pickNight()` marks trends shown on tonight's card (`t.card`) so the morning does not repeat them, and `S.pending.n` gives the night cards their "1 of N".
+
+**Checks and skills:** `node tools/qa/run-all-checks.js <folder outside the repo>` runs every fast check. `tools/qa/qa-page.js` is the shared helper for new browser checks (`openGame()`; in the page, `__T.ev(code)` runs code inside the game and `QA.seed/newGame/night/morning` drive it). The Claude skills in `.claude/skills/` (`dg-quick-checks`, `dg-ui-check`, `dg-sim`, `dg-sim-suite`, `dg-rival-audit`, `dg-bug-hunt`) describe when and how to run each.
+
+## Ways to earn outside a job (section 4, before `apply`)
+
+`CONFIG.side` tunes them. `sidePay()` scales a base amount by wages, prices and productivity; `sideBlocked()` gives the shared refusals (illness, no clothes, exhaustion, the daily work limit); `sideWork()` applies time worked, energy, happiness and health. Gig delivery: `gigState()`, `gigFare()`, `gigRun()` (action `gig`), `gigsPanel()` (the `gigsapp` screen). Tutoring: `tutorPay()`, `tutor()` (action `tutor`), drawn at the end of `panels.school`. Creator: `creatorState()`, `creatorBoost()`, `creatorPost()` (action `post`), `creatorPanel()` (the `creatorapp` screen), and `creatorTick()` in `rollover0()` right after `tickInv()`. Rivals do delivery runs in `rivalDay()` when they have no job or their workplace is closed. To add another, follow the same shape: a CONFIG block, a state default in `blank()`, the action, a panel row, an `ACTIONS` line, and a case in `tools/qa/check-modern.js`.
+
+`tools/qa/check-tables.js <folder> --list` prints every pathway and job and checks the table rules; use it before and after changing `TRACKS`, `CAREERS` or `CONFIG.jobs.pick`.
+
+## Interface files added in CHANGELOG 107
+
+| File | Holds |
+|---|---|
+| `src/css/07-compact.css` | Header sizes (`--head`, `--head-row`), the two-row header at each width, the map's name layer |
+| `src/css/08-buttons.css` | The three button levels and their colour tokens (`--btn2-*`, `--danger`, `--warn-bg`) |
+| `src/css/09-welcome-coach.css` | The welcome screen and the first-day guide bar and highlight |
+| `src/css/10-feel-settings.css` | Flashes, coin burst, day sweep, text-size zoom, phone toast position |
+| `src/js/11-feel.js` | `FEEL` settings, `motionOK()`, `buzz()`, `feelSetup()` (settings buttons), `feelPaint()` (count-ups, flashes, sounds), `feelSweep()` |
+
+In `src/js/11-addons.js`: `coachNow()` returns the guide's current step (or null) and `coachPaint()` draws it; both are called from `modernPaint()`, as is `feelPaint()`. To add a guide step, add an entry to the `steps` list in `coachNow()` with `done`, `go` (the place), `far`/`near` text and `sel` (the button to highlight). To give a button a level, use class `alt` (secondary) or `danger` (risky), or add its selector to `08-buttons.css`. A new sound is a line in `snd()` (`src/js/04-actions.js`) plus a pattern in `BUZZ`.

@@ -1,0 +1,18 @@
+/* ===== Buttons: three levels (CHANGELOG 107) =====
+   1. Main action: solid teal (the default for any button).
+   2. Secondary: outlined, for "other" choices: .btn.alt, small and utility buttons, places, quick cards, tabs not in use.
+   3. Risky or hard to undo: a warm warning colour: .btn.danger, Reset, betray, end a pact, sabotage; .warn for sleeping outside.
+   The scope list repeats the containers used by the older rules so these win without !important. */
+:root{--btn2-bg:#3a4a45;--btn2-ink:#e9f3ee;--btn2-line:#5f9c90;--btn2-hover:#44574f;--danger:#b8492f;--danger-ink:#fff4ee;--danger-hover:#a23f27;--warn-bg:#8a6a2a;--warn-ink:#fff6df}
+:is(#shop,#hud,#appTop,#appNav,#characterPop,.over,.evcard,#center,#townViewport,#logDrawer,body) button:not(.tile):not(:disabled){background:var(--teal);color:var(--teal-ink);border-color:var(--teal)}
+:is(#shop,#hud,#appTop,#appNav,#characterPop,.over,.evcard,#center,#townViewport,#logDrawer,body) :is(button.alt,button.mini,button.mute,button.ib,button.nav-item,button.destination,button.quick-card,button.leave):not(:disabled){background:var(--btn2-bg);color:var(--btn2-ink);border:1px solid var(--btn2-line)}
+:is(#shop,#hud,#appTop,#appNav,#characterPop,.over,.evcard,#center,#townViewport,#logDrawer,body) :is(button.alt,button.mini,button.mute,button.ib,button.nav-item,button.destination,button.quick-card,button.leave):not(:disabled):hover{background:var(--btn2-hover)}
+/* the tab in use and the suggested quick card are main actions */
+:is(#appNav,body) button.nav-item[aria-current=page]:not(:disabled),:is(#center,body) button.quick-card.primary:not(:disabled){background:var(--teal);color:var(--teal-ink);border-color:var(--teal)}
+:is(#shop,#center,body) button[aria-pressed=true]:not(:disabled):not(.mute),:is(#shop,#center,body) button[aria-selected=true]:not(:disabled){background:var(--teal);color:var(--teal-ink);border-color:var(--teal)}
+/* risky */
+:is(#shop,#hud,#appTop,#characterPop,.over,.evcard,#center,body) :is(button.danger,button.reset,button[data-act=pbetray],button[data-act=pend],button[data-act=unflat],button[data-act=sab],button[data-act=cdo][data-arg=end],button[data-act=promise][data-arg=terminate]):not(:disabled){background:var(--danger);color:var(--danger-ink);border:1px solid var(--danger)}
+:is(#shop,#hud,#appTop,#characterPop,.over,.evcard,#center,body) :is(button.danger,button.reset,button[data-act=pbetray],button[data-act=pend],button[data-act=unflat],button[data-act=sab],button[data-act=cdo][data-arg=end],button[data-act=promise][data-arg=terminate]):not(:disabled):hover{background:var(--danger-hover)}
+:is(#appTop,body) #hudEnd.warn:not(:disabled){background:var(--warn-bg);color:var(--warn-ink);border:1px solid var(--warn-bg)}
+#hudTools>summary{background:var(--btn2-bg);color:var(--btn2-ink);border:1px solid var(--btn2-line);gap:6px}
+.quick-card small,.destination small{color:inherit;opacity:.82}

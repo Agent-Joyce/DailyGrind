@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daily Grind</title>
+<meta name="description" content="Daily Grind: build a life from scratch in a small town. Work, study, save, and keep up with your rivals.">
+<!--@site-->
+<meta name="theme-color" content="#34312e">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<!--@/site-->
+<style>
+/*@css*/
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a9d3e6"/><stop offset=".5" stop-color="#4f7fa0"/><stop offset="1" stop-color="#1f3d56"/></linearGradient>
+<linearGradient id="warm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7ae"/><stop offset="1" stop-color="#f0a950"/></linearGradient>
+<linearGradient id="shade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></linearGradient>
+<linearGradient id="screen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff3d81"/><stop offset="1" stop-color="#3d7bff"/></linearGradient>
+<linearGradient id="screen2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2ee6c5"/><stop offset="1" stop-color="#7a3dff"/></linearGradient>
+<linearGradient id="poster1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2994a"/><stop offset="1" stop-color="#8e2de2"/></linearGradient>
+<linearGradient id="poster2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#27b3ff"/><stop offset="1" stop-color="#0b2a6b"/></linearGradient>
+<pattern id="brick" width="10" height="6" patternUnits="userSpaceOnUse"><rect width="10" height="6" fill="#a65a43"/><path d="M0 3h10M5 0v3M0 3v3" stroke="#7d3f2e" stroke-width=".6" fill="none"/></pattern>
+<pattern id="wood" width="4" height="10" patternUnits="userSpaceOnUse"><rect width="4" height="10" fill="#9a6b43"/><path d="M0 0v10" stroke="#7a5232" stroke-width=".7"/></pattern>
+<radialGradient id="leaf" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#9bd65f"/><stop offset="1" stop-color="#3a8a38"/></radialGradient>
+<linearGradient id="water" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fd0ee"/><stop offset="1" stop-color="#3f86b5"/></linearGradient>
+<linearGradient id="col" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#ddd8cb"/><stop offset="1" stop-color="#b9b3a3"/></linearGradient>
+<radialGradient id="gold" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff0a8"/><stop offset="1" stop-color="#b8860b"/></radialGradient>
+<pattern id="brickd" width="10" height="6" patternUnits="userSpaceOnUse"><rect width="10" height="6" fill="#5c3b31"/><path d="M0 3h10M5 0v3M0 3v3" stroke="#3d2620" stroke-width=".6" fill="none"/></pattern>
+</defs></svg>
+<header class="hud" id="hud">
+  <div class="hstats">
+    <div class="tcell"><span class="l">Day</span><b><span id="day">1</span><small id="dayMax"> / 30</small></b></div>
+        <div class="tcell tleft" id="donutWrap"><svg class="donut" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15.9155" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="5"/><circle id="donut" cx="18" cy="18" r="15.9155" fill="none" stroke="#3cc0c3" stroke-width="5" stroke-dasharray="100 100" stroke-linecap="round" transform="rotate(-90 18 18)"/><text id="donutTxt" x="18" y="21" text-anchor="middle" font-size="8.5" font-weight="800" fill="#fff">100%</text></svg><div><span class="l"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-time"/></svg><span id="clockNow">7:00 AM</span> <span id="clockIcon">☀️</span></span><b><span id="ap">24h</span><small id="apOf"> of 24h</small></b></div></div>
+        
+    <div class="tcell" id="hNwC" data-tip="Net worth: cash + bank + investments + the resale value of your things, minus any loan and bills you owe. Ranks are milestones on the way: the game runs to its last day." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Net worth"><use href="#ic-worth"/></svg></span><b id="hNw">$200</b></div>
+    <div class="tcell" data-tip="Cash in hand. Pays for food, shopping and rent. Bank savings and investments are not included." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Cash"><use href="#ic-cash"/></svg></span><b id="hCash">$200</b></div>
+    <div class="tcell" data-tip="Energy: work and study use it up; food, rest and sleep restore it. Under 30% your shifts pay less and you fall ill more easily." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Energy"><use href="#ic-energy"/></svg></span><b id="hEn">100%</b></div>
+    <div class="tcell" data-tip="Happiness: fun, good food and comfort at home raise it. Low happiness cuts your pay, and too long at rock bottom ends the game." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Happiness"><use href="#ic-happy"/></svg></span><b id="hHp">70</b></div>
+    <div class="tcell" data-tip="Health: healthy meals, the gym and sleeping at home raise it. Junk food, hunger and illness lower it. Poor health means more illness and lower pay." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Health"><use href="#ic-health"/></svg></span><b id="hHl">80</b></div>
+    <div class="tcell" data-tip="Knowledge: grows with study, devices and investing. Better jobs need more of it, and it raises your shift pay." tabindex="0"><span class="l icl"><svg class="ic" viewBox="0 0 24 24" role="img" aria-label="Knowledge"><use href="#ic-know"/></svg></span><b id="hKn">10</b></div>
+    <div class="tcell" id="hInvC" hidden><span class="l">Invest</span><b id="hInv">$0</b><small id="hInvPL"></small></div>
+    <div class="tcell sc" data-tip="score" tabindex="0"><span class="l"><span class="sclbl">Score </span><i class="hinfo" aria-label="How the score is worked out">i</i></span><b id="hScore">0</b><small id="hBest"></small></div>
+  </div>
+  <div class="actbar" id="actbar"><button class="btn alt" id="hudLeave">← Leave</button><button class="btn alt places-btn" id="hudPlaces" title="List of places">📍 Places</button><button class="btn alt" id="hudOv" hidden title="Show the overview window">📋 Overview</button><button class="btn" id="hudEnd">Sleep in Apartment ☾</button></div>
+  <div class="daybar" id="daybar" aria-hidden="true"></div>
+</header>
+<main class="board" id="board">
+  <svg id="map" class="map" aria-hidden="true"></svg>
+  <div class="cloud"></div><div class="cloud b"></div>
+  <section class="center" id="center" aria-label="Game panel">
+    <div id="sr" class="sr" aria-live="polite" aria-atomic="true"></div>
+    <div id="overview">
+      <p class="ovtip">Click outside this panel to explore the town. <b>📋 Overview</b> brings it back.</p>
+      <h1>Daily Grind</h1> <button class="mute" id="muteBtn" aria-pressed="false" title="Sound on/off">🔊</button><button class="mute reset" id="resetBtn" title="Wipe the save and start a fresh game">↺ Reset</button><button class="mute ovhide" id="ovHide" title="Hide this panel to see the whole town">Hide ✕</button><button class="mute" id="previewBtn" aria-pressed="true" title="Ask before big actions, showing what they will cost">🔎 Preview: on</button><span class="saved"><span id="saveSt" role="status" title="Your progress is saved in this browser">💾 Saved</span> · <span id="diffTag">Normal</span></span>
+      <div class="top">
+        <div class="tcell pay"><span class="l">Current pay</span><b id="pay">$0</b><small id="payRole">no job</small>
+          <div class="grp g-vit inpay">
+            <div class="gh">❤️ Vitals</div>
+            <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-energy"/></svg>Energy</span><div class="bar"><i id="enBar"></i></div><b id="energy">100%</b></div>
+            <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-happy"/></svg>Happy</span><div class="bar"><i id="hpBar"></i></div><b id="happy">70%</b></div>
+            <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-health"/></svg>Health</span><div class="bar"><i id="hlBar"></i></div><b id="health">80%</b></div>
+            <div class="mrow"><span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-know"/></svg><span class="lfull">Knowledge</span><span class="lshort">Know</span></span><div class="bar kb"><i id="knBar"></i></div><b id="know">10</b></div>
+            <div class="meal" id="meal"></div>
+          </div>
+        </div>
+        <div class="tcell econ"><span class="l">Economy</span><div id="econ"></div></div>
+      </div>
+      <div class="goals" id="goals" hidden></div>
+      <div class="alerts" id="warn" hidden></div>
+      <div class="moment" id="momentBox" hidden></div>
+      <div class="sumcard" id="sumcard" hidden></div>
+      <div class="grp g-life g-home">
+        <div class="gh">🏠 Home &amp; life</div>
+        <div class="hgrid">
+          <div class="kv"><span>Home</span><b id="homeName"></b></div>
+          <div class="kv"><span>Rent</span><b id="rent"></b></div>
+          <div class="kv"><span>Belongings</span><b class="belb"><span id="belong">0</span><button type="button" class="ib belbtn" id="belongBtn" aria-expanded="false" aria-controls="belongPop" title="Everything you own">i</button></b></div>
+          <div class="belpop" id="belongPop" hidden></div>
+          <div class="kv"><span>Clothes</span><span id="wardrobe" class="wchips"></span></div>
+          <div class="kv"><span>Education</span><b id="edu">High School</b></div>
+          <div class="kv sub"><span id="eduSub">No courses yet</span></div>
+        </div>
+      </div>
+      <div class="grp g-nw">
+        <div class="gh">💰 Net worth</div>
+        <div class="nwrow"><b id="nw">$200</b><span><span id="goalAmt">next: Comfortable $1,000</span></span></div>
+        <div class="seg" id="seg"><i class="s1" id="sgCash"></i><i class="s2" id="sgBank"></i><i class="s4" id="sgInv"></i><i class="s3" id="sgAsset"></i></div>
+        <div class="parts">
+          <div><span class="dot d1"></span>Cash<b id="cash">$200</b></div>
+          <div><span class="dot d2"></span>Bank<b id="bank">$0</b></div>
+          <div><span class="dot d4"></span>Invest<b id="invv">$0</b></div>
+          <div><span class="dot d3"></span>Assets<b id="assets">$0</b></div>
+          <div><span class="dot d5"></span>Loan<b id="loanv" class="owe">$0</b></div>
+          <div id="billsRow" hidden><span class="dot d5"></span>Bills<b id="billsv" class="owe">$0</b></div>
+        </div>
+        <div class="invline" id="invline" hidden></div>
+        <p class="bankapp"><button type="button" class="btn alt" id="phoneBtn">📱 Phone</button> <small id="phoneNote"></small></p>
+        <div class="invline" id="debtline" hidden></div>
+      </div>
+      <div class="grp g-riv" id="rivBox" hidden>
+        <div class="gh">🏁 Cousins’ scoreboard <small id="rivSub"></small></div>
+        <div id="rivList"></div>
+      </div>
+      <div class="loghead"><h2>Daily log</h2><span style="display:flex;gap:8px"><button class="btn alt" id="logBig" aria-expanded="false" aria-controls="log" title="Show more of the log">Expand log</button><button class="btn alt" id="rulesBtn" title="How the game ends">How it ends</button></span></div>
+      <div id="log" role="log"></div>
+    </div>
+
+    <div id="shop" hidden>
+      <div class="shophead"><h2 id="shopTitle" style="margin:0"></h2></div>
+      <div class="say" id="say"></div>
+      <div class="result" id="result"></div>
+      <div id="shopBody"></div>
+    </div>
+  </section>
+  <div id="evwrap" hidden><div id="event" class="evcard" role="dialog" aria-live="assertive"></div></div>
+</main>
+
+<div class="over" id="welcome" role="dialog" aria-modal="true" aria-labelledby="wlT"><div class="card rules welcome-card">
+  <h2 id="wlT">Daily Grind</h2>
+  <p class="wl-tag">Beat your cousins before the reunion dinner.</p>
+  <p class="wl-pitch">Build a life from scratch in a small town. Reach <b><span id="cfgGoal">$1,000</span> net worth</b> without going broke, burning out or skipping meals.</p>
+  <div class="wl-start" id="diffs">
+    <button class="btn wl-go" data-diff="normal" id="welcomeGo"><b id="welcomeGoT">▶ Start playing</b><small>$200 to start, 20 days, standard prices</small></button>
+    <button type="button" class="btn alt wl-go" id="welcomeRivals"><b>🏁 Play against AI rivals</b><small id="welcomeRivalsT">30 days, three cousins, a scoreboard for the reunion dinner</small></button>
+    <label class="wl-coach"><input type="checkbox" id="coachOn" checked> Guide me through my first day</label>
+    <details id="customGame" class="wmore"><summary><i class="ib">⚙</i>Custom game: rivals, difficulty, starting trait</summary><div class="more-b">
+  <details id="traitBox" class="tbox"><summary><span>🎭 Starting trait: <b id="traitPick">No trait</b></span><small>optional · tap to change</small></summary>
+  <div class="traits" id="traits" role="radiogroup" aria-label="Starting trait"></div></details>
+  <div id="modeWrap"><h3>How do you want to play?</h3>
+  <div class="diffs modes" id="modes" role="radiogroup" aria-label="Game mode">
+    <button type="button" class="btn" data-mode="single" aria-pressed="true"><b>🎯 Single game</b><small id="modeSingleTxt">20 days, your own score</small></button>
+    <button type="button" class="btn alt" data-mode="rivals" aria-pressed="false"><b>🏁 With AI rivals</b><small id="modeRivalsTxt">30 days, your cousins, a reunion-dinner scoreboard</small></button>
+  </div>
+  <div class="rivopts" id="rivOpts" hidden>
+    <div><span>Rivals</span><span class="rseg" id="rivCount"><button type="button" data-rc="1">1</button><button type="button" data-rc="2">2</button><button type="button" data-rc="3" class="on">3</button></span></div>
+    <div><span>Level</span><span class="rseg" id="rivLevel"><button type="button" data-rl="easy">Easy</button><button type="button" data-rl="medium" class="on">Medium</button><button type="button" data-rl="expert">Expert</button><button type="button" data-rl="mixed">Mixed</button></span></div>
+    <div><span>Town mood</span><span class="rseg" id="rivMood"><button type="button" data-rm="friendly">😊 Friendly</button><button type="button" data-rm="competitive" class="on">⚖️ Competitive</button><button type="button" data-rm="cutthroat">🔪 Cutthroat</button></span></div>
+  </div></div>
+  <div id="diffsWrap"><h3>Other difficulties</h3>
+  <div class="diffs">
+    <button class="btn alt" data-diff="easy"><b>Easy</b><small>$500 to start, 20 days, cheaper prices, fewer illnesses</small></button>
+    <button class="btn alt" data-diff="hard"><b>Hard</b><small>$100 to start, 20 days, prices +15%, pay −5%, more illness</small></button>
+  </div><p class="wl-note">Easy and Hard start the game straight away with the choices above. “Start playing” is Normal.</p></div>
+    </div></details>
+    <details class="wmore" id="howWorks"><summary><i class="ib">i</i>How the game works</summary>
+  <div class="wtiles">
+    <div><b>⏱ 24 hours a day</b><span>Walking: <span id="cfgWalk">5 minutes</span> and <span id="cfgWalkE">1%</span> energy per distance step. Destination labels show the total walk.</span></div>
+    <div><b>🍽 Eat once a day</b><span>Low energy makes you ill</span></div>
+    <div><b>🏠 Rent <span id="cfgRent">every 5 days</span></b><span>Short of cash? It goes on a plan</span></div>
+    <div><b>👕 Clothes last <span id="cfgClothes">5 days</span></b><span>Replace them at the Clothes Mall</span></div>
+  </div>
+    <div class="more-b">Working, studying and shopping all use time. End the day with <b>Sleep in Apartment</b> at home (the most rest) or <b>Sleep outside</b> anywhere else. Keep an eye on energy and happiness: low happiness cuts your pay. Start with a job at the Employment Office, work shifts, then study at City College for better jobs. The <b>First week</b> checklist guides your first days, and the game saves automatically.</div></details>
+  </div>
+</div></div>
+<div class="over" id="rules" role="dialog" aria-modal="true" aria-labelledby="rlT"><div class="card rules">
+  <h2 id="rlT">How the game ends</h2>
+  <h3 class="win">You win</h3>
+  <ul><li><b>Net worth reaches <span id="cfgGoal2">$1,000</span></b>: cash + bank + investments + the resale value of your things, minus hospital debt, rent arrears and any loan you owe<span id="rlWin">, within 20 days</span>. That makes you <b id="cfgRank1">🙂 Comfortable</b>, the first rank.</li>
+  <li>Keep playing for a higher rank: <span id="cfgRanks"><b>💼 Wealthy</b> at $5,000 and <b>👑 Tycoon</b> at $10,000 (ranks are milestones: the game goes on to its last day)</span>. When time runs out, your best rank is your final result.</li>
+  <li><span id="cfgOnTime">Reach a rank by its target day for bonus points.</span></li></ul>
+  <h3 class="lose">You lose</h3>
+  <ul>
+    <li><b>Bankrupt:</b> <span id="cfgBankrupt">net worth under $0 for three days in a row.</span></li>
+    <li><b>Loan default:</b> <span id="cfgLoanDefault">you owe more than $10,000, or have not repaid your loan in full 5 days after its due date.</span></li>
+    <li><b>Exhaustion:</b> energy at 10% or less at the end of two days in a row.</li>
+    <li><b>You gave up:</b> happiness at 10 or less for three days in a row.</li>
+    <li><b>Hospitalised:</b> <span id="cfgHungry">three days</span> in a row without a meal.</li>
+    <li><b>Time’s up:</b> <span id="rlTime">Day 20 passes and you are still under $1,000.</span></li>
+  </ul>
+  <h3>Stress that builds before then</h3>
+  <ul>
+    <li><b>Every night:</b> <span id="cfgNight">happiness −5 and knowledge −2</span>, then sleep adds energy, happiness and health back for each hour you had left (more at home; <span id="cfgSleepHap">happiness for at most 12 hours</span>).</li>
+    <li><b>Tired (energy under 30):</b> shifts pay 15% less. Low energy that lasts also raises your chance of falling ill overnight: <span id="cfgIllEn">about 40% a night under 11 energy</span> (before health, diet and gym visits lower it).</li>
+    <li><b>Morale (happiness under 40 / 25 / 20):</b> shifts pay 10% / 25% / 40% less, and below 20 your boss may demote or fire you.</li>
+    <li><b>Factory without a job:</b> <span id="cfgFac">day labour on the loading dock (4h, once a day, no dress code) pays 60% of the lowest Factory wage and does not count as work experience. A safety course (once a game) counts as 1 shift of Factory work experience; a factory tour (once a game) adds a little knowledge.</span></li>
+    <li><b>AI rivals:</b> <span id="cfgRivals">in a game with AI rivals, computer players live the same days in the same town.</span></li>
+    <li><b>Community Centre:</b> <span id="cfgComm">a night out, karaoke or volunteering lifts your mood, and friends can tip you off about jobs.</span></li>
+    <li><b>Free time:</b> <span id="cfgFun">at home, watch a show or play games (1h, −1% energy, +7 happiness, needs a TV or console) or call your family once a day (30m, +3). At the Park, walk (1h, +5 happiness, +1 health) or jog (1h, −8% energy, +4 happiness, +3 health). The Family Restaurant also serves coffee and cake (45m, +3% energy, +6 happiness), a snack rather than a meal.</span></li>
+    <li><b>Hunger:</b> skipping the daily meal costs <span id="cfgHunger">20% energy and 15 happiness</span>, and cuts productivity.</li>
+    <li><b>Shame:</b> <span id="cfgShame">checked when you end the day: net worth under $0 costs 8 happiness and 5% energy; from day 6, net worth under $100 costs 3 happiness. Nothing is taken during the day.</span></li>
+    <li><b>Keyboard:</b> 1–9 press the numbered buttons, E ends the day, Esc leaves a building or closes a window, H opens these rules, M toggles sound. Tab moves between buildings.</li>
+    <li><b>Health:</b> a slow-moving vital. Healthy meals, the gym, the Park and sleeping at home raise it; hunger, illness, junk food, burnout and <span id="cfgHpWork">work and study (1 health an hour of shifts, lessons and self-study)</span> lower it. Good health, a healthy diet and regular gym visits all cut your chance of falling ill.</li>
+    <li><b>Layoffs and closures (two different things):</b> in a bad economy you can be <b>laid off</b> (the job is gone, so apply for a new one) or your workplace can <b>close</b> for 1 to 4 days (the Work button is disabled, but the job stays on your record and the morning message tells you when it is back). You can only hold one job at a time.</li>
+    <li><b>Storylines:</b> <span id="cfgStory">each game has one global storyline (an oil crisis, a pandemic…) that moves prices, pay and interest for everyone, and one industry-specific storyline that hits particular jobs.</span></li>
+    <li><b>Bank:</b> <span id="cfgBank">savings earn interest every night; investments follow the economy.</span></li>
+    <li><b>Loans:</b> <span id="cfgLoan">Borrow at the Bank in $50 steps.</span></li>
+    <li><b>Work limit:</b> you can work at most <span id="cfgWork">12 hours</span> of shifts in one day.</li>
+    <li><b>Burnout:</b> <span id="cfgBurn">studying more than 5 hours a day (school plus self-study), or working 9 hours or more a day, three days in a row costs 15 health and cuts shift pay by 20% for 3 days.</span></li>
+    <li><b>Illness:</b> <span id="cfgIll">a cold, the flu, dengue or pneumonia.</span> While sick you cannot work. Hospital treatment always cures you (usually after a full day in the ward). The bill is charged the morning after you are released; whatever your cash cannot cover goes on a repayment plan (+<span id="cfgDebt">10%</span> interest, late fees on missed instalments), like rent arrears.</li>
+    <li><b>Housing bubble:</b> <span id="cfgHousing">when a housing bubble bursts you may lose your home.</span></li>
+    <li><b>City College:</b> while a qualification is in progress, 3 days without a lesson is a warning and 5 to 6 is expulsion. Once you have finished one and not started the next, nothing is skipped. <span id="cfgCert">Earning a qualification adds knowledge and happiness: +5 each for a Certificate, +10 for a Degree, +15 for Honours, +20 for a Masters.</span></li>
+  </ul>
+  <button class="btn" id="rulesClose" style="margin-top:12px">Got it</button>
+</div></div>
+<div class="over" id="goalpop" role="dialog" aria-modal="true" aria-labelledby="gpT"><div class="card" style="text-align:center;max-width:420px">
+  <div style="font-size:3rem" aria-hidden="true">🎉</div>
+  <h2 id="gpT">Getting started: complete!</h2>
+  <ul id="gpList" style="text-align:left;list-style:none;padding:0;margin:8px 0"></ul>
+  <p id="gpMsg"></p>
+  <button class="btn" id="gpGo">Let’s go!</button>
+</div></div>
+<div class="over" id="certpop" role="dialog" aria-modal="true" aria-labelledby="cpT"><div class="cert">
+  <div class="cert-in">
+    <div class="cert-seal">🎓</div>
+    <div class="cert-k">Certificate of Achievement</div>
+    <div class="cert-s">This certifies that</div>
+    <div class="cert-name">You</div>
+    <div class="cert-s">has successfully completed the</div>
+    <h2 id="cpT"></h2>
+    <div class="cert-mods" id="cpMods"></div>
+    <div class="cert-f"><span id="cpDay"></span><span>Professor Lim · Town City College</span></div>
+    <p class="cert-msg" id="cpMsg"></p>
+    <button class="btn" id="cpGo">Congratulations! 🎉</button> <button class="btn alt" id="cpNext" hidden>Enrol in the next level</button>
+  </div>
+</div></div>
+<div class="over" id="morning" role="dialog" aria-modal="true" aria-labelledby="mnT"><div class="card morning">
+  <h2 id="mnT">☀️ Good morning</h2><p id="mnSub"></p><ul id="mnList"></ul>
+  <button class="btn" id="mnGo">Got it</button>
+</div></div>
+<div class="over" id="over" role="dialog" aria-modal="true" aria-labelledby="overTitle"><div class="card">
+  <h2 id="overTitle"></h2><p id="overText"></p><div id="overScore" hidden></div>
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn" id="keep" hidden>Keep playing</button><button class="btn alt" id="again">New game</button></div>
+</div></div>
+
+<div class="over" id="pvpop" role="dialog" aria-modal="true" aria-labelledby="pvT"><div class="card pv">
+  <h2 id="pvT">Do this?</h2><p class="pv-sub" id="pvSub"></p>
+  <div id="pvRows"></div><div id="pvWarn"></div><p class="pv-note" id="pvNote"></p>
+  <label class="pv-skip"><input type="checkbox" id="pvSkip" checked> Don’t ask me again (turn it back on with the 🔎 button on the Overview)</label>
+  <div class="pv-btns"><button class="btn" id="pvGo">Ok</button></div><p class="pv-out">Click or tap outside this box to cancel.</p>
+</div></div>
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+/*@js*/
+</script>
+</body>
+</html>

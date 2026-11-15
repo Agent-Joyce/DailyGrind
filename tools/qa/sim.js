@@ -2,7 +2,7 @@
    Needs the test hook (window.__G) that run-sims.ps1 injects before the line "  if(!load())fresh();".
 
    Two players, both driven by real clicks on the page (tiles, #shop buttons, #hudEnd, event buttons, pop-ups):
-     survive : eats every day (cooks meal prep two meals at a time), buys the outfit the job needs as soon as
+     survive : eats every day (cooks meal kit two meals at a time), buys the outfit the job needs as soon as
                clothes run out (withdrawing savings if needed), studies towards the best-paid job reachable in the
                days left, keeps work + study under the burnout line on the last day of a streak, switches jobs when
                the workplace closes, declines risky offers, gets treated when sick, re-applies for a home if it is lost.
@@ -146,18 +146,25 @@
     return out.sort(function(a,b){return b.g-a.g}).map(function(x){return x.o});
   }
   async function withdraw(n){if(G.S.bank<=0||!(await go('bank')))return;var a=$('amt');if(a){a.value=String(Math.ceil(n));await click(btn('wd',''),'wd')}}
-  /* clothes are always bought the moment the outfit the job needs has run out */
+  /* clothes are bought on the last day of the outfit the job needs, or the moment it has run out (CHANGELOG 108: a day without clothes means no pay) */
+  /* the Community Centre's emergency help (CHANGELOG 116): tried only when the player is stuck; builds without it have no such button */
+  async function rescue(why){
+    var Z=G.CONFIG.community.safetyNet;if(!Z||!Z.enabled)return false;
+    if(!(await go('comm')))return false;var b=btn('safety','');if(!b)return false;
+    var d=G.S.day;await click(b,'safety:'+why);(rep.safety=rep.safety||[]).push(why+' day '+d);return true;
+  }
   async function ensureClothes(){
     var j=curJob(),nx=jobsWanted()[0],order=['casual','smart','suit'];
     var want=[j&&j.rk.dress,nx&&nx.rk.dress].filter(Boolean).sort(function(a,b){return order.indexOf(b)-order.indexOf(a)})[0]||'casual';
-    if(G.hasDress(want))return;
+    var c=G.S.clothes,left=Math.max(c.suit||0,want==='suit'?0:c.smart||0,want==='casual'?c.casual||0:0);  /* days left on the best outfit that will do */
+    if(left>1)return;
     var p=G.price(want);
     if(G.S.cash<p)await withdraw(p-G.S.cash+20);
-    if(G.S.cash<p){note('SURVIVAL','clothes ran out and new ones were unaffordable (day '+G.S.day+')');return}
+    if(G.S.cash<p){if(!left){if(!G.hasDress('casual')&&await rescue('clothes'))return;note('SURVIVAL','clothes ran out and new ones were unaffordable (day '+G.S.day+')')}return}  /* on the last day, try again tomorrow */
     if(await go('mall'))await click(btn('cbuy',want),'cbuy:'+want);
   }
   function fresh(list,type){return list.filter(function(p){return !p.sp&&(!type||p.t===type)})}
-  /* eat every day: cooked meal (warm, else reheated or cold), else a ready-to-eat meal, else buy and cook meal prep (two at a time), else fast food */
+  /* eat every day: cooked meal (warm, else reheated or cold), else a ready-to-eat rice box, else buy and cook meal kit (two at a time), else fast food */
   async function ensureFed(){
     S=G.S;if(S.fed)return;
     var FD=G.CONFIG.food;
@@ -173,6 +180,7 @@
       await click(btn('eatc',''),'eatc');
     }
     if(!G.S.fed&&G.S.cash>=G.G(15)&&await go('fast'))await click(btn('treat','meal')||btn('treat','snack'),'treat');
+    if(!G.S.fed&&await rescue('meal'))return;
     if(!G.S.fed)note('SURVIVAL','could not eat on day '+G.S.day+' (cash '+G.S.cash+', time left '+G.S.ap+'m)');
   }
   async function handleSick(){
@@ -189,7 +197,8 @@
   }
   function home(){return G.S.homeless?null:G.S.home}
   function walkHome(){return G.dist(G.loc,G.S.home)*G.CONFIG.time.walkMinutes}
-  function reserve(){return 300+walkHome()+15}  /* keep about 5h for sleep, plus the walk home */
+  var SLEEP_MIN=420;  /* the careful bot goes to bed with about 7h left (CHANGELOG 122; it slept about 5h before) */
+  function reserve(){return SLEEP_MIN+walkHome()+15}  /* keep the sleep, plus the walk home */
   async function studyStep(){
     if(!target)return;
     var need=(target.rk.q||[]).filter(function(q){return lvl(q[0])<q[1]}).sort(function(a,b){return lvl(a[0])-lvl(b[0])});
@@ -197,7 +206,7 @@
     var t=null;need.forEach(function(q){if(!t&&G.inProgress(q[0]))t=q[0]});
     if(!t){
       if(G.S.expelled>0)return;
-      t=need[0][0];var fee=G.qualFee(t,G.S.edu[t]),keep=G.HOUSE[G.S.home].rent+80;
+      t=need[0][0];var cj=curJob(),fee=G.qualFee(t,G.S.edu[t]),keep=G.HOUSE[G.S.home].rent+80+G.price(cj&&cj.rk.dress||'casual');  /* a fee never spends the money for the next outfit (CHANGELOG 108) */
       if(G.S.cash-fee<keep){if(G.S.bank+G.S.cash-fee<keep)return;await withdraw(keep+fee-G.S.cash);if(G.S.cash-fee<keep)return}
       if(!(await go('school')))return;await click(btn('enrol',t),'enrol:'+t);
     }
@@ -240,7 +249,7 @@
   function after(dest,min,en,cost){
     S=G.S;var W=G.CONFIG.time.walkMinutes,there=G.dist(G.loc,dest)*W,back=G.dist(dest,G.S.home)*W,we=Math.abs(G.CONFIG.time.walkEnergy||0)*there/W;
     var keep=G.HOUSE[S.home].rent+60;
-    return S.ap-there-min>=300+back+15&&S.energy+en-we>=25&&S.cash-cost>=keep;
+    return S.ap-there-min>=SLEEP_MIN+back+15&&S.energy+en-we>=25&&S.cash-cost>=keep;
   }
   async function moraleStep(aim){
     var C=G.CONFIG.community,L=G.CONFIG.leisure,acts=[
@@ -286,12 +295,16 @@
     rep={seed:seed,mode:mode,issues:{}};clicks=0;target=null;errs.length=0;MOR={};
     try{localStorage.removeItem('dailyGrind.save.v1')}catch(e){}
     G.fresh();
+    (()=>{const d=document.getElementById('customGame');if(d)d.open=true;const c=document.getElementById('coachOn');if(c)c.checked=false})();  /* the options are in the Custom game drawer (CHANGELOG 107); bots play without the first-day guide */
     if(QA.rivals){  /* a game with AI rivals: QA.rivals = their level, QA.rivalCount = how many */
       await click(document.querySelector('#modes [data-mode="rivals"]'),'mode:rivals');
       await click(document.querySelector('#rivCount [data-rc="'+(QA.rivalCount||3)+'"]'),'rivals:count');
       await click(document.querySelector('#rivLevel [data-rl="'+QA.rivals+'"]'),'rivals:level');
     }
-    await click($('welcomeGo'),'popup:start');
+    if(QA.difficulty&&QA.difficulty!=='normal')await click(document.querySelector('#diffsWrap [data-diff="'+QA.difficulty+'"]'),'popup:start:'+QA.difficulty);  /* Easy and Hard start the game straight away */
+    else await click($('welcomeGo'),'popup:start');
+    rep.difficulty=QA.difficulty||'normal';
+    if(QA.start==='broke'){var s0=G.S;s0.cash=G.G(20);s0.bank=0;s0.clothes.casual=1;s0.food=[];rep.start='broke';G.render()}  /* a hard-times scenario set through the hook, not natural play */
     var pb=$('previewBtn');
     if(mode==='survive'&&/on/.test(pb.textContent))pb.click();
     if(mode==='random'&&/off/.test(pb.textContent))pb.click();

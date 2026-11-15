@@ -95,6 +95,7 @@ async function runCase(browser,url,player,c,out,limits){
     await pg.addScriptTag({content:player});await pg.evaluate(()=>window.__suite.init());ready=true;
     res.runtime=await pg.evaluate(()=>({ua:navigator.userAgent,width:innerWidth,height:innerHeight,touch:navigator.maxTouchPoints,scale:devicePixelRatio}));
     if(!(await pg.locator('#traits input[value="none"]').isChecked()))throw Error('Unexpected default starting trait');
+    await pg.evaluate((()=>{const d=document.getElementById('customGame');if(d)d.open=true;const c=document.getElementById('coachOn');if(c)c.checked=false}));  /* the options are in the Custom game drawer (CHANGELOG 107); no first-day guide in suite games */
     await press('#modes [data-mode="'+c.mode+'"]');
     if(c.mode==='rivals'){
       await press('#rivCount [data-rc="3"]');await press('#rivLevel [data-rl="'+c.rivals+'"]');await press('#rivMood [data-rm="'+c.mood+'"]');
