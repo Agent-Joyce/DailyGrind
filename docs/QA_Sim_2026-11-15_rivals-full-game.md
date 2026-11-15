@@ -1,8 +1,8 @@
-# Rival simulation: rivals use the whole game (CHANGELOG 118–121)
+# Rival simulation: rivals use the whole game (CHANGELOG 123–126)
 
 **Versions tested**
 - **Base:** `d00f221` (claude/vigilant-curie-a1kpwu, through §117). Results `base-*`.
-- **Final:** `484bed0` (claude/roadmap-b21-b23-c13-c14: §118 awareness, §119 conversations, §120 moments, §121 whole game, with the fixes below). Results `final-*`.
+- **Final:** `484bed0` (claude/roadmap-b21-b23-c13-c14 before it was rebased: §123 awareness, §124 conversations, §125 moments, §126 whole game, with the fixes below). Results `final-*`. The numbers in this report were run before the branch was rebased onto `9c67598` (sleep parity: sleep happiness capped at 12 hours, rivals' errands 360 minutes), so they were not re-run on the rebased code; at the time of writing the sections were numbered §118–121.
 - Intermediate builds are in the JSON under the names shown in the table.
 
 **Settings:** careful bot only, 10 games, seeds 1–10, 30 days, three rivals, normal difficulty, `--rivals=medium|expert|mixed`. Same seeds for both builds, but rival dice order differs, so games diverge after day 1. No random-bot games, no single games, no UI check. n = 10 per cell: a difference of one or two wins is within noise.

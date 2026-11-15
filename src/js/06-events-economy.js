@@ -797,7 +797,7 @@
     return st.k;
   }
   /* one rival's day (the day that has just ended) */
-  /* ---------- rivals use the whole game (CONFIG.rivals.fullGame; CHANGELOG 121) ---------- */
+  /* ---------- rivals use the whole game (CONFIG.rivals.fullGame; CHANGELOG 126) ---------- */
   function FG(){return CONFIG.rivals.fullGame}
   /* a meal by need: the usual rice kit, the cheap bun when short of money, a family dinner when unhappy and flush. Returns the minutes it took (0 = no meal) */
   function rivalEat(r,meal){

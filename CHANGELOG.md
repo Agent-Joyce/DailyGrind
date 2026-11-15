@@ -2101,11 +2101,9 @@ The bot now has less time for study and morale (calls fell from 15–19 a game t
 
 **QA:** `check-social-rules.js` has a new case (sleep happiness stops at 12 hours and is unchanged below it; 62 in all). Docs: `CLAUDE.md` (sleep convention), `docs/Daily Grind Config Guide.docx` (new sleep-happiness row; the rivals' errand row now 360).
 
-## 114. Rivals notice who leads, who is in trouble and who helped them (Package B, item 21)
+## 123. Rivals notice who leads, who is in trouble and who helped them (Package B, item 21)
 
-## 118. Rivals notice who leads, who is in trouble and who helped them (Package B, item 21)
-
-Base: §117. Rival games only. The three modifiers sit in `CONFIG.rivals.awareness`; no rival decision function was rewritten.
+Base: §122. Rival games only. The three modifiers sit in `CONFIG.rivals.awareness`; no rival decision function was rewritten.
 
 - **Sabotage:** medium and expert rivals are `leaderSabotage` (1.5) times as likely to sabotage whoever leads the Life Score (`leaderIdx()`; a tie has no leader). Expert rivals also pick the leader first among rivals they can hit (`leaderFirst`), where before they took the one just ahead.
 - **Asking for help:** when a rival short of rent money (plus `loan.askBuffer`) is among those who could ask to borrow, it asks before the others; among several, the one who trusts you most (`troubleFirst`).
@@ -2113,9 +2111,9 @@ Base: §117. Rival games only. The three modifiers sit in `CONFIG.rivals.awarene
 - **Not done:** the job race is not changed. It only ever targets you and its chance is computed inside `rivalTick()`, which another chat owns; a leader modifier belongs there.
 - Rules text (`cfgRivals`), `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated. `check-personalities.js` has three new cases. No simulation was run.
 
-## 119. Conversations with intent: five topics when you meet a rival (Package C, item 13)
+## 124. Conversations with intent: five topics when you meet a rival (Package C, item 13)
 
-Base: §118. Rival games only (encounters exist only there); the dice are the rivals' (`rrand()`), so single games are untouched.
+Base: §123. Rival games only (encounters exist only there); the dice are the rivals' (`rrand()`), so single games are untouched.
 
 - **Removed:** `CONFIG.rivals.social.chat` and `.hello` (a flat chat and a hello). **Added:** `CONFIG.rivals.talk` (times, relationship changes, win chances and the reply text); `social.ignore` stays.
 - **Topics** (`encounterCard()`, `rivalMeet(k)`; all through `relGain()` and `remember()`):
@@ -2127,9 +2125,9 @@ Base: §118. Rival games only (encounters exist only there); the dice are the ri
 - The Rivals tab's “Chat or say hello” row (§115) is now “Talk: work, a lead, a favour, a tease or gossip” and reads its chips from `CONFIG.rivals.talk`; `check-ux.js` looks for the new label.
 - Replies are text tables in `CONFIG.rivals.talk.say`. Rules text, `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated. `check-personalities.js` has five new cases. No UI check or simulation was run.
 
-## 120. Shared and contested moments: timed cards on the Today screen (Package C, item 14)
+## 125. Shared and contested moments: timed cards on the Today screen (Package C, item 14)
 
-Base: §119. Rival games only. A card is dealt each morning on the rivals' dice (`rrand()`); the choices and the town contest roll use the player's dice. Single games never deal one.
+Base: §124. Rival games only. A card is dealt each morning on the rivals' dice (`rrand()`); the choices and the town contest roll use the player's dice. Single games never deal one.
 
 - **New:** `CONFIG.rivals.moments`, `S.moment` and `S.momN` (defaults come from `blank()`, no migration needed), a `#momentBox` on the Today screen (also at the top of any building panel) with the minutes left, and the action `mom`.
 - **Deal** (`momentDeal()`, end of `rollover`): about half the days from day 2, one card, at most three of each kind a game, and only kinds that make sense now. It is announced in the morning notes.
@@ -2142,9 +2140,9 @@ Base: §119. Rival games only. A card is dealt each morning on the rivals' dice 
 - **Rival logic:** untouched. Rivals' own days do not change; only your relationship and memories with them do.
 - Rules text, `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated. `check-personalities.js` has seven new cases. No UI check or simulation was run; the UI check would need a `SITUATIONS` entry for a moment card (not added, per the instruction not to run it).
 
-## 121. Rivals use the whole game: meals, gym, homes, investments and loans (Package B, item 23)
+## 126. Rivals use the whole game: meals, gym, homes, investments and loans (Package B, item 23)
 
-Base: §120. Rival games only; single games unchanged. New `CONFIG.rivals.fullGame`; every price, return and loan term still comes from the game's own tables (`FOOD`, `CONFIG.gym`, `HOUSE`, `expRet()`, `CONFIG.loan`).
+Base: §125. Rival games only; single games unchanged. New `CONFIG.rivals.fullGame`; every price, return and loan term still comes from the game's own tables (`FOOD`, `CONFIG.gym`, `HOUSE`, `expRet()`, `CONFIG.loan`).
 
 - **Meals by need** (`rivalEat()`): a rival short of money (under one rent) or unable to pay for the rice kit eats the cheap bun instead of going hungry; one that is unhappy (under 40) with three rents spare treats itself to the family dinner. Both second-chance meals (the breakfast it could not afford) use it too.
 - **Gym:** a rival with poor health takes the cheapest class (as the health focus took its chosen class), when rent and the next outfit are covered.

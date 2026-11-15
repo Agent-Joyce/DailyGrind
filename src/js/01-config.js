@@ -617,7 +617,7 @@
         close:{happiness:6, health:1, education:1, rep:6}, defendFrom:0.8,
         moraleLift:15, studyHours:1.5, gymClass:'spin', repPactChance:0.15,
         newsGap:3},  // a rival's aim (r.aim, shown on its profile) is in the morning news when it changes, at most once in newsGap days
-      /* Rivals use the whole game (CHANGELOG 121). Every number the game already has (food, gym, housing, expRet, loan tenures) is reused; these only say when.
+      /* Rivals use the whole game (CHANGELOG 126). Every number the game already has (food, gym, housing, expRet, loan tenures) is reused; these only say when.
         meals: a rival short of money (under poorRents rents) or unable to afford the usual meal eats the cheap junk bun instead of going hungry; one that is
           unhappy (below treatBelow) and has treatKeepRents rents spare treats itself to the family dinner; the usual meal is the Fresh Market rice kit (health +5).
         gym: a rival with poor health (CONFIG.health.poorBelow) takes the cheapest Gym class when rent and its next outfit are covered.
