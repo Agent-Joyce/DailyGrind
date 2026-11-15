@@ -674,7 +674,7 @@
   var RIVAL_MEMORIES={
     lent:'You lent me money when I asked.',refused:'You turned down my request for a loan.',expired:'You left my loan request unanswered.',
     repaid:'You paid me back on time.',defaulted:'You did not pay me back on time.',
-    car:'You gave me a lift to an interview.',cake:'You chipped in for my birthday cake.',cover:'You covered my shift.',soup:'You brought soup when I was ill.',move:'You helped me move.',
+    car:'You gave me a lift to an interview.',cake:'You chipped in for my birthday cake.',cover:'You covered my shift.',soup:'You brought soup when I was ill.',move:'You helped me move.',tipped:'You passed me a job lead.',
     no_car:'You could not help me get to my interview.',no_cake:'You skipped my birthday collection.',no_cover:'You declined to cover my shift.',no_soup:'You sent a text instead of visiting when I was ill.',no_move:'You could not help me move.',
     returned:'I returned a favour with a job introduction.',
     betrayed:'You walked out on our pact and took the pot.'
@@ -720,7 +720,7 @@
   function rivalLv(r,t){var c=TRACKS[t].c,n=r.edu[t]||0,k=0;c.forEach(function(e){if(n>=e)k++});return k}
   function rivalMeets(r,rk){return (rk.q||[]).every(function(q){return rivalLv(r,q[0])>=q[1]})}
   function rivalJob(r){return r.job&&CAREERS[r.job.c]?{c:r.job.c,i:r.job.i,rk:CAREERS[r.job.c].ranks[r.job.i],b:bOf(r.job.c)}:null}
-  function rivalWorth(r){return Math.round(r.cash+r.bank+(r.etf||0)+(S.rivals.indexOf(r)<0?0:rivalMoney(S.rivals.indexOf(r))))}
+  function rivalWorth(r){return Math.round(r.cash+r.bank+(r.etf||0)+(r.hf||0)+(r.cry||0)+(r.fd||0)-rivalLoanOwed(r)+(S.rivals.indexOf(r)<0?0:rivalMoney(S.rivals.indexOf(r))))}
   /* a rival's level, adjusted by its archetype (CONFIG.rivals.archetypes): the numbers rivalDay() plays with */
   function archetype(r){return r&&CONFIG.rivals.archetypes[r.archetype]||null}
   function archetypeLabel(r){var A=archetype(r);return A?A.icon+' '+A.name:''}
@@ -797,15 +797,71 @@
     return st.k;
   }
   /* one rival's day (the day that has just ended) */
+  /* ---------- rivals use the whole game (CONFIG.rivals.fullGame; CHANGELOG 126) ---------- */
+  function FG(){return CONFIG.rivals.fullGame}
+  /* a meal by need: the usual rice kit, the cheap bun when short of money, a family dinner when unhappy and flush. Returns the minutes it took (0 = no meal) */
+  function rivalEat(r,meal){
+    var FD=CONFIG.food,F=FG().meals,rent=HOUSE[r.home||'apt'].rent,f=null,c=0,money=r.cash+r.bank;
+    var poor=money<F.poorRents*rent&&r.health>=CONFIG.health.poorBelow,bun=G(FD.burger.cost);
+    if(!poor&&r.cash<meal&&r.bank>0){var w=Math.min(r.bank,meal-r.cash);r.bank-=w;r.cash+=w}
+    if(!poor&&r.cash>=meal){f=FD.basic;c=meal;var tc=G(FD.dinner.cost);
+      if(r.happy<F.treatBelow&&r.health>=CONFIG.health.poorBelow&&money-tc>=F.treatKeepRents*rent+150){f=FD.dinner;c=tc}}
+    else if(r.cash>=bun){f=FD.burger;c=bun}
+    else if(r.cash<bun&&r.bank>0&&r.cash+r.bank>=bun){var w2=Math.min(r.bank,bun-r.cash);r.bank-=w2;r.cash+=w2;f=FD.burger;c=bun}
+    if(!f)return 0;
+    var cl=function(v){return Math.max(0,Math.min(100,v))};
+    r.cash-=c;r.energy=cl(r.energy+f.energy);r.happy=cl(r.happy+f.happiness);r.health=cl(r.health+(f.health!=null?f.health:f.junk?FD.junkHealth:(f.healthy||0)));r.hungry=0;
+    return 90;
+  }
+  /* the villa when a planning rival can carry it, the apartment when it cannot; never while it shares your home */
+  function rivalHome(r,keep){
+    var F=FG().home,H=HOUSE,home=r.home||'apt',money=r.cash+r.bank;if(flatmate()===r)return;
+    if(home==='apt'&&r.job&&money>=H.bung.fee+F.moveRents*H.bung.rent+keep){var pay=H.bung.fee;if(r.cash<pay){var w=Math.min(r.bank,pay-r.cash);r.bank-=w;r.cash+=w}r.cash-=pay;r.home='bung';rivalNote(r,1,'moved into a villa.')}
+    else if(home==='bung'&&money<F.backRents*H.bung.rent){r.home='apt';rivalNote(r,1,'moved back to an apartment to save on rent.')}
+  }
+  /* the products an investing rival holds (by archetype), judged on the player's own expected returns */
+  function rivalInvest(r){
+    var F=FG().invest,list=F.products[r.archetype]||['etf'],risk=F.risk[r.archetype]!=null?F.risk[r.archetype]:0.15,worth0=Math.max(1,rivalWorth(r));
+    ['etf','hf','cry'].forEach(function(k){var cap=F.maxShare[k]*worth0;if(r[k]>cap){var ex=r[k]-Math.max(0,cap);r.bank+=ex;r[k]-=ex}});  /* take profits: a holding grown past its cap goes back to savings */
+    var tot=function(){return (r.etf||0)+(r.hf||0)+(r.cry||0)};
+    ['cry','hf','etf'].forEach(function(k){var over=tot()-F.maxTotal*worth0;if(over>0&&r[k]>0){var ex=Math.min(r[k],over);r.bank+=ex;r[k]-=ex}});  /* and all three together stay under maxTotal, the riskiest sold first */
+    list.forEach(function(k){
+      var score=expRet(k)-risk*VOL[k],held=k==='fd'?(r.fd||0):(r[k]||0);
+      if(k!=='fd'&&held>0&&score<S.rate-F.sellMargin){r.bank+=held;r[k]=0;held=0}
+      var avail=r.bank-F.keepBank;
+      if(score>S.rate+F.margin&&avail>=F.minMove){
+        if(k==='fd'){if(!(r.fd>0)){var a=Math.round(avail*F.share);r.bank-=a;r.fd=a;r.fdLock=S.day-1+F.fdDays}}
+        else{var room=Math.max(0,Math.min(F.maxShare[k]*worth0-held,F.maxTotal*worth0-((r.etf||0)+(r.hf||0)+(r.cry||0)))),m=Math.round(Math.min(avail*F.share,room));if(m>=F.minMove){r.bank-=m;r[k]=held+m}}}
+    });
+  }
+  /* a bank loan to pay a course fee that blocks a clearly better role */
+  function rivalBorrow(r,tg,fee,keep,j){
+    var F=FG().loan,L=CONFIG.loan;if(!F||!F.on||!L.enabled||r.loan||F.levels.indexOf(r.diff)<0||!j||tg.pay<j.rk.pay*F.payGain||rivalWorth(r)-fee<F.keepWorth)return;  /* a loan solves a cash shortage, not insolvency: net worth after the fee must stay above keepWorth, or the bankrupt rule would end the rival */
+    var assets=r.cash+r.bank+(r.etf||0)+(r.hf||0)+(r.cry||0)+(r.fd||0),limit=Math.floor(Math.min(L.maxLoan,L.baseLimit+L.limitPerAsset*assets)/L.step)*L.step;
+    var need=Math.ceil((keep+fee-r.cash-r.bank)/L.step)*L.step;if(need<=0)need=L.step;  /* the savings are drawn first */
+    if(need>limit)return;
+    var T=L.tenures[Math.min(F.tenure,L.tenures.length-1)];r.loan={p:need,i:0,rate:T.rate,due:S.day-1+T.days};r.cash+=need;
+    rivalNote(r,1,'took a '+money(need)+' bank loan to pay for a course.');
+  }
+  function rivalLoanOwed(r){return r.loan?r.loan.p+r.loan.i:0}
+  /* each night: interest, repayment, and default as for you; returns true when the rival is out */
+  function rivalLoanTick(r,keep){
+    var Ln=r.loan,L=CONFIG.loan,night=S.day-1;if(!Ln)return false;
+    Ln.i+=night<Ln.due?Math.round(Ln.p*Ln.rate):Math.round((L.overdueCompounds?Ln.p+Ln.i:Ln.p)*L.overdueRate);
+    var owed=Ln.p+Ln.i,spare=r.cash+r.bank-keep;
+    if(spare>=owed||night>=Ln.due){var pay=Math.max(0,Math.min(owed,r.cash+r.bank));var c=Math.min(pay,Math.max(0,r.cash));r.cash-=c;r.bank-=pay-c;owed-=pay;
+      if(owed<=0){rivalNote(r,0,'repaid its bank loan.');r.loan=null;return false}
+      var left=owed/(Ln.p+Ln.i);Ln.p=Math.round(Ln.p*left);Ln.i=owed-Ln.p}
+    if(owed>L.defaultIfOwedAbove||night>=Ln.due+L.graceDays){r.out={day:night,why:'defaulted on a bank loan'};rivalNote(r,1,'defaulted on a bank loan on day '+night+'. Out of the race.');return true}
+    return false;
+  }
   function rivalDay(r){
-    var K=rivalSkill(r),AM=CONFIG.rivals.aims,FDc=CONFIG.food,day=S.day-1,used=CONFIG.rivals.dayOverheadMinutes||0,mistake=rivalMistake(r,K),left=gameLen()-day;
+    var K=rivalSkill(r),rent0=HOUSE[r.home||'apt'].rent,AM=CONFIG.rivals.aims,FDc=CONFIG.food,day=S.day-1,used=CONFIG.rivals.dayOverheadMinutes||0,mistake=rivalMistake(r,K),left=gameLen()-day;
     var clamp100=function(v){return Math.max(0,Math.min(100,v))};
     if(r.focus&&AM){K=Object.assign({},K);if(r.focus==='happiness')K.moraleAim=Math.max(K.moraleAim,r.aimHappy||0);if(r.focus==='education')K.studyHours+=AM.studyHours}  /* today's Life Score focus (aimTick) */
     /* eat */
     var meal=Math.round(G(FDc.basic.cost)*(1-(FDc.bundleDiscount||0)));
-    if(mistake!=='meal'&&r.cash<meal&&r.bank>0){var wm=Math.min(r.bank,meal-r.cash);r.bank-=wm;r.cash+=wm}  /* savings pay for a meal before hunger does */
-    if(mistake!=='meal'&&r.cash>=meal){r.cash-=meal;r.energy=clamp100(r.energy+FDc.basic.energy);r.happy=clamp100(r.happy+FDc.basic.happiness);r.health=clamp100(r.health+FDc.basic.health);r.hungry=0;used+=90}
-    else r.hungry++;
+    var ate=mistake!=='meal'?rivalEat(r,meal):0;if(ate)used+=ate;else r.hungry++;
     /* aim (medium, expert) */
     if(K.plans&&(!r.target||day%3===1))r.target=rivalTarget(r,left,K.studyHours||1);
     /* clothes for the job (or the one aimed for) */
@@ -818,7 +874,7 @@
     /* dress for the best better-paid role it already qualifies for, so a dress code never locks a rival out of a job
        (bought with the rent still covered; no dice) */
     var up=rivalDressUp(r,j);
-    if(up&&mistake!=='clothes'&&!dressed(up)){var cu=G(WEAR[up].p);if(r.cash+r.bank-cu>=HOUSE.apt.rent){if(r.cash<cu){var wu=Math.min(r.bank,cu-r.cash);r.bank-=wu;r.cash+=wu}r.cash-=cu;r.clothes[up]=WEAR[up].w;used+=30}}
+    if(up&&mistake!=='clothes'&&!dressed(up)){var cu=G(WEAR[up].p);if(r.cash+r.bank-cu>=rent0){if(r.cash<cu){var wu=Math.min(r.bank,cu-r.cash);r.bank-=wu;r.cash+=wu}r.cash-=cu;r.clothes[up]=WEAR[up].w;used+=30}}
     /* apply for a better job it qualifies for (openings are shared with yours) */
     for(var a=0;a<K.applyTries;a++){
       var val=function(c,i){return (K.usesOutlook?rolePay(c,i):CAREERS[c].ranks[i].pay)*careerPreference(r,c,CAREERS[c].ranks[i])+(r.target&&bOf(c)===bOf(r.target.c)?CONFIG.rivals.career.targetBonus:0)},cp0=j?val(j.c,j.i):0,best=null;  /* the target's workplace is worth a little extra (work experience) */
@@ -834,7 +890,7 @@
         if(!r.bestJob||j.rk.pay>r.bestJob.pay)r.bestJob={r:j.rk.r,pay:j.rk.pay};break}
     }
     /* ill: no work or lessons; a rival who can spare the money pays for treatment (cured from tomorrow) */
-    if(r.ill){var IL=ILL[r.ill.k],fee=G(IL.cost||Math.round((IL.lo+IL.hi)/2));if(K.bank!=='none'&&r.cash+r.bank>fee+HOUSE.apt.rent+G(WEAR[want].p)){var wf=Math.max(0,fee-r.cash);r.bank-=wf;r.cash+=wf-fee;r.ill.d=0;used+=120;rivalNote(r,0,'paid '+money(fee)+' to be treated for '+illShort(IL)+'.')}}
+    if(r.ill){var IL=ILL[r.ill.k],fee=G(IL.cost||Math.round((IL.lo+IL.hi)/2));if(K.bank!=='none'&&r.cash+r.bank>fee+rent0+G(WEAR[want].p)){var wf=Math.max(0,fee-r.cash);r.bank-=wf;r.cash+=wf-fee;r.ill.d=0;used+=120;rivalNote(r,0,'paid '+money(fee)+' to be treated for '+illShort(IL)+'.')}}
     /* work */
     var shifts=Math.floor(K.shifts)+(rrand()<K.shifts%1?1:0)-(mistake==='lazy'?1:0)-(r.ill?99:0),load=0;  /* 2.5 = a third shift on about half of days */
     var targetRank=r.target&&CAREERS[r.target.c]&&CAREERS[r.target.c].ranks[r.target.i];
@@ -856,7 +912,7 @@
       for(var gi=0;gi<Math.min(GG.maxRuns,Math.ceil(K.shifts)+1)&&r.energy+GG.energy>=25&&load+GG.minutes<=CONFIG.time.maxWorkMinutes;gi++){
         r.cash+=Math.round(GG.pay*payIdx());r.energy=clamp100(r.energy+GG.energy);r.happy=clamp100(r.happy-workHap(-GG.energy));r.health=clamp100(r.health+workHp(GG.minutes));load+=GG.minutes;used+=GG.minutes;r.gigs=(r.gigs||0)+1}}
     /* no money for breakfast: eat after the day's pay instead */
-    if(r.hungry&&mistake!=='meal'&&r.cash>=meal){r.cash-=meal;r.energy=clamp100(r.energy+FDc.basic.energy);r.happy=clamp100(r.happy+FDc.basic.happiness);r.health=clamp100(r.health+FDc.basic.health);r.hungry=0;used+=90}
+    if(r.hungry&&mistake!=='meal')used+=rivalEat(r,meal);
     /* study towards the target (or anything, for easy rivals now and then) */
     var tg=r.target&&CAREERS[r.target.c]&&CAREERS[r.target.c].ranks[r.target.i],need=tg?(tg.q||[]).filter(function(q){return rivalLv(r,q[0])<q[1]}):[];
     if(!K.plans&&!r.study&&rrand()<K.studyChance){var ts=Object.keys(TRACKS).filter(function(t){return (r.edu[t]||0)<totMods(t)});
@@ -866,7 +922,8 @@
     if(!r.study&&need.length&&r.pausedStudy&&r.pausedStudy[need[0][0]]){r.study=r.pausedStudy[need[0][0]];delete r.pausedStudy[need[0][0]]}
     if(!r.ill&&mistake!=='study'&&!sabClass(r,day)&&(need.length||r.study)&&rrand()<K.studyChance){
       var t=r.study?r.study.t:need[0][0];
-      if(!r.study){var n0=r.edu[t]||0,fee=qualFee(t,n0),keep=HOUSE.apt.rent+80+G(WEAR[want].p);  /* a fee never spends the money for the next outfit */if(r.cash-fee<keep&&r.bank>0){var w2=Math.min(r.bank,keep+fee-r.cash);r.bank-=w2;r.cash+=w2}
+      if(!r.study){var n0=r.edu[t]||0,fee=qualFee(t,n0),keep=rent0+80+G(WEAR[want].p);  /* a fee never spends the money for the next outfit */if(r.cash-fee<keep&&r.bank>0){var w2=Math.min(r.bank,keep+fee-r.cash);r.bank-=w2;r.cash+=w2}
+        if(r.cash-fee<keep&&K.plans&&tg)rivalBorrow(r,tg,fee,keep,j);
         if(r.cash-fee>=keep){r.cash-=fee;r.study={t:t,lv:levelOf(t,n0),h:0}}}
       if(r.study){var hrs=Math.min(K.studyHours,(CONFIG.burnout.loadMinutes-load)/60,Math.max(0,(r.energy-25)/Math.abs(CONFIG.education.lessonEnergyPerHour||5)));
         if(hrs>=0.5){r.wentSchool=1;var lc=lessonCost(hrs);r.energy=clamp100(r.energy+lc.en);r.happy=clamp100(r.happy+lc.hap);r.health=clamp100(r.health+lc.hp);r.know=clamp100(r.know+Math.round(hrs));used+=hrs*60;
@@ -878,15 +935,16 @@
     }
     /* morale: free and cheap lifts, cheapest first, up to the level's aim (CONFIG.community and CONFIG.leisure) */
     if(mistake!=='fun'&&r.happy<K.moraleAim){var L=CONFIG.leisure,C=CONFIG.community,acts=[L.call,L.walk];if(K.social&&C)acts.push(C.volunteer,C.karaoke,C.nightOut);
-      acts.forEach(function(c){if(!c||r.happy>=K.moraleAim||used+c.minutes>1440-360)return;var cost=G(c.cost||0);if(r.cash-cost<HOUSE.apt.rent)return;if(c.energy&&r.energy+c.energy<25)return;
+      acts.forEach(function(c){if(!c||r.happy>=K.moraleAim||used+c.minutes>1440-360)return;var cost=G(c.cost||0);if(r.cash-cost<rent0)return;if(c.energy&&r.energy+c.energy<25)return;
         if(c!==L.call&&c!==L.walk)r.wentComm=1;r.cash-=cost;r.happy=clamp100(r.happy+(c.happiness||0));r.energy=clamp100(r.energy+(c.energy||0));r.health=clamp100(r.health+(c.health||0));if(c.knowledge)r.know=clamp100(r.know+c.knowledge);used+=c.minutes})}
     /* chasing a health place: a class at the Gym, paid with the rent and the next outfit still covered (CONFIG.rivals.aims.gymClass) */
-    if(r.focus==='health'&&!r.ill&&mistake!=='fun'){var gc=null;(CONFIG.gym.classes||[]).forEach(function(c){if(c.k===AM.gymClass)gc=c});
-      if(gc&&used+gc.minutes<=1440-360&&r.energy+gc.energy>=25){var gcost=G(gc.cost);if(r.cash-gcost>=HOUSE.apt.rent+G(WEAR[want].p)){r.cash-=gcost;r.energy=clamp100(r.energy+gc.energy);r.health=clamp100(r.health+gc.health);r.happy=clamp100(r.happy+(gc.happiness||0));used+=gc.minutes;r.wentGym=1}}}
+    if((r.focus==='health'||r.health<CONFIG.health.poorBelow)&&!r.ill&&mistake!=='fun'){var gc=null;(CONFIG.gym.classes||[]).forEach(function(c){if(r.focus==='health'?c.k===AM.gymClass:!gc)gc=c});  /* poor health: the cheapest class */
+      if(gc&&used+gc.minutes<=1440-360&&r.energy+gc.energy>=25){var gcost=G(gc.cost);if(r.cash-gcost>=rent0+G(WEAR[want].p)){r.cash-=gcost;r.energy=clamp100(r.energy+gc.energy);r.health=clamp100(r.health+gc.health);r.happy=clamp100(r.happy+(gc.happiness||0));used+=gc.minutes;r.wentGym=1}}}
     /* money: savings (medium), savings and the ETF in a good market (expert) */
-    var keepC=HOUSE.apt.rent+150+G(WEAR.casual.p);
+    var keepC=rent0+150+G(WEAR.casual.p);
     if(K.bank!=='none'&&r.cash>keepC+50){r.bank+=r.cash-keepC;r.cash=keepC}
-    if(K.bank==='invest'){if(S.mkt>0.3&&r.bank>300){var mv=Math.round(r.bank/2);r.bank-=mv;r.etf+=mv}else if(S.mkt<-0.3&&r.etf>0){r.bank+=r.etf;r.etf=0}}
+    if(K.bank==='invest')rivalInvest(r);
+    if(K.plans)rivalHome(r,keepC);
     /* where a rival spends its days: where you may meet them tomorrow */
     var jb=rivalJob(r);r.places=[jb?jb.b:null,r.wentSchool?'school':null,r.wentComm?'comm':null,r.wentGym?'gym':null,'market'].filter(Boolean);r.wentSchool=0;r.wentComm=0;r.wentGym=0;
     return used;
@@ -902,15 +960,17 @@
     else if(rrand()<rivalIllChance(r)){var mix=RV.illMix,ks=Object.keys(mix),x=rrand(),k0=ks[ks.length-1];for(var q=0;q<ks.length;q++){x-=mix[ks[q]];if(x<0){k0=ks[q];break}}
       r.ill={k:k0,d:ILL[k0].wk};rivalNote(r,1,'fell ill with '+illShort(ILL[k0])+'.')}
     if(r.energy<HN.lowEnergyBelow)r.health=clamp100(r.health+HN.lowEnergy);
-    r.energy=clamp100(r.energy+SL.nightEnergy+Math.min(SL.maxEnergy,Math.round(leftMin/60*SL.perHour.apt*(SL.rateX||1))));
+    r.energy=clamp100(r.energy+SL.nightEnergy+Math.min(SL.maxEnergy,Math.round(leftMin/60*SL.perHour[r.home||'apt']*(SL.rateX||1))));
     r.happy=clamp100(r.happy+SL.nightHappiness+sleepHap(leftMin));
     r.health=clamp100(r.health+sleepHealth(leftMin)+(HN.always||0));
     if(r.hungry){r.energy=clamp100(r.energy+FDc.hungryEnergy);r.happy=clamp100(r.happy+FDc.hungryHappiness);r.health=clamp100(r.health+HN.skippedMeal)}
     r.know=clamp100(r.know+CONFIG.selfStudy.nightlyLoss);
     ['casual','smart','suit'].forEach(function(k){if(r.clothes[k]>0)r.clothes[k]=Math.max(0,r.clothes[k]-CONFIG.clothes.wearPerDay)});
     r.bank+=Math.floor(r.bank*S.rate/100);
-    if(r.etf>0)r.etf=Math.max(0,r.etf*(1+(expRet('etf')+VOL.etf*(rrand()*2-1)*1.7)/100));
-    if((S.day-1)%RENT_EVERY===0){var due=flatmate()===r?flatShare(r):HOUSE.apt.rent,pay=Math.min(due,Math.max(0,r.cash));r.cash-=pay;due-=pay;var b=Math.min(due,r.bank);r.bank-=b;due-=b;r.cash-=due}
+    ['etf','hf','cry'].forEach(function(k){if(r[k]>0)r[k]=Math.max(0,r[k]*(1+Math.max(CAP[k][0],Math.min(CAP[k][1],expRet(k)+VOL[k]*(rrand()*2-1)*1.7))/100))});
+    if(r.fd>0){r.fd*=1+expRet('fd')/100;if(S.day-1>=r.fdLock){r.bank+=Math.round(r.fd);r.fd=0}}  /* the fixed deposit matures into savings */
+    if((S.day-1)%RENT_EVERY===0){var due=flatmate()===r?flatShare(r):HOUSE[r.home||'apt'].rent,pay=Math.min(due,Math.max(0,r.cash));r.cash-=pay;due-=pay;var b=Math.min(due,r.bank);r.bank-=b;due-=b;r.cash-=due}
+    var loanOut=rivalLoanTick(r,HOUSE[r.home||'apt'].rent+150);if(loanOut){r.hist.push(rivalWorth(r));return}
     /* layoffs and closures: the industry-specific storyline and the economy's trends, as for you */
     var j=rivalJob(r);
     if(j){var x=indRole(j.c,j.i),I=CONFIG.industry,lay=0;S.trends.forEach(function(t){lay+=t.lay||0});
@@ -1038,6 +1098,8 @@
     var ask=free.filter(function(i){var r=S.rivals[i];return !rloan(i,'in')&&(!r.lastLoanAsk||today-r.lastLoanAsk>=L.cooldown)&&rrand()<(r.cash+r.bank<HOUSE[r.home||'apt'].rent+L.askBuffer?L.distressChance:L.askChance)});
     var st=0,bet=free.filter(function(i){var r=S.rivals[i],v=betStake(i);return !rbet(i)&&canStake(S,v,M.bet)&&canStake(r,v,M.bet)&&rrand()<rivalChance(r,pick(M.bet.accept,r.diff,0.5),'bet')});
     var k=ask.length?'borrow':bet.length?'bet':'',pool=k==='borrow'?ask:bet;if(!k)return;
+    var W=CONFIG.rivals.awareness,tr=function(i){return S.rivals[i].favours&&S.rivals[i].favours.trust||0},dist=function(i){var q=S.rivals[i];return W&&W.levels.indexOf(q.diff)>=0&&q.cash+q.bank<HOUSE[q.home||'apt'].rent+L.askBuffer};
+    var tf=k==='borrow'&&W&&W.troubleFirst?pool.filter(dist):[];if(tf.length)pool=tf.sort(function(a,b){return tr(b)-tr(a)}).slice(0,1);  /* a rival in trouble asks first, from you if it trusts you most */
     var i=pool[Math.floor(rrand()*pool.length)],r=S.rivals[i],m={id:(S.msgN=(S.msgN||0)+1),i:i,k:k,day:today,until:today+M.messageDays-1,amt:st,back:0,st:null};
     if(k==='bet')m.amt=betStake(i);
     if(k==='borrow'){r.lastLoanAsk=today;m.amt=Math.round(G(L.min+rrand()*(L.max-L.min))/10)*10;m.back=Math.round(m.amt*(1+L.interest))}
@@ -1154,8 +1216,12 @@
   function startPact(i,stake){var r=S.rivals[i],P=PX().pact;if(!r||r.out||S.pact||hasAlly(i)||(stake&&(!canStake(S,stake,P)||!canStake(r,stake,P))))return false;if(stake){S.cash-=stake;r.cash-=stake}S.pact={i:i,since:S.day,until:S.day+P.days-1,pot:stake*2};return true}
   function splitPot(pot,a,b){var h=Math.floor(pot/2);a.cash+=h;b.cash+=pot-h}  /* a and b are S or a rival (both have cash) */
   /* the betrayal chance tonight for rival r */
+  /* awareness (CONFIG.rivals.awareness): a rival you helped (trust above 0) is less likely to betray; bounded below by helpedFloor */
+  function helpedMult(r){var W=CONFIG.rivals.awareness,t=r.favours&&r.favours.trust||0;if(!W||W.levels.indexOf(r.diff)<0||t<=0)return 1;return Math.max(W.helpedFloor,1-t*W.helpedBetray)}
+  /* the Life Score leader's index: -1 is you, otherwise a rival's index; null when no one leads alone or no lead is known */
+  function leaderIdx(P){P=P||lifeScore();var top=null,tie=false;P.forEach(function(p){if(top==null||p.pts>top.pts){top=p;tie=false}else if(p.pts===top.pts)tie=true});return !top||tie?null:top.me?-1:S.rivals.indexOf(top.r)}
   function betrayChance(r){var B=PX().betray,pm=B.personality[r.personality]||1;if(r.personality==='vindictive'&&!((r.favours&&r.favours.trust)<0))pm=1;
-    return pick(B.chance,r.diff,0.04)*moodX().betray*pm*(r.diff==='expert'&&gameLen()-(S.day-1)<=B.lateDays?B.lateMult:1)}
+    return pick(B.chance,r.diff,0.04)*moodX().betray*pm*helpedMult(r)*(r.diff==='expert'&&gameLen()-(S.day-1)<=B.lateDays?B.lateMult:1)}
   /* you propose: pact 'i' (plain) or 'i|pot' */
   function proposePact(arg){
     var a=String(arg).split('|'),i=+a[0],withPot=a[1]==='pot',r=S.rivals&&S.rivals[i],P=PX().pact,st=withPot?potStake(i):0;
@@ -1322,13 +1388,13 @@
       var P=lifeScore(),pts={};P.forEach(function(p){pts[p.me?-1:S.rivals.indexOf(p.r)]=p.pts});
       var late=gameLen()-(today-1)<=R.expertLastDays,hitsOnYou=0;
       var wants=function(r,ti){var ahead=pts[ti]>pts[S.rivals.indexOf(r)];return r.diff==='easy'||(r.diff==='medium'&&ahead)||(r.diff==='expert'&&ahead&&late)};
-      var base=function(r){return pick(R.chance,r.diff,0.03)*moodX().sabotage*(R.personality[r.personality]||1)};
+      var W=CONFIG.rivals.awareness,lead=W?leaderIdx(P):null,base=function(r,ti){return pick(R.chance,r.diff,0.03)*moodX().sabotage*(R.personality[r.personality]||1)*(W&&ti!=null&&ti===lead&&W.levels.indexOf(r.diff)>=0?W.leaderSabotage:1)};
       S.rivals.forEach(function(r,ri){
         if(r.out||(r.sabUsed||0)>=Z.maxPerGame)return;
         /* at you */
         if(hitsOnYou<Z.hitsOnYouPerDay&&wants(r,-1)&&ally()!==r&&(r.rel||0)<CONFIG.rivals.social.friendAt){
           var g=r.grudge&&today<=r.grudge+1?(r.personality==='vindictive'?C.vindictiveGrudge:C.grudgeMult):1;
-          if(rrand()<base(r)*((r.rel||0)<0?R.enemyMult:1)*g){var ks=sabMovesFor(S,r),k=ks[Math.floor(rrand()*ks.length)],ch=sabCatch(pick(R.caught,r.diff,0.3),r.sabUsed);r.sabUsed=(r.sabUsed||0)+1;hitsOnYou++;
+          if(rrand()<base(r,-1)*((r.rel||0)<0?R.enemyMult:1)*g){var ks=sabMovesFor(S,r),k=ks[Math.floor(rrand()*ks.length)],ch=sabCatch(pick(R.caught,r.diff,0.3),r.sabUsed);r.sabUsed=(r.sabUsed||0)+1;hitsOnYou++;
             if(rrand()<ch){repAdd(r,C.rep);relAdd(r,C.rel);S.notes.push({l:'warn',t:'🕵️ '+r.ic+' '+r.name+' was caught trying to '+sabTry(k,'you','your')+'. It didn’t work. Their reputation '+sg(C.rep)+', your relationship with them '+sg(C.rel)+'.'})}
             else{var e=sabLand(S,k,ri,true);var inc={id:e.id,kind:'sab',k:k,by:ri,day:today,eid:e.id,done:false};S.incidents.push(inc);
               S.notes.push({l:'bad',t:'📉 '+({rumour:'Someone has been spreading a rumour about you: interview chances '+Math.round(M.rumour.interview*100)+' points until the end of day '+e.until+'.',online:'Someone has been posting rumours about you online: interview chances '+Math.round(M.online.interview*100)+' points until the end of day '+e.until+'.',badmouth:'Someone has been bad-mouthing you around town: reputation '+sg(M.badmouth.rep)+'.',cls:'Someone booked the last seat in your class: no lesson for you today.',boss:'Someone has been talking you down to your boss: your shifts pay '+Math.round((1-M.boss.pay)*100)+'% less until the end of day '+e.until+'.',snag:'Someone had a word with the hiring manager: no openings for your next rank until the end of day '+e.until+'.',prank:'Prank calls kept you up half the night: energy '+sg(M.prank.energy)+'%.'}[k])+' You weren’t told who. Accuse someone at the Community Centre if you think you know.'})}
@@ -1336,8 +1402,9 @@
         }
         /* at another rival: the one just ahead (easy: anyone) */
         var others=S.rivals.map(function(o,oi){return oi}).filter(function(oi){var o=S.rivals[oi];return oi!==ri&&!o.out&&!(rivalPactOf(ri)&&(rivalPactOf(ri).a===oi||rivalPactOf(ri).b===oi))&&!(o.hitBy&&o.hitBy.d===today&&o.hitBy.n>=Z.rivalHitsPerDay)&&wants(r,oi)});
-        if(!others.length||rrand()>=base(r))return;
+        if(!others.length||rrand()>=base(r,others.indexOf(lead)>=0?lead:null))return;
         if(r.diff!=='easy')others.sort(function(x,y){return pts[x]-pts[y]});
+        if(W&&W.leaderFirst.indexOf(r.diff)>=0&&others.indexOf(lead)>0){others.splice(others.indexOf(lead),1);others.unshift(lead)}  /* experts go for the leader */
         var ti=r.diff==='easy'?others[Math.floor(rrand()*others.length)]:others[0],t=S.rivals[ti],ks2=sabMovesFor(t,r),k2=ks2[Math.floor(rrand()*ks2.length)],ch2=sabCatch(pick(R.caught,r.diff,0.3),r.sabUsed);
         r.sabUsed=(r.sabUsed||0)+1;t.hitBy={d:today,n:(t.hitBy&&t.hitBy.d===today?t.hitBy.n:0)+1};
         if(rrand()<ch2){repAdd(r,C.rep);S.notes.push({l:'rem',t:'🕵️ '+r.ic+' '+r.name+' was caught trying to '+sabTry(k2,t.ic+' '+t.name,t.name+'’s')+' (reputation '+sg(C.rep)+').'})}
@@ -1685,22 +1752,121 @@
   }
   function encounterCard(){
     var e=S.enc;if(S.mode!=='rivals'||!e||e.day!==S.day||e.done||e.loc!==view||!S.rivals[e.i])return '';
-    var r=S.rivals[e.i],X=CONFIG.rivals.social,j=rivalJob(r),tense=(r.rel||0)<0;  /* below 0 a chat or hello may turn into an argument */
-    return boxed(psec('enc',r.ic+' '+r.name+' is here',chip('',relLabel(r.rel||0)),r.name+' ('+r.diff+' · '+personality(r).name+(j?', '+j.rk.r:'')+') is here too. '+personality(r).about+' '+memoryLine(r)+' Talking builds your relationship, but takes time; with someone you are on bad terms with it may turn tense and make things worse.')+
-      arow('🗣️ Chat',chip('time',hm(X.chat.minutes))+chip('happy',sg(X.chat.happiness))+chip('','Relationship '+sg(X.chat.rel))+(tense?argueChip():''),btn('meet','chat','Chat'),'',tense?'chance':'')+
-      arow('👋 Say hello',chip('time',hm(X.hello.minutes))+chip('','Relationship '+sg(X.hello.rel))+(tense?argueChip():''),btn('meet','hello','Say hello',1),'',tense?'chance':'')+
+    var r=S.rivals[e.i],X=CONFIG.rivals.social,T=CONFIG.rivals.talk,j=rivalJob(r),tense=(r.rel||0)<0,f=r.favours,tip=tipOn(),owed=f&&f.owed>0;  /* below 0 a topic that goes wrong turns into an argument */
+    var rows=arow('💼 Ask about their work',chip('time',hm(T.work.minutes))+chip('happy',sg(T.work.happiness))+chip('','Relationship '+sg(T.work.rel))+(!tip?chip('','May give a job lead'):'')+(tense?argueChip():''),btn('meet','work','Ask'),'',tense||!tip?'chance':'');
+    if(tip)rows+=arow('🎁 Share your job lead',chip('time',hm(T.tip.minutes))+chip('','Relationship '+sg(T.tip.rel))+chip('','You lose the lead','warn')+chip('','They owe you'),btn('meet','tip','Share'));
+    if(owed)rows+=arow('🙏 Ask for the favour they owe you',chip('time',hm(T.favour.minutes))+chip('','Relationship '+sg(T.favour.rel))+(tip?chip('','You already have a lead','warn'):chip('','Job lead')),btn('meet','favour','Ask',0,tip));
+    rows+=arow('😜 Tease them',chip('time',hm(T.tease.minutes))+chip('happy',sg(T.tease.happiness))+chip('','Win '+sg(T.tease.relWin)+' / lose '+sg(T.tease.relLose))+argueChip(),btn('meet','tease','Tease',1),'','chance');
+    S.rivals.forEach(function(o,oi){if(oi===e.i||o.out)return;rows+=arow('🗣️ Gossip about '+o.ic+' '+o.name,chip('time',hm(T.gossip.minutes))+chip('','Win '+sg(T.gossip.rel)+' / lose '+sg(T.gossip.relLose))+chip('','Their trust '+sg(T.gossip.relOther)),btn('meet','gossip|'+oi,'Gossip',1),'','chance')});
+    return boxed(psec('enc',r.ic+' '+r.name+' is here',chip('',relLabel(r.rel||0)),r.name+' ('+r.diff+' · '+personality(r).name+(j?', '+j.rk.r:'')+') is here too. '+personality(r).about+' '+memoryLine(r)+' Pick what to talk about. Every topic takes time, and the replies depend on who they are; with someone you are on bad terms with it may turn tense and make things worse.')+rows+
       arow('🙈 Ignore',chip('','No time')+chip('','Relationship '+sg(X.ignore.rel),'warn'),btn('meet','ignore','Ignore',1)));
   }
+  /* a conversation topic (rival dice; CONFIG.rivals.talk). k: 'work', 'tip', 'favour', 'tease', 'gossip|<rival>' or 'ignore' */
   function rivalMeet(k){
     var e=S.enc;if(!e||e.day!==S.day||e.done)return refuse('Nobody to talk to here right now.');
-    var r=S.rivals[e.i],X=CONFIG.rivals.social,c=X[k];if(!r||!c)return;
-    if(c.minutes&&!spendMin(c.minutes,0))return;
-    var v0=vitSnap(),res;
-    if(k==='ignore'){r.rel=Math.max(-100,Math.min(100,(r.rel||0)+c.rel));res={d:c.rel,backfire:false}}
-    else{res=relGain(r,c.rel);S.happy=clamp(S.happy+(c.happiness||0));if(res.backfire)argue()}  /* a tense chat or hello is an argument */
+    var r=S.rivals[e.i],X=CONFIG.rivals.social,T=CONFIG.rivals.talk,a=String(k).split('|'),t=a[0],P=r&&personality(r),say=T.say,line='',res,v0,bad=false;if(!r)return;
+    if(t==='ignore'){r.rel=Math.max(-100,Math.min(100,(r.rel||0)+X.ignore.rel));e.done=true;log('🙈 You ignored '+r.name+': '+relTxt(r,{d:X.ignore.rel})+'.','warn');done();return}
+    var c=T[t];if(!c)return;var o=t==='gossip'?S.rivals[+a[1]]:null;
+    if(t==='gossip'&&(!o||o.out||o===r))return refuse('There is nobody to gossip about.');
+    if(t==='tip'&&!tipOn())return refuse('You have no job lead to share.');
+    if(t==='favour'&&!(r.favours&&r.favours.owed>0))return refuse(r.name+' does not owe you a favour.');
+    if(t==='favour'&&tipOn())return refuse('You already have a job lead. Use it first.');
+    if(!spendMin(c.minutes,0))return;v0=vitSnap();
+    var tenseX=function(x){if(x.backfire){argue();bad=true}};
+    if(t==='work'){res=relGain(r,c.rel);S.happy=clamp(S.happy+c.happiness);tenseX(res);line=say.work[r.archetype]||'';
+      if(!res.backfire&&!tipOn()&&(r.rel||0)>=0&&rrand()<c.tipChance*P.tipMult){S.tip={until:S.day+CONFIG.community.tip.days-1};line+=' They mentioned an opening: your next interview is easier (until the end of day '+S.tip.until+').'}}
+    else if(t==='tip'){S.tip=null;res=relGain(r,c.rel);tenseX(res);remember(r,'tipped',c.trust,true);line=say.tip[r.personality]||''}
+    else if(t==='favour'){r.favours.owed--;remember(r,'returned',0,false);S.tip={until:S.day+CONFIG.community.tip.days-1};res=relGain(r,c.rel);tenseX(res);line=(say.favour[r.personality]||'')+' Your next interview is easier (until the end of day '+S.tip.until+').'}
+    else if(t==='tease'){var win=(c.win[r.personality]||0.5)-((r.rel||0)<=X.rivalAt?c.badTerms:0);S.happy=clamp(S.happy+c.happiness);
+      if(rrand()<win){res=relGain(r,c.relWin);tenseX(res);line=say.teaseWin[r.personality]||''}else{r.rel=Math.max(-100,r.rel+c.relLose);res={d:c.relLose,backfire:false};argue();bad=true;line=say.teaseLose[r.personality]||''}}
+    else if(t==='gossip'){var key=[S.rivals.indexOf(r),S.rivals.indexOf(o)].sort().join('|');
+      if(rrand()<(c.like[r.personality]||0.5)){res=relGain(r,c.rel);tenseX(res);S.rivalRelations[key]=(S.rivalRelations[key]||0)+c.relOther;line=say.gossipWin[r.personality]+' Their trust with '+o.name+' '+sg(c.relOther)+'.'}
+      else{r.rel=Math.max(-100,r.rel+c.relLose);res={d:c.relLose,backfire:false};bad=true;line=say.gossipLose[r.personality]||''}}
     e.done=true;
-    log((k==='ignore'?'🙈 You ignored '+r.name:res.backfire?'🗯️ The '+(k==='chat'?'chat':'hello')+' with '+r.name+' turned into an argument':k==='chat'?'🗣️ You had a chat with '+r.name:'👋 You said hello to '+r.name)+vitPar(v0)+': '+relTxt(r,res)+'.',res.d<0?'warn':'good');
+    var what={work:'asked '+r.name+' about their work',tip:'shared a job lead with '+r.name,favour:'asked '+r.name+' for the favour they owed you',tease:'teased '+r.name,gossip:'gossiped with '+r.name+' about '+(o&&o.name)}[t];
+    log((res.backfire?'🗯️ You '+what+' and it turned into an argument':'🗣️ You '+what)+vitPar(v0)+': '+relTxt(r,res)+'.'+(line?' “'+line+'”':''),res.d<0||bad?'warn':'good');
     done();
+  }
+  /* ---------- moments: one timed card a day on the Today screen (CONFIG.rivals.moments; rival games) ----------
+    S.moment {k, i (rival), day, until (minutes since the day began), id (contest: the role), pay}. Dealt each morning on rival dice
+    (momentDeal); you answer with your own choices (momentDo); one you miss resolves in momentExpire (no dice). */
+  function momentLeft(m){return m.until-(MAX_AP-S.ap)}
+  function momentOpening(){
+    var jb=myJob(),pay0=jb?rolePay(jb.c,S.career[jb.c]):0,out=[];
+    Object.keys(CAREERS).forEach(function(c){var i=S.career[c]!=null?S.career[c]+1:0,rk=CAREERS[c].ranks[i];
+      if(!rk||(jb&&jb.c!==c&&rolePay(c,i)<=pay0)||S.closed[c+'_'+i]||shutLeft(bOf(c))>0||!meets(rk)||kreq(rk)>Math.floor(S.know)||expShort(c,rk))return;out.push(c+'_'+i)});
+    return out;
+  }
+  function momentDeal(){
+    var X=CONFIG.rivals.moments;S.moment=null;
+    if(S.mode!=='rivals'||!S.rivals||!X||S.day<X.firstDay||rrand()>=X.chance)return;
+    var live=S.rivals.map(function(r,i){return i}).filter(function(i){return !S.rivals[i].out});if(!live.length)return;
+    var n=S.momN||(S.momN={}),kinds=[];
+    ['contest','cover','project','town'].forEach(function(k){if((n[k]||0)>=X.maxPerGame)return;
+      var ok=k==='contest'?!tipOn()&&momentOpening().length>0:k==='cover'?live.some(function(i){var r=S.rivals[i];return rivalJob(r)&&r.cash>=coverPay(r)}):k==='project'?Object.keys(TRACKS).some(inProgress):true;
+      if(ok)kinds.push(k)});
+    if(!kinds.length)return;
+    var k=kinds[Math.floor(rrand()*kinds.length)],pool=k==='cover'?live.filter(function(i){var r=S.rivals[i];return rivalJob(r)&&r.cash>=coverPay(r)}):live,i=pool[Math.floor(rrand()*pool.length)],m={k:k,i:i,day:S.day,until:(MAX_AP-S.ap)+X.window[k]};
+    if(k==='contest'){var o=momentOpening();m.id=o[Math.floor(rrand()*o.length)]}
+    if(k==='cover')m.pay=coverPay(S.rivals[i]);
+    n[k]=(n[k]||0)+1;S.moment=m;
+    S.notes.push({l:'rem',t:'⏳ '+S.rivals[i].ic+' '+S.rivals[i].name+': '+({contest:'you both want the same opening',cover:'asks you to cover a shift',project:'wants you in a group project',town:'a town contest is on'}[k])+'. See the card on the Today screen: it is open for '+hm(X.window[k])+'.'});
+  }
+  function momentText(m){
+    var r=S.rivals[m.i],X=CONFIG.rivals.moments;if(!r)return null;
+    if(m.k==='contest'){var c=m.id.split('_'),rk=CAREERS[c[0]].ranks[+c[1]];return {ic:'🏁',t:'Same opening, same morning',q:r.name+' is going for '+rk.r+' at the '+NAME[bOf(c[0])]+' too. Get to the interview first and it goes your way: your next interview is easier and has an opening. Wait, and they take it.',
+      yes:'Interview now',yc:chip('time','1h interview')+chip('','Easier interview')+chip('','Relationship with '+r.name+' '+sg(X.contest.interviewRel),'warn'),no:'Let them',nc:chip('','Closes for you today')+chip('','Relationship '+sg(X.contest.missRel),'warn')}}
+    if(m.k==='cover'){var j=rivalJob(r);return {ic:'🧑‍🍳',t:'Cover a shift now',q:r.name+' cannot make their shift'+(j?' as '+j.rk.r:'')+' and asks you to cover it for '+money(m.pay)+'.',
+      yes:'Cover it',yc:chip('time',hm(X.cover.minutes))+chip('good','+'+money(m.pay))+chip('energy',sg(X.cover.energy))+chip('','Relationship '+sg(X.cover.rel)),no:'Say no',nc:chip('','Relationship '+sg(X.cover.refuseRel),'warn')}}
+    if(m.k==='project')return {ic:'📚',t:'Group project at the School',q:r.name+' needs one more for a group project that is due today.',
+      yes:'Join in',yc:chip('time',hm(X.project.minutes))+chip('know','+'+X.project.know+' 🧠')+chip('happy',sg(X.project.happiness))+chip('','Relationship '+sg(X.project.rel)),no:'Skip it',nc:chip('','Relationship '+sg(X.project.missRel),'warn')};
+    return {ic:'🏆',t:'Town contest',q:'A quiz and bake-off at the Community Centre today; '+r.name+' has entered. A prize for the winner.',
+      yes:'Enter',yc:chip('time',hm(X.town.minutes))+chip('cost','−'+money(G(X.town.fee)))+chip('good','Prize '+money(G(X.town.prize)))+chip('','Reputation '+sg(X.town.rep)),no:'Not today',nc:''};
+  }
+  function momentCard(){
+    var m=S.moment;if(S.mode!=='rivals'||!m||m.day!==S.day||S.over||momentLeft(m)<=0)return '';
+    var t=momentText(m);if(!t)return '';var left=momentLeft(m);
+    return boxed(psec('mom',t.ic+' '+t.t,chip('time',hm(left)+' left'),t.q)+
+      arow('✅ '+t.yes,t.yc,btn('mom','yes',t.yes),'',m.k==='town'||m.k==='contest'?'chance':'')+arow('✖️ '+t.no,t.nc,btn('mom','no',t.no,1)));
+  }
+  function momentDo(a){
+    var m=S.moment,X=CONFIG.rivals.moments,r=m&&S.rivals[m.i];
+    if(!m||m.day!==S.day||momentLeft(m)<=0||!r)return refuse('That is no longer on offer.');
+    var v0=vitSnap();
+    if(a==='no'){momentMiss(m,false);return done()}
+    if(m.k==='contest'){
+      if(S.ap<60)return refuse('Not enough time left today (the interview takes 1h).');
+      S.moment=null;if(!tipOn())S.tip={until:S.day};  /* the head start: easier, and never "no openings" */
+      relAdd(r,X.contest.interviewRel);log('🏁 You rushed to the interview before '+r.name+' could: relationship with '+r.name+' '+sg(X.contest.interviewRel)+'.','good');
+      return apply(m.id);
+    }
+    if(m.k==='cover'){var C=X.cover;if(S.energy<30)return refuse('You are too tired to cover a shift.');if(r.cash<m.pay)return refuse(r.name+' cannot pay for it any more.');if(!spendMin(C.minutes,0))return;
+      S.moment=null;S.cash+=m.pay;inc(m.pay);r.cash-=m.pay;S.energy=Math.max(0,S.energy+C.energy);var res=relGain(r,C.rel);remember(r,'cover',CONFIG.rivals.memory.helpTrust,true);if(PX().rep.help)repAdd(S,PX().rep.help);if(res.backfire)argue();
+      log('🧑‍🍳 You covered '+r.name+'’s shift for '+money(m.pay)+vitPar(v0)+': '+relTxt(r,res)+'.','good');return done()}
+    if(m.k==='project'){var P=X.project;if(!spendMin(P.minutes,0))return;S.moment=null;applyFx('n+'+P.know);S.happy=clamp(S.happy+P.happiness);var res2=relGain(r,P.rel);if(res2.backfire)argue();
+      log('📚 You finished the group project with '+r.name+vitPar(v0)+': '+relTxt(r,res2)+'.','good');return done()}
+    var T=X.town,fee=G(T.fee);if(S.cash<fee)return refuse('The entry fee is '+money(fee)+'.');if(!spendMin(T.minutes,fee))return;S.moment=null;
+    var win=Math.random()<Math.min(T.max,T.base+S.know/T.knowledgeDiv);
+    if(win){var pz=G(T.prize);S.cash+=pz;inc(pz);S.happy=clamp(S.happy+T.happiness);repAdd(S,T.rep);relAdd(r,-1);log('🏆 You won the town contest: '+money(pz)+' and a name around town'+vitPar(v0)+'.','good')}
+    else{S.happy=clamp(S.happy+T.loseHappiness);relAdd(r,1);log('🏆 You took part in the town contest and '+r.name+' won it. A good day out anyway'+vitPar(v0)+'.','')}
+    done();
+  }
+  /* a card you declined, let run out during the day, or left at bedtime: no dice, only what the config says.
+    during the day the result is logged at once; at bedtime (night) it goes into the morning notes */
+  function momentMiss(m,night){
+    var X=CONFIG.rivals.moments,r=S.rivals&&S.rivals[m.i];S.moment=null;if(!r)return;
+    var msg='',tone='warn';
+    if(m.k==='contest'){var c=m.id.split('_');if(!night){S.closed[m.id]=1;S.raced=S.raced||{};S.raced[m.id]=r.name}relAdd(r,X.contest.missRel);msg='🏁 '+r.ic+' '+r.name+' got to the interview first'+(night?'':': no openings for '+CAREERS[c[0]].ranks[+c[1]].r+' at the '+NAME[bOf(c[0])]+' today')+' (relationship '+sg(X.contest.missRel)+').'}
+    else if(m.k==='cover'){relAdd(r,X.cover.refuseRel);remember(r,'no_cover',CONFIG.rivals.memory.refuseTrust,false);msg='🧑‍🍳 '+r.name+' had to call in sick: nobody covered (relationship '+sg(X.cover.refuseRel)+').'}
+    else if(m.k==='project'){relAdd(r,X.project.missRel);msg='📚 The group project with '+r.name+' went ahead without you (relationship '+sg(X.project.missRel)+').'}
+    else{msg='🏆 The town contest came and went without you.';tone='rem';if(night)return}
+    if(night)S.notes.push({l:tone,t:msg});else log(msg,tone==='rem'?'':'warn');
+  }
+  /* time ran out during the day (called by done()), or the day is ending (force) */
+  function momentExpire(force){
+    var m=S.moment;if(!m||S.over)return;
+    if(!force&&m.day===S.day&&momentLeft(m)>0)return;
+    momentMiss(m,!!force||m.day!==S.day);
   }
   /* calls: from home (no phone needed, costs what a family call costs) or by phone anywhere (one rival or a group) */
   function calledToday(i){return S.rcalled&&S.rcalled.d===S.day&&S.rcalled[i]}
@@ -1738,7 +1904,7 @@
     var app=function(k,label,off){return '<button type="button" class="btn alt" data-dg-app="'+k+'"'+(dev&&!off?'':' disabled')+'>'+label+'</button>'};
     var nodev=dev?'':'Needs a phone or tablet, or your computer at home. ';
     var e=S.enc,here=e&&e.day===S.day&&!e.done&&e.i===i,pl=(r.places||[]).map(function(k){return NAME[k]}).filter(Boolean);
-    h+=arow('🗣️ Chat or say hello',chip('time',hm(X.chat.minutes))+chip('','Relationship '+sg(X.chat.rel))+(rel<0?argueChip():'')+(here?chip('','Here today','ok'):''),here?go(e.loc,'Walk to '+NAME[e.loc]):'',
+    h+=arow('🗣️ Talk: work, a lead, a favour, a tease or gossip',chip('time',hm(CONFIG.rivals.talk.favour.minutes)+' to '+hm(CONFIG.rivals.talk.work.minutes))+chip('','Relationship '+sg(CONFIG.rivals.talk.tease.relLose)+' to '+sg(CONFIG.rivals.talk.tip.rel))+(rel<0?argueChip():'')+(here?chip('','Here today','ok'):''),here?go(e.loc,'Walk to '+NAME[e.loc]):'',
       here?r.name+' is at the '+NAME[e.loc]+' today. Walk there to talk.':'You can talk when you meet by chance'+(pl.length?'; lately they have been at: '+pl.join(', '):' at the places they use')+'.',rel<0?'chance':'');
     var c=calledToday(i);
     h+=arow('📞 Call '+r.name,chip('time',hm(X.call.phoneMinutes))+chip('happy',sg(X.call.phoneHappiness))+argueChip()+chip('',relLabel(rel))+(c?chip('','✓ Called today','ok'):''),mv('rcall',i,'Call',!!c||!handheld()),handheld()?'':'Needs a phone or tablet. At home you can call from the 📞 Calls screen.','chance');

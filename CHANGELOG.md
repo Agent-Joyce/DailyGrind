@@ -2100,3 +2100,58 @@ Base: `d00f221` (§117 and the other chat's §113–116). Numbered 122 because �
 The bot now has less time for study and morale (calls fell from 15–19 a game to 6–10), so it ends as a Senior Nurse rather than a Junior Doctor and still places 3rd–4th on happiness. Three games at one level only: rerun expert and mixed rival games before judging the level balance.
 
 **QA:** `check-social-rules.js` has a new case (sleep happiness stops at 12 hours and is unchanged below it; 62 in all). Docs: `CLAUDE.md` (sleep convention), `docs/Daily Grind Config Guide.docx` (new sleep-happiness row; the rivals' errand row now 360).
+
+## 123. Rivals notice who leads, who is in trouble and who helped them (Package B, item 21)
+
+Base: §122. Rival games only. The three modifiers sit in `CONFIG.rivals.awareness`; no rival decision function was rewritten.
+
+- **Sabotage:** medium and expert rivals are `leaderSabotage` (1.5) times as likely to sabotage whoever leads the Life Score (`leaderIdx()`; a tie has no leader). Expert rivals also pick the leader first among rivals they can hit (`leaderFirst`), where before they took the one just ahead.
+- **Asking for help:** when a rival short of rent money (plus `loan.askBuffer`) is among those who could ask to borrow, it asks before the others; among several, the one who trusts you most (`troubleFirst`).
+- **Betrayal:** each point of remembered trust a rival holds for a partner cuts its betrayal chance by `helpedBetray` (0.2), never below `helpedFloor` (0.4) of the base chance (`helpedMult()`).
+- **Not done:** the job race is not changed. It only ever targets you and its chance is computed inside `rivalTick()`, which another chat owns; a leader modifier belongs there.
+- Rules text (`cfgRivals`), `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated. `check-personalities.js` has three new cases. No simulation was run.
+
+## 124. Conversations with intent: five topics when you meet a rival (Package C, item 13)
+
+Base: §123. Rival games only (encounters exist only there); the dice are the rivals' (`rrand()`), so single games are untouched.
+
+- **Removed:** `CONFIG.rivals.social.chat` and `.hello` (a flat chat and a hello). **Added:** `CONFIG.rivals.talk` (times, relationship changes, win chances and the reply text); `social.ignore` stays.
+- **Topics** (`encounterCard()`, `rivalMeet(k)`; all through `relGain()` and `remember()`):
+  - 💼 **Ask about their work** (20 min, +4, +1 happiness): the reply comes from their archetype; if you have no job lead and are not on bad terms they may give you one (25% × their personality's `tipMult`).
+  - 🎁 **Share your job lead** (only with one active, 15 min, +10): you lose it; they remember it (`tipped`, trust +1) and owe you a favour.
+  - 🙏 **Ask for the favour they owe** (only when one is owed and you have no lead, 10 min): spends the favour for a guaranteed lead, like the morning return but on request.
+  - 😜 **Tease** (10 min): win chance by personality (generous 85%, reckless 75%, ambitious 50%, vindictive 30%, 20 points lower on bad terms): +5, or −6 and an argument.
+  - 🗣️ **Gossip about a third rival** (one row per rival still in, 15 min): they like it by personality for +4 and the pair's trust (`S.rivalRelations`) falls by 6; otherwise −4 with them.
+- The Rivals tab's “Chat or say hello” row (§115) is now “Talk: work, a lead, a favour, a tease or gossip” and reads its chips from `CONFIG.rivals.talk`; `check-ux.js` looks for the new label.
+- Replies are text tables in `CONFIG.rivals.talk.say`. Rules text, `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated. `check-personalities.js` has five new cases. No UI check or simulation was run.
+
+## 125. Shared and contested moments: timed cards on the Today screen (Package C, item 14)
+
+Base: §124. Rival games only. A card is dealt each morning on the rivals' dice (`rrand()`); the choices and the town contest roll use the player's dice. Single games never deal one.
+
+- **New:** `CONFIG.rivals.moments`, `S.moment` and `S.momN` (defaults come from `blank()`, no migration needed), a `#momentBox` on the Today screen (also at the top of any building panel) with the minutes left, and the action `mom`.
+- **Deal** (`momentDeal()`, end of `rollover`): about half the days from day 2, one card, at most three of each kind a game, and only kinds that make sense now. It is announced in the morning notes.
+- **Cards:**
+  - 🏁 **Contested opening:** you and a rival want the same role (a promotion in your line, or a better-paid job you qualify for). *Interview now* gives the interview head start (like a friend's tip) and runs the normal interview; missing it closes the role for you that day and shows "taken by", like a lost job race.
+  - 🧑‍🍳 **Cover a shift:** the rival pays you (from their cash), you spend 3h and 10 energy, they remember it. Saying no or letting it lapse is remembered as a refusal.
+  - 📚 **Group project:** needs a course in progress; 1h30 for knowledge, happiness and relationship.
+  - 🏆 **Town contest:** entry fee, 1h, win chance 30% + knowledge/200 (at most 80%), prize, reputation and happiness.
+- **Deadlines** are in minutes of the day (window 4 to 7 hours). A card that runs out is settled with no dice by `momentExpire()` (called from `done()`); one left at bedtime goes into the morning notes.
+- **Rival logic:** untouched. Rivals' own days do not change; only your relationship and memories with them do.
+- Rules text, `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated. `check-personalities.js` has seven new cases. No UI check or simulation was run; the UI check would need a `SITUATIONS` entry for a moment card (not added, per the instruction not to run it).
+
+## 126. Rivals use the whole game: meals, gym, homes, investments and loans (Package B, item 23)
+
+Base: §125. Rival games only; single games unchanged. New `CONFIG.rivals.fullGame`; every price, return and loan term still comes from the game's own tables (`FOOD`, `CONFIG.gym`, `HOUSE`, `expRet()`, `CONFIG.loan`).
+
+- **Meals by need** (`rivalEat()`): a rival short of money (under one rent) or unable to pay for the rice kit eats the cheap bun instead of going hungry; one that is unhappy (under 40) with three rents spare treats itself to the family dinner. Both second-chance meals (the breakfast it could not afford) use it too.
+- **Gym:** a rival with poor health takes the cheapest class (as the health focus took its chosen class), when rent and the next outfit are covered.
+- **Home** (`rivalHome()`): planning rivals without you as flatmate move to the villa when they hold its fee plus six rents, and back to the apartment under one rent. Rent and the night's energy follow the home. Not modelled for rivals: the villa's happiness.
+- **Investments** (`rivalInvest()`): rivals whose level invests hold products by archetype (careerist and socialite ETF, scholar fixed deposit, investor deposit, ETF and hedge fund, hustler ETF, hedge fund and crypto). A product is bought when its expected return minus risk × its daily swing beats the savings rate; sold when it falls under. Products grow nightly on rival dice with the game's own caps; fixed deposits lock four days. All count in `rivalWorth()`.
+- **Bank loans** (`rivalBorrow()`, `rivalLoanTick()`): a planning rival that cannot pay a course fee for a role paying 1.3 times its job borrows the shortfall at the 10-day tenure, with your credit limit, but only if its net worth after the fee stays above `keepWorth` ($300), because a loan fixes a cash shortage, not insolvency (the first version let broke rivals borrow and 16 of 30 medium and 19 of 30 expert rivals went bankrupt in the simulation); it repays when it can, owes interest and overdue interest like you, and is out of the race five days after the due date. The debt counts against its net worth.
+- Rules text, `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated; `check-personalities.js` has five new cases. No UI check or simulation was run: rival outcomes will move, so a rival simulation is advised before merging.
+- **Simulation:** [`docs/QA_Sim_2026-11-15_rivals-full-game.md`](docs/QA_Sim_2026-11-15_rivals-full-game.md). Medium is close to the base; expert rivals are clearly stronger (the careful bot wins 0 of 10, base 2), likely from investing, and need a retune before merging.
+- **Take profits:** each night `rivalInvest()` sells any ETF, hedge fund or crypto holding above `maxShare` × the rival's net worth back to savings before buying (the cap used to apply only when buying, so holdings compounded unchecked: one expert rival went from $779 to $76,891 in ten days). No new dice. `check-personalities.js` has a case; the loan test was updated for `keepWorth`.
+- **Tighter investing caps:** a hot market (mood +4 for days) let one investor compound $779 into $76,891 in ten days. Limits are now `share` 0.25, `maxShare` ETF 0.25, hedge fund 0.15, crypto 0.05, and a new `maxTotal` 0.35 across the three; anything above is sold back to savings each night, the riskiest first. `check-personalities.js` has the total-exposure case.
+- **No loans for expert rivals** (`CONFIG.rivals.fullGame.loan.levels`: easy and medium only). In the expert simulation a $212 loan let one rival start Medicine four days sooner and reach the top doctor role by day 26, and the richest rival ended at $65,184 (base $35,300); raising `payGain` to 1.6 or 2 changed nothing. Final simulation (10 careful games a level): the bot wins 1, 4 and 1 of 10 against medium, mixed and expert rivals (base 3, 2, 2); medium rivals are richer than on the base. See the report linked above.
+
