@@ -1844,7 +1844,7 @@
     var app=function(k,label,off){return '<button type="button" class="btn alt" data-dg-app="'+k+'"'+(dev&&!off?'':' disabled')+'>'+label+'</button>'};
     var nodev=dev?'':'Needs a phone or tablet, or your computer at home. ';
     var e=S.enc,here=e&&e.day===S.day&&!e.done&&e.i===i,pl=(r.places||[]).map(function(k){return NAME[k]}).filter(Boolean);
-    h+=arow('🗣️ Chat or say hello',chip('time',hm(X.chat.minutes))+chip('','Relationship '+sg(X.chat.rel))+(rel<0?argueChip():'')+(here?chip('','Here today','ok'):''),here?go(e.loc,'Walk to '+NAME[e.loc]):'',
+    h+=arow('🗣️ Talk: work, a lead, a favour, a tease or gossip',chip('time',hm(CONFIG.rivals.talk.favour.minutes)+' to '+hm(CONFIG.rivals.talk.work.minutes))+chip('','Relationship '+sg(CONFIG.rivals.talk.tease.relLose)+' to '+sg(CONFIG.rivals.talk.tip.rel))+(rel<0?argueChip():'')+(here?chip('','Here today','ok'):''),here?go(e.loc,'Walk to '+NAME[e.loc]):'',
       here?r.name+' is at the '+NAME[e.loc]+' today. Walk there to talk.':'You can talk when you meet by chance'+(pl.length?'; lately they have been at: '+pl.join(', '):' at the places they use')+'.',rel<0?'chance':'');
     var c=calledToday(i);
     h+=arow('📞 Call '+r.name,chip('time',hm(X.call.phoneMinutes))+chip('happy',sg(X.call.phoneHappiness))+argueChip()+chip('',relLabel(rel))+(c?chip('','✓ Called today','ok'):''),mv('rcall',i,'Call',!!c||!handheld()),handheld()?'':'Needs a phone or tablet. At home you can call from the 📞 Calls screen.','chance');

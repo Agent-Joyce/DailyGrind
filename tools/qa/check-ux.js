@@ -74,7 +74,7 @@ const out=outDir(process.argv[2],'dg-ux-check');
    await test('the Rivals tab lists every move on each rival, and its buttons work (CHANGELOG 115)',async()=>{await fresh();await pg.uncheck('#coachOn');await pg.click('#welcomeRivals');
      await ev("S.cash=900;S.items.phone=1;S.rel=0;S.rivals[0].rel=60;S.rivals[0].cash=900;render()");await pg.click('[data-dg-screen=rivals]');
      await pg.evaluate(()=>{document.querySelector('#rivList>details:nth-of-type(2)').open=true});
-     const txt=await pg.textContent('#rivList');for(const w of ['What you can do now','Chat or say hello','Call ','for a loan','a bet','Propose a pact','Schemes against'])ok(txt.includes(w),'missing the move: '+w);
+     const txt=await pg.textContent('#rivList');for(const w of ['What you can do now','Talk: work, a lead, a favour, a tease or gossip','Call ','for a loan','a bet','Propose a pact','Schemes against'])ok(txt.includes(w),'missing the move: '+w);
      ok(await pg.evaluate(()=>{const b=document.querySelector('#rivList .rmoves [data-rmove^="rcall"]');return !!b&&!b.disabled}),'the Call button is missing or disabled');
      const ap=await ev("S.ap");await pg.click('#rivList .rmoves [data-rmove^="rcall"]');
      ok(await ev("!!calledToday(0)")&&await ev("S.ap")<ap,'the Call button did not make a call');

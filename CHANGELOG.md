@@ -2103,7 +2103,9 @@ The bot now has less time for study and morale (calls fell from 15–19 a game t
 
 ## 114. Rivals notice who leads, who is in trouble and who helped them (Package B, item 21)
 
-Base: §113. Rival games only. The three modifiers sit in `CONFIG.rivals.awareness`; no rival decision function was rewritten.
+## 118. Rivals notice who leads, who is in trouble and who helped them (Package B, item 21)
+
+Base: §117. Rival games only. The three modifiers sit in `CONFIG.rivals.awareness`; no rival decision function was rewritten.
 
 - **Sabotage:** medium and expert rivals are `leaderSabotage` (1.5) times as likely to sabotage whoever leads the Life Score (`leaderIdx()`; a tie has no leader). Expert rivals also pick the leader first among rivals they can hit (`leaderFirst`), where before they took the one just ahead.
 - **Asking for help:** when a rival short of rent money (plus `loan.askBuffer`) is among those who could ask to borrow, it asks before the others; among several, the one who trusts you most (`troubleFirst`).
@@ -2111,9 +2113,9 @@ Base: §113. Rival games only. The three modifiers sit in `CONFIG.rivals.awarene
 - **Not done:** the job race is not changed. It only ever targets you and its chance is computed inside `rivalTick()`, which another chat owns; a leader modifier belongs there.
 - Rules text (`cfgRivals`), `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated. `check-personalities.js` has three new cases. No simulation was run.
 
-## 115. Conversations with intent: five topics when you meet a rival (Package C, item 13)
+## 119. Conversations with intent: five topics when you meet a rival (Package C, item 13)
 
-Base: §114. Rival games only (encounters exist only there); the dice are the rivals' (`rrand()`), so single games are untouched.
+Base: §118. Rival games only (encounters exist only there); the dice are the rivals' (`rrand()`), so single games are untouched.
 
 - **Removed:** `CONFIG.rivals.social.chat` and `.hello` (a flat chat and a hello). **Added:** `CONFIG.rivals.talk` (times, relationship changes, win chances and the reply text); `social.ignore` stays.
 - **Topics** (`encounterCard()`, `rivalMeet(k)`; all through `relGain()` and `remember()`):
@@ -2122,11 +2124,12 @@ Base: §114. Rival games only (encounters exist only there); the dice are the ri
   - 🙏 **Ask for the favour they owe** (only when one is owed and you have no lead, 10 min): spends the favour for a guaranteed lead, like the morning return but on request.
   - 😜 **Tease** (10 min): win chance by personality (generous 85%, reckless 75%, ambitious 50%, vindictive 30%, 20 points lower on bad terms): +5, or −6 and an argument.
   - 🗣️ **Gossip about a third rival** (one row per rival still in, 15 min): they like it by personality for +4 and the pair's trust (`S.rivalRelations`) falls by 6; otherwise −4 with them.
+- The Rivals tab's “Chat or say hello” row (§115) is now “Talk: work, a lead, a favour, a tease or gossip” and reads its chips from `CONFIG.rivals.talk`; `check-ux.js` looks for the new label.
 - Replies are text tables in `CONFIG.rivals.talk.say`. Rules text, `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated. `check-personalities.js` has five new cases. No UI check or simulation was run.
 
-## 116. Shared and contested moments: timed cards on the Today screen (Package C, item 14)
+## 120. Shared and contested moments: timed cards on the Today screen (Package C, item 14)
 
-Base: §115. Rival games only. A card is dealt each morning on the rivals' dice (`rrand()`); the choices and the town contest roll use the player's dice. Single games never deal one.
+Base: §119. Rival games only. A card is dealt each morning on the rivals' dice (`rrand()`); the choices and the town contest roll use the player's dice. Single games never deal one.
 
 - **New:** `CONFIG.rivals.moments`, `S.moment` and `S.momN` (defaults come from `blank()`, no migration needed), a `#momentBox` on the Today screen (also at the top of any building panel) with the minutes left, and the action `mom`.
 - **Deal** (`momentDeal()`, end of `rollover`): about half the days from day 2, one card, at most three of each kind a game, and only kinds that make sense now. It is announced in the morning notes.
