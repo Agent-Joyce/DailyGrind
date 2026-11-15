@@ -606,7 +606,8 @@
         it also defends a place that the player just behind is that close to. Focus levers: happiness sets the day's happiness aim moraleLift
         above the average it needs to pass (or keep); education adds studyHours; health takes the gymClass at the Gym (CONFIG.gym.classes); rep adds repPactChance to the
         nightly chance of a pact between rivals (CONFIG.rivals.politics.rivalPacts) and starts it. Wealth and career are its normal play. */
-      aims:{levels:['medium','expert'], close:{happiness:6, health:1, education:1, rep:6}, defendFrom:0.8,
+      aims:{levels:['expert'],  // medium rivals plan their careers but do not play for places (CHANGELOG 113)
+        close:{happiness:6, health:1, education:1, rep:6}, defendFrom:0.8,
         moraleLift:15, studyHours:1.5, gymClass:'spin', repPactChance:0.15,
         newsGap:3},  // a rival's aim (r.aim, shown on its profile) is in the morning news when it changes, at most once in newsGap days
       /* A rival's slips (the level's mistakeChance is the most it can be): the chance is mistakeChance x (floor + (1 − floor) x strain),
@@ -668,9 +669,9 @@
       lifeEvents:{chance:0.6, outcomes:['h-2~6','h-5 c-15~40','h-4 e-6','h+2~4','h+3 c-10~25','l-2~4','h-3 l-2','e-8 h-2','c+10~30 h+2','h-8 l-3']},
       names:['Maya','Leo','Sam'], icons:['👩','🧔','🧑'],
       levels:{
-        easy:  {mistakeChance:0.25, shifts:1, plans:false, studyHours:1.5, studyChance:0.35, applyTries:1, usesOutlook:false, bank:'none',    moraleAim:20, social:false},
+        easy:  {mistakeChance:0.2, shifts:1.25, plans:false, studyHours:1.5, studyChance:0.35, applyTries:1, usesOutlook:false, bank:'none',    moraleAim:20, social:false},
         medium:{mistakeChance:0.03, shifts:2.25, plans:true,  studyHours:4,   studyChance:1,    applyTries:2, usesOutlook:false, bank:'savings', moraleAim:55, social:true},
-        expert:{mistakeChance:0.02, shifts:3, plans:true,  studyHours:4.5, studyChance:1,    applyTries:2, usesOutlook:true,  bank:'invest',  moraleAim:60, social:true}
+        expert:{mistakeChance:0.02, shifts:2.75, plans:true,  studyHours:4.5, studyChance:1,    applyTries:2, usesOutlook:true,  bank:'invest',  moraleAim:60, social:true}
       },
       /* The Life Score: how a rival game is won. In each category every player gets a place (ties share the better one);
         a place earns placePoints[place-1] x the category's weight. on:false leaves a category out. Happiness and health are
