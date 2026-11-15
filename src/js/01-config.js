@@ -617,6 +617,23 @@
         close:{happiness:6, health:1, education:1, rep:6}, defendFrom:0.8,
         moraleLift:15, studyHours:1.5, gymClass:'spin', repPactChance:0.15,
         newsGap:3},  // a rival's aim (r.aim, shown on its profile) is in the morning news when it changes, at most once in newsGap days
+      /* Rivals use the whole game (CHANGELOG 121). Every number the game already has (food, gym, housing, expRet, loan tenures) is reused; these only say when.
+        meals: a rival short of money (under poorRents rents) or unable to afford the usual meal eats the cheap junk bun instead of going hungry; one that is
+          unhappy (below treatBelow) and has treatKeepRents rents spare treats itself to the family dinner; the usual meal is the Fresh Market rice kit (health +5).
+        gym: a rival with poor health (CONFIG.health.poorBelow) takes the cheapest Gym class when rent and its next outfit are covered.
+        home: planning rivals move to the villa when they hold the move fee plus moveRents of its rent (and no flatmate); back to the apartment under backRents.
+        invest: investing rivals (a level whose bank plan is invest) hold the products listed for their archetype. A product is bought when its expected return
+          minus risk x its daily swing beats the savings rate by margin, and sold when it falls sellMargin under it; share of the savings move each time (never
+          more than maxShare of net worth in one product); fixed deposits lock for fdDays and are never sold early.
+        loan: a planning rival with no loan that cannot pay a course fee for a role paying payGain times its job borrows the shortfall (in steps, tenure by index
+          from CONFIG.loan.tenures, limit as yours) and repays when it can; not repaid graceDays after the due date it is out of the race, as you would be. */
+      fullGame:{
+        meals:{poorRents:1, treatBelow:40, treatKeepRents:3},
+        home:{moveRents:6, backRents:1},
+        invest:{keepBank:300, share:0.5, minMove:100, margin:0.1, sellMargin:0.3, maxShare:{etf:0.5, hf:0.3, cry:0.1}, fdDays:4,
+          products:{careerist:['etf'], scholar:['fd'], investor:['fd','etf','hf'], socialite:['etf'], hustler:['etf','hf','cry']},
+          risk:{careerist:0.15, scholar:0.2, investor:0.05, socialite:0.15, hustler:0.02}},
+        loan:{on:true, payGain:1.3, tenure:2}},
       /* Awareness of the player and each other (medium and expert rivals; everything is a bounded modifier on an existing chance).
         leaderSabotage: x a rival's sabotage chance against whoever leads the Life Score (you or a rival; the lead is held by points);
         leaderFirst: levels whose sabotage on other rivals goes for the leader before the one just ahead;

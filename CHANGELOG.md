@@ -2142,3 +2142,14 @@ Base: §119. Rival games only. A card is dealt each morning on the rivals' dice 
 - **Rival logic:** untouched. Rivals' own days do not change; only your relationship and memories with them do.
 - Rules text, `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated. `check-personalities.js` has seven new cases. No UI check or simulation was run; the UI check would need a `SITUATIONS` entry for a moment card (not added, per the instruction not to run it).
 
+## 121. Rivals use the whole game: meals, gym, homes, investments and loans (Package B, item 23)
+
+Base: §120. Rival games only; single games unchanged. New `CONFIG.rivals.fullGame`; every price, return and loan term still comes from the game's own tables (`FOOD`, `CONFIG.gym`, `HOUSE`, `expRet()`, `CONFIG.loan`).
+
+- **Meals by need** (`rivalEat()`): a rival short of money (under one rent) or unable to pay for the rice kit eats the cheap bun instead of going hungry; one that is unhappy (under 40) with three rents spare treats itself to the family dinner. Both second-chance meals (the breakfast it could not afford) use it too.
+- **Gym:** a rival with poor health takes the cheapest class (as the health focus took its chosen class), when rent and the next outfit are covered.
+- **Home** (`rivalHome()`): planning rivals without you as flatmate move to the villa when they hold its fee plus six rents, and back to the apartment under one rent. Rent and the night's energy follow the home. Not modelled for rivals: the villa's happiness.
+- **Investments** (`rivalInvest()`): rivals whose level invests hold products by archetype (careerist and socialite ETF, scholar fixed deposit, investor deposit, ETF and hedge fund, hustler ETF, hedge fund and crypto). A product is bought when its expected return minus risk × its daily swing beats the savings rate; sold when it falls under. Products grow nightly on rival dice with the game's own caps; fixed deposits lock four days. All count in `rivalWorth()`.
+- **Bank loans** (`rivalBorrow()`, `rivalLoanTick()`): a planning rival that cannot pay a course fee for a role paying 1.3 times its job borrows the shortfall at the 10-day tenure, with your credit limit; it repays when it can, owes interest and overdue interest like you, and is out of the race five days after the due date. The debt counts against its net worth.
+- Rules text, `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated; `check-personalities.js` has five new cases. No UI check or simulation was run: rival outcomes will move, so a rival simulation is advised before merging.
+

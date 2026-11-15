@@ -720,7 +720,7 @@
   function rivalLv(r,t){var c=TRACKS[t].c,n=r.edu[t]||0,k=0;c.forEach(function(e){if(n>=e)k++});return k}
   function rivalMeets(r,rk){return (rk.q||[]).every(function(q){return rivalLv(r,q[0])>=q[1]})}
   function rivalJob(r){return r.job&&CAREERS[r.job.c]?{c:r.job.c,i:r.job.i,rk:CAREERS[r.job.c].ranks[r.job.i],b:bOf(r.job.c)}:null}
-  function rivalWorth(r){return Math.round(r.cash+r.bank+(r.etf||0)+(S.rivals.indexOf(r)<0?0:rivalMoney(S.rivals.indexOf(r))))}
+  function rivalWorth(r){return Math.round(r.cash+r.bank+(r.etf||0)+(r.hf||0)+(r.cry||0)+(r.fd||0)-rivalLoanOwed(r)+(S.rivals.indexOf(r)<0?0:rivalMoney(S.rivals.indexOf(r))))}
   /* a rival's level, adjusted by its archetype (CONFIG.rivals.archetypes): the numbers rivalDay() plays with */
   function archetype(r){return r&&CONFIG.rivals.archetypes[r.archetype]||null}
   function archetypeLabel(r){var A=archetype(r);return A?A.icon+' '+A.name:''}
@@ -797,15 +797,68 @@
     return st.k;
   }
   /* one rival's day (the day that has just ended) */
+  /* ---------- rivals use the whole game (CONFIG.rivals.fullGame; CHANGELOG 121) ---------- */
+  function FG(){return CONFIG.rivals.fullGame}
+  /* a meal by need: the usual rice kit, the cheap bun when short of money, a family dinner when unhappy and flush. Returns the minutes it took (0 = no meal) */
+  function rivalEat(r,meal){
+    var FD=CONFIG.food,F=FG().meals,rent=HOUSE[r.home||'apt'].rent,f=null,c=0,money=r.cash+r.bank;
+    var poor=money<F.poorRents*rent&&r.health>=CONFIG.health.poorBelow,bun=G(FD.burger.cost);
+    if(!poor&&r.cash<meal&&r.bank>0){var w=Math.min(r.bank,meal-r.cash);r.bank-=w;r.cash+=w}
+    if(!poor&&r.cash>=meal){f=FD.basic;c=meal;var tc=G(FD.dinner.cost);
+      if(r.happy<F.treatBelow&&r.health>=CONFIG.health.poorBelow&&money-tc>=F.treatKeepRents*rent+150){f=FD.dinner;c=tc}}
+    else if(r.cash>=bun){f=FD.burger;c=bun}
+    else if(r.cash<bun&&r.bank>0&&r.cash+r.bank>=bun){var w2=Math.min(r.bank,bun-r.cash);r.bank-=w2;r.cash+=w2;f=FD.burger;c=bun}
+    if(!f)return 0;
+    var cl=function(v){return Math.max(0,Math.min(100,v))};
+    r.cash-=c;r.energy=cl(r.energy+f.energy);r.happy=cl(r.happy+f.happiness);r.health=cl(r.health+(f.health!=null?f.health:f.junk?FD.junkHealth:(f.healthy||0)));r.hungry=0;
+    return 90;
+  }
+  /* the villa when a planning rival can carry it, the apartment when it cannot; never while it shares your home */
+  function rivalHome(r,keep){
+    var F=FG().home,H=HOUSE,home=r.home||'apt',money=r.cash+r.bank;if(flatmate()===r)return;
+    if(home==='apt'&&r.job&&money>=H.bung.fee+F.moveRents*H.bung.rent+keep){var pay=H.bung.fee;if(r.cash<pay){var w=Math.min(r.bank,pay-r.cash);r.bank-=w;r.cash+=w}r.cash-=pay;r.home='bung';rivalNote(r,1,'moved into a villa.')}
+    else if(home==='bung'&&money<F.backRents*H.bung.rent){r.home='apt';rivalNote(r,1,'moved back to an apartment to save on rent.')}
+  }
+  /* the products an investing rival holds (by archetype), judged on the player's own expected returns */
+  function rivalInvest(r){
+    var F=FG().invest,list=F.products[r.archetype]||['etf'],risk=F.risk[r.archetype]!=null?F.risk[r.archetype]:0.15,worth0=Math.max(1,rivalWorth(r));
+    list.forEach(function(k){
+      var score=expRet(k)-risk*VOL[k],held=k==='fd'?(r.fd||0):(r[k]||0);
+      if(k!=='fd'&&held>0&&score<S.rate-F.sellMargin){r.bank+=held;r[k]=0;held=0}
+      var avail=r.bank-F.keepBank;
+      if(score>S.rate+F.margin&&avail>=F.minMove){
+        if(k==='fd'){if(!(r.fd>0)){var a=Math.round(avail*F.share);r.bank-=a;r.fd=a;r.fdLock=S.day-1+F.fdDays}}
+        else{var room=Math.max(0,F.maxShare[k]*worth0-held),m=Math.round(Math.min(avail*F.share,room));if(m>=F.minMove){r.bank-=m;r[k]=held+m}}}
+    });
+  }
+  /* a bank loan to pay a course fee that blocks a clearly better role */
+  function rivalBorrow(r,tg,fee,keep,j){
+    var F=FG().loan,L=CONFIG.loan;if(!F||!F.on||!L.enabled||r.loan||!j||tg.pay<j.rk.pay*F.payGain)return;
+    var assets=r.cash+r.bank+(r.etf||0)+(r.hf||0)+(r.cry||0)+(r.fd||0),limit=Math.floor(Math.min(L.maxLoan,L.baseLimit+L.limitPerAsset*assets)/L.step)*L.step;
+    var need=Math.ceil((keep+fee-r.cash-r.bank)/L.step)*L.step;if(need<=0)need=L.step;  /* the savings are drawn first */
+    if(need>limit)return;
+    var T=L.tenures[Math.min(F.tenure,L.tenures.length-1)];r.loan={p:need,i:0,rate:T.rate,due:S.day-1+T.days};r.cash+=need;
+    rivalNote(r,1,'took a '+money(need)+' bank loan to pay for a course.');
+  }
+  function rivalLoanOwed(r){return r.loan?r.loan.p+r.loan.i:0}
+  /* each night: interest, repayment, and default as for you; returns true when the rival is out */
+  function rivalLoanTick(r,keep){
+    var Ln=r.loan,L=CONFIG.loan,night=S.day-1;if(!Ln)return false;
+    Ln.i+=night<Ln.due?Math.round(Ln.p*Ln.rate):Math.round((L.overdueCompounds?Ln.p+Ln.i:Ln.p)*L.overdueRate);
+    var owed=Ln.p+Ln.i,spare=r.cash+r.bank-keep;
+    if(spare>=owed||night>=Ln.due){var pay=Math.max(0,Math.min(owed,r.cash+r.bank));var c=Math.min(pay,Math.max(0,r.cash));r.cash-=c;r.bank-=pay-c;owed-=pay;
+      if(owed<=0){rivalNote(r,0,'repaid its bank loan.');r.loan=null;return false}
+      var left=owed/(Ln.p+Ln.i);Ln.p=Math.round(Ln.p*left);Ln.i=owed-Ln.p}
+    if(owed>L.defaultIfOwedAbove||night>=Ln.due+L.graceDays){r.out={day:night,why:'defaulted on a bank loan'};rivalNote(r,1,'defaulted on a bank loan on day '+night+'. Out of the race.');return true}
+    return false;
+  }
   function rivalDay(r){
-    var K=rivalSkill(r),AM=CONFIG.rivals.aims,FDc=CONFIG.food,day=S.day-1,used=CONFIG.rivals.dayOverheadMinutes||0,mistake=rivalMistake(r,K),left=gameLen()-day;
+    var K=rivalSkill(r),rent0=HOUSE[r.home||'apt'].rent,AM=CONFIG.rivals.aims,FDc=CONFIG.food,day=S.day-1,used=CONFIG.rivals.dayOverheadMinutes||0,mistake=rivalMistake(r,K),left=gameLen()-day;
     var clamp100=function(v){return Math.max(0,Math.min(100,v))};
     if(r.focus&&AM){K=Object.assign({},K);if(r.focus==='happiness')K.moraleAim=Math.max(K.moraleAim,r.aimHappy||0);if(r.focus==='education')K.studyHours+=AM.studyHours}  /* today's Life Score focus (aimTick) */
     /* eat */
     var meal=Math.round(G(FDc.basic.cost)*(1-(FDc.bundleDiscount||0)));
-    if(mistake!=='meal'&&r.cash<meal&&r.bank>0){var wm=Math.min(r.bank,meal-r.cash);r.bank-=wm;r.cash+=wm}  /* savings pay for a meal before hunger does */
-    if(mistake!=='meal'&&r.cash>=meal){r.cash-=meal;r.energy=clamp100(r.energy+FDc.basic.energy);r.happy=clamp100(r.happy+FDc.basic.happiness);r.health=clamp100(r.health+FDc.basic.health);r.hungry=0;used+=90}
-    else r.hungry++;
+    var ate=mistake!=='meal'?rivalEat(r,meal):0;if(ate)used+=ate;else r.hungry++;
     /* aim (medium, expert) */
     if(K.plans&&(!r.target||day%3===1))r.target=rivalTarget(r,left,K.studyHours||1);
     /* clothes for the job (or the one aimed for) */
@@ -818,7 +871,7 @@
     /* dress for the best better-paid role it already qualifies for, so a dress code never locks a rival out of a job
        (bought with the rent still covered; no dice) */
     var up=rivalDressUp(r,j);
-    if(up&&mistake!=='clothes'&&!dressed(up)){var cu=G(WEAR[up].p);if(r.cash+r.bank-cu>=HOUSE.apt.rent){if(r.cash<cu){var wu=Math.min(r.bank,cu-r.cash);r.bank-=wu;r.cash+=wu}r.cash-=cu;r.clothes[up]=WEAR[up].w;used+=30}}
+    if(up&&mistake!=='clothes'&&!dressed(up)){var cu=G(WEAR[up].p);if(r.cash+r.bank-cu>=rent0){if(r.cash<cu){var wu=Math.min(r.bank,cu-r.cash);r.bank-=wu;r.cash+=wu}r.cash-=cu;r.clothes[up]=WEAR[up].w;used+=30}}
     /* apply for a better job it qualifies for (openings are shared with yours) */
     for(var a=0;a<K.applyTries;a++){
       var val=function(c,i){return (K.usesOutlook?rolePay(c,i):CAREERS[c].ranks[i].pay)*careerPreference(r,c,CAREERS[c].ranks[i])+(r.target&&bOf(c)===bOf(r.target.c)?CONFIG.rivals.career.targetBonus:0)},cp0=j?val(j.c,j.i):0,best=null;  /* the target's workplace is worth a little extra (work experience) */
@@ -834,7 +887,7 @@
         if(!r.bestJob||j.rk.pay>r.bestJob.pay)r.bestJob={r:j.rk.r,pay:j.rk.pay};break}
     }
     /* ill: no work or lessons; a rival who can spare the money pays for treatment (cured from tomorrow) */
-    if(r.ill){var IL=ILL[r.ill.k],fee=G(IL.cost||Math.round((IL.lo+IL.hi)/2));if(K.bank!=='none'&&r.cash+r.bank>fee+HOUSE.apt.rent+G(WEAR[want].p)){var wf=Math.max(0,fee-r.cash);r.bank-=wf;r.cash+=wf-fee;r.ill.d=0;used+=120;rivalNote(r,0,'paid '+money(fee)+' to be treated for '+illShort(IL)+'.')}}
+    if(r.ill){var IL=ILL[r.ill.k],fee=G(IL.cost||Math.round((IL.lo+IL.hi)/2));if(K.bank!=='none'&&r.cash+r.bank>fee+rent0+G(WEAR[want].p)){var wf=Math.max(0,fee-r.cash);r.bank-=wf;r.cash+=wf-fee;r.ill.d=0;used+=120;rivalNote(r,0,'paid '+money(fee)+' to be treated for '+illShort(IL)+'.')}}
     /* work */
     var shifts=Math.floor(K.shifts)+(rrand()<K.shifts%1?1:0)-(mistake==='lazy'?1:0)-(r.ill?99:0),load=0;  /* 2.5 = a third shift on about half of days */
     var targetRank=r.target&&CAREERS[r.target.c]&&CAREERS[r.target.c].ranks[r.target.i];
@@ -856,7 +909,7 @@
       for(var gi=0;gi<Math.min(GG.maxRuns,Math.ceil(K.shifts)+1)&&r.energy+GG.energy>=25&&load+GG.minutes<=CONFIG.time.maxWorkMinutes;gi++){
         r.cash+=Math.round(GG.pay*payIdx());r.energy=clamp100(r.energy+GG.energy);r.happy=clamp100(r.happy-workHap(-GG.energy));r.health=clamp100(r.health+workHp(GG.minutes));load+=GG.minutes;used+=GG.minutes;r.gigs=(r.gigs||0)+1}}
     /* no money for breakfast: eat after the day's pay instead */
-    if(r.hungry&&mistake!=='meal'&&r.cash>=meal){r.cash-=meal;r.energy=clamp100(r.energy+FDc.basic.energy);r.happy=clamp100(r.happy+FDc.basic.happiness);r.health=clamp100(r.health+FDc.basic.health);r.hungry=0;used+=90}
+    if(r.hungry&&mistake!=='meal')used+=rivalEat(r,meal);
     /* study towards the target (or anything, for easy rivals now and then) */
     var tg=r.target&&CAREERS[r.target.c]&&CAREERS[r.target.c].ranks[r.target.i],need=tg?(tg.q||[]).filter(function(q){return rivalLv(r,q[0])<q[1]}):[];
     if(!K.plans&&!r.study&&rrand()<K.studyChance){var ts=Object.keys(TRACKS).filter(function(t){return (r.edu[t]||0)<totMods(t)});
@@ -866,7 +919,8 @@
     if(!r.study&&need.length&&r.pausedStudy&&r.pausedStudy[need[0][0]]){r.study=r.pausedStudy[need[0][0]];delete r.pausedStudy[need[0][0]]}
     if(!r.ill&&mistake!=='study'&&!sabClass(r,day)&&(need.length||r.study)&&rrand()<K.studyChance){
       var t=r.study?r.study.t:need[0][0];
-      if(!r.study){var n0=r.edu[t]||0,fee=qualFee(t,n0),keep=HOUSE.apt.rent+80+G(WEAR[want].p);  /* a fee never spends the money for the next outfit */if(r.cash-fee<keep&&r.bank>0){var w2=Math.min(r.bank,keep+fee-r.cash);r.bank-=w2;r.cash+=w2}
+      if(!r.study){var n0=r.edu[t]||0,fee=qualFee(t,n0),keep=rent0+80+G(WEAR[want].p);  /* a fee never spends the money for the next outfit */if(r.cash-fee<keep&&r.bank>0){var w2=Math.min(r.bank,keep+fee-r.cash);r.bank-=w2;r.cash+=w2}
+        if(r.cash-fee<keep&&K.plans&&tg)rivalBorrow(r,tg,fee,keep,j);
         if(r.cash-fee>=keep){r.cash-=fee;r.study={t:t,lv:levelOf(t,n0),h:0}}}
       if(r.study){var hrs=Math.min(K.studyHours,(CONFIG.burnout.loadMinutes-load)/60,Math.max(0,(r.energy-25)/Math.abs(CONFIG.education.lessonEnergyPerHour||5)));
         if(hrs>=0.5){r.wentSchool=1;var lc=lessonCost(hrs);r.energy=clamp100(r.energy+lc.en);r.happy=clamp100(r.happy+lc.hap);r.health=clamp100(r.health+lc.hp);r.know=clamp100(r.know+Math.round(hrs));used+=hrs*60;
@@ -878,15 +932,16 @@
     }
     /* morale: free and cheap lifts, cheapest first, up to the level's aim (CONFIG.community and CONFIG.leisure) */
     if(mistake!=='fun'&&r.happy<K.moraleAim){var L=CONFIG.leisure,C=CONFIG.community,acts=[L.call,L.walk];if(K.social&&C)acts.push(C.volunteer,C.karaoke,C.nightOut);
-      acts.forEach(function(c){if(!c||r.happy>=K.moraleAim||used+c.minutes>1440-360)return;var cost=G(c.cost||0);if(r.cash-cost<HOUSE.apt.rent)return;if(c.energy&&r.energy+c.energy<25)return;
+      acts.forEach(function(c){if(!c||r.happy>=K.moraleAim||used+c.minutes>1440-360)return;var cost=G(c.cost||0);if(r.cash-cost<rent0)return;if(c.energy&&r.energy+c.energy<25)return;
         if(c!==L.call&&c!==L.walk)r.wentComm=1;r.cash-=cost;r.happy=clamp100(r.happy+(c.happiness||0));r.energy=clamp100(r.energy+(c.energy||0));r.health=clamp100(r.health+(c.health||0));if(c.knowledge)r.know=clamp100(r.know+c.knowledge);used+=c.minutes})}
     /* chasing a health place: a class at the Gym, paid with the rent and the next outfit still covered (CONFIG.rivals.aims.gymClass) */
-    if(r.focus==='health'&&!r.ill&&mistake!=='fun'){var gc=null;(CONFIG.gym.classes||[]).forEach(function(c){if(c.k===AM.gymClass)gc=c});
-      if(gc&&used+gc.minutes<=1440-360&&r.energy+gc.energy>=25){var gcost=G(gc.cost);if(r.cash-gcost>=HOUSE.apt.rent+G(WEAR[want].p)){r.cash-=gcost;r.energy=clamp100(r.energy+gc.energy);r.health=clamp100(r.health+gc.health);r.happy=clamp100(r.happy+(gc.happiness||0));used+=gc.minutes;r.wentGym=1}}}
+    if((r.focus==='health'||r.health<CONFIG.health.poorBelow)&&!r.ill&&mistake!=='fun'){var gc=null;(CONFIG.gym.classes||[]).forEach(function(c){if(r.focus==='health'?c.k===AM.gymClass:!gc)gc=c});  /* poor health: the cheapest class */
+      if(gc&&used+gc.minutes<=1440-360&&r.energy+gc.energy>=25){var gcost=G(gc.cost);if(r.cash-gcost>=rent0+G(WEAR[want].p)){r.cash-=gcost;r.energy=clamp100(r.energy+gc.energy);r.health=clamp100(r.health+gc.health);r.happy=clamp100(r.happy+(gc.happiness||0));used+=gc.minutes;r.wentGym=1}}}
     /* money: savings (medium), savings and the ETF in a good market (expert) */
-    var keepC=HOUSE.apt.rent+150+G(WEAR.casual.p);
+    var keepC=rent0+150+G(WEAR.casual.p);
     if(K.bank!=='none'&&r.cash>keepC+50){r.bank+=r.cash-keepC;r.cash=keepC}
-    if(K.bank==='invest'){if(S.mkt>0.3&&r.bank>300){var mv=Math.round(r.bank/2);r.bank-=mv;r.etf+=mv}else if(S.mkt<-0.3&&r.etf>0){r.bank+=r.etf;r.etf=0}}
+    if(K.bank==='invest')rivalInvest(r);
+    if(K.plans)rivalHome(r,keepC);
     /* where a rival spends its days: where you may meet them tomorrow */
     var jb=rivalJob(r);r.places=[jb?jb.b:null,r.wentSchool?'school':null,r.wentComm?'comm':null,r.wentGym?'gym':null,'market'].filter(Boolean);r.wentSchool=0;r.wentComm=0;r.wentGym=0;
     return used;
@@ -902,15 +957,17 @@
     else if(rrand()<rivalIllChance(r)){var mix=RV.illMix,ks=Object.keys(mix),x=rrand(),k0=ks[ks.length-1];for(var q=0;q<ks.length;q++){x-=mix[ks[q]];if(x<0){k0=ks[q];break}}
       r.ill={k:k0,d:ILL[k0].wk};rivalNote(r,1,'fell ill with '+illShort(ILL[k0])+'.')}
     if(r.energy<HN.lowEnergyBelow)r.health=clamp100(r.health+HN.lowEnergy);
-    r.energy=clamp100(r.energy+SL.nightEnergy+Math.min(SL.maxEnergy,Math.round(leftMin/60*SL.perHour.apt*(SL.rateX||1))));
+    r.energy=clamp100(r.energy+SL.nightEnergy+Math.min(SL.maxEnergy,Math.round(leftMin/60*SL.perHour[r.home||'apt']*(SL.rateX||1))));
     r.happy=clamp100(r.happy+SL.nightHappiness+sleepHap(leftMin));
     r.health=clamp100(r.health+sleepHealth(leftMin)+(HN.always||0));
     if(r.hungry){r.energy=clamp100(r.energy+FDc.hungryEnergy);r.happy=clamp100(r.happy+FDc.hungryHappiness);r.health=clamp100(r.health+HN.skippedMeal)}
     r.know=clamp100(r.know+CONFIG.selfStudy.nightlyLoss);
     ['casual','smart','suit'].forEach(function(k){if(r.clothes[k]>0)r.clothes[k]=Math.max(0,r.clothes[k]-CONFIG.clothes.wearPerDay)});
     r.bank+=Math.floor(r.bank*S.rate/100);
-    if(r.etf>0)r.etf=Math.max(0,r.etf*(1+(expRet('etf')+VOL.etf*(rrand()*2-1)*1.7)/100));
-    if((S.day-1)%RENT_EVERY===0){var due=flatmate()===r?flatShare(r):HOUSE.apt.rent,pay=Math.min(due,Math.max(0,r.cash));r.cash-=pay;due-=pay;var b=Math.min(due,r.bank);r.bank-=b;due-=b;r.cash-=due}
+    ['etf','hf','cry'].forEach(function(k){if(r[k]>0)r[k]=Math.max(0,r[k]*(1+Math.max(CAP[k][0],Math.min(CAP[k][1],expRet(k)+VOL[k]*(rrand()*2-1)*1.7))/100))});
+    if(r.fd>0){r.fd*=1+expRet('fd')/100;if(S.day-1>=r.fdLock){r.bank+=Math.round(r.fd);r.fd=0}}  /* the fixed deposit matures into savings */
+    if((S.day-1)%RENT_EVERY===0){var due=flatmate()===r?flatShare(r):HOUSE[r.home||'apt'].rent,pay=Math.min(due,Math.max(0,r.cash));r.cash-=pay;due-=pay;var b=Math.min(due,r.bank);r.bank-=b;due-=b;r.cash-=due}
+    var loanOut=rivalLoanTick(r,HOUSE[r.home||'apt'].rent+150);if(loanOut){r.hist.push(rivalWorth(r));return}
     /* layoffs and closures: the industry-specific storyline and the economy's trends, as for you */
     var j=rivalJob(r);
     if(j){var x=indRole(j.c,j.i),I=CONFIG.industry,lay=0;S.trends.forEach(function(t){lay+=t.lay||0});

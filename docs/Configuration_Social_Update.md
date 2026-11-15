@@ -75,6 +75,7 @@ Missed sessions and unanswered obligations affect progress/consequences. A cance
 | `awareness` | medium and expert; leaderSabotage 1.5; leaderFirst expert; troubleFirst; helpedBetray 0.2; helpedFloor 0.4 | Rivals sabotage the Life Score leader more, ask for help when short of money, and betray those who helped them less (CHANGELOG 118) |
 | `talk` | work 20 min, tip 15, favour 10, tease 10, gossip 15 | Five conversation topics when you meet a rival, replacing chat and hello (CHANGELOG 119) |
 | `moments` | chance 0.5 from day 2; 3 of each kind; windows 240–420 min | One timed card some days: contested opening, shift to cover, group project, town contest (CHANGELOG 120) |
+| `fullGame` | meals poorRents 1, treatBelow 40; villa at fee + 6 rents; invest by archetype; loan for a role paying 1.3x | Rivals eat by need, use the gym, choose a home, hold investment products and take bank loans (CHANGELOG 121) |
 | `mistakes` | floor 0.5; tired 55→20; brokeRents 2; unhappy 45→15 | A rival's slips follow its state (tired skips class, broke skips a meal, unhappy skips a shift); the level's mistakeChance is the most (CHANGELOG 111) |
 | `career.closedWeight`, `experienceWeight`, `targetBonus` | 0.75, 0.80, 10 | Current opportunity/experience discounts and target workplace application bonus |
 | `career.preferences`, `educationWeight` | per-personality map, 0.025 | Small preferences plus completed relevant qualifications; remaining study and eligibility still constrain choices |
