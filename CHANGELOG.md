@@ -2110,3 +2110,17 @@ Base: §113. Rival games only. The three modifiers sit in `CONFIG.rivals.awarene
 - **Betrayal:** each point of remembered trust a rival holds for a partner cuts its betrayal chance by `helpedBetray` (0.2), never below `helpedFloor` (0.4) of the base chance (`helpedMult()`).
 - **Not done:** the job race is not changed. It only ever targets you and its chance is computed inside `rivalTick()`, which another chat owns; a leader modifier belongs there.
 - Rules text (`cfgRivals`), `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated. `check-personalities.js` has three new cases. No simulation was run.
+
+## 115. Conversations with intent: five topics when you meet a rival (Package C, item 13)
+
+Base: §114. Rival games only (encounters exist only there); the dice are the rivals' (`rrand()`), so single games are untouched.
+
+- **Removed:** `CONFIG.rivals.social.chat` and `.hello` (a flat chat and a hello). **Added:** `CONFIG.rivals.talk` (times, relationship changes, win chances and the reply text); `social.ignore` stays.
+- **Topics** (`encounterCard()`, `rivalMeet(k)`; all through `relGain()` and `remember()`):
+  - 💼 **Ask about their work** (20 min, +4, +1 happiness): the reply comes from their archetype; if you have no job lead and are not on bad terms they may give you one (25% × their personality's `tipMult`).
+  - 🎁 **Share your job lead** (only with one active, 15 min, +10): you lose it; they remember it (`tipped`, trust +1) and owe you a favour.
+  - 🙏 **Ask for the favour they owe** (only when one is owed and you have no lead, 10 min): spends the favour for a guaranteed lead, like the morning return but on request.
+  - 😜 **Tease** (10 min): win chance by personality (generous 85%, reckless 75%, ambitious 50%, vindictive 30%, 20 points lower on bad terms): +5, or −6 and an argument.
+  - 🗣️ **Gossip about a third rival** (one row per rival still in, 15 min): they like it by personality for +4 and the pair's trust (`S.rivalRelations`) falls by 6; otherwise −4 with them.
+- Replies are text tables in `CONFIG.rivals.talk.say`. Rules text, `CODE_MAP.md`, `docs/Configuration_Social_Update.md` and the Config Guide updated. `check-personalities.js` has five new cases. No UI check or simulation was run.
+

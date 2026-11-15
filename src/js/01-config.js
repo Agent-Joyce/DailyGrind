@@ -623,6 +623,24 @@
         troubleFirst: a rival short of rent money asks to borrow before the others, from the one who trusts you most (messages);
         helpedBetray: each point of trust a rival holds for a partner cuts its betrayal chance by this much, down to at least helpedFloor x the chance. */
       awareness:{levels:['medium','expert'], leaderSabotage:1.5, leaderFirst:['expert'], troubleFirst:true, helpedBetray:0.2, helpedFloor:0.4},
+      /* Conversations when you meet a rival (rival dice; every topic costs minutes; outcomes go through relGain() and remember()).
+        work: ask about their job (rel, happiness, and tipChance x their personality's tipMult of a job lead if you have none and are not on bad terms);
+        tip: share your job lead (needs one active: you lose it; they remember it, and owe you);
+        favour: spend a favour a rival owes you (needs one; guaranteed job lead);
+        tease: win chance by personality (lower by badTerms when relationship is at or below rivalAt), win relWin, lose relLose and an argument;
+        gossip: about a third rival (needs one still in): wins with their like chance for rel, and sours their trust (relOther); a loss costs relLose.
+        say: the reply text, by archetype (work) or personality (the rest). */
+      talk:{work:{minutes:20, rel:4, happiness:1, tipChance:0.25}, tip:{minutes:15, rel:10, trust:1}, favour:{minutes:10, rel:2},
+        tease:{minutes:10, happiness:1, relWin:5, relLose:-6, badTerms:0.2, win:{generous:0.85, ambitious:0.5, reckless:0.75, vindictive:0.3}},
+        gossip:{minutes:15, rel:4, relOther:-6, relLose:-4, like:{generous:0.3, ambitious:0.6, reckless:0.75, vindictive:0.7}},
+        say:{
+          work:{careerist:'Long hours, but the next rank is close.', scholar:'Between shifts I am mostly in a lesson.', investor:'Work pays the bills. The savings do the rest.', socialite:'Work is fine. The people are the best part.', hustler:'Whatever pays this week, I am doing it.'},
+          tip:{generous:'You are a good one. I will not forget this.', ambitious:'That is useful. Thank you.', reckless:'No way! I owe you one.', vindictive:'Hm. Fine. I will remember you did that.'},
+          favour:{generous:'Of course. Say no more.', ambitious:'You did help me. Here is what I know.', reckless:'Yes yes, I owe you. Here.', vindictive:'We are even after this.'},
+          teaseWin:{generous:'They laughed and teased you right back.', ambitious:'They allowed a half-smile.', reckless:'They laughed harder than you did.', vindictive:'Somehow it landed. They smirked.'},
+          teaseLose:{generous:'It came out wrong and you both went quiet.', ambitious:'They did not find it funny.', reckless:'They did not take the joke well.', vindictive:'They did not laugh. They will not forget it.'},
+          gossipWin:{generous:'They listened politely.', ambitious:'They filed it away.', reckless:'They wanted every detail.', vindictive:'They loved it.'},
+          gossipLose:{generous:'They did not want to hear it.', ambitious:'They changed the subject.', reckless:'They told you to mind your own business.', vindictive:'They thought less of you for it.'}}},
       /* A rival's slips (the level's mistakeChance is the most it can be): the chance is mistakeChance x (floor + (1 − floor) x strain),
         strain being the worst of: tired (energy from tired[0] down to tired[1]: skips class), broke (cash and savings under brokeRents
         rents: skips a meal) and unhappy (happiness from unhappy[0] down to unhappy[1]: skips a shift). With no strain it skips its fun. */
@@ -631,7 +649,7 @@
         A help credit can be returned as one job introduction, no earlier than the next day. */
       memory:{maxEntries:5,maxTrust:3,maxOwed:3,lendPerTrust:0.04,lendTrust:1,refuseTrust:-1,repayTrust:1,defaultTrust:-2,helpTrust:1},
       social:{greetingMs:3000, friendAt:40, friendlyAt:15, rivalAt:-15, enemyAt:-40, encounterChance:0.35,
-        chat:{minutes:30, happiness:2, rel:8}, hello:{minutes:10, rel:3}, ignore:{rel:-3},
+        ignore:{rel:-3},  // (the old chat and hello were replaced by the talk topics below)
         congratulate:{minutes:15, rel:6, happiness:1}, friendTipChance:0.15, enemyRaceBonus:0.25, racedRel:-10,
         call:{phoneMinutes:30, phoneHappiness:1, roll:[[-1,0.1],[0,0.1],[1,0.4],[2,0.4]]},
         tension:{per:0.01, max:0.6},

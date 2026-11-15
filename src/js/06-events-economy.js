@@ -674,7 +674,7 @@
   var RIVAL_MEMORIES={
     lent:'You lent me money when I asked.',refused:'You turned down my request for a loan.',expired:'You left my loan request unanswered.',
     repaid:'You paid me back on time.',defaulted:'You did not pay me back on time.',
-    car:'You gave me a lift to an interview.',cake:'You chipped in for my birthday cake.',cover:'You covered my shift.',soup:'You brought soup when I was ill.',move:'You helped me move.',
+    car:'You gave me a lift to an interview.',cake:'You chipped in for my birthday cake.',cover:'You covered my shift.',soup:'You brought soup when I was ill.',move:'You helped me move.',tipped:'You passed me a job lead.',
     no_car:'You could not help me get to my interview.',no_cake:'You skipped my birthday collection.',no_cover:'You declined to cover my shift.',no_soup:'You sent a text instead of visiting when I was ill.',no_move:'You could not help me move.',
     returned:'I returned a favour with a job introduction.',
     betrayed:'You walked out on our pact and took the pot.'
@@ -1692,21 +1692,39 @@
   }
   function encounterCard(){
     var e=S.enc;if(S.mode!=='rivals'||!e||e.day!==S.day||e.done||e.loc!==view||!S.rivals[e.i])return '';
-    var r=S.rivals[e.i],X=CONFIG.rivals.social,j=rivalJob(r),tense=(r.rel||0)<0;  /* below 0 a chat or hello may turn into an argument */
-    return boxed(psec('enc',r.ic+' '+r.name+' is here',chip('',relLabel(r.rel||0)),r.name+' ('+r.diff+' · '+personality(r).name+(j?', '+j.rk.r:'')+') is here too. '+personality(r).about+' '+memoryLine(r)+' Talking builds your relationship, but takes time; with someone you are on bad terms with it may turn tense and make things worse.')+
-      arow('🗣️ Chat',chip('time',hm(X.chat.minutes))+chip('happy',sg(X.chat.happiness))+chip('','Relationship '+sg(X.chat.rel))+(tense?argueChip():''),btn('meet','chat','Chat'),'',tense?'chance':'')+
-      arow('👋 Say hello',chip('time',hm(X.hello.minutes))+chip('','Relationship '+sg(X.hello.rel))+(tense?argueChip():''),btn('meet','hello','Say hello',1),'',tense?'chance':'')+
+    var r=S.rivals[e.i],X=CONFIG.rivals.social,T=CONFIG.rivals.talk,j=rivalJob(r),tense=(r.rel||0)<0,f=r.favours,tip=tipOn(),owed=f&&f.owed>0;  /* below 0 a topic that goes wrong turns into an argument */
+    var rows=arow('💼 Ask about their work',chip('time',hm(T.work.minutes))+chip('happy',sg(T.work.happiness))+chip('','Relationship '+sg(T.work.rel))+(!tip?chip('','May give a job lead'):'')+(tense?argueChip():''),btn('meet','work','Ask'),'',tense||!tip?'chance':'');
+    if(tip)rows+=arow('🎁 Share your job lead',chip('time',hm(T.tip.minutes))+chip('','Relationship '+sg(T.tip.rel))+chip('','You lose the lead','warn')+chip('','They owe you'),btn('meet','tip','Share'));
+    if(owed)rows+=arow('🙏 Ask for the favour they owe you',chip('time',hm(T.favour.minutes))+chip('','Relationship '+sg(T.favour.rel))+(tip?chip('','You already have a lead','warn'):chip('','Job lead')),btn('meet','favour','Ask',0,tip));
+    rows+=arow('😜 Tease them',chip('time',hm(T.tease.minutes))+chip('happy',sg(T.tease.happiness))+chip('','Win '+sg(T.tease.relWin)+' / lose '+sg(T.tease.relLose))+argueChip(),btn('meet','tease','Tease',1),'','chance');
+    S.rivals.forEach(function(o,oi){if(oi===e.i||o.out)return;rows+=arow('🗣️ Gossip about '+o.ic+' '+o.name,chip('time',hm(T.gossip.minutes))+chip('','Win '+sg(T.gossip.rel)+' / lose '+sg(T.gossip.relLose))+chip('','Their trust '+sg(T.gossip.relOther)),btn('meet','gossip|'+oi,'Gossip',1),'','chance')});
+    return boxed(psec('enc',r.ic+' '+r.name+' is here',chip('',relLabel(r.rel||0)),r.name+' ('+r.diff+' · '+personality(r).name+(j?', '+j.rk.r:'')+') is here too. '+personality(r).about+' '+memoryLine(r)+' Pick what to talk about. Every topic takes time, and the replies depend on who they are; with someone you are on bad terms with it may turn tense and make things worse.')+rows+
       arow('🙈 Ignore',chip('','No time')+chip('','Relationship '+sg(X.ignore.rel),'warn'),btn('meet','ignore','Ignore',1)));
   }
+  /* a conversation topic (rival dice; CONFIG.rivals.talk). k: 'work', 'tip', 'favour', 'tease', 'gossip|<rival>' or 'ignore' */
   function rivalMeet(k){
     var e=S.enc;if(!e||e.day!==S.day||e.done)return refuse('Nobody to talk to here right now.');
-    var r=S.rivals[e.i],X=CONFIG.rivals.social,c=X[k];if(!r||!c)return;
-    if(c.minutes&&!spendMin(c.minutes,0))return;
-    var v0=vitSnap(),res;
-    if(k==='ignore'){r.rel=Math.max(-100,Math.min(100,(r.rel||0)+c.rel));res={d:c.rel,backfire:false}}
-    else{res=relGain(r,c.rel);S.happy=clamp(S.happy+(c.happiness||0));if(res.backfire)argue()}  /* a tense chat or hello is an argument */
+    var r=S.rivals[e.i],X=CONFIG.rivals.social,T=CONFIG.rivals.talk,a=String(k).split('|'),t=a[0],P=r&&personality(r),say=T.say,line='',res,v0,bad=false;if(!r)return;
+    if(t==='ignore'){r.rel=Math.max(-100,Math.min(100,(r.rel||0)+X.ignore.rel));e.done=true;log('🙈 You ignored '+r.name+': '+relTxt(r,{d:X.ignore.rel})+'.','warn');done();return}
+    var c=T[t];if(!c)return;var o=t==='gossip'?S.rivals[+a[1]]:null;
+    if(t==='gossip'&&(!o||o.out||o===r))return refuse('There is nobody to gossip about.');
+    if(t==='tip'&&!tipOn())return refuse('You have no job lead to share.');
+    if(t==='favour'&&!(r.favours&&r.favours.owed>0))return refuse(r.name+' does not owe you a favour.');
+    if(t==='favour'&&tipOn())return refuse('You already have a job lead. Use it first.');
+    if(!spendMin(c.minutes,0))return;v0=vitSnap();
+    var tenseX=function(x){if(x.backfire){argue();bad=true}};
+    if(t==='work'){res=relGain(r,c.rel);S.happy=clamp(S.happy+c.happiness);tenseX(res);line=say.work[r.archetype]||'';
+      if(!res.backfire&&!tipOn()&&(r.rel||0)>=0&&rrand()<c.tipChance*P.tipMult){S.tip={until:S.day+CONFIG.community.tip.days-1};line+=' They mentioned an opening: your next interview is easier (until the end of day '+S.tip.until+').'}}
+    else if(t==='tip'){S.tip=null;res=relGain(r,c.rel);tenseX(res);remember(r,'tipped',c.trust,true);line=say.tip[r.personality]||''}
+    else if(t==='favour'){r.favours.owed--;remember(r,'returned',0,false);S.tip={until:S.day+CONFIG.community.tip.days-1};res=relGain(r,c.rel);tenseX(res);line=(say.favour[r.personality]||'')+' Your next interview is easier (until the end of day '+S.tip.until+').'}
+    else if(t==='tease'){var win=(c.win[r.personality]||0.5)-((r.rel||0)<=X.rivalAt?c.badTerms:0);S.happy=clamp(S.happy+c.happiness);
+      if(rrand()<win){res=relGain(r,c.relWin);tenseX(res);line=say.teaseWin[r.personality]||''}else{r.rel=Math.max(-100,r.rel+c.relLose);res={d:c.relLose,backfire:false};argue();bad=true;line=say.teaseLose[r.personality]||''}}
+    else if(t==='gossip'){var key=[S.rivals.indexOf(r),S.rivals.indexOf(o)].sort().join('|');
+      if(rrand()<(c.like[r.personality]||0.5)){res=relGain(r,c.rel);tenseX(res);S.rivalRelations[key]=(S.rivalRelations[key]||0)+c.relOther;line=say.gossipWin[r.personality]+' Their trust with '+o.name+' '+sg(c.relOther)+'.'}
+      else{r.rel=Math.max(-100,r.rel+c.relLose);res={d:c.relLose,backfire:false};bad=true;line=say.gossipLose[r.personality]||''}}
     e.done=true;
-    log((k==='ignore'?'🙈 You ignored '+r.name:res.backfire?'🗯️ The '+(k==='chat'?'chat':'hello')+' with '+r.name+' turned into an argument':k==='chat'?'🗣️ You had a chat with '+r.name:'👋 You said hello to '+r.name)+vitPar(v0)+': '+relTxt(r,res)+'.',res.d<0?'warn':'good');
+    var what={work:'asked '+r.name+' about their work',tip:'shared a job lead with '+r.name,favour:'asked '+r.name+' for the favour they owed you',tease:'teased '+r.name,gossip:'gossiped with '+r.name+' about '+(o&&o.name)}[t];
+    log((res.backfire?'🗯️ You '+what+' and it turned into an argument':'🗣️ You '+what)+vitPar(v0)+': '+relTxt(r,res)+'.'+(line?' “'+line+'”':''),res.d<0||bad?'warn':'good');
     done();
   }
   /* calls: from home (no phone needed, costs what a family call costs) or by phone anywhere (one rival or a group) */
