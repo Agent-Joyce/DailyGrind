@@ -2075,3 +2075,28 @@ The Rules text names the levels that play to win from CONFIG, so it now says exp
 Not yet measured against the playing bot; a rival simulation on this build is the check.
 
 **QA:** the playing-to-win case in `check-social-rules.js` now uses expert rivals and asserts that medium and easy rivals have no focus. Docs: `docs/Daily Grind Config Guide.docx` (levels and aims rows), `docs/Configuration_Social_Update.md`.
+
+## 122. Sleep parity: rivals' days are longer, sleep happiness counts at most 12 hours, the bot sleeps about 7 hours
+
+Base: `d00f221` (§117 and the other chat's §113–116). Numbered 122 because §118–121 are in use on `claude/roadmap-b21-b23-c13-c14`. Asked for by the owner after the sleep measurement in [QA_Sim_2026-11-15_sleep-parity.md](docs/QA_Sim_2026-11-15_sleep-parity.md) ([raw](docs/QA_Sim_2026-11-15_sleep-parity.json)).
+
+**Why:** the careful bot placed last on happiness in every rival game. Rivals use the player's formulas, but a medium rival slept about 11h41 a night (its day was 11½ hours of work, study, meals and 3 hours of errands) against the bot's 5h16. Sleep happiness had no cap, so rivals gained about 10 happiness a night more.
+
+**Changes**
+
+- **Sleep happiness counts at most 12 hours** (new `CONFIG.sleep.maxHappinessHours: 12`), for you and the rivals: `sleepHap()` counts full hours up to the cap. Energy (`sleep.maxEnergy`) and health (`health.sleep.max`) were already capped. The Rules line "Every night" now says "1.5 happiness a full hour, for at most 12 hours" (new `cfgSleepHap`, from CONFIG), and the home's sleep note says "for up to 12 hours".
+- **Rivals' days are longer:** `CONFIG.rivals.dayOverheadMinutes` 180 → 360 (walking, shopping, cooking and errands), so a medium rival now sleeps about 8 hours instead of about 11½.
+- **The careful bot goes to bed with about 7 hours left** (`tools/qa/sim.js`, `SLEEP_MIN` 420, was 300 + the walk home). It changes the yardstick, not the game.
+
+**Effect** (3 careful games, seeds 1–3, medium rivals; before → after)
+
+| | Before | After |
+|---|---|---|
+| Bot: average sleep / sleep happiness a night | 5h16 / +7.3 | 6h56 / +9.8 |
+| Rivals: average sleep / sleep happiness a night | 11h41 / +17.1 | 8h15 / +11.8 |
+| Gap in sleep happiness a night | 9.8 | 2.0 |
+| Bot: average Life Score place / net worth | 1.7 / $8,584–$16,887 | 3 / $8,566–$8,685 |
+
+The bot now has less time for study and morale (calls fell from 15–19 a game to 6–10), so it ends as a Senior Nurse rather than a Junior Doctor and still places 3rd–4th on happiness. Three games at one level only: rerun expert and mixed rival games before judging the level balance.
+
+**QA:** `check-social-rules.js` has a new case (sleep happiness stops at 12 hours and is unchanged below it; 62 in all). Docs: `CLAUDE.md` (sleep convention), `docs/Daily Grind Config Guide.docx` (new sleep-happiness row; the rivals' errand row now 360).

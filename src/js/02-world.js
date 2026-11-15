@@ -123,7 +123,7 @@
   function restRate(){return HOUSE[S.home].rate*comfortMult()*(CONFIG.sleep.rateX||1)}  /* energy % per hour of rest */
   function sleepRate(){return (CONFIG.sleep.perHour[S.home]||HOUSE[S.home].rate)*comfortMult()*(CONFIG.sleep.rateX||1)}  /* energy % per hour of a night's sleep at home */
   function sleepGain(min){return Math.min(CONFIG.sleep.maxEnergy,Math.round(min/60*sleepRate()))}
-  function sleepHap(min){return Math.round(Math.floor(min/60)*CONFIG.sleep.happinessPerHour)}  /* happiness from a night at home */
+  function sleepHap(min){var SL=CONFIG.sleep;return Math.round(Math.min(Math.floor(min/60),SL.maxHappinessHours==null?99:SL.maxHappinessHours)*SL.happinessPerHour)}  /* happiness from a night at home: full hours, at most maxHappinessHours */
   function sleepHealth(min){var HS=CONFIG.health.sleep;return Math.round(Math.min(HS.max,min/60*HS.perHour))}
   var GLOVES_PAY=15;  /* work gloves: $ added to every shift */
   var ITEMS={

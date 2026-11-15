@@ -514,7 +514,8 @@
       nightEnergy:0,        // every night, before sleep is added back: energy change (%)
       nightHappiness:-5,    // ...and happiness change
       comfortBonus:0.05,    // each comfort item at home (TV, console, fridge, coffee machine, computer) makes resting and sleep restore this much more energy (0.05 = 5%)
-      happinessPerHour:1.5,  // happiness next morning for each full hour slept at home
+      happinessPerHour:1.5,  // happiness next morning for each full hour slept at home...
+      maxHappinessHours:12,  // ...counting at most this many hours (a longer sleep gives no more happiness)
       perHour:{apt:6.5, bung:9},  // energy (%) a night's sleep at home restores for each hour left in the day, by home (comfort items and rateX add to it; the 2h rest uses the home's own rest rate)
       maxEnergy:75,          // most energy a night's sleep at home can give
       awayShare:0.5,        // sleeping away from home gives this share of the energy, health and happiness a night at home gives
@@ -571,7 +572,7 @@
           jobs by today's pay (the industry storyline included) rather than base pay; bank = none, savings or invest (savings and
           the ETF in a good market); moraleAim = happiness it tops up to with calls, Park walks and (social) the Community Centre. */
       gameDays:30, industryStorylines:2, industryGapDays:5,
-      dayOverheadMinutes:180,  // minutes of a rival's day spent walking between places and on errands (less time left to sleep)
+      dayOverheadMinutes:360,  // minutes of a rival's day spent walking between places, shopping, cooking and on errands (less time left to sleep; 360 = a medium rival sleeps about 8 1/2 hours)
       /* rivals' own small life events, like your daily cards: each night a 'chance' of one outcome, picked at random from
         'outcomes' (effect tokens: h happiness, l health, e energy, c cash; a~b is a range). Tonight's global and industry storyline
         chapters, illness (CONFIG.illness) and money shame (CONFIG.shame) hit rivals as they hit you. */
@@ -898,6 +899,7 @@
     $('cfgBurn').textContent='more than '+loadLimitTxt()+' a day of work and study together (shifts, school lessons and self-study), '+numWord(BU.daysInARow)+' day'+(BU.daysInARow===1?'':'s')+' in a row, costs '+Math.abs(BU.healthHit)+' health and cuts shift pay by '+pctTxt(1-BU.pay)+' for '+dayN(BU.lastsDays)+'.';
     if($('cfgWork'))$('cfgWork').textContent=hm(CONFIG.time.maxWorkMinutes);
     if($('cfgNight'))$('cfgNight').textContent=nightTxt();
+    if($('cfgSleepHap'))$('cfgSleepHap').textContent=CONFIG.sleep.happinessPerHour+' happiness a full hour, for at most '+CONFIG.sleep.maxHappinessHours+' hours';
   }
   var NUMW=['zero','one','two','three','four','five','six','seven','eight','nine','ten'];
   function numWord(n){return NUMW[n]||String(n)}

@@ -71,7 +71,7 @@ The existing runner below remains available. The implemented 50-game suite is do
 - Log every gameplay change in `CHANGELOG.md`, in the existing numbered-section style, including new `CONFIG` keys and removed ones.
 - Use a real minus sign (`−`) in player-facing text via the `sg()` helper (`+5` / `−3`); money goes through `money()`.
 - Scaling to difficulty, prices and wages goes through `G()` (price index) and `Df()` (difficulty), so use them for any new cost.
-- Sleeping at home restores `CONFIG.sleep.perHour` energy (by home) and `CONFIG.health.sleep` health for each hour left in the day, both capped, plus happiness. Sleeping elsewhere earns `CONFIG.sleep.awayShare` of each. Going to bed unfed adds `CONFIG.health.nightly.skippedMeal`. Health otherwise changes only through the `l` token, the gym, the Park, the hospital, meals, hours of work and study (`workHealthPerHour`, `lessonHealthPerHour`, `selfStudy.healthPerHour`) and the nightly rules in `CONFIG.health.nightly`.
+- Sleeping at home restores `CONFIG.sleep.perHour` energy (by home) and `CONFIG.health.sleep` health for each hour left in the day, both capped, plus `CONFIG.sleep.happinessPerHour` happiness for each full hour up to `maxHappinessHours` (`sleepHap()`, shared with the rivals). Sleeping elsewhere earns `CONFIG.sleep.awayShare` of each. Going to bed unfed adds `CONFIG.health.nightly.skippedMeal`. Health otherwise changes only through the `l` token, the gym, the Park, the hospital, meals, hours of work and study (`workHealthPerHour`, `lessonHealthPerHour`, `selfStudy.healthPerHour`) and the nightly rules in `CONFIG.health.nightly`.
 
 ## Rival personalities and remembered favours
 

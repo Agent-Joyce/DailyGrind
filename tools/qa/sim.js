@@ -197,7 +197,8 @@
   }
   function home(){return G.S.homeless?null:G.S.home}
   function walkHome(){return G.dist(G.loc,G.S.home)*G.CONFIG.time.walkMinutes}
-  function reserve(){return 300+walkHome()+15}  /* keep about 5h for sleep, plus the walk home */
+  var SLEEP_MIN=420;  /* the careful bot goes to bed with about 7h left (CHANGELOG 122; it slept about 5h before) */
+  function reserve(){return SLEEP_MIN+walkHome()+15}  /* keep the sleep, plus the walk home */
   async function studyStep(){
     if(!target)return;
     var need=(target.rk.q||[]).filter(function(q){return lvl(q[0])<q[1]}).sort(function(a,b){return lvl(a[0])-lvl(b[0])});
@@ -248,7 +249,7 @@
   function after(dest,min,en,cost){
     S=G.S;var W=G.CONFIG.time.walkMinutes,there=G.dist(G.loc,dest)*W,back=G.dist(dest,G.S.home)*W,we=Math.abs(G.CONFIG.time.walkEnergy||0)*there/W;
     var keep=G.HOUSE[S.home].rent+60;
-    return S.ap-there-min>=300+back+15&&S.energy+en-we>=25&&S.cash-cost>=keep;
+    return S.ap-there-min>=SLEEP_MIN+back+15&&S.energy+en-we>=25&&S.cash-cost>=keep;
   }
   async function moraleStep(aim){
     var C=G.CONFIG.community,L=G.CONFIG.leisure,acts=[

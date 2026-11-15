@@ -938,7 +938,7 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
   </ul>
   <h3>Stress that builds before then</h3>
   <ul>
-    <li><b>Every night:</b> <span id="cfgNight">happiness −5 and knowledge −2</span>, then sleep adds energy, happiness and health back for each hour you had left (more at home).</li>
+    <li><b>Every night:</b> <span id="cfgNight">happiness −5 and knowledge −2</span>, then sleep adds energy, happiness and health back for each hour you had left (more at home; <span id="cfgSleepHap">happiness for at most 12 hours</span>).</li>
     <li><b>Tired (energy under 30):</b> shifts pay 15% less. Low energy that lasts also raises your chance of falling ill overnight: <span id="cfgIllEn">about 40% a night under 11 energy</span> (before health, diet and gym visits lower it).</li>
     <li><b>Morale (happiness under 40 / 25 / 20):</b> shifts pay 10% / 25% / 40% less, and below 20 your boss may demote or fire you.</li>
     <li><b>Factory without a job:</b> <span id="cfgFac">day labour on the loading dock (4h, once a day, no dress code) pays 60% of the lowest Factory wage and does not count as work experience. A safety course (once a game) counts as 1 shift of Factory work experience; a factory tour (once a game) adds a little knowledge.</span></li>
@@ -1530,7 +1530,8 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
       nightEnergy:0,        // every night, before sleep is added back: energy change (%)
       nightHappiness:-5,    // ...and happiness change
       comfortBonus:0.05,    // each comfort item at home (TV, console, fridge, coffee machine, computer) makes resting and sleep restore this much more energy (0.05 = 5%)
-      happinessPerHour:1.5,  // happiness next morning for each full hour slept at home
+      happinessPerHour:1.5,  // happiness next morning for each full hour slept at home...
+      maxHappinessHours:12,  // ...counting at most this many hours (a longer sleep gives no more happiness)
       perHour:{apt:6.5, bung:9},  // energy (%) a night's sleep at home restores for each hour left in the day, by home (comfort items and rateX add to it; the 2h rest uses the home's own rest rate)
       maxEnergy:75,          // most energy a night's sleep at home can give
       awayShare:0.5,        // sleeping away from home gives this share of the energy, health and happiness a night at home gives
@@ -1587,7 +1588,7 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
           jobs by today's pay (the industry storyline included) rather than base pay; bank = none, savings or invest (savings and
           the ETF in a good market); moraleAim = happiness it tops up to with calls, Park walks and (social) the Community Centre. */
       gameDays:30, industryStorylines:2, industryGapDays:5,
-      dayOverheadMinutes:180,  // minutes of a rival's day spent walking between places and on errands (less time left to sleep)
+      dayOverheadMinutes:360,  // minutes of a rival's day spent walking between places, shopping, cooking and on errands (less time left to sleep; 360 = a medium rival sleeps about 8 1/2 hours)
       /* rivals' own small life events, like your daily cards: each night a 'chance' of one outcome, picked at random from
         'outcomes' (effect tokens: h happiness, l health, e energy, c cash; a~b is a range). Tonight's global and industry storyline
         chapters, illness (CONFIG.illness) and money shame (CONFIG.shame) hit rivals as they hit you. */
@@ -1914,6 +1915,7 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
     $('cfgBurn').textContent='more than '+loadLimitTxt()+' a day of work and study together (shifts, school lessons and self-study), '+numWord(BU.daysInARow)+' day'+(BU.daysInARow===1?'':'s')+' in a row, costs '+Math.abs(BU.healthHit)+' health and cuts shift pay by '+pctTxt(1-BU.pay)+' for '+dayN(BU.lastsDays)+'.';
     if($('cfgWork'))$('cfgWork').textContent=hm(CONFIG.time.maxWorkMinutes);
     if($('cfgNight'))$('cfgNight').textContent=nightTxt();
+    if($('cfgSleepHap'))$('cfgSleepHap').textContent=CONFIG.sleep.happinessPerHour+' happiness a full hour, for at most '+CONFIG.sleep.maxHappinessHours+' hours';
   }
   var NUMW=['zero','one','two','three','four','five','six','seven','eight','nine','ten'];
   function numWord(n){return NUMW[n]||String(n)}
@@ -2065,7 +2067,7 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
   function restRate(){return HOUSE[S.home].rate*comfortMult()*(CONFIG.sleep.rateX||1)}  /* energy % per hour of rest */
   function sleepRate(){return (CONFIG.sleep.perHour[S.home]||HOUSE[S.home].rate)*comfortMult()*(CONFIG.sleep.rateX||1)}  /* energy % per hour of a night's sleep at home */
   function sleepGain(min){return Math.min(CONFIG.sleep.maxEnergy,Math.round(min/60*sleepRate()))}
-  function sleepHap(min){return Math.round(Math.floor(min/60)*CONFIG.sleep.happinessPerHour)}  /* happiness from a night at home */
+  function sleepHap(min){var SL=CONFIG.sleep;return Math.round(Math.min(Math.floor(min/60),SL.maxHappinessHours==null?99:SL.maxHappinessHours)*SL.happinessPerHour)}  /* happiness from a night at home: full hours, at most maxHappinessHours */
   function sleepHealth(min){var HS=CONFIG.health.sleep;return Math.round(Math.min(HS.max,min/60*HS.perHour))}
   var GLOVES_PAY=15;  /* work gloves: $ added to every shift */
   var ITEMS={
@@ -7501,7 +7503,7 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
     if(nsp)t+=arow('🗑️ Throw out spoiled × '+nsp,chip('','No time'),btn('binsp','','Throw out',1));
     /* --- rest and sleep --- */
     t+=psec('rest','😴 Rest & sleep',chip('','Comfort '+ci.length+'/5'),
-      'Resting gives '+rr0.toFixed(1)+'% energy an hour now'+(ci.length?' (comfort: '+ci.join(', ')+')':' (a TV, console, fridge, coffee machine or computer at home adds '+pctTxt(CONFIG.sleep.comfortBonus)+' each)')+'. A night’s sleep at home restores '+(Math.round(sleepRate()*10)/10)+'% energy for each hour left in the day, up to '+SL.maxEnergy+'%, plus '+CONFIG.health.sleep.perHour+' health an hour (up to '+CONFIG.health.sleep.max+') and '+SL.happinessPerHour+' happiness per full hour. The nightly change is '+nightTxt()+', so going to bed with more hours left means you wake up fresher. Sleeping anywhere else gives '+pctTxt(SL.awayShare)+' of it.');
+      'Resting gives '+rr0.toFixed(1)+'% energy an hour now'+(ci.length?' (comfort: '+ci.join(', ')+')':' (a TV, console, fridge, coffee machine or computer at home adds '+pctTxt(CONFIG.sleep.comfortBonus)+' each)')+'. A night’s sleep at home restores '+(Math.round(sleepRate()*10)/10)+'% energy for each hour left in the day, up to '+SL.maxEnergy+'%, plus '+CONFIG.health.sleep.perHour+' health an hour (up to '+CONFIG.health.sleep.max+') and '+SL.happinessPerHour+' happiness per full hour (for up to '+SL.maxHappinessHours+' hours). The nightly change is '+nightTxt()+', so going to bed with more hours left means you wake up fresher. Sleeping anywhere else gives '+pctTxt(SL.awayShare)+' of it.');
     t+=arow('Rest',chip('time',hm(SL.napMinutes))+chip('energy','+'+Math.round(nh*rr0)+'%')+chip('happy',sg(SL.napHappiness)),btn('nap','','Rest '+hm(SL.napMinutes),0,S.ap<SL.napMinutes||S.energy>=100));
     t+=arow('Sleep · end the day',chip('time',hm(S.ap))+chip('energy','+'+sleepGain(S.ap)+'%')+chip('health','+'+sleepHealth(S.ap))+chip('happy','+'+(sleepHap(S.ap)+(H.hap||0))),btn('rest','',sleepLabel()));
     /* --- free time --- */
