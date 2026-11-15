@@ -836,7 +836,7 @@
   }
   /* a bank loan to pay a course fee that blocks a clearly better role */
   function rivalBorrow(r,tg,fee,keep,j){
-    var F=FG().loan,L=CONFIG.loan;if(!F||!F.on||!L.enabled||r.loan||!j||tg.pay<j.rk.pay*F.payGain||rivalWorth(r)-fee<F.keepWorth)return;  /* a loan solves a cash shortage, not insolvency: net worth after the fee must stay above keepWorth, or the bankrupt rule would end the rival */
+    var F=FG().loan,L=CONFIG.loan;if(!F||!F.on||!L.enabled||r.loan||F.levels.indexOf(r.diff)<0||!j||tg.pay<j.rk.pay*F.payGain||rivalWorth(r)-fee<F.keepWorth)return;  /* a loan solves a cash shortage, not insolvency: net worth after the fee must stay above keepWorth, or the bankrupt rule would end the rival */
     var assets=r.cash+r.bank+(r.etf||0)+(r.hf||0)+(r.cry||0)+(r.fd||0),limit=Math.floor(Math.min(L.maxLoan,L.baseLimit+L.limitPerAsset*assets)/L.step)*L.step;
     var need=Math.ceil((keep+fee-r.cash-r.bank)/L.step)*L.step;if(need<=0)need=L.step;  /* the savings are drawn first */
     if(need>limit)return;

@@ -625,7 +625,7 @@
         invest: investing rivals (a level whose bank plan is invest) hold the products listed for their archetype. A product is bought when its expected return
           minus risk x its daily swing beats the savings rate by margin, and sold when it falls sellMargin under it; share of the savings move each time (never
           more than maxShare of net worth in one product, nor maxTotal in all three market products together; anything above is sold back to savings each night); fixed deposits lock for fdDays and are never sold early.
-        loan: a planning rival with no loan that cannot pay a course fee for a role paying payGain times its job borrows the shortfall (in steps, tenure by index
+        loan: a planning rival of a level in `levels` (not expert: borrowing let expert doctors reach the top role days earlier and win the game) with no loan that cannot pay a course fee for a role paying payGain times its job borrows the shortfall (in steps, tenure by index
           from CONFIG.loan.tenures, limit as yours; its net worth after the fee must stay above keepWorth) and repays when it can; not repaid graceDays after the due date it is out of the race, as you would be. */
       fullGame:{
         meals:{poorRents:1, treatBelow:40, treatKeepRents:3},
@@ -633,7 +633,7 @@
         invest:{keepBank:300, share:0.25, minMove:100, margin:0.1, sellMargin:0.3, maxShare:{etf:0.25, hf:0.15, cry:0.05}, maxTotal:0.35, fdDays:4,
           products:{careerist:['etf'], scholar:['fd'], investor:['fd','etf','hf'], socialite:['etf'], hustler:['etf','hf','cry']},
           risk:{careerist:0.15, scholar:0.2, investor:0.05, socialite:0.15, hustler:0.02}},
-        loan:{on:true, payGain:1.3, tenure:2, keepWorth:300}},
+        loan:{on:true, levels:['easy','medium'], payGain:1.3, tenure:2, keepWorth:300}},
       /* Awareness of the player and each other (medium and expert rivals; everything is a bounded modifier on an existing chance).
         leaderSabotage: x a rival's sabotage chance against whoever leads the Life Score (you or a rival; the lead is held by points);
         leaderFirst: levels whose sabotage on other rivals goes for the leader before the one just ahead;
