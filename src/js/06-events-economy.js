@@ -1815,7 +1815,7 @@
   function momentText(m){
     var r=S.rivals[m.i],X=CONFIG.rivals.moments;if(!r)return null;
     if(m.k==='contest'){var c=m.id.split('_'),rk=CAREERS[c[0]].ranks[+c[1]];return {ic:'🏁',t:'Same opening, same morning',q:r.name+' is going for '+rk.r+' at the '+NAME[bOf(c[0])]+' too. Get to the interview first and it goes your way: your next interview is easier and has an opening. Wait, and they take it.',
-      yes:'Interview now',yc:chip('time','1h interview')+chip('','Easier interview')+chip('','Relationship with '+r.name+' '+sg(X.contest.interviewRel),'warn'),no:'Let them',nc:chip('','Closes for you today')+chip('','Relationship '+sg(X.contest.missRel),'warn')}}
+      yes:'Interview now',yc:chip('time',hm(60))+chip('','Easier interview')+chip('','Relationship with '+r.name+' '+sg(X.contest.interviewRel),'warn'),no:'Let them',nc:chip('','Closes for you today')+chip('','Relationship '+sg(X.contest.missRel),'warn')}}
     if(m.k==='cover'){var j=rivalJob(r);return {ic:'🧑‍🍳',t:'Cover a shift now',q:r.name+' cannot make their shift'+(j?' as '+j.rk.r:'')+' and asks you to cover it for '+money(m.pay)+'.',
       yes:'Cover it',yc:chip('time',hm(X.cover.minutes))+chip('good','+'+money(m.pay))+chip('energy',sg(X.cover.energy))+chip('','Relationship '+sg(X.cover.rel)),no:'Say no',nc:chip('','Relationship '+sg(X.cover.refuseRel),'warn')}}
     if(m.k==='project')return {ic:'📚',t:'Group project at the School',q:r.name+' needs one more for a group project that is due today.',
