@@ -4802,6 +4802,7 @@ body[data-text=xl] :is(#center,.over .card,#logDrawer,.evcard){zoom:1.25}
   /* the products an investing rival holds (by archetype), judged on the player's own expected returns */
   function rivalInvest(r){
     var F=FG().invest,list=F.products[r.archetype]||['etf'],risk=F.risk[r.archetype]!=null?F.risk[r.archetype]:0.15,worth0=Math.max(1,rivalWorth(r));
+    ['etf','hf','cry'].forEach(function(k){var cap=F.maxShare[k]*worth0;if(r[k]>cap){var ex=r[k]-Math.max(0,cap);r.bank+=ex;r[k]-=ex}});  /* take profits: a holding grown past its cap goes back to savings */
     list.forEach(function(k){
       var score=expRet(k)-risk*VOL[k],held=k==='fd'?(r.fd||0):(r[k]||0);
       if(k!=='fd'&&held>0&&score<S.rate-F.sellMargin){r.bank+=held;r[k]=0;held=0}
