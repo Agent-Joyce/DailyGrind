@@ -2044,3 +2044,34 @@ Gameplay change for the player. It rolls no dice. **Rivals are exempt:** they ha
 - Rules text (`cfgComm`) describes it; `docs/Daily Grind Config Guide.docx` has a new row for `safetyNet`, and its old food, place and rival names are updated for CHANGELOG 114.
 - Checks: a case in `tools/qa/check-ux.js` (greyed when you can afford things or have eaten and have clothes; works once; gives exactly what is lacking; the warnings mention the centre; savings count). **Simulation** (20 careful + 10 random single games, base vs new, [report](docs/QA_Sim_2026-11-14_safety-net.md)): identical endings; the careful bot never qualified for the help, so the sample cannot show the benefit. `tools/qa/sim.js` now tries the help when stuck. **Hard-times runs** (`--start=broke` and `--difficulty=hard`, 20 careful games each, [report](docs/QA_Sim_2026-11-15_safety-net-hard-times.md)): 36 of 40 games finished with the help against 21 of 40 without; hospital endings 15 to 0. New sim options `--difficulty` and `--start=broke` in `run-sims.js`. **Re-run after the rebase** (same scenarios, base `ebf0b99` against `210eb50`, [report](docs/QA_Sim_2026-11-15_safety-net-rerun-after-rebase.md)): both builds now finish 20 of 20 careful games in every scenario, so the earlier gap came from the older base and is not the net's effect on current code; the net still removes 2 of the 3 "could not eat" flags in the broke and hard runs, and normal difficulty is unchanged.
 
+## 117. Rival level retune (Package A item 3, after Package B)
+
+Base: §116 (renumbered from 113 when merged with the safety-net branch). Approved by the owner ("retune with the latest report"); based on [QA_Sim_2026-11-15_bot-clothes-rival-strategies.md](docs/QA_Sim_2026-11-15_bot-clothes-rival-strategies.md), the latest report with rival games, and an overnight sweep on the current build. Rival games only.
+
+**What the report showed:** the careful bot won 1 of 10 games against medium rivals, the default rival game, and 2 of 10 against expert: medium was about as hard as expert. The bot placed last on happiness at every level, because medium and expert rivals both played for Life Score places (§110) and kept their happiness around 92. Easy rivals were no threat (median $1,306, 42 points), and 11 of 30 expert rivals finished above $15,000 (most $47,630).
+
+**Changes**
+
+| Setting | Was | Now | Why |
+|---|---|---|---|
+| `rivals.aims.levels` | `['medium','expert']` | `['expert']` | Playing for places is now what makes an expert an expert; medium rivals still plan their careers |
+| `rivals.levels.easy.shifts` | 1 | 1.25 | A little more presence |
+| `rivals.levels.easy.mistakeChance` | 0.25 | 0.2 | |
+| `rivals.levels.expert.shifts` | 3 | 2.75 | Fewer runaway fortunes |
+
+The Rules text names the levels that play to win from CONFIG, so it now says expert only.
+
+**Effect** (overnight harness: the player only sleeps, 12 games per level, 30 days, three rivals; before → after)
+
+| | Before | After |
+|---|---|---|
+| Easy median net worth | $1,822 | $2,094 |
+| Medium median net worth / average happiness | $9,528 / 92 | $10,331 / 88 |
+| Expert median net worth (10th–90th percentile) | $13,466 ($3,520–$22,378) | $12,320 ($3,108–$20,053) |
+| Expert rivals over $15,000 / highest | 15 of 36 / $38,641 | 12 of 36 / $33,706 |
+| Mixed games, median Life Score points (expert / medium / easy) | 90 / 87 / 51 | 100 / 87 / 49 |
+| Rivals out of the race | 0 | 0 |
+
+Not yet measured against the playing bot; a rival simulation on this build is the check.
+
+**QA:** the playing-to-win case in `check-social-rules.js` now uses expert rivals and asserts that medium and easy rivals have no focus. Docs: `docs/Daily Grind Config Guide.docx` (levels and aims rows), `docs/Configuration_Social_Update.md`.
